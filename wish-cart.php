@@ -157,7 +157,11 @@ class WISHCART_Wishlist {
         
         // FluentCRM integration classes
         include_once WISHCART_PLUGIN_DIR . 'includes/class-fluentcrm-integration.php';
+        include_once WISHCART_PLUGIN_DIR . 'includes/class-fluentcrm-triggers.php';
         include_once WISHCART_PLUGIN_DIR . 'includes/class-crm-campaign-handler.php';
+        
+        // FluentCRM trigger classes (loaded on demand when FluentCRM is available)
+        // These are included in class-fluentcrm-triggers.php when needed
         
         // Frontend classes
         include_once WISHCART_PLUGIN_DIR . 'includes/class-wishlist-frontend.php';
@@ -182,6 +186,11 @@ class WISHCART_Wishlist {
         // Initialize FluentCRM integration if available
         if (class_exists('WISHCART_FluentCRM_Integration')) {
             new WISHCART_FluentCRM_Integration();
+        }
+        
+        // Initialize FluentCRM triggers if available
+        if (class_exists('WISHCART_FluentCRM_Triggers')) {
+            new WISHCART_FluentCRM_Triggers();
         }
         
         // Initialize CRM campaign handler

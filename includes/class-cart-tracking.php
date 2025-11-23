@@ -165,6 +165,12 @@ class WISHCART_Cart_Tracking {
         // Get customer/user ID
         $user_id = $this->get_order_user_id( $order );
 
+        // Get order ID
+        $order_id = $this->get_order_id( $order );
+
+        // Get contact email from order
+        $contact_email = $this->get_order_email( $order, $user_id );
+
         // Track each product
         foreach ( $items as $item ) {
             $product_id = $this->get_item_product_id( $item );
@@ -179,6 +185,33 @@ class WISHCART_Cart_Tracking {
 
             // Update wishlist items status if they exist
             $this->update_wishlist_items_on_purchase( $product_id, $variation_id, $user_id );
+
+            // Check if this product was in any wishlist for this user
+            // If so, fire the purchase trigger
+            if ( $user_id || $contact_email ) {
+                $wishlist_item = $this->find_wishlist_item( $product_id, $variation_id, $user_id );
+                
+                if ( $wishlist_item ) {
+                    // Get product information
+                    $product = WISHCART_FluentCart_Helper::get_product( $product_id );
+                    $product_name = $product ? $product->get_name() : '';
+                    $product_url = $product ? get_permalink( $product_id ) : '';
+
+                    // Fire purchase trigger
+                    $purchase_data = array(
+                        'user_id'       => $user_id,
+                        'contact_email' => $contact_email,
+                        'product_id'    => $product_id,
+                        'variation_id'  => $variation_id,
+                        'product_name'  => $product_name,
+                        'product_url'   => $product_url,
+                        'order_id'      => $order_id,
+                        'wishlist_id'   => $wishlist_item['wishlist_id'],
+                    );
+
+                    do_action( 'wishcart_item_purchased', $purchase_data );
+                }
+            }
         }
     }
 
@@ -289,6 +322,121 @@ class WISHCART_Cart_Tracking {
         }
 
         return '';
+    }
+
+    /**
+     * Get order ID
+     *
+     * @param object $order Order object
+     * @return int Order ID
+     */
+    private function get_order_id( $order ) {
+        if ( method_exists( $order, 'get_id' ) ) {
+            return $order->get_id();
+        }
+
+        if ( is_object( $order ) && isset( $order->id ) ) {
+            return intval( $order->id );
+        }
+
+        if ( is_object( $order ) && isset( $order->ID ) ) {
+            return intval( $order->ID );
+        }
+
+        return 0;
+    }
+
+    /**
+     * Get order email
+     *
+     * @param object $order Order object
+     * @param int|null $user_id User ID
+     * @return string|null Email address
+     */
+    private function get_order_email( $order, $user_id = null ) {
+        // If user_id is provided, get email from user
+        if ( $user_id ) {
+            $user = get_userdata( $user_id );
+            if ( $user && ! empty( $user->user_email ) ) {
+                return sanitize_email( $user->user_email );
+            }
+        }
+
+        // Try to get email from order
+        if ( method_exists( $order, 'get_billing_email' ) ) {
+            $email = $order->get_billing_email();
+            if ( ! empty( $email ) ) {
+                return sanitize_email( $email );
+            }
+        }
+
+        if ( method_exists( $order, 'get_email' ) ) {
+            $email = $order->get_email();
+            if ( ! empty( $email ) ) {
+                return sanitize_email( $email );
+            }
+        }
+
+        // Check order object properties
+        if ( is_object( $order ) && isset( $order->billing_email ) ) {
+            return sanitize_email( $order->billing_email );
+        }
+
+        if ( is_object( $order ) && isset( $order->email ) ) {
+            return sanitize_email( $order->email );
+        }
+
+        return null;
+    }
+
+    /**
+     * Find wishlist item for product
+     *
+     * @param int $product_id Product ID
+     * @param int $variation_id Variation ID
+     * @param int|null $user_id User ID
+     * @return array|null Wishlist item data or null
+     */
+    private function find_wishlist_item( $product_id, $variation_id, $user_id = null ) {
+        if ( ! $product_id ) {
+            return null;
+        }
+
+        $where_clauses = array();
+        $where_values = array();
+
+        $where_clauses[] = "wi.product_id = %d";
+        $where_values[] = $product_id;
+
+        if ( $variation_id > 0 ) {
+            $where_clauses[] = "wi.variation_id = %d";
+            $where_values[] = $variation_id;
+        } else {
+            $where_clauses[] = "(wi.variation_id = 0 OR wi.variation_id IS NULL)";
+        }
+
+        $where_clauses[] = "wi.status = 'active'";
+        $where_clauses[] = "w.status = 'active'";
+
+        if ( $user_id ) {
+            $where_clauses[] = "w.user_id = %d";
+            $where_values[] = $user_id;
+        }
+
+        $where_sql = implode( ' AND ', $where_clauses );
+
+        $query = $this->wpdb->prepare(
+            "SELECT wi.*, w.user_id
+            FROM {$this->items_table} wi
+            INNER JOIN {$this->wishlists_table} w ON wi.wishlist_id = w.id
+            WHERE {$where_sql}
+            LIMIT 1",
+            $where_values
+        );
+
+        $result = $this->wpdb->get_row( $query, ARRAY_A );
+
+        return $result ? $result : null;
     }
 
     /**

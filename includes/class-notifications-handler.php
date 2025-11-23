@@ -672,6 +672,7 @@ class WISHCART_Notifications_Handler {
                             // Trigger CRM back in stock event
                             $stock_data = array(
                                 'user_id' => $item['user_id'],
+                                'contact_email' => $user->user_email,
                                 'wishlist_id' => $item['wishlist_id'],
                                 'product_id' => $item['product_id'],
                                 'product_name' => $product->get_name(),
