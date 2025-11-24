@@ -658,6 +658,62 @@ class WISHCART_Wishlist_Handler {
             $this->update_guest_tracking($session_id, $wishlist_id);
         }
 
+        // Get email for trigger data and ensure contact exists in FluentCRM
+        $contact_email = null;
+        if (!empty($user_id)) {
+            // For logged-in users, get email from user
+            $user = get_userdata($user_id);
+            if ($user && $user->user_email) {
+                $contact_email = $user->user_email;
+                
+                // Ensure contact exists in FluentCRM for logged-in users
+                if (class_exists('WISHCART_FluentCRM_Integration')) {
+                    $fluentcrm = new WISHCART_FluentCRM_Integration();
+                    if ($fluentcrm->is_available()) {
+                        $settings = $fluentcrm->get_settings();
+                        if ($settings['enabled'] && $settings['auto_create_contacts']) {
+                            // Check if contact exists
+                            $existing_contact = $fluentcrm->get_contact($contact_email);
+                            if (!$existing_contact) {
+                                // Create contact if it doesn't exist
+                                try {
+                                    $contact_id = $fluentcrm->create_or_update_contact($user_id, $contact_email, array());
+                                    if (!is_wp_error($contact_id)) {
+                                        // Ensure contact is added to default list
+                                        $default_list_id = $fluentcrm->get_or_create_default_list();
+                                        if (!is_wp_error($default_list_id)) {
+                                            $fluentcrm->attach_lists($contact_id, array($default_list_id));
+                                        }
+                                    }
+                                } catch (Exception $e) {
+                                    // Log error but don't block wishlist addition
+                                    if (defined('WP_DEBUG') && WP_DEBUG) {
+                                        error_log('[WishCart] FluentCRM sync error for logged-in user: ' . $e->getMessage());
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } elseif (!empty($session_id)) {
+            // For guest users, try to get email from guest handler
+            if (class_exists('WISHCART_Guest_Handler')) {
+                $guest_handler = new WISHCART_Guest_Handler();
+                $guest = $guest_handler->get_guest_by_session($session_id);
+                if ($guest && !empty($guest['guest_email']) && is_email($guest['guest_email'])) {
+                    $contact_email = $guest['guest_email'];
+                }
+            }
+            // Also check if email was provided in options (for immediate use)
+            if (empty($contact_email) && isset($options['guest_email']) && is_email($options['guest_email'])) {
+                $contact_email = sanitize_email($options['guest_email']);
+            }
+            
+            // Note: Guest contact creation already happens earlier in the function (lines 558-579)
+            // So we don't need to create it again here
+        }
+
         // Trigger CRM event hook
         $item_data = array(
             'item_id' => $this->wpdb->insert_id,
@@ -669,11 +725,31 @@ class WISHCART_Wishlist_Handler {
             'product_name' => $product->get_name(),
             'product_url' => get_permalink($product_id),
         );
+        
+        // Add email to item_data if available (for FluentCRM trigger)
+        if (!empty($contact_email)) {
+            $item_data['email'] = $contact_email;
+        }
+        
+        // Debug logging
+        if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+            error_log( '[WishCart] Item added to wishlist - Firing wishcart_item_added action' );
+            error_log( '[WishCart] Item data: ' . print_r( $item_data, true ) );
+        }
+        
+        // Fire the generic WordPress action hook
         do_action('wishcart_item_added', $item_data);
 
-        // Fire FluentCRM automation trigger
+        // Fire FluentCRM automation trigger (contact should exist by now)
         if ( class_exists( 'WISHCART_FluentCRM_Triggers' ) ) {
+            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+                error_log( '[WishCart] Firing FluentCRM trigger for wishcart_item_added' );
+            }
             WISHCART_FluentCRM_Triggers::fire_trigger( 'wishcart_item_added', $item_data );
+        } else {
+            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+                error_log( '[WishCart] Warning: WISHCART_FluentCRM_Triggers class not found. FluentCRM trigger not fired.' );
+            }
         }
 
         return true;
