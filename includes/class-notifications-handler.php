@@ -590,6 +590,11 @@ class WISHCART_Notifications_Handler {
                                 'new_price' => $current_price,
                             );
                             do_action('wishcart_price_drop_detected', $price_data);
+
+                            // Fire FluentCRM automation trigger
+                            if ( class_exists( 'WISHCART_FluentCRM_Triggers' ) ) {
+                                WISHCART_FluentCRM_Triggers::fire_trigger( 'wishcart_price_drop', $price_data );
+                            }
                         }
                     }
                 }
@@ -672,13 +677,17 @@ class WISHCART_Notifications_Handler {
                             // Trigger CRM back in stock event
                             $stock_data = array(
                                 'user_id' => $item['user_id'],
-                                'contact_email' => $user->user_email,
                                 'wishlist_id' => $item['wishlist_id'],
                                 'product_id' => $item['product_id'],
                                 'product_name' => $product->get_name(),
                                 'product_url' => get_permalink($item['product_id']),
                             );
                             do_action('wishcart_back_in_stock', $stock_data);
+
+                            // Fire FluentCRM automation trigger
+                            if ( class_exists( 'WISHCART_FluentCRM_Triggers' ) ) {
+                                WISHCART_FluentCRM_Triggers::fire_trigger( 'wishcart_back_in_stock', $stock_data );
+                            }
                         }
                     }
                 }

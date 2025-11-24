@@ -2,9 +2,9 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 /**
- * WishCart Back in Stock Trigger
+ * WishCart Item Removed Trigger
  *
- * Triggers when a product in a wishlist comes back in stock
+ * Triggers when a product is removed from a wishlist
  *
  * @category WordPress
  * @package  WishCart
@@ -12,13 +12,13 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://wishcart.chat
  */
-class WISHCART_Back_In_Stock_Trigger extends \FluentCrm\App\Services\Funnel\BaseTrigger {
+class WISHCART_Item_Removed_Trigger extends \FluentCrm\App\Services\Funnel\BaseTrigger {
 
     /**
      * Constructor
      */
     public function __construct() {
-        $this->triggerName = 'wishcart_back_in_stock';
+        $this->triggerName = 'wishcart_item_removed';
         $this->priority = 20;
         $this->actionArgNum = 2;
         parent::__construct();
@@ -32,8 +32,8 @@ class WISHCART_Back_In_Stock_Trigger extends \FluentCrm\App\Services\Funnel\Base
     public function getTrigger() {
         return array(
             'category'    => __( 'WishCart', 'wish-cart' ),
-            'label'       => __( 'Item Back in Stock', 'wish-cart' ),
-            'description' => __( 'This funnel will be initiated when a product in a wishlist comes back in stock', 'wish-cart' ),
+            'label'       => __( 'Item Removed from Wishlist', 'wish-cart' ),
+            'description' => __( 'This funnel will be initiated when a product is removed from a wishlist', 'wish-cart' ),
             'icon'        => 'fc-icon-heart',
         );
     }

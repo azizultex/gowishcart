@@ -160,8 +160,13 @@ class WISHCART_Wishlist {
         include_once WISHCART_PLUGIN_DIR . 'includes/class-fluentcrm-triggers.php';
         include_once WISHCART_PLUGIN_DIR . 'includes/class-crm-campaign-handler.php';
         
-        // FluentCRM trigger classes (loaded on demand when FluentCRM is available)
-        // These are included in class-fluentcrm-triggers.php when needed
+        // FluentCRM trigger classes (only load if FluentCRM BaseTrigger exists)
+        if ( class_exists( '\FluentCrm\App\Services\Funnel\BaseTrigger' ) ) {
+            include_once WISHCART_PLUGIN_DIR . 'includes/triggers/class-item-added-trigger.php';
+            include_once WISHCART_PLUGIN_DIR . 'includes/triggers/class-item-removed-trigger.php';
+            include_once WISHCART_PLUGIN_DIR . 'includes/triggers/class-price-drop-trigger.php';
+            include_once WISHCART_PLUGIN_DIR . 'includes/triggers/class-back-in-stock-trigger.php';
+        }
         
         // Frontend classes
         include_once WISHCART_PLUGIN_DIR . 'includes/class-wishlist-frontend.php';
@@ -187,7 +192,7 @@ class WISHCART_Wishlist {
         if (class_exists('WISHCART_FluentCRM_Integration')) {
             new WISHCART_FluentCRM_Integration();
         }
-        
+
         // Initialize FluentCRM triggers if available
         if (class_exists('WISHCART_FluentCRM_Triggers')) {
             new WISHCART_FluentCRM_Triggers();

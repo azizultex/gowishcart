@@ -658,27 +658,6 @@ class WISHCART_Wishlist_Handler {
             $this->update_guest_tracking($session_id, $wishlist_id);
         }
 
-        // Get contact email for trigger
-        $contact_email = null;
-        if ($user_id) {
-            $user = get_userdata($user_id);
-            if ($user && !empty($user->user_email)) {
-                $contact_email = $user->user_email;
-            }
-        } elseif (!empty($session_id)) {
-            // Try to get guest email
-            if (isset($options['guest_email']) && !empty($options['guest_email'])) {
-                $contact_email = sanitize_email($options['guest_email']);
-            } else {
-                // Try to get from guest handler
-                $guest_handler = new WISHCART_Guest_Handler();
-                $guest = $guest_handler->get_guest_by_session($session_id);
-                if ($guest && !empty($guest['guest_email'])) {
-                    $contact_email = sanitize_email($guest['guest_email']);
-                }
-            }
-        }
-
         // Trigger CRM event hook
         $item_data = array(
             'item_id' => $this->wpdb->insert_id,
@@ -687,11 +666,15 @@ class WISHCART_Wishlist_Handler {
             'variation_id' => $variation_id,
             'user_id' => $user_id,
             'session_id' => $session_id,
-            'contact_email' => $contact_email,
             'product_name' => $product->get_name(),
             'product_url' => get_permalink($product_id),
         );
         do_action('wishcart_item_added', $item_data);
+
+        // Fire FluentCRM automation trigger
+        if ( class_exists( 'WISHCART_FluentCRM_Triggers' ) ) {
+            WISHCART_FluentCRM_Triggers::fire_trigger( 'wishcart_item_added', $item_data );
+        }
 
         return true;
     }
@@ -768,6 +751,11 @@ class WISHCART_Wishlist_Handler {
             'user_id' => $user_id,
         );
         do_action('wishcart_item_removed', $item_data);
+
+        // Fire FluentCRM automation trigger
+        if ( class_exists( 'WISHCART_FluentCRM_Triggers' ) ) {
+            WISHCART_FluentCRM_Triggers::fire_trigger( 'wishcart_item_removed', $item_data );
+        }
 
         return true;
     }
