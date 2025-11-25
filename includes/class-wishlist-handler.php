@@ -736,11 +736,9 @@ class WISHCART_Wishlist_Handler {
             error_log( '[WishCart] Item added to wishlist - Firing wishcart_item_added action' );
             error_log( '[WishCart] Item data: ' . print_r( $item_data, true ) );
         }
-        
-        // Fire the generic WordPress action hook
-        do_action('wishcart_item_added', $item_data);
 
         // Fire FluentCRM automation trigger (contact should exist by now)
+        // Note: fire_trigger() internally calls do_action() so we don't call it separately
         if ( class_exists( 'WISHCART_FluentCRM_Triggers' ) ) {
             if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
                 error_log( '[WishCart] Firing FluentCRM trigger for wishcart_item_added' );
@@ -865,10 +863,9 @@ class WISHCART_Wishlist_Handler {
             error_log( '[WishCart] Item removed from wishlist - Firing wishcart_item_removed action' );
             error_log( '[WishCart] Item data: ' . print_r( $item_data, true ) );
         }
-        
-        do_action('wishcart_item_removed', $item_data);
 
         // Fire FluentCRM automation trigger (contact should exist by now)
+        // Note: fire_trigger() internally calls do_action() so we don't call it separately
         if ( class_exists( 'WISHCART_FluentCRM_Triggers' ) ) {
             if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
                 error_log( '[WishCart] Firing FluentCRM trigger for wishcart_item_removed' );

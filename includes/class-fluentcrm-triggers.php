@@ -16,6 +16,13 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class WISHCART_FluentCRM_Triggers {
 
     /**
+     * Flag to prevent duplicate trigger registration
+     *
+     * @var bool
+     */
+    private static $triggers_registered = false;
+
+    /**
      * Constructor
      */
     public function __construct() {
@@ -61,6 +68,14 @@ class WISHCART_FluentCRM_Triggers {
      * @return void
      */
     public function register_triggers() {
+        // Prevent duplicate registration (method is called on multiple hooks)
+        if ( self::$triggers_registered ) {
+            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+                error_log( '[WishCart] Triggers already registered, skipping duplicate registration.' );
+            }
+            return;
+        }
+
         // Check if BaseTrigger class exists
         if ( ! class_exists( '\FluentCrm\App\Services\Funnel\BaseTrigger' ) ) {
             if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
@@ -68,6 +83,9 @@ class WISHCART_FluentCRM_Triggers {
             }
             return;
         }
+
+        // Mark as registered to prevent duplicate registration
+        self::$triggers_registered = true;
 
         // Filter is already registered in constructor, no need to add it again
 
@@ -303,11 +321,6 @@ class WISHCART_FluentCRM_Triggers {
             // This matches the pattern used by fluent-booking: do_action('fluent_booking/after_booking_scheduled', $booking)
             do_action( $action_hook, $trigger_data );
             
-            // Also fire the prefixed version as a fallback (some FluentCRM versions might use this)
-            // BaseTrigger might listen to both formats
-            $prefixed_hook = 'fluentcrm_funnel_trigger_' . $trigger_key;
-            do_action( $prefixed_hook, $subscriber, array( $trigger_data ) );
-            
             if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
                 error_log( '[WishCart] Trigger action hook fired successfully: ' . $action_hook );
             }
@@ -317,8 +330,7 @@ class WISHCART_FluentCRM_Triggers {
             }
         }
 
-        // Also fire other action hooks for backward compatibility
-        do_action( 'fluentcrm_automation_trigger_' . $trigger_key, $trigger_data );
+        // Fire custom hook for extensions (does not trigger FluentCRM funnels)
         do_action( 'wishcart_trigger_' . $trigger_key, $data );
     }
 }
