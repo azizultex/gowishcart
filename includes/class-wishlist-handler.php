@@ -795,6 +795,31 @@ class WISHCART_Wishlist_Handler {
             return new WP_Error('no_wishlist', __('Wishlist not found', 'wish-cart'));
         }
 
+        // Get product object before deletion (needed for trigger data)
+        $product = WISHCART_FluentCart_Helper::get_product($product_id);
+        if (!$product) {
+            return new WP_Error('product_not_found', __('Product not found', 'wish-cart'));
+        }
+
+        // Get email for trigger data (similar to add_to_wishlist)
+        $contact_email = null;
+        if (!empty($user_id)) {
+            // For logged-in users, get email from user
+            $user = get_userdata($user_id);
+            if ($user && $user->user_email) {
+                $contact_email = $user->user_email;
+            }
+        } else if (!empty($session_id)) {
+            // For guest users, try to get email from guest handler
+            if (class_exists('WISHCART_Guest_Handler')) {
+                $guest_handler = new WISHCART_Guest_Handler();
+                $guest = $guest_handler->get_guest_by_session($session_id);
+                if ($guest && !empty($guest['guest_email']) && is_email($guest['guest_email'])) {
+                    $contact_email = $guest['guest_email'];
+                }
+            }
+        }
+
         // Delete from database
         $result = $this->wpdb->delete(
             $this->items_table,
@@ -825,12 +850,34 @@ class WISHCART_Wishlist_Handler {
             'product_id' => $product_id,
             'variation_id' => $variation_id,
             'user_id' => $user_id,
+            'session_id' => $session_id,
+            'product_name' => $product->get_name(),
+            'product_url' => get_permalink($product_id),
         );
+        
+        // Add email to item_data if available (for FluentCRM trigger)
+        if (!empty($contact_email)) {
+            $item_data['email'] = $contact_email;
+        }
+        
+        // Debug logging
+        if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+            error_log( '[WishCart] Item removed from wishlist - Firing wishcart_item_removed action' );
+            error_log( '[WishCart] Item data: ' . print_r( $item_data, true ) );
+        }
+        
         do_action('wishcart_item_removed', $item_data);
 
-        // Fire FluentCRM automation trigger
+        // Fire FluentCRM automation trigger (contact should exist by now)
         if ( class_exists( 'WISHCART_FluentCRM_Triggers' ) ) {
+            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+                error_log( '[WishCart] Firing FluentCRM trigger for wishcart_item_removed' );
+            }
             WISHCART_FluentCRM_Triggers::fire_trigger( 'wishcart_item_removed', $item_data );
+        } else {
+            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+                error_log( '[WishCart] Warning: WISHCART_FluentCRM_Triggers class not found. FluentCRM trigger not fired.' );
+            }
         }
 
         return true;
