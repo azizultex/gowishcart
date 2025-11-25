@@ -160,8 +160,8 @@ class WISHCART_Item_Removed_Trigger extends \FluentCrm\App\Services\Funnel\BaseT
                 
                 // Only pass simple scalar values like fluent-booking does
                 // Do NOT pass complex arrays/objects that cause preg_replace errors in FluentCRM's database layer
-                // For removed items, we may not have item_id, so use product_id or 0
-                $source_ref_id = isset( $item_data['item_id'] ) ? intval( $item_data['item_id'] ) : ( isset( $item_data['product_id'] ) ? intval( $item_data['product_id'] ) : 0 );
+                // Use product_id as source_ref_id so SmartCode can retrieve product data for dynamic shortcodes
+                $source_ref_id = isset( $item_data['product_id'] ) ? intval( $item_data['product_id'] ) : 0;
                 
                 $processor->startFunnelSequence( $funnel, $subscriberData, array(
                     'source_trigger_name' => $this->triggerName,

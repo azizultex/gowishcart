@@ -160,7 +160,8 @@ class WISHCART_Item_Added_Trigger extends \FluentCrm\App\Services\Funnel\BaseTri
                 
                 // Only pass simple scalar values like fluent-booking does
                 // Do NOT pass complex arrays/objects that cause preg_replace errors in FluentCRM's database layer
-                $source_ref_id = isset( $item_data['item_id'] ) ? intval( $item_data['item_id'] ) : 0;
+                // Use product_id as source_ref_id so SmartCode can retrieve product data for dynamic shortcodes
+                $source_ref_id = isset( $item_data['product_id'] ) ? intval( $item_data['product_id'] ) : 0;
                 
                 $processor->startFunnelSequence( $funnel, $subscriberData, array(
                     'source_trigger_name' => $this->triggerName,
