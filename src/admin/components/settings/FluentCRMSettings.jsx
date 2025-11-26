@@ -5,25 +5,15 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { CheckCircle2, XCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { Badge } from "@/components/ui/badge";
+import { CheckCircle2, XCircle, AlertCircle, Loader2, Lock } from 'lucide-react';
 import { __ } from '@wordpress/i18n';
 
 const FluentCRMSettings = () => {
     const [settings, setSettings] = useState({
         enabled: false,
-        auto_create_contacts: true,
-        send_welcome_email: true,
-        default_tags: [],
-        default_lists: [],
-        price_drop_enabled: true,
-        back_in_stock_enabled: true,
-        time_based_enabled: true,
-        progressive_discounts: true,
-        discount_code_prefix: 'WISHLIST',
     });
     const [isAvailable, setIsAvailable] = useState(false);
-    const [tags, setTags] = useState([]);
-    const [lists, setLists] = useState([]);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [saveMessage, setSaveMessage] = useState('');
@@ -48,51 +38,10 @@ const FluentCRMSettings = () => {
                 }
             }
 
-            // Load tags and lists
-            await loadTags();
-            await loadLists();
         } catch (error) {
             console.error('Error loading FluentCRM settings:', error);
         } finally {
             setLoading(false);
-        }
-    };
-
-    const loadTags = async () => {
-        try {
-            const response = await fetch(`${WishCartSettings.apiUrl}fluentcrm/tags`, {
-                headers: {
-                    'X-WP-Nonce': WishCartSettings.nonce
-                }
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                if (data.success) {
-                    setTags(data.tags);
-                }
-            }
-        } catch (error) {
-            console.error('Error loading tags:', error);
-        }
-    };
-
-    const loadLists = async () => {
-        try {
-            const response = await fetch(`${WishCartSettings.apiUrl}fluentcrm/lists`, {
-                headers: {
-                    'X-WP-Nonce': WishCartSettings.nonce
-                }
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                if (data.success) {
-                    setLists(data.lists);
-                }
-            }
-        } catch (error) {
-            console.error('Error loading lists:', error);
         }
     };
 
@@ -193,7 +142,9 @@ const FluentCRMSettings = () => {
                 <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
                         <Label>{__('Enable FluentCRM Integration', 'wish-cart')}</Label>
-                        <p className="text-sm text-gray-500">{__('Activate FluentCRM integration for automated campaigns', 'wish-cart')}</p>
+                        <p className="text-sm text-gray-500">
+                            {__('Activate FluentCRM integration for automated campaigns, contact creation, welcome emails, price drops, back-in-stock alerts, time-based reminders, and progressive discounts', 'wish-cart')}
+                        </p>
                     </div>
                     <Switch
                         checked={settings.enabled}
@@ -201,98 +152,21 @@ const FluentCRMSettings = () => {
                     />
                 </div>
 
-                <div className="flex items-center justify-between">
-                    <div className="space-y-0.5">
-                        <Label>{__('Auto-create Contacts', 'wish-cart')}</Label>
-                        <p className="text-sm text-gray-500">{__('Automatically create FluentCRM contacts for wishlist users', 'wish-cart')}</p>
-                    </div>
-                    <Switch
-                        checked={settings.auto_create_contacts}
-                        onCheckedChange={(checked) => updateSetting('auto_create_contacts', checked)}
-                        disabled={!settings.enabled}
-                    />
-                </div>
-
-                <div className="flex items-center justify-between">
-                    <div className="space-y-0.5">
-                        <Label>{__('Send Welcome Email', 'wish-cart')}</Label>
-                        <p className="text-sm text-gray-500">{__('Send welcome email when a product is added to wishlist', 'wish-cart')}</p>
-                    </div>
-                    <Switch
-                        checked={settings.send_welcome_email !== false}
-                        onCheckedChange={(checked) => updateSetting('send_welcome_email', checked)}
-                        disabled={!settings.enabled}
-                    />
-                </div>
-
-                <div className="space-y-2">
-                    <Label htmlFor="discount_code_prefix">{__('Discount Code Prefix', 'wish-cart')}</Label>
-                    <Input
-                        id="discount_code_prefix"
-                        value={settings.discount_code_prefix}
-                        onChange={(e) => updateSetting('discount_code_prefix', e.target.value)}
-                        disabled={!settings.enabled}
-                        placeholder="WISHLIST"
-                    />
-                    <p className="text-sm text-gray-500">{__('Prefix for auto-generated discount codes', 'wish-cart')}</p>
-                </div>
-
-                <div className="space-y-4">
-                    <Label>{__('Campaign Features', 'wish-cart')}</Label>
-                    
+                {/* REST API Credentials Section - Pro/Upcoming Feature */}
+                <Alert className="bg-blue-50 border-blue-200">
                     <div className="flex items-center justify-between">
-                        <Label className="font-normal">{__('Price Drop Alerts', 'wish-cart')}</Label>
-                        <Switch
-                            checked={settings.price_drop_enabled}
-                            onCheckedChange={(checked) => updateSetting('price_drop_enabled', checked)}
-                            disabled={!settings.enabled}
-                        />
+                        <div>
+                            <div className="flex items-center gap-2 mb-1">
+                                <Lock className="h-4 w-4" />
+                                <span className="font-semibold">{__('REST API Credentials', 'wish-cart')}</span>
+                                <Badge variant="pro">{__('PRO', 'wish-cart')}</Badge>
+                                <Badge variant="secondary">{__('COMING SOON', 'wish-cart')}</Badge>
+                            </div>
+                            <p className="text-sm">{__('This feature is available in WishCart Pro', 'wish-cart')}</p>
+                            <p className="text-sm text-gray-600">{__('Please upgrade to get all the advanced features.', 'wish-cart')}</p>
+                        </div>
                     </div>
-
-                    <div className="flex items-center justify-between">
-                        <Label className="font-normal">{__('Back in Stock Alerts', 'wish-cart')}</Label>
-                        <Switch
-                            checked={settings.back_in_stock_enabled}
-                            onCheckedChange={(checked) => updateSetting('back_in_stock_enabled', checked)}
-                            disabled={!settings.enabled}
-                        />
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                        <Label className="font-normal">{__('Time-based Reminders', 'wish-cart')}</Label>
-                        <Switch
-                            checked={settings.time_based_enabled}
-                            onCheckedChange={(checked) => updateSetting('time_based_enabled', checked)}
-                            disabled={!settings.enabled}
-                        />
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                        <Label className="font-normal">{__('Progressive Discounts', 'wish-cart')}</Label>
-                        <Switch
-                            checked={settings.progressive_discounts}
-                            onCheckedChange={(checked) => updateSetting('progressive_discounts', checked)}
-                            disabled={!settings.enabled}
-                        />
-                    </div>
-                </div>
-
-                <div className="pt-4 border-t">
-                    <Button
-                        onClick={saveSettings}
-                        disabled={saving || !settings.enabled}
-                        className="w-full"
-                    >
-                        {saving ? (
-                            <>
-                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                {__('Saving...', 'wish-cart')}
-                            </>
-                        ) : (
-                            __('Save Settings', 'wish-cart')
-                        )}
-                    </Button>
-                </div>
+                </Alert>
             </CardContent>
         </Card>
     );

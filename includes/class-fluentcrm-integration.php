@@ -147,7 +147,27 @@ class WISHCART_FluentCRM_Integration {
         );
 
         $settings = get_option('wishcart_fluentcrm_settings', array());
-        return wp_parse_args($settings, $defaults);
+        $settings = wp_parse_args($settings, $defaults);
+        
+        // When integration is enabled, automatically enable all features
+        // When integration is disabled, automatically disable all features
+        if ($settings['enabled']) {
+            $settings['auto_create_contacts'] = true;
+            $settings['send_welcome_email'] = true;
+            $settings['price_drop_enabled'] = true;
+            $settings['back_in_stock_enabled'] = true;
+            $settings['time_based_enabled'] = true;
+            $settings['progressive_discounts'] = true;
+        } else {
+            $settings['auto_create_contacts'] = false;
+            $settings['send_welcome_email'] = false;
+            $settings['price_drop_enabled'] = false;
+            $settings['back_in_stock_enabled'] = false;
+            $settings['time_based_enabled'] = false;
+            $settings['progressive_discounts'] = false;
+        }
+        
+        return $settings;
     }
 
     /**
@@ -157,6 +177,27 @@ class WISHCART_FluentCRM_Integration {
      * @return bool
      */
     public function update_settings($settings) {
+        // When master toggle is changed, automatically set all feature flags
+        if (isset($settings['enabled'])) {
+            if ($settings['enabled']) {
+                // Enable all features
+                $settings['auto_create_contacts'] = true;
+                $settings['send_welcome_email'] = true;
+                $settings['price_drop_enabled'] = true;
+                $settings['back_in_stock_enabled'] = true;
+                $settings['time_based_enabled'] = true;
+                $settings['progressive_discounts'] = true;
+            } else {
+                // Disable all features
+                $settings['auto_create_contacts'] = false;
+                $settings['send_welcome_email'] = false;
+                $settings['price_drop_enabled'] = false;
+                $settings['back_in_stock_enabled'] = false;
+                $settings['time_based_enabled'] = false;
+                $settings['progressive_discounts'] = false;
+            }
+        }
+        
         return update_option('wishcart_fluentcrm_settings', $settings);
     }
 
