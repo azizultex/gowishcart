@@ -437,6 +437,128 @@ class WISHCART_CRM_Campaign_Handler {
     }
 
     /**
+     * Build product tags from product object (supports both WooCommerce and FluentCart)
+     *
+     * @param WC_Product|WISHCART_FluentCart_Product $product Product object
+     * @return array Array of formatted tag strings
+     */
+    private function build_product_tags($product) {
+        $tags = array();
+        
+        if (!$product || !is_object($product)) {
+            return $tags;
+        }
+        
+        // Get product ID
+        $product_id = method_exists($product, 'get_id') ? $product->get_id() : 0;
+        
+        // Product Name
+        if (method_exists($product, 'get_name')) {
+            $product_name = $product->get_name();
+            if (!empty($product_name)) {
+                $tags[] = 'Product: ' . $product_name;
+            }
+        }
+        
+        // Product Categories
+        // For FluentCart/WordPress custom post types, use wp_get_post_terms
+        if ($product_id) {
+            // Try multiple taxonomy names (product_cat for WooCommerce, fc_product_cat for FluentCart)
+            $taxonomy_names = array('product_cat', 'fc_product_cat', 'product_category');
+            
+            foreach ($taxonomy_names as $taxonomy) {
+                if (taxonomy_exists($taxonomy)) {
+                    $categories = wp_get_post_terms($product_id, $taxonomy);
+                    if (!empty($categories) && !is_wp_error($categories)) {
+                        foreach ($categories as $category) {
+                            $tags[] = 'Category: ' . $category->name;
+                        }
+                        break; // Found categories, stop checking other taxonomies
+                    }
+                }
+            }
+        }
+        
+        // SKU - check both method and post meta
+        $sku = '';
+        if (method_exists($product, 'get_sku')) {
+            $sku = $product->get_sku();
+        } elseif ($product_id) {
+            $sku = get_post_meta($product_id, '_sku', true);
+        }
+        if (!empty($sku)) {
+            $tags[] = 'SKU: ' . $sku;
+        }
+        
+        // Price
+        if (method_exists($product, 'get_price')) {
+            $price = $product->get_price();
+            if (!empty($price) && $price > 0) {
+                // Format price properly
+                if (function_exists('wc_price')) {
+                    $formatted_price = wc_price($price);
+                    $price_text = strip_tags($formatted_price);
+                } else {
+                    // Fallback formatting
+                    $price_text = '$' . number_format($price, 2);
+                }
+                $tags[] = 'Price: ' . $price_text;
+            }
+        }
+        
+        // Stock Status
+        if (method_exists($product, 'get_stock_status')) {
+            $stock_status = $product->get_stock_status();
+            if (!empty($stock_status)) {
+                // FluentCart returns "In stock" or "Out of stock" as text
+                // WooCommerce returns "instock", "outofstock", "onbackorder"
+                if (is_string($stock_status)) {
+                    if (strpos(strtolower($stock_status), 'in stock') !== false || $stock_status === 'instock') {
+                        $tags[] = 'Stock: In Stock';
+                    } elseif (strpos(strtolower($stock_status), 'out') !== false || $stock_status === 'outofstock') {
+                        $tags[] = 'Stock: Out of Stock';
+                    } elseif ($stock_status === 'onbackorder') {
+                        $tags[] = 'Stock: On Backorder';
+                    } else {
+                        $tags[] = 'Stock: ' . ucfirst($stock_status);
+                    }
+                }
+            }
+        } elseif (method_exists($product, 'is_in_stock')) {
+            $in_stock = $product->is_in_stock();
+            $tags[] = $in_stock ? 'Stock: In Stock' : 'Stock: Out of Stock';
+        }
+        
+        // Product Type
+        if (method_exists($product, 'get_type')) {
+            $product_type = $product->get_type();
+            if (!empty($product_type)) {
+                $type_label = ucfirst($product_type);
+                $tags[] = 'Type: ' . $type_label;
+            }
+        } elseif ($product_id) {
+            // For FluentCart, get post type
+            $post = get_post($product_id);
+            if ($post) {
+                $post_type_obj = get_post_type_object($post->post_type);
+                if ($post_type_obj) {
+                    $tags[] = 'Type: ' . $post_type_obj->labels->singular_name;
+                }
+            }
+        }
+        
+        // Check if product is on sale (FluentCart specific)
+        if (method_exists($product, 'is_on_sale')) {
+            $on_sale = $product->is_on_sale();
+            if ($on_sale) {
+                $tags[] = 'On Sale';
+            }
+        }
+        
+        return $tags;
+    }
+
+    /**
      * Handle item added event
      *
      * @param array $item_data Item data
@@ -447,6 +569,23 @@ class WISHCART_CRM_Campaign_Handler {
         $contact_id = null;
         $user_email = null;
         $user_name = null;
+        
+        // Get product object to build tags
+        $product = null;
+        $product_tags = array();
+        if (!empty($item_data['product_id'])) {
+            // Try to get product from item_data first (if passed)
+            if (!empty($item_data['product'])) {
+                $product = $item_data['product'];
+            } else {
+                // Otherwise, get product using helper
+                $product = wc_get_product($item_data['product_id']);
+            }
+            
+            if ($product) {
+                $product_tags = $this->build_product_tags($product);
+            }
+        }
         
         if ($this->fluentcrm && $this->fluentcrm->is_available()) {
             $settings = $this->fluentcrm->get_settings();
@@ -476,11 +615,21 @@ class WISHCART_CRM_Campaign_Handler {
                                     $contact_id = is_object($contact) ? $contact->id : (isset($contact['id']) ? $contact['id'] : null);
                                 }
                             }
+                            
+                            // Add product tags to contact
+                            if ($contact_id && !empty($product_tags)) {
+                                $this->fluentcrm->attach_tags($contact_id, $product_tags);
+                            }
                         } else {
                             // Just get existing contact
                             $contact = $this->fluentcrm->get_contact($user->user_email);
                             if ($contact) {
                                 $contact_id = is_object($contact) ? $contact->id : (isset($contact['id']) ? $contact['id'] : null);
+                                
+                                // Add product tags to contact
+                                if ($contact_id && !empty($product_tags)) {
+                                    $this->fluentcrm->attach_tags($contact_id, $product_tags);
+                                }
                             }
                         }
                     }
@@ -500,10 +649,13 @@ class WISHCART_CRM_Campaign_Handler {
 
                         // Create or update contact for guest user
                         if ($settings['auto_create_contacts']) {
+                            // Merge product tags with default tags
+                            $all_tags = array_merge(array('Wishlist User', 'Guest User'), $product_tags);
+                            
                             $contact_data = array(
                                 'first_name' => $user_name['first_name'],
                                 'last_name' => $user_name['last_name'],
-                                'tags' => array('Wishlist User', 'Guest User'),
+                                'tags' => $all_tags,
                             );
                             
                             $sync_result = $this->fluentcrm->create_or_update_contact(null, $user_email, $contact_data);
@@ -516,6 +668,11 @@ class WISHCART_CRM_Campaign_Handler {
                                 $contact = $this->fluentcrm->get_contact($user_email);
                                 if ($contact) {
                                     $contact_id = is_object($contact) ? $contact->id : (isset($contact['id']) ? $contact['id'] : null);
+                                    
+                                    // Add product tags to existing contact
+                                    if ($contact_id && !empty($product_tags)) {
+                                        $this->fluentcrm->attach_tags($contact_id, $product_tags);
+                                    }
                                 }
                             }
                         } else {
@@ -523,6 +680,11 @@ class WISHCART_CRM_Campaign_Handler {
                             $contact = $this->fluentcrm->get_contact($user_email);
                             if ($contact) {
                                 $contact_id = is_object($contact) ? $contact->id : (isset($contact['id']) ? $contact['id'] : null);
+                                
+                                // Add product tags to contact
+                                if ($contact_id && !empty($product_tags)) {
+                                    $this->fluentcrm->attach_tags($contact_id, $product_tags);
+                                }
                             }
                         }
                     }

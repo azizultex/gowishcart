@@ -724,6 +724,7 @@ class WISHCART_Wishlist_Handler {
             'session_id' => $session_id,
             'product_name' => $product->get_name(),
             'product_url' => get_permalink($product_id),
+            'product' => $product, // Pass product object for tag generation
         );
         
         // Add email to item_data if available (for FluentCRM trigger)

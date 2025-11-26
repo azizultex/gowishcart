@@ -322,7 +322,7 @@ class WISHCART_FluentCRM_Integration {
             if (class_exists('\FluentCrm\App\Models\Subscriber')) {
                 $subscriber = \FluentCrm\App\Models\Subscriber::find($contact_id);
                 if ($subscriber) {
-                    // Convert tag names to IDs if needed
+                    // Convert tag names to IDs if needed, create if doesn't exist
                     $final_tag_ids = array();
                     foreach ($tag_ids as $tag) {
                         if (is_numeric($tag)) {
@@ -332,6 +332,15 @@ class WISHCART_FluentCRM_Integration {
                             $tag_obj = \FluentCrm\App\Models\Tag::where('title', $tag)->first();
                             if ($tag_obj) {
                                 $final_tag_ids[] = $tag_obj->id;
+                            } else {
+                                // Tag doesn't exist, create it
+                                $new_tag = \FluentCrm\App\Models\Tag::create(array(
+                                    'title' => sanitize_text_field($tag),
+                                    'slug' => sanitize_title($tag),
+                                ));
+                                if ($new_tag && isset($new_tag->id)) {
+                                    $final_tag_ids[] = $new_tag->id;
+                                }
                             }
                         }
                     }
