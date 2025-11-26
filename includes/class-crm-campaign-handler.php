@@ -452,15 +452,24 @@ class WISHCART_CRM_Campaign_Handler {
         // Get product ID
         $product_id = method_exists($product, 'get_id') ? $product->get_id() : 0;
         
-        // Product Name
+        // Get Product Name first - we'll use it as prefix for clarity
+        $product_name = '';
         if (method_exists($product, 'get_name')) {
             $product_name = $product->get_name();
-            if (!empty($product_name)) {
-                $tags[] = 'Product: ' . $product_name;
-            }
         }
         
-        // Product Categories
+        // If no product name, we can't create clear tags
+        if (empty($product_name)) {
+            return $tags;
+        }
+        
+        // Truncate long product names for readability (keep first 30 chars)
+        $product_prefix = strlen($product_name) > 30 ? substr($product_name, 0, 30) . '...' : $product_name;
+        
+        // Add main product tag
+        $tags[] = 'Product: ' . $product_name;
+        
+        // Product Categories - prefixed with product name
         // For FluentCart/WordPress custom post types, use wp_get_post_terms
         if ($product_id) {
             // Try multiple taxonomy names (product_cat for WooCommerce, fc_product_cat for FluentCart)
@@ -471,7 +480,7 @@ class WISHCART_CRM_Campaign_Handler {
                     $categories = wp_get_post_terms($product_id, $taxonomy);
                     if (!empty($categories) && !is_wp_error($categories)) {
                         foreach ($categories as $category) {
-                            $tags[] = 'Category: ' . $category->name;
+                            $tags[] = $product_prefix . ' - Category: ' . $category->name;
                         }
                         break; // Found categories, stop checking other taxonomies
                     }
@@ -487,10 +496,10 @@ class WISHCART_CRM_Campaign_Handler {
             $sku = get_post_meta($product_id, '_sku', true);
         }
         if (!empty($sku)) {
-            $tags[] = 'SKU: ' . $sku;
+            $tags[] = $product_prefix . ' - SKU: ' . $sku;
         }
         
-        // Price
+        // Price - prefixed with product name
         if (method_exists($product, 'get_price')) {
             $price = $product->get_price();
             if (!empty($price) && $price > 0) {
@@ -502,11 +511,11 @@ class WISHCART_CRM_Campaign_Handler {
                     // Fallback formatting
                     $price_text = '$' . number_format($price, 2);
                 }
-                $tags[] = 'Price: ' . $price_text;
+                $tags[] = $product_prefix . ' - Price: ' . $price_text;
             }
         }
         
-        // Stock Status
+        // Stock Status - prefixed with product name
         if (method_exists($product, 'get_stock_status')) {
             $stock_status = $product->get_stock_status();
             if (!empty($stock_status)) {
@@ -514,27 +523,27 @@ class WISHCART_CRM_Campaign_Handler {
                 // WooCommerce returns "instock", "outofstock", "onbackorder"
                 if (is_string($stock_status)) {
                     if (strpos(strtolower($stock_status), 'in stock') !== false || $stock_status === 'instock') {
-                        $tags[] = 'Stock: In Stock';
+                        $tags[] = $product_prefix . ' - Stock: In Stock';
                     } elseif (strpos(strtolower($stock_status), 'out') !== false || $stock_status === 'outofstock') {
-                        $tags[] = 'Stock: Out of Stock';
+                        $tags[] = $product_prefix . ' - Stock: Out of Stock';
                     } elseif ($stock_status === 'onbackorder') {
-                        $tags[] = 'Stock: On Backorder';
+                        $tags[] = $product_prefix . ' - Stock: On Backorder';
                     } else {
-                        $tags[] = 'Stock: ' . ucfirst($stock_status);
+                        $tags[] = $product_prefix . ' - Stock: ' . ucfirst($stock_status);
                     }
                 }
             }
         } elseif (method_exists($product, 'is_in_stock')) {
             $in_stock = $product->is_in_stock();
-            $tags[] = $in_stock ? 'Stock: In Stock' : 'Stock: Out of Stock';
+            $tags[] = $product_prefix . ' - Stock: ' . ($in_stock ? 'In Stock' : 'Out of Stock');
         }
         
-        // Product Type
+        // Product Type - prefixed with product name
         if (method_exists($product, 'get_type')) {
             $product_type = $product->get_type();
             if (!empty($product_type)) {
                 $type_label = ucfirst($product_type);
-                $tags[] = 'Type: ' . $type_label;
+                $tags[] = $product_prefix . ' - Type: ' . $type_label;
             }
         } elseif ($product_id) {
             // For FluentCart, get post type
@@ -542,16 +551,16 @@ class WISHCART_CRM_Campaign_Handler {
             if ($post) {
                 $post_type_obj = get_post_type_object($post->post_type);
                 if ($post_type_obj) {
-                    $tags[] = 'Type: ' . $post_type_obj->labels->singular_name;
+                    $tags[] = $product_prefix . ' - Type: ' . $post_type_obj->labels->singular_name;
                 }
             }
         }
         
-        // Check if product is on sale (FluentCart specific)
+        // Check if product is on sale (FluentCart specific) - prefixed with product name
         if (method_exists($product, 'is_on_sale')) {
             $on_sale = $product->is_on_sale();
             if ($on_sale) {
-                $tags[] = 'On Sale';
+                $tags[] = $product_prefix . ' - On Sale';
             }
         }
         
