@@ -3,6 +3,7 @@ import { Heart } from 'lucide-react';
 import { __ } from '@wordpress/i18n';
 import { cn } from '../lib/utils';
 import WishlistSelectorModal from './WishlistSelectorModal';
+import GuestEmailModal from './GuestEmailModal';
 import * as LucideIcons from 'lucide-react';
 
 const WishlistButton = ({ productId, className, customStyles, position = 'bottom' }) => {
@@ -10,6 +11,9 @@ const WishlistButton = ({ productId, className, customStyles, position = 'bottom
     const [isLoading, setIsLoading] = useState(true);
     const [isAdding, setIsAdding] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
+    const [guestHasEmail, setGuestHasEmail] = useState(null); // null = not checked, true/false = checked
+    const [pendingAddAction, setPendingAddAction] = useState(null); // Store pending add action
 
     // Get session ID from cookie or create one
     const getSessionId = () => {
@@ -41,6 +45,36 @@ const WishlistButton = ({ productId, className, customStyles, position = 'bottom
         }
 
         return sessionId;
+    };
+
+    // Check if guest has email via API
+    const checkGuestEmail = async () => {
+        if (window.WishCartWishlist?.isLoggedIn) {
+            return true; // Logged in users don't need email check
+        }
+
+        try {
+            const sessionId = getSessionId();
+            const url = `${window.WishCartWishlist.apiUrl}guest/check-email?session_id=${sessionId}`;
+            
+            const response = await fetch(url, {
+                headers: {
+                    'X-WP-Nonce': window.WishCartWishlist.nonce,
+                },
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                const hasEmail = data.has_email || false;
+                setGuestHasEmail(hasEmail);
+                return hasEmail;
+            }
+        } catch (error) {
+            console.error('Error checking guest email:', error);
+        }
+        
+        setGuestHasEmail(false);
+        return false;
     };
 
     // Check if product is in wishlist
@@ -76,7 +110,18 @@ const WishlistButton = ({ productId, className, customStyles, position = 'bottom
     }, [productId]);
 
     // Add product directly to default wishlist (when multiple wishlists disabled)
-    const addToDefaultWishlist = async () => {
+    const addToDefaultWishlist = async (skipEmailCheck = false) => {
+        // Check if guest has email (unless we're executing after email was provided)
+        if (!skipEmailCheck && !window.WishCartWishlist?.isLoggedIn) {
+            const hasEmail = await checkGuestEmail();
+            if (!hasEmail) {
+                // Store the pending action and show email modal
+                setPendingAddAction('default');
+                setIsEmailModalOpen(true);
+                return;
+            }
+        }
+
         setIsAdding(true);
         try {
             const sessionId = getSessionId();
@@ -149,6 +194,17 @@ const WishlistButton = ({ productId, className, customStyles, position = 'bottom
                 setIsAdding(false);
             }
         } else {
+            // For guests, check if they have email first
+            if (!window.WishCartWishlist?.isLoggedIn) {
+                const hasEmail = await checkGuestEmail();
+                if (!hasEmail) {
+                    // Store the pending action and show email modal
+                    setPendingAddAction('toggle');
+                    setIsEmailModalOpen(true);
+                    return;
+                }
+            }
+
             // Check if multiple wishlists are enabled
             const enableMultipleWishlists = window.WishCartWishlist?.enableMultipleWishlists || false;
             
@@ -157,9 +213,39 @@ const WishlistButton = ({ productId, className, customStyles, position = 'bottom
                 setIsModalOpen(true);
             } else {
                 // If multiple wishlists disabled, add directly to default wishlist
-                await addToDefaultWishlist();
+                await addToDefaultWishlist(true); // Skip email check since we just did it
             }
         }
+    };
+
+    // Handle email modal submission
+    const handleEmailSubmitted = async (email) => {
+        // Mark guest as having email
+        setGuestHasEmail(true);
+        
+        // Execute the pending action
+        if (pendingAddAction === 'default') {
+            await addToDefaultWishlist(true); // Skip email check since we just got it
+        } else if (pendingAddAction === 'toggle') {
+            // Re-run the toggle logic but skip email check
+            const enableMultipleWishlists = window.WishCartWishlist?.enableMultipleWishlists || false;
+            
+            if (enableMultipleWishlists) {
+                setIsModalOpen(true);
+            } else {
+                await addToDefaultWishlist(true);
+            }
+        }
+        
+        // Clear pending action
+        setPendingAddAction(null);
+    };
+
+    // Handle email modal close (skip)
+    const handleEmailModalClose = () => {
+        setIsEmailModalOpen(false);
+        setPendingAddAction(null);
+        // Don't add item if they skip
     };
 
     // Handle successful addition from modal
@@ -311,6 +397,11 @@ const WishlistButton = ({ productId, className, customStyles, position = 'bottom
 
     return (
         <>
+            <GuestEmailModal
+                isOpen={isEmailModalOpen}
+                onClose={handleEmailModalClose}
+                onEmailSubmitted={handleEmailSubmitted}
+            />
             <WishlistSelectorModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}

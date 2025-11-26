@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { X, Mail } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, Mail, Bell } from 'lucide-react';
 import { Button } from './ui/button';
 import '../styles/WishlistSelectorModal.scss';
 
@@ -7,6 +7,7 @@ const GuestEmailModal = ({ isOpen, onClose, onEmailSubmitted }) => {
     const [email, setEmail] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState(null);
+    const [focused, setFocused] = useState(false);
 
     // Validate email format
     const validateEmail = (email) => {
@@ -84,24 +85,49 @@ const GuestEmailModal = ({ isOpen, onClose, onEmailSubmitted }) => {
         }
     };
 
+    // Handle ESC key to close modal
+    useEffect(() => {
+        const handleEscape = (e) => {
+            if (e.key === 'Escape' && isOpen && !isSubmitting) {
+                onClose();
+            }
+        };
+
+        if (isOpen) {
+            document.addEventListener('keydown', handleEscape);
+            document.body.style.overflow = 'hidden';
+        }
+
+        return () => {
+            document.removeEventListener('keydown', handleEscape);
+            document.body.style.overflow = '';
+        };
+    }, [isOpen, isSubmitting, onClose]);
+
     if (!isOpen) return null;
 
     return (
         <div className="wishcart-modal-overlay" onClick={onClose}>
-            <div className="wishcart-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="wishcart-modal wishcart-email-modal" onClick={(e) => e.stopPropagation()}>
                 <div className="wishcart-modal-header">
-                    <h2>Get Notified About Your Wishlist</h2>
+                    <div className="wishcart-modal-header-content">
+                        <div className="wishcart-modal-icon">
+                            <Bell size={24} />
+                        </div>
+                        <h2>Get Notified About Your Wishlist</h2>
+                    </div>
                     <button 
                         className="wishcart-modal-close" 
                         onClick={onClose}
                         aria-label="Close"
+                        disabled={isSubmitting}
                     >
                         <X size={20} />
                     </button>
                 </div>
 
                 <div className="wishcart-modal-body">
-                    <div style={{ marginBottom: '1rem', color: '#6b7280', fontSize: '0.875rem' }}>
+                    <div className="wishcart-email-description">
                         Enter your email to receive notifications about price drops, back-in-stock alerts, and more for items in your wishlist.
                     </div>
 
@@ -111,46 +137,62 @@ const GuestEmailModal = ({ isOpen, onClose, onEmailSubmitted }) => {
                         </div>
                     )}
 
-                    <form onSubmit={handleSubmit}>
-                        <div className="wishcart-create-new-form">
-                            <label htmlFor="guest-email">
-                                <Mail size={16} style={{ display: 'inline-block', marginRight: '0.5rem', verticalAlign: 'middle' }} />
-                                Email Address
+                    <form onSubmit={handleSubmit} className="wishcart-email-form">
+                        <div className="wishcart-email-input-wrapper">
+                            <label htmlFor="guest-email" className="wishcart-email-label">
+                                <Mail size={16} />
+                                <span>Email Address</span>
                             </label>
-                            <input
-                                id="guest-email"
-                                type="email"
-                                value={email}
-                                onChange={(e) => {
-                                    setEmail(e.target.value);
-                                    setError(null);
-                                }}
-                                placeholder="your.email@example.com"
-                                autoFocus
-                                required
-                                disabled={isSubmitting}
-                                style={{ marginBottom: '0' }}
-                            />
+                            <div className={`wishcart-input-container ${focused ? 'focused' : ''} ${error ? 'error' : ''}`}>
+                                <Mail size={18} className="wishcart-input-icon" />
+                                <input
+                                    id="guest-email"
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => {
+                                        setEmail(e.target.value);
+                                        setError(null);
+                                    }}
+                                    onFocus={() => setFocused(true)}
+                                    onBlur={() => setFocused(false)}
+                                    placeholder="your.email@example.com"
+                                    autoFocus
+                                    required
+                                    disabled={isSubmitting}
+                                    className="wishcart-email-input"
+                                />
+                            </div>
+                            <p className="wishcart-email-hint">
+                                We'll use this to notify you about your wishlist items
+                            </p>
                         </div>
                     </form>
                 </div>
 
                 <div className="wishcart-modal-footer">
-                    <Button
-                        variant="outline"
+                    <button
+                        className="wishcart-button-secondary"
                         onClick={onClose}
                         disabled={isSubmitting}
                         type="button"
                     >
                         Skip
-                    </Button>
-                    <Button
+                    </button>
+                    <button
+                        className="wishcart-button-primary"
                         onClick={handleSubmit}
                         disabled={isSubmitting || !email.trim()}
                         type="button"
                     >
-                        {isSubmitting ? 'Saving...' : 'Continue'}
-                    </Button>
+                        {isSubmitting ? (
+                            <>
+                                <div className="wishcart-button-spinner"></div>
+                                <span>Saving...</span>
+                            </>
+                        ) : (
+                            'Continue'
+                        )}
+                    </button>
                 </div>
             </div>
         </div>

@@ -14,6 +14,7 @@ const WishlistSelectorModal = ({ isOpen, onClose, productId, onSuccess }) => {
     const [error, setError] = useState(null);
     const [showEmailModal, setShowEmailModal] = useState(false);
     const [guestEmail, setGuestEmail] = useState(null);
+    const [successMessage, setSuccessMessage] = useState(null);
 
     // Get session ID from cookie
     const getSessionId = () => {
@@ -94,11 +95,12 @@ const WishlistSelectorModal = ({ isOpen, onClose, productId, onSuccess }) => {
                 setError(null);
             };
             initModal();
-        } else {
-            setShowEmailModal(false);
-            setGuestEmail(null);
-        }
-    }, [isOpen]);
+            } else {
+                setShowEmailModal(false);
+                setGuestEmail(null);
+                setSuccessMessage(null);
+            }
+        }, [isOpen]);
 
     const loadWishlists = async () => {
         setIsLoading(true);
@@ -211,10 +213,18 @@ const WishlistSelectorModal = ({ isOpen, onClose, productId, onSuccess }) => {
 
             if (response.ok) {
                 const data = await response.json();
-                if (onSuccess) {
-                    onSuccess(data);
-                }
-                onClose();
+                
+                // Show success message briefly
+                setSuccessMessage(data.message || 'Product added to wishlist!');
+                
+                // Call success callback and close modal after a brief delay
+                setTimeout(() => {
+                    if (onSuccess) {
+                        onSuccess(data);
+                    }
+                    onClose();
+                    setSuccessMessage(null);
+                }, 800);
             } else {
                 const errorData = await response.json();
                 setError(errorData.message || 'Failed to add product to wishlist');
@@ -227,13 +237,36 @@ const WishlistSelectorModal = ({ isOpen, onClose, productId, onSuccess }) => {
         }
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = (e) => {
+        if (e) {
+            e.preventDefault();
+        }
         if (isCreatingNew) {
             handleCreateNewWishlist();
         } else if (selectedWishlistId) {
             addToWishlist(selectedWishlistId);
         }
     };
+
+    // Handle ESC key to close modal
+    useEffect(() => {
+        const handleEscape = (e) => {
+            if (e.key === 'Escape' && isOpen && !isSubmitting) {
+                onClose();
+            }
+        };
+
+        if (isOpen) {
+            document.addEventListener('keydown', handleEscape);
+            // Prevent body scroll when modal is open
+            document.body.style.overflow = 'hidden';
+        }
+
+        return () => {
+            document.removeEventListener('keydown', handleEscape);
+            document.body.style.overflow = '';
+        };
+    }, [isOpen, isSubmitting, onClose]);
 
     const handleEmailSubmitted = (email) => {
         setGuestEmail(email);
@@ -242,9 +275,9 @@ const WishlistSelectorModal = ({ isOpen, onClose, productId, onSuccess }) => {
     };
 
     const handleEmailModalClose = () => {
-        // If user closes email modal without submitting, still proceed to wishlist selection
+        // If user closes email modal without submitting, close the entire modal (don't allow addition)
         setShowEmailModal(false);
-        loadWishlists();
+        onClose(); // Close the wishlist selector modal too
     };
 
     if (!isOpen) return null;
@@ -275,6 +308,12 @@ const WishlistSelectorModal = ({ isOpen, onClose, productId, onSuccess }) => {
                 </div>
 
                 <div className="wishcart-modal-body">
+                    {successMessage && (
+                        <div className="wishcart-modal-success">
+                            {successMessage}
+                        </div>
+                    )}
+                    
                     {error && (
                         <div className="wishcart-modal-error">
                             {error}
@@ -283,7 +322,13 @@ const WishlistSelectorModal = ({ isOpen, onClose, productId, onSuccess }) => {
 
                     {isLoading ? (
                         <div className="wishcart-modal-loading">
-                            Loading wishlists...
+                            <div className="wishcart-spinner"></div>
+                            <p>Loading wishlists...</p>
+                        </div>
+                    ) : successMessage ? (
+                        <div className="wishcart-modal-loading">
+                            <div className="wishcart-success-checkmark">✓</div>
+                            <p>{successMessage}</p>
                         </div>
                     ) : (
                         <>
@@ -297,6 +342,15 @@ const WishlistSelectorModal = ({ isOpen, onClose, productId, onSuccess }) => {
                                                     selectedWishlistId === wishlist.id ? 'selected' : ''
                                                 }`}
                                                 onClick={() => setSelectedWishlistId(wishlist.id)}
+                                                onKeyPress={(e) => {
+                                                    if (e.key === 'Enter' || e.key === ' ') {
+                                                        e.preventDefault();
+                                                        setSelectedWishlistId(wishlist.id);
+                                                    }
+                                                }}
+                                                role="radio"
+                                                aria-checked={selectedWishlistId === wishlist.id}
+                                                tabIndex={0}
                                             >
                                                 <div className="wishcart-wishlist-radio">
                                                     {selectedWishlistId === wishlist.id && (
@@ -330,12 +384,16 @@ const WishlistSelectorModal = ({ isOpen, onClose, productId, onSuccess }) => {
                                         id="new-wishlist-name"
                                         type="text"
                                         value={newWishlistName}
-                                        onChange={(e) => setNewWishlistName(e.target.value)}
+                                        onChange={(e) => {
+                                            setNewWishlistName(e.target.value);
+                                            setError(null); // Clear error on input
+                                        }}
                                         placeholder="e.g., My Birthday Wishlist"
                                         autoFocus
+                                        disabled={isSubmitting}
                                         onKeyPress={(e) => {
-                                            if (e.key === 'Enter') {
-                                                handleSubmit();
+                                            if (e.key === 'Enter' && newWishlistName.trim()) {
+                                                handleSubmit(e);
                                             }
                                         }}
                                     />
@@ -359,15 +417,30 @@ const WishlistSelectorModal = ({ isOpen, onClose, productId, onSuccess }) => {
                     <Button
                         variant="outline"
                         onClick={onClose}
-                        disabled={isSubmitting}
+                        disabled={isSubmitting || successMessage}
                     >
                         Cancel
                     </Button>
                     <Button
                         onClick={handleSubmit}
-                        disabled={isSubmitting || (!selectedWishlistId && !isCreatingNew) || (isCreatingNew && !newWishlistName.trim())}
+                        disabled={isSubmitting || successMessage || (!selectedWishlistId && !isCreatingNew) || (isCreatingNew && !newWishlistName.trim())}
+                        className={successMessage ? 'wishcart-button-success' : ''}
                     >
-                        {isSubmitting ? 'Adding...' : isCreatingNew ? 'Create & Add' : 'Add to Wishlist'}
+                        {successMessage ? (
+                            <>
+                                <Check size={16} />
+                                Added!
+                            </>
+                        ) : isSubmitting ? (
+                            <>
+                                <div className="wishcart-button-spinner"></div>
+                                Adding...
+                            </>
+                        ) : isCreatingNew ? (
+                            'Create & Add'
+                        ) : (
+                            'Add to Wishlist'
+                        )}
                     </Button>
                 </div>
             </div>
