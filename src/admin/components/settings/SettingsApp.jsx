@@ -382,14 +382,17 @@ const SettingsApp = () => {
                                 </TabsContent>
                             </Tabs>
 
-                            <div className="mt-6 flex justify-end border-t border-slate-100 pt-4">
-                                <Button
-                                    onClick={saveSettings}
-                                    disabled={isSaving}
-                                >
-                                    {isSaving ? __('Saving...', 'wish-cart') : __('Save Settings', 'wish-cart')}
-                                </Button>
-                            </div>
+                            {/* Only show global save button for tabs that don't have their own save functionality */}
+                            {activeTab !== 'fluentcrm' && activeTab !== 'analytics' && (
+                                <div className="mt-6 flex justify-end border-t border-slate-100 pt-4">
+                                    <Button
+                                        onClick={saveSettings}
+                                        disabled={isSaving}
+                                    >
+                                        {isSaving ? __('Saving...', 'wish-cart') : __('Save Settings', 'wish-cart')}
+                                    </Button>
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
                 </div>

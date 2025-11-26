@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -168,6 +168,14 @@ const FluentCRMSettings = () => {
                     </div>
                 </Alert>
             </CardContent>
+            <CardFooter className="flex justify-end border-t bg-slate-50/50 pt-4">
+                <Button
+                    onClick={saveSettings}
+                    disabled={saving}
+                >
+                    {saving ? __('Saving...', 'wish-cart') : __('Save Settings', 'wish-cart')}
+                </Button>
+            </CardFooter>
         </Card>
     );
 };
