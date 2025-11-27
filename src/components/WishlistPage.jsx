@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Heart, Trash2, ShoppingCart, Check, X, Twitter, Mail, MessageCircle, Link2, Grid, List } from 'lucide-react';
+import { Heart, Trash2, ShoppingCart, Check, X, Twitter, Mail, MessageCircle, Link2 } from 'lucide-react';
 import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
 import { Checkbox } from './ui/checkbox';
@@ -19,20 +19,10 @@ const WishlistPage = () => {
     const [currentWishlist, setCurrentWishlist] = useState(null);
     const [isLoadingWishlists, setIsLoadingWishlists] = useState(false);
     const [error, setError] = useState(null);
-    const [viewMode, setViewMode] = useState(() => {
-        // Get saved view preference from localStorage
-        const savedView = localStorage.getItem('wishcart_view_mode');
-        return savedView || 'table'; // default to table view
-    });
     
     // Track if wishlist has been loaded to prevent infinite loops
     const hasLoadedRef = useRef(false);
     const loadedWishlistIdRef = useRef(null);
-
-    // Save view mode preference to localStorage
-    useEffect(() => {
-        localStorage.setItem('wishcart_view_mode', viewMode);
-    }, [viewMode]);
 
     // Get session ID from cookie
     const getSessionId = () => {
@@ -490,7 +480,6 @@ const WishlistPage = () => {
             return (
                 <div className="flex flex-col">
                     <span className="price-current">{formattedPrice}</span>
-                    <span className="price-regular">{formattedRegular}</span>
                 </div>
             );
         }
@@ -799,7 +788,7 @@ const WishlistPage = () => {
          (currentWishlist.user_id && !window.WishCartWishlist?.isLoggedIn));
 
     return (
-        <div className={cn("wishcart-wishlist-page", viewMode === 'card' && 'card-view')}>
+        <div className="wishcart-wishlist-page">
             {wishlists.length > 0 && !isViewingShared && (
                 <div className="wishlist-selector">
                     <Select 
@@ -847,27 +836,7 @@ const WishlistPage = () => {
                 <div className="wishlist-header-content">
                     <div>
                         <h1>Wishlist</h1>
-                        <p>{currentWishlist ? currentWishlist.name : 'Default wishlist'}</p>
-                    </div>
-                    <div className="view-toggle">
-                        <Button
-                            onClick={() => setViewMode('table')}
-                            className={cn('view-toggle-btn', viewMode === 'table' && 'active')}
-                            variant={viewMode === 'table' ? 'default' : 'outline'}
-                            size="sm"
-                        >
-                            <List className="w-4 h-4" />
-                            Table
-                        </Button>
-                        <Button
-                            onClick={() => setViewMode('card')}
-                            className={cn('view-toggle-btn', viewMode === 'card' && 'active')}
-                            variant={viewMode === 'card' ? 'default' : 'outline'}
-                            size="sm"
-                        >
-                            <Grid className="w-4 h-4" />
-                            Cards
-                        </Button>
+                        <p>{products.length} {products.length === 1 ? 'item' : 'items'}</p>
                     </div>
                 </div>
             </div>
@@ -885,288 +854,186 @@ const WishlistPage = () => {
                 </Card>
             ) : (
                 <>
-            {viewMode === 'table' ? (
-            <div className="wishlist-table-wrapper">
-                <table className="wishlist-table">
-                    <thead>
-                        <tr>
-                            <th className="checkbox-col">
-                                {!isViewingShared && (
-                                    <Checkbox
-                                        checked={allSelected}
-                                        onCheckedChange={toggleSelectAll}
-                                    />
+                    {/* Bulk Actions Bar */}
+                    {!isViewingShared && (
+                        <div className="bulk-actions-bar">
+                            <div className="bulk-select">
+                                <Checkbox
+                                    checked={allSelected}
+                                    onCheckedChange={toggleSelectAll}
+                                />
+                                <span>Select All</span>
+                            </div>
+                            <div className="bulk-actions-controls">
+                                {selectedIds.size > 0 && (
+                                    <span className="selected-count">
+                                        {selectedIds.size} selected
+                                    </span>
                                 )}
-                            </th>
-                            <th>Product Name</th>
-                            <th>Unit Price</th>
-                            <th>Date Added</th>
-                            <th>Stock Status</th>
-                            <th className="action-col"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                                <Select value={bulkAction} onValueChange={setBulkAction}>
+                                    <SelectTrigger className="actions-select">
+                                        <SelectValue placeholder="Actions" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="remove">Remove selected</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <Button
+                                    onClick={handleBulkAction}
+                                    disabled={!bulkAction || selectedIds.size === 0}
+                                    variant="outline"
+                                    size="sm"
+                                >
+                                    Apply
+                                </Button>
+                                <Button
+                                    onClick={addAllToCart}
+                                    disabled={products.length === 0}
+                                    size="sm"
+                                    className="bulk-add-to-cart"
+                                >
+                                    Add All To Cart
+                                </Button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Product List - FluentCart Style */}
+                    <div className="wishlist-items-container">
                         {products.map((product) => (
-                            <tr key={product.id}>
-                                <td className="checkbox-col">
-                                    {!isViewingShared && (
+                            <div key={product.id} className="wishlist-item">
+                                {/* Checkbox */}
+                                {!isViewingShared && (
+                                    <div className="item-checkbox">
                                         <Checkbox
                                             checked={selectedIds.has(product.id)}
                                             onCheckedChange={(checked) => toggleSelection(product.id, checked)}
                                         />
-                                    )}
-                                </td>
-                                <td className="product-col">
-                                    {!isViewingShared && (
-                                        <button
-                                            onClick={() => removeProduct(product.id)}
-                                            className="remove-btn"
-                                            disabled={removingIds.has(product.id)}
-                                            aria-label="Remove from wishlist"
-                                        >
-                                            <X className="w-3 h-3" />
-                                        </button>
-                                    )}
-                                    {isViewingShared && (
-                                        <div className="remove-btn-placeholder"></div>
-                                    )}
+                                    </div>
+                                )}
+
+                                {/* Product Thumbnail */}
+                                <div className="item-image">
                                     {product.image_url ? (
-                                        <img
-                                            src={product.image_url}
-                                            alt={product.name}
-                                            className="product-image"
-                                        />
+                                        <img src={product.image_url} alt={product.name} />
                                     ) : (
-                                        <div className="product-image-placeholder">
+                                        <div className="image-placeholder">
                                             <ShoppingCart className="w-6 h-6" />
                                         </div>
                                     )}
-                                    <a
-                                        href={product.permalink}
-                                        className="product-name"
-                                    >
+                                </div>
+
+                                {/* Product Info */}
+                                <div className="item-info">
+                                    <a href={product.permalink} className="item-name">
                                         {product.name}
                                     </a>
-                                </td>
-                                <td className="price-col">
-                                    {formatPrice(product.price, product.regular_price, product.is_on_sale)}
-                                </td>
-                                <td className="date-col">
-                                    {product.date_added || 'N/A'}
-                                </td>
-                                <td className="stock-col">
-                                    <div className="stock-status">
-                                        {getStockStatusIcon(product.stock_status)}
-                                        <span>{product.stock_status || 'In stock'}</span>
-                                    </div>
-                                </td>
-                                <td className="action-col">
-                                    <Button
-                                        size="sm"
-                                        onClick={() => addToCart(product.id)}
-                                        disabled={addingToCartIds.has(product.id)}
-                                        className="add-to-cart-btn"
-                                        variant="outline"
-                                    >
-                                        {addingToCartIds.has(product.id) ? (
-                                            'Adding...'
-                                        ) : (
-                                            'Add to Cart'
-                                        )}
-                                    </Button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-            ) : (
-            <div className="products-grid">
-                {products.map((product) => (
-                    <Card key={product.id} className="product-card">
-                        {product.image_url && (
-                            <div className="product-image">
-                                <img src={product.image_url} alt={product.name} />
-                                {product.is_on_sale && (
-                                    <span className="sale-badge">SALE</span>
-                                )}
-                            </div>
-                        )}
-
-                        <CardContent className="product-content">
-                            <h3 className="product-name">
-                                <a href={product.permalink}>
-                                    {product.name}
-                                </a>
-                            </h3>
-
-                            <div className="product-price">
-                                {product.is_on_sale ? (
-                                    <>
-                                        <span className="sale-price">{formatPrice(product.price, product.regular_price, product.is_on_sale)}</span>
-                                        <span className="regular-price">${product.regular_price}</span>
-                                    </>
-                                ) : (
-                                    <span className="price">${product.price}</span>
-                                )}
-                            </div>
-
-                            {product.stock_status && (
-                                <div className={`stock-status ${product.stock_status === 'In stock' ? 'instock' : 'outofstock'}`}>
-                                    {product.stock_status}
+                                    {product.variation_id && (
+                                        <div className="item-variant">
+                                            {product.variation_name || 'Variant'}
+                                        </div>
+                                    )}
                                 </div>
-                            )}
 
-                            <div className="product-meta">
-                                <span className="date-added">Added {product.date_added || 'Recently'}</span>
-                            </div>
+                                {/* Price */}
+                                <div className="item-price">
+                                    {product.is_on_sale && product.regular_price ? (
+                                        <>
+                                            <span className="price-sale">${product.price}</span>
+                                        </>
+                                    ) : (
+                                        <span className="price-current">${product.price}</span>
+                                    )}
+                                </div>
 
-                            {!isViewingShared && (
-                                <div className="product-actions">
-                                    <Button
-                                        onClick={() => addToCart(product.id)}
-                                        disabled={addingToCartIds.has(product.id) || product.stock_status !== 'In stock'}
-                                        className="add-to-cart-button"
-                                    >
-                                        <ShoppingCart size={16} />
-                                        {addingToCartIds.has(product.id) ? 'Adding...' : 'Add to Cart'}
-                                    </Button>
+                                {/* Add to Cart Button */}
+                                <Button
+                                    onClick={() => addToCart(product.id)}
+                                    disabled={addingToCartIds.has(product.id)}
+                                    className="item-add-to-cart"
+                                    size="sm"
+                                >
+                                    {addingToCartIds.has(product.id) ? 'Adding...' : 'Add To Cart'}
+                                </Button>
 
+                                {/* Remove Button */}
+                                {!isViewingShared && (
                                     <button
                                         onClick={() => removeProduct(product.id)}
                                         disabled={removingIds.has(product.id)}
-                                        className="remove-button"
-                                        title="Remove from wishlist"
+                                        className="item-remove"
+                                        aria-label="Remove from wishlist"
                                     >
-                                        <Trash2 size={16} />
+                                        <Trash2 className="w-4 h-4" />
                                     </button>
-                                </div>
-                            )}
-                            {isViewingShared && (
-                                <div className="product-actions">
-                                    <Button
-                                        onClick={() => addToCart(product.id)}
-                                        disabled={addingToCartIds.has(product.id) || product.stock_status !== 'In stock'}
-                                        className="add-to-cart-button"
-                                    >
-                                        <ShoppingCart size={16} />
-                                        {addingToCartIds.has(product.id) ? 'Adding...' : 'Add to Cart'}
-                                    </Button>
-                                    
-                                    <a
-                                        href={product.permalink}
-                                        className="view-details-link"
-                                    >
-                                        View Details
-                                    </a>
-                                </div>
-                            )}
-                        </CardContent>
-                    </Card>
-                ))}
-            </div>
-            )}
+                                )}
+                            </div>
+                        ))}
+                    </div>
 
-            {!isViewingShared && (
-                <div className="bulk-actions">
-                    <div className="bulk-actions-left">
-                        <Select value={bulkAction} onValueChange={setBulkAction}>
-                            <SelectTrigger className="actions-select">
-                                <SelectValue placeholder="Actions" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="remove">Remove selected</SelectItem>
-                            </SelectContent>
-                        </Select>
-                        <Button
-                            onClick={handleBulkAction}
-                            disabled={!bulkAction || selectedIds.size === 0}
-                            className="bulk-action-btn"
-                        >
-                            Apply Action
-                        </Button>
-                    </div>
-                    <div className="bulk-actions-right">
-                        <Button
-                            onClick={addSelectedToCart}
-                            disabled={selectedIds.size === 0}
-                            className="bulk-action-btn"
-                        >
-                            Add Selected to Cart
-                        </Button>
-                        <Button
-                            onClick={addAllToCart}
-                            disabled={products.length === 0}
-                            className="bulk-action-btn"
-                        >
-                            Add All to Cart
-                        </Button>
-                    </div>
-                </div>
-            )}
-
-            {!isViewingShared && (
-                <div className="share-section">
-                    <span className="share-label">Share on</span>
-                    <div className="share-icons">
-                    <button
-                        onClick={shareOnFacebook}
-                        className="share-icon"
-                        aria-label="Share on Facebook"
-                        title="Share on Facebook"
-                    >
-                        <span className="share-icon-text">f</span>
-                    </button>
-                    <button
-                        onClick={shareOnTwitter}
-                        className="share-icon"
-                        aria-label="Share on Twitter"
-                        title="Share on Twitter"
-                    >
-                        <Twitter className="share-icon-svg" />
-                    </button>
-                    <button
-                        onClick={shareOnPinterest}
-                        className="share-icon"
-                        aria-label="Share on Pinterest"
-                        title="Share on Pinterest"
-                    >
-                        <span className="share-icon-text">P</span>
-                    </button>
-                    <button
-                        onClick={shareOnWhatsApp}
-                        className="share-icon"
-                        aria-label="Share on WhatsApp"
-                        title="Share on WhatsApp"
-                    >
-                        <MessageCircle className="share-icon-svg" />
-                    </button>
-                    <button
-                        onClick={copyWishlistLink}
-                        className="share-icon"
-                        aria-label="Copy link"
-                        title="Copy link"
-                        disabled={isGeneratingShare}
-                    >
-                        {isGeneratingShare ? (
-                            <span className="spinner-small">⏳</span>
-                        ) : linkCopied ? (
-                            <Check className="share-icon-svg" />
-                        ) : (
-                            <Link2 className="share-icon-svg" />
-                        )}
-                    </button>
-                    <button
-                        onClick={shareViaEmail}
-                        className="share-icon"
-                        aria-label="Share via Email"
-                        title="Share via Email"
-                    >
-                        <Mail className="share-icon-svg" />
-                    </button>
-                    </div>
-                </div>
-            )}
+                    {/* Share Section */}
+                    {!isViewingShared && (
+                        <div className="share-section">
+                            <span className="share-label">Share on</span>
+                            <div className="share-icons">
+                                <button
+                                    onClick={shareOnFacebook}
+                                    className="share-icon"
+                                    aria-label="Share on Facebook"
+                                    title="Share on Facebook"
+                                >
+                                    <span className="share-icon-text">f</span>
+                                </button>
+                                <button
+                                    onClick={shareOnTwitter}
+                                    className="share-icon"
+                                    aria-label="Share on Twitter"
+                                    title="Share on Twitter"
+                                >
+                                    <Twitter className="share-icon-svg" />
+                                </button>
+                                <button
+                                    onClick={shareOnPinterest}
+                                    className="share-icon"
+                                    aria-label="Share on Pinterest"
+                                    title="Share on Pinterest"
+                                >
+                                    <span className="share-icon-text">P</span>
+                                </button>
+                                <button
+                                    onClick={shareOnWhatsApp}
+                                    className="share-icon"
+                                    aria-label="Share on WhatsApp"
+                                    title="Share on WhatsApp"
+                                >
+                                    <MessageCircle className="share-icon-svg" />
+                                </button>
+                                <button
+                                    onClick={copyWishlistLink}
+                                    className="share-icon"
+                                    aria-label="Copy link"
+                                    title="Copy link"
+                                    disabled={isGeneratingShare}
+                                >
+                                    {isGeneratingShare ? (
+                                        <span className="spinner-small">⏳</span>
+                                    ) : linkCopied ? (
+                                        <Check className="share-icon-svg" />
+                                    ) : (
+                                        <Link2 className="share-icon-svg" />
+                                    )}
+                                </button>
+                                <button
+                                    onClick={shareViaEmail}
+                                    className="share-icon"
+                                    aria-label="Share via Email"
+                                    title="Share via Email"
+                                >
+                                    <Mail className="share-icon-svg" />
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </>
             )}
         </div>
