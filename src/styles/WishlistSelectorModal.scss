@@ -121,9 +121,9 @@
 }
 
 .wishcart-modal-success {
-    background-color: #d1fae5;
-    border: 1px solid #6ee7b7;
-    color: #065f46;
+    background-color: #1f2937;
+    border: 1px solid #374151;
+    color: #ffffff;
     padding: 0.75rem 1rem;
     border-radius: 6px;
     margin-bottom: 1rem;
@@ -413,12 +413,12 @@
         }
 
         &.wishcart-button-success {
-            background-color: #10b981;
-            border-color: #10b981;
+            // background-color: #10b981;
+            // border-color: #10b981;
 
-            &:hover:not(:disabled) {
-                background-color: #059669;
-            }
+            // &:hover:not(:disabled) {
+            //     background-color: #059669;
+            // }
         }
     }
 }
