@@ -3,7 +3,7 @@ import { Heart, Trash2, ShoppingCart, Check, X, Twitter, Mail, MessageCircle, Li
 import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
 import { Checkbox } from './ui/checkbox';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import CustomSelect from './ui/CustomSelect';
 import { cn } from '../lib/utils';
 import '../styles/WishlistPage.scss';
 
@@ -791,21 +791,19 @@ const WishlistPage = () => {
         <div className="wishcart-wishlist-page">
             {wishlists.length > 0 && !isViewingShared && (
                 <div className="wishlist-selector">
-                    <Select 
-                        value={currentWishlist ? currentWishlist.id.toString() : ''} 
-                        onValueChange={handleWishlistSelect}
-                    >
-                        <SelectTrigger className="wishlist-select-trigger">
-                            <SelectValue placeholder="Select Wishlist" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {wishlists.map((wishlist) => (
-                                <SelectItem key={wishlist.id} value={wishlist.id.toString()}>
-                                    {wishlist.wishlist_name} {wishlist.is_default ? '(Default)' : ''}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                    <CustomSelect
+                        options={wishlists.map(wishlist => ({
+                            value: wishlist.id.toString(),
+                            label: `${wishlist.wishlist_name}${wishlist.is_default ? ' (Default)' : ''}`
+                        }))}
+                        value={currentWishlist ? {
+                            value: currentWishlist.id.toString(),
+                            label: `${currentWishlist.wishlist_name}${currentWishlist.is_default ? ' (Default)' : ''}`
+                        } : null}
+                        onChange={(selectedOption) => handleWishlistSelect(selectedOption.value)}
+                        placeholder="Select Wishlist"
+                        className="wishlist-select-trigger"
+                    />
                     <Button
                         onClick={createNewWishlist}
                         className="create-wishlist-btn"
@@ -816,18 +814,18 @@ const WishlistPage = () => {
                     
                     {/* Privacy Control */}
                     {currentWishlist && !isViewingShared && (
-                        <Select 
-                            value={currentWishlist.privacy_status || 'private'}
-                            onValueChange={handlePrivacyChange}
-                        >
-                            <SelectTrigger className="privacy-select-trigger">
-                                <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="private">🔒 Private</SelectItem>
-                                <SelectItem value="shared">👥 Shared</SelectItem>
-                            </SelectContent>
-                        </Select>
+                        <CustomSelect
+                            options={[
+                                { value: 'private', label: '🔒 Private' },
+                                { value: 'shared', label: '👥 Shared' }
+                            ]}
+                            value={{
+                                value: currentWishlist.privacy_status || 'private',
+                                label: currentWishlist.privacy_status === 'shared' ? '👥 Shared' : '🔒 Private'
+                            }}
+                            onChange={(selectedOption) => handlePrivacyChange(selectedOption.value)}
+                            className="privacy-select-trigger"
+                        />
                     )}
                 </div>
             )}
@@ -870,14 +868,16 @@ const WishlistPage = () => {
                                         {selectedIds.size} selected
                                     </span>
                                 )}
-                                <Select value={bulkAction} onValueChange={setBulkAction}>
-                                    <SelectTrigger className="actions-select">
-                                        <SelectValue placeholder="Actions" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="remove">Remove selected</SelectItem>
-                                    </SelectContent>
-                                </Select>
+                                <CustomSelect
+                                    options={[
+                                        { value: 'remove', label: 'Remove selected' }
+                                    ]}
+                                    value={bulkAction ? { value: bulkAction, label: 'Remove selected' } : null}
+                                    onChange={(selectedOption) => setBulkAction(selectedOption ? selectedOption.value : '')}
+                                    placeholder="Actions"
+                                    className="actions-select"
+                                    isClearable={true}
+                                />
                                 <Button
                                     onClick={handleBulkAction}
                                     disabled={!bulkAction || selectedIds.size === 0}
