@@ -1,11 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, XCircle, AlertCircle, Loader2, Lock } from 'lucide-react';
 import { __ } from '@wordpress/i18n';
 
@@ -87,96 +82,83 @@ const FluentCRMSettings = () => {
 
     if (loading) {
         return (
-            <Card>
-                <CardContent className="flex items-center justify-center py-8">
-                    <Loader2 className="w-6 h-6 animate-spin" />
-                </CardContent>
-            </Card>
+            <div className="wishcart-settings-section">
+                <div className="fluentcrm-flex-center" style={{padding: '40px'}}>
+                    <Loader2 style={{width: '24px', height: '24px'}} className="animate-spin" />
+                </div>
+            </div>
         );
     }
 
     if (!isAvailable) {
         return (
-            <Card>
-                <CardHeader>
-                    <CardTitle>{__('FluentCRM Integration', 'wish-cart')}</CardTitle>
-                    <CardDescription>{__('Connect WishCart with FluentCRM for automated marketing campaigns', 'wish-cart')}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <Alert>
-                        <AlertCircle className="h-4 w-4" />
-                        <AlertDescription>
+            <div className="wishcart-settings-section">
+                <div className="fluentcrm-notice fluentcrm-notice-warning">
+                    <AlertCircle style={{width: '18px', height: '18px', flexShrink: 0}} />
+                    <div>
+                        <strong>{__('FluentCRM Not Available', 'wish-cart')}</strong>
+                        <p style={{margin: '4px 0 0'}}>
                             {__('FluentCRM plugin is not installed or activated. Please install FluentCRM to use this integration.', 'wish-cart')}
-                        </AlertDescription>
-                    </Alert>
-                </CardContent>
-            </Card>
+                        </p>
+                    </div>
+                </div>
+            </div>
         );
     }
 
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle>{__('FluentCRM Integration', 'wish-cart')}</CardTitle>
-                <CardDescription>{__('Configure FluentCRM integration for automated marketing campaigns', 'wish-cart')}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-                {saveMessage === 'success' && (
-                    <Alert className="bg-green-50 border-green-200">
-                        <CheckCircle2 className="h-4 w-4 text-green-600" />
-                        <AlertDescription className="text-green-800">
-                            {__('Settings saved successfully!', 'wish-cart')}
-                        </AlertDescription>
-                    </Alert>
-                )}
+        <div className="wishcart-settings-section">
+            {saveMessage === 'success' && (
+                <div className="fluentcrm-notice fluentcrm-notice-success">
+                    <CheckCircle2 style={{width: '18px', height: '18px', flexShrink: 0}} />
+                    <span>{__('Settings saved successfully!', 'wish-cart')}</span>
+                </div>
+            )}
 
-                {saveMessage === 'error' && (
-                    <Alert className="bg-red-50 border-red-200">
-                        <XCircle className="h-4 w-4 text-red-600" />
-                        <AlertDescription className="text-red-800">
-                            {__('Failed to save settings. Please try again.', 'wish-cart')}
-                        </AlertDescription>
-                    </Alert>
-                )}
+            {saveMessage === 'error' && (
+                <div className="fluentcrm-notice fluentcrm-notice-error">
+                    <XCircle style={{width: '18px', height: '18px', flexShrink: 0}} />
+                    <span>{__('Failed to save settings. Please try again.', 'wish-cart')}</span>
+                </div>
+            )}
 
-                <div className="flex items-center justify-between">
-                    <div className="space-y-0.5">
-                        <Label>{__('Enable FluentCRM Integration', 'wish-cart')}</Label>
-                        <p className="text-sm text-gray-500">
-                            {__('Activate FluentCRM integration for automated campaigns, contact creation, welcome emails, price drops, back-in-stock alerts, time-based reminders, and progressive discounts', 'wish-cart')}
-                        </p>
-                    </div>
+            <div className="wishcart-toggle-row">
+                <div className="toggle-info">
+                    <h4>{__('Enable FluentCRM Integration', 'wish-cart')}</h4>
+                    <p>{__('Activate FluentCRM integration for automated campaigns, contact creation, welcome emails, price drops, back-in-stock alerts, time-based reminders, and progressive discounts', 'wish-cart')}</p>
+                </div>
+                <div className="toggle-control">
                     <Switch
                         checked={settings.enabled}
                         onCheckedChange={(checked) => updateSetting('enabled', checked)}
                     />
                 </div>
+            </div>
 
-                {/* REST API Credentials Section - Pro/Upcoming Feature */}
-                <Alert className="bg-blue-50 border-blue-200">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <div className="flex items-center gap-2 mb-1">
-                                <Lock className="h-4 w-4" />
-                                <span className="font-semibold">{__('REST API Credentials', 'wish-cart')}</span>
-                                <Badge variant="pro">{__('PRO', 'wish-cart')}</Badge>
-                                <Badge variant="secondary">{__('COMING SOON', 'wish-cart')}</Badge>
-                            </div>
-                            <p className="text-sm">{__('This feature is available in WishCart Pro', 'wish-cart')}</p>
-                            <p className="text-sm text-gray-600">{__('Please upgrade to get all the advanced features.', 'wish-cart')}</p>
-                        </div>
+            {/* REST API Credentials Section - Pro/Upcoming Feature */}
+            <div className="fluentcrm-notice fluentcrm-notice-info" style={{marginTop: '16px'}}>
+                <Lock style={{width: '18px', height: '18px', flexShrink: 0}} />
+                <div style={{flex: 1}}>
+                    <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px'}}>
+                        <strong>{__('REST API Credentials', 'wish-cart')}</strong>
+                        <span className="fluentcrm-badge fluentcrm-badge-warning">{__('PRO', 'wish-cart')}</span>
+                        <span className="fluentcrm-badge fluentcrm-badge-info">{__('COMING SOON', 'wish-cart')}</span>
                     </div>
-                </Alert>
-            </CardContent>
-            <CardFooter className="flex justify-end border-t bg-slate-50/50 pt-4">
-                <Button
+                    <p style={{fontSize: '13px', margin: '0'}}>{__('This feature is available in WishCart Pro', 'wish-cart')}</p>
+                    <p style={{fontSize: '13px', margin: '4px 0 0', color: 'var(--fluentcrm-text-muted)'}}>{__('Please upgrade to get all the advanced features.', 'wish-cart')}</p>
+                </div>
+            </div>
+
+            <div className="fluentcrm-card-footer">
+                <button
                     onClick={saveSettings}
                     disabled={saving}
+                    className="fluentcrm-button fluentcrm-button-primary"
                 >
                     {saving ? __('Saving...', 'wish-cart') : __('Save Settings', 'wish-cart')}
-                </Button>
-            </CardFooter>
-        </Card>
+                </button>
+            </div>
+        </div>
     );
 };
 

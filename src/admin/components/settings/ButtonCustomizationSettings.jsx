@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -461,19 +460,8 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
     };
 
     return (
-        <div className="space-y-6">
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <ShoppingCart className="w-5 h-5" />
-                        {__('Button Customization', 'wish-cart')}
-                    </CardTitle>
-                    <CardDescription>
-                        {__('Customize the appearance of the wishlist button', 'wish-cart')}
-                    </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                    {/* General Settings Section */}
+        <div className="wishcart-settings-section">
+            {/* General Settings Section */}
                             <div className="space-y-4">
                         <Label className="text-base font-semibold">{__('General Settings', 'wish-cart')}</Label>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -580,8 +568,6 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
                             </p>
                         </div>
                     </div>
-                </CardContent>
-            </Card>
         </div>
     );
 };

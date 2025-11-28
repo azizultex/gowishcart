@@ -1,11 +1,5 @@
 import { __ } from '@wordpress/i18n';
 import React, { useState, useEffect } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Toaster } from "@/components/ui/toaster"
 import { useToast } from "@/components/hooks/use-toast"
 import {
@@ -22,7 +16,6 @@ import {
 import WishlistSettings from './WishlistSettings';
 import ButtonCustomizationSettings from './ButtonCustomizationSettings';
 import FluentCRMSettings from './FluentCRMSettings';
-import {buttonVariants} from "../../../components/ui/button";
 import { AnalyticsDashboard } from '../AnalyticsDashboard';
 
 
@@ -154,135 +147,147 @@ const SettingsApp = () => {
 
     const pluginLogo = `${WishCartSettings.pluginUrl}assets/images/icons/menu-icon.svg`;
 
+    const tabs = [
+        { id: 'settings', label: __('Settings', 'wish-cart'), icon: Heart },
+        { id: 'button-customization', label: __('Button Customization', 'wish-cart'), icon: Palette },
+        { id: 'analytics', label: __('Analytics', 'wish-cart'), icon: BarChart3 },
+        { id: 'fluentcrm', label: __('FluentCRM', 'wish-cart'), icon: Mail },
+    ];
+
     return (
         <>
-            <div className="wishcart-admin-shell min-h-[70vh] bg-slate-50 py-6">
-                <div className="mx-auto max-w-6xl px-4 lg:px-6 space-y-6">
-                    <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                        <div className="flex items-center gap-3">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/5">
+            <div className="wishcart-admin-shell fluentcrm-admin-page">
+                {/* Header Section - FluentCRM Style */}
+                <header className="fluentcrm-admin-header">
+                    <div className="fluentcrm-admin-header-content">
+                        <div className="fluentcrm-admin-header-left">
+                            <div className="fluentcrm-admin-logo">
                                 <img
                                     src={pluginLogo}
                                     alt={__('WishCart logo', 'wish-cart')}
-                                    className="h-6 w-6"
                                 />
                             </div>
-                            <div>
-                                <h1 className="text-xl font-semibold tracking-tight text-slate-900">
-                                    {__('WishCart', 'wish-cart')}
-                                </h1>
-                                <p className="flex items-center gap-2 text-sm text-slate-500">
-                                    <span>{__('Wishlist & engagement tools for your store', 'wish-cart')}</span>
-                                    <span className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[11px] font-medium uppercase tracking-wide text-emerald-700">
-                                        {__('Free', 'wish-cart')}
-                                    </span>
-                                </p>
+                            <div className="fluentcrm-admin-title-wrapper">
+                                <h1>{__('WishCart', 'wish-cart')}</h1>
+                                <p>{__('Wishlist & engagement tools for your store', 'wish-cart')}</p>
                             </div>
                         </div>
-                        <div className="flex items-center gap-3">
-                            <div className="flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
-                                <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                                <span>{__('You are connected.', 'wish-cart')}</span>
+                        <div className="fluentcrm-admin-header-right">
+                            <div className="fluentcrm-connection-status">
+                                <span className="status-dot"></span>
+                                <span>{__('You are connected', 'wish-cart')}</span>
                             </div>
-                            <div className="hidden sm:flex items-center gap-2">
-                                <a
-                                    href="https://wishcart.chat/support"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className={buttonVariants({ variant: "outline", size: "sm" })}
-                                >
-                                    <HelpCircle className="mr-2 h-4 w-4" />
-                                    {__('Support', 'wish-cart')}
-                                </a>
-                                <a
-                                    href="https://wishcart.chat/docs"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className={buttonVariants({ variant: "ghost", size: "sm" })}
-                                >
-                                    <ExternalLink className="mr-2 h-4 w-4" />
-                                    {__('Docs', 'wish-cart')}
-                                </a>
-                            </div>
-                        </div>
-                    </header>
-
-                    {saveMessage && (
-                        <Alert className="border-amber-200 bg-amber-50">
-                            <AlertDescription>{saveMessage}</AlertDescription>
-                        </Alert>
-                    )}
-
-                    <Card className="shadow-sm border-slate-200">
-                        <CardHeader className="border-b border-slate-100 pb-3">
-                            <CardTitle className="text-base font-semibold">
-                                {__('WishCart dashboard', 'wish-cart')}
-                            </CardTitle>
-                            <CardDescription>
-                                {__('Manage wishlist behavior, tools, and plugin information.', 'wish-cart')}
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="pt-4">
-                            <Tabs
-                                value={activeTab}
-                                onValueChange={setActiveTab}
-                                className="w-full"
+                            <a
+                                href="https://wishcart.chat/support"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="fluentcrm-button fluentcrm-button-secondary fluentcrm-button-sm"
                             >
-                                <TabsList className="mb-4 bg-slate-50 flex flex-wrap">
-                                    <TabsTrigger value="settings" className="flex items-center gap-2">
-                                        <Heart className="w-4 h-4" />
-                                        {__('Settings', 'wish-cart')}
-                                    </TabsTrigger>
-                                    <TabsTrigger value="button-customization" className="flex items-center gap-2">
-                                        <Palette className="w-4 h-4" />
-                                        {__('Button Customization', 'wish-cart')}
-                                    </TabsTrigger>
-                                    <TabsTrigger value="analytics" className="flex items-center gap-2">
-                                        <BarChart3 className="w-4 h-4" />
-                                        {__('Analytics', 'wish-cart')}
-                                    </TabsTrigger>
-                                    <TabsTrigger value="fluentcrm" className="flex items-center gap-2">
-                                        <Mail className="w-4 h-4" />
-                                        {__('FluentCRM', 'wish-cart')}
-                                    </TabsTrigger>
-                                </TabsList>
+                                <HelpCircle style={{ width: '16px', height: '16px' }} />
+                                {__('Support', 'wish-cart')}
+                            </a>
+                            <a
+                                href="https://wishcart.chat/docs"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="fluentcrm-button fluentcrm-button-ghost fluentcrm-button-sm"
+                            >
+                                <ExternalLink style={{ width: '16px', height: '16px' }} />
+                                {__('Docs', 'wish-cart')}
+                            </a>
+                        </div>
+                    </div>
+                </header>
 
-                                <TabsContent value="settings" className="space-y-6">
-                                    <WishlistSettings
-                                        settings={settings}
-                                        updateSettings={updateSettings}
-                                    />
-                                </TabsContent>
+                {/* Navigation Tabs - WordPress/FluentCRM Style */}
+                <nav className="fluentcrm-nav-tabs">
+                    {tabs.map((tab) => {
+                        const Icon = tab.icon;
+                        return (
+                            <button
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id)}
+                                className={`fluentcrm-nav-tab ${activeTab === tab.id ? 'active' : ''}`}
+                            >
+                                <Icon />
+                                {tab.label}
+                            </button>
+                        );
+                    })}
+                </nav>
 
-                                <TabsContent value="button-customization" className="space-y-6">
-                                    <ButtonCustomizationSettings
-                                        settings={settings}
-                                        updateSettings={updateSettings}
-                                    />
-                                </TabsContent>
-
-                                <TabsContent value="analytics" className="space-y-6">
-                                    <AnalyticsDashboard />
-                                </TabsContent>
-
-                                <TabsContent value="fluentcrm" className="space-y-6">
-                                    <FluentCRMSettings />
-                                </TabsContent>
-                            </Tabs>
-
-                            {/* Only show global save button for tabs that don't have their own save functionality */}
-                            {activeTab !== 'fluentcrm' && activeTab !== 'analytics' && (
-                                <div className="mt-6 flex justify-end border-t border-slate-100 pt-4">
-                                    <Button
-                                        onClick={saveSettings}
-                                        disabled={isSaving}
-                                    >
-                                        {isSaving ? __('Saving...', 'wish-cart') : __('Save Settings', 'wish-cart')}
-                                    </Button>
+                {/* Main Content Area */}
+                <div className="fluentcrm-admin-body">
+                    <div className="fluentcrm-admin-content">
+                        {/* Settings Tab */}
+                        {activeTab === 'settings' && (
+                            <>
+                                <div className="fluentcrm-card-header">
+                                    <h2 className="fluentcrm-card-title">
+                                        {__('Wishlist Settings', 'wish-cart')}
+                                    </h2>
+                                    <p className="fluentcrm-card-description">
+                                        {__('Configure wishlist functionality and button placement', 'wish-cart')}
+                                    </p>
                                 </div>
-                            )}
-                        </CardContent>
-                    </Card>
+                                <WishlistSettings
+                                    settings={settings}
+                                    updateSettings={updateSettings}
+                                />
+                            </>
+                        )}
+
+                        {/* Button Customization Tab */}
+                        {activeTab === 'button-customization' && (
+                            <>
+                                <div className="fluentcrm-card-header">
+                                    <h2 className="fluentcrm-card-title">
+                                        {__('Button Customization', 'wish-cart')}
+                                    </h2>
+                                    <p className="fluentcrm-card-description">
+                                        {__('Customize the appearance and behavior of wishlist buttons', 'wish-cart')}
+                                    </p>
+                                </div>
+                                <ButtonCustomizationSettings
+                                    settings={settings}
+                                    updateSettings={updateSettings}
+                                />
+                            </>
+                        )}
+
+                        {/* Analytics Tab */}
+                        {activeTab === 'analytics' && (
+                            <AnalyticsDashboard />
+                        )}
+
+                        {/* FluentCRM Tab */}
+                        {activeTab === 'fluentcrm' && (
+                            <>
+                                <div className="fluentcrm-card-header">
+                                    <h2 className="fluentcrm-card-title">
+                                        {__('FluentCRM Integration', 'wish-cart')}
+                                    </h2>
+                                    <p className="fluentcrm-card-description">
+                                        {__('Connect WishCart with FluentCRM for advanced email marketing', 'wish-cart')}
+                                    </p>
+                                </div>
+                                <FluentCRMSettings />
+                            </>
+                        )}
+
+                        {/* Save Button - Only show for tabs that need it */}
+                        {activeTab !== 'fluentcrm' && activeTab !== 'analytics' && (
+                            <div className="fluentcrm-card-footer" style={{ marginTop: '24px' }}>
+                                <button
+                                    onClick={saveSettings}
+                                    disabled={isSaving}
+                                    className="fluentcrm-button fluentcrm-button-primary"
+                                >
+                                    {isSaving ? __('Saving...', 'wish-cart') : __('Save Settings', 'wish-cart')}
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
             <Toaster />

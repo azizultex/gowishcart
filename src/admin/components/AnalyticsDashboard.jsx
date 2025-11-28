@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { TrendingUp, Heart, ShoppingCart, Share2, Users, BarChart, Link as LinkIcon } from 'lucide-react';
-import { Card, CardContent } from '../../components/ui/card';
 import '../../styles/Analytics.scss';
 
 export const AnalyticsDashboard = () => {
@@ -85,63 +84,54 @@ export const AnalyticsDashboard = () => {
             {/* Overview Cards */}
             {overview && (
                 <div className="overview-grid">
-                    <Card className="stat-card">
-                        <CardContent>
-                            <div className="stat-icon wishlist">
-                                <Heart size={24} />
-                            </div>
-                            <div className="stat-content">
-                                <p className="stat-label">Total Wishlists</p>
-                                <p className="stat-value">{overview.total_wishlists || 0}</p>
-                            </div>
-                        </CardContent>
-                    </Card>
+                    <div className="stat-card fluentcrm-card">
+                        <div className="stat-icon wishlist">
+                            <Heart size={24} />
+                        </div>
+                        <div className="stat-content">
+                            <p className="stat-label">Total Wishlists</p>
+                            <p className="stat-value">{overview.total_wishlists || 0}</p>
+                        </div>
+                    </div>
 
-                    <Card className="stat-card">
-                        <CardContent>
-                            <div className="stat-icon items">
-                                <BarChart size={24} />
-                            </div>
-                            <div className="stat-content">
-                                <p className="stat-label">Total Items</p>
-                                <p className="stat-value">{overview.total_items || 0}</p>
-                                <p className="stat-meta">Avg: {overview.avg_items_per_wishlist || 0} per wishlist</p>
-                            </div>
-                        </CardContent>
-                    </Card>
+                    <div className="stat-card fluentcrm-card">
+                        <div className="stat-icon items">
+                            <BarChart size={24} />
+                        </div>
+                        <div className="stat-content">
+                            <p className="stat-label">Total Items</p>
+                            <p className="stat-value">{overview.total_items || 0}</p>
+                            <p className="stat-meta">Avg: {overview.avg_items_per_wishlist || 0} per wishlist</p>
+                        </div>
+                    </div>
 
-                    <Card className="stat-card">
-                        <CardContent>
-                            <div className="stat-icon conversion">
-                                <ShoppingCart size={24} />
-                            </div>
-                            <div className="stat-content">
-                                <p className="stat-label">Total Purchases</p>
-                                <p className="stat-value">{overview.total_purchases || 0}</p>
-                                <p className="stat-meta">Conversion: {overview.overall_conversion_rate || 0}%</p>
-                            </div>
-                        </CardContent>
-                    </Card>
+                    <div className="stat-card fluentcrm-card">
+                        <div className="stat-icon conversion">
+                            <ShoppingCart size={24} />
+                        </div>
+                        <div className="stat-content">
+                            <p className="stat-label">Total Purchases</p>
+                            <p className="stat-value">{overview.total_purchases || 0}</p>
+                            <p className="stat-meta">Conversion: {overview.overall_conversion_rate || 0}%</p>
+                        </div>
+                    </div>
 
-                    <Card className="stat-card">
-                        <CardContent>
-                            <div className="stat-icon shares">
-                                <Share2 size={24} />
-                            </div>
-                            <div className="stat-content">
-                                <p className="stat-label">Total Shares</p>
-                                <p className="stat-value">{overview.total_shares || 0}</p>
-                            </div>
-                        </CardContent>
-                    </Card>
+                    <div className="stat-card fluentcrm-card">
+                        <div className="stat-icon shares">
+                            <Share2 size={24} />
+                        </div>
+                        <div className="stat-content">
+                            <p className="stat-label">Total Shares</p>
+                            <p className="stat-value">{overview.total_shares || 0}</p>
+                        </div>
+                    </div>
                 </div>
             )}
 
             {/* Conversion Funnel */}
             {conversionData && (
-                <Card className="funnel-card">
-                    <CardContent>
-                        <h3>Conversion Funnel</h3>
+                <div className="funnel-card fluentcrm-card">
+                    <h3>Conversion Funnel</h3>
                         <div className="funnel-visualization">
                             <div className="funnel-stage">
                                 <div className="funnel-bar" style={{ width: '100%' }}>
@@ -170,15 +160,13 @@ export const AnalyticsDashboard = () => {
                                 </div>
                             </div>
                         </div>
-                    </CardContent>
-                </Card>
+                </div>
             )}
 
             {/* Popular Products */}
             {popularProducts.length > 0 && (
-                <Card className="popular-products-card">
-                    <CardContent>
-                        <h3>Most Wishlisted Products</h3>
+                <div className="popular-products-card fluentcrm-card">
+                    <h3>Most Wishlisted Products</h3>
                         <div className="products-table">
                             <table>
                                 <thead>
@@ -213,15 +201,13 @@ export const AnalyticsDashboard = () => {
                                 </tbody>
                             </table>
                         </div>
-                    </CardContent>
-                </Card>
+                </div>
             )}
 
             {/* Link Details */}
             {linkDetails && (
-                <Card className="links-card">
-                    <CardContent>
-                        <div className="links-header">
+                <div className="links-card fluentcrm-card">
+                    <div className="links-header">
                             <h3>
                                 <LinkIcon size={20} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
                                 Share Links Details
@@ -298,8 +284,7 @@ export const AnalyticsDashboard = () => {
                                 <p>No share links found.</p>
                             </div>
                         )}
-                    </CardContent>
-                </Card>
+                </div>
             )}
         </div>
     );

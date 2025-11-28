@@ -1,33 +1,27 @@
+@import '../admin/styles/fluentcrm-theme.scss';
+
 .analytics-dashboard {
-    padding: 24px;
+    padding: 0;
 
     .dashboard-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 24px;
+        margin-bottom: var(--fluentcrm-space-xl);
+        padding-bottom: var(--fluentcrm-space-lg);
+        border-bottom: 1px solid var(--fluentcrm-border-light);
 
         h2 {
             margin: 0;
-            font-size: 24px;
+            font-size: 18px;
             font-weight: 600;
-            color: #111827;
+            color: var(--fluentcrm-gray-900);
         }
 
         .refresh-button {
-            padding: 8px 16px;
-            background: #3b82f6;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background 0.2s;
-
-            &:hover {
-                background: #2563eb;
-            }
+            @extend .fluentcrm-button;
+            @extend .fluentcrm-button-secondary;
+            @extend .fluentcrm-button-sm;
         }
     }
 
@@ -41,16 +35,16 @@
         .spinner {
             width: 40px;
             height: 40px;
-            border: 4px solid #e5e7eb;
-            border-top-color: #3b82f6;
+            border: 4px solid var(--fluentcrm-border-light);
+            border-top-color: var(--wp-admin-blue);
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
 
         p {
-            margin-top: 16px;
-            color: #6b7280;
-            font-size: 14px;
+            margin-top: var(--fluentcrm-space-lg);
+            color: var(--fluentcrm-text-secondary);
+            font-size: 13px;
         }
     }
 
@@ -61,11 +55,14 @@
     .overview-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-        gap: 20px;
-        margin-bottom: 24px;
+        gap: var(--fluentcrm-space-xl);
+        margin-bottom: var(--fluentcrm-space-2xl);
     }
 
     .stat-card {
+        @extend .fluentcrm-card;
+        padding: var(--fluentcrm-space-lg);
+
         .stat-content {
             display: flex;
             flex-direction: column;
@@ -77,46 +74,46 @@
             justify-content: center;
             width: 48px;
             height: 48px;
-            border-radius: 12px;
-            margin-bottom: 12px;
+            border-radius: var(--fluentcrm-radius-md);
+            margin-bottom: var(--fluentcrm-space-md);
 
             &.wishlist {
-                background: #dbeafe;
-                color: #1e40af;
+                background: rgba(30, 115, 190, 0.1);
+                color: var(--fluentcrm-primary);
             }
 
             &.items {
-                background: #dcfce7;
-                color: #15803d;
+                background: rgba(0, 163, 42, 0.1);
+                color: var(--fluentcrm-success);
             }
 
             &.conversion {
-                background: #fef3c7;
-                color: #d97706;
+                background: rgba(219, 166, 23, 0.1);
+                color: var(--fluentcrm-warning);
             }
 
             &.shares {
-                background: #f3e8ff;
-                color: #7c3aed;
+                background: rgba(34, 113, 177, 0.1);
+                color: var(--wp-admin-blue);
             }
         }
 
         .stat-label {
-            font-size: 14px;
-            color: #6b7280;
+            font-size: 13px;
+            color: var(--fluentcrm-text-secondary);
             margin: 0 0 4px 0;
         }
 
         .stat-value {
             font-size: 28px;
             font-weight: 700;
-            color: #111827;
+            color: var(--fluentcrm-gray-900);
             margin: 0;
         }
 
         .stat-meta {
             font-size: 12px;
-            color: #9ca3af;
+            color: var(--fluentcrm-text-muted);
             margin: 4px 0 0 0;
         }
     }
@@ -124,13 +121,14 @@
     .funnel-card,
     .popular-products-card,
     .links-card {
-        margin-bottom: 24px;
+        @extend .fluentcrm-card;
+        margin-bottom: var(--fluentcrm-space-xl);
 
         h3 {
-            margin: 0 0 20px 0;
-            font-size: 18px;
+            margin: 0 0 var(--fluentcrm-space-lg) 0;
+            font-size: 16px;
             font-weight: 600;
-            color: #111827;
+            color: var(--fluentcrm-gray-900);
         }
     }
 
@@ -139,7 +137,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: var(--fluentcrm-space-lg);
 
             h3 {
                 margin: 0;
@@ -148,12 +146,8 @@
             }
 
             .total-links-badge {
-                padding: 6px 12px;
-                background: #f3e8ff;
-                color: #7c3aed;
-                border-radius: 12px;
-                font-size: 13px;
-                font-weight: 600;
+                @extend .fluentcrm-badge;
+                @extend .fluentcrm-badge-info;
             }
         }
 
@@ -165,36 +159,36 @@
                 border-collapse: collapse;
 
                 thead {
-                    background: #f9fafb;
+                    background: var(--fluentcrm-bg-light);
 
                     th {
-                        padding: 12px 16px;
+                        padding: var(--fluentcrm-space-md) var(--fluentcrm-space-lg);
                         text-align: left;
                         font-size: 13px;
                         font-weight: 600;
-                        color: #6b7280;
-                        border-bottom: 2px solid #e5e7eb;
+                        color: var(--fluentcrm-text-secondary);
+                        border-bottom: 2px solid var(--fluentcrm-border-light);
                     }
                 }
 
                 tbody {
                     tr {
-                        border-bottom: 1px solid #e5e7eb;
+                        border-bottom: 1px solid var(--fluentcrm-border-light);
                         transition: background 0.15s;
 
                         &:hover {
-                            background: #f9fafb;
+                            background: var(--fluentcrm-bg-light);
                         }
                     }
 
                     td {
-                        padding: 12px 16px;
-                        font-size: 14px;
-                        color: #374151;
+                        padding: var(--fluentcrm-space-md) var(--fluentcrm-space-lg);
+                        font-size: 13px;
+                        color: var(--fluentcrm-text-primary);
                         vertical-align: top;
 
                         .share-link {
-                            color: #3b82f6;
+                            color: var(--fluentcrm-primary);
                             text-decoration: none;
                             font-weight: 500;
                             font-family: monospace;
@@ -208,70 +202,45 @@
                         .products-list {
                             display: flex;
                             flex-wrap: wrap;
-                            gap: 6px;
+                            gap: var(--fluentcrm-space-xs);
                             max-width: 300px;
 
                             .product-tag {
-                                display: inline-block;
-                                padding: 4px 8px;
-                                background: #e0e7ff;
-                                color: #4338ca;
-                                border-radius: 6px;
-                                font-size: 12px;
-                                font-weight: 500;
+                                @extend .fluentcrm-badge;
+                                @extend .fluentcrm-badge-info;
                             }
 
                             .more-items {
-                                display: inline-block;
-                                padding: 4px 8px;
-                                background: #f3f4f6;
-                                color: #6b7280;
-                                border-radius: 6px;
-                                font-size: 12px;
+                                @extend .fluentcrm-badge;
+                                @extend .fluentcrm-badge-neutral;
                                 font-style: italic;
                             }
 
                             .no-items {
-                                color: #9ca3af;
+                                color: var(--fluentcrm-text-muted);
                                 font-style: italic;
                                 font-size: 13px;
                             }
                         }
 
                         .click-count {
-                            display: inline-block;
-                            padding: 4px 10px;
-                            background: #f3f4f6;
-                            color: #6b7280;
-                            border-radius: 12px;
-                            font-size: 13px;
-                            font-weight: 600;
+                            @extend .fluentcrm-badge;
+                            @extend .fluentcrm-badge-neutral;
 
                             &.has-clicks {
-                                background: #dbeafe;
-                                color: #1e40af;
+                                @extend .fluentcrm-badge-info;
                             }
                         }
 
                         .share-type-badge {
-                            display: inline-block;
-                            padding: 4px 10px;
-                            background: #fef3c7;
-                            color: #d97706;
-                            border-radius: 12px;
-                            font-size: 12px;
-                            font-weight: 600;
+                            @extend .fluentcrm-badge;
+                            @extend .fluentcrm-badge-warning;
                             text-transform: capitalize;
                         }
 
                         .badge {
-                            display: inline-block;
-                            padding: 4px 10px;
-                            background: #dbeafe;
-                            color: #1e40af;
-                            border-radius: 12px;
-                            font-size: 13px;
-                            font-weight: 600;
+                            @extend .fluentcrm-badge;
+                            @extend .fluentcrm-badge-info;
                         }
                     }
                 }
@@ -281,15 +250,15 @@
         .empty-state {
             padding: 40px 20px;
             text-align: center;
-            color: #9ca3af;
-            font-size: 14px;
+            color: var(--fluentcrm-text-muted);
+            font-size: 13px;
         }
     }
 
     .funnel-visualization {
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        gap: var(--fluentcrm-space-md);
     }
 
     .funnel-stage {
@@ -297,34 +266,34 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 16px 20px;
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-            border-radius: 8px;
+            padding: var(--fluentcrm-space-lg) var(--fluentcrm-space-xl);
+            background: linear-gradient(135deg, var(--fluentcrm-primary) 0%, var(--wp-admin-blue) 100%);
+            border-radius: var(--fluentcrm-radius);
             color: white;
-            transition: all 0.3s;
+            transition: all 0.2s ease-in-out;
             min-width: 200px;
 
             &:hover {
                 transform: translateX(4px);
-                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+                box-shadow: var(--fluentcrm-shadow-md);
             }
         }
 
         .funnel-label {
             font-weight: 500;
-            font-size: 14px;
+            font-size: 13px;
         }
 
         .funnel-value {
             font-weight: 700;
             font-size: 16px;
-            margin-right: 8px;
+            margin-right: var(--fluentcrm-space-sm);
         }
 
         .funnel-rate {
-            padding: 2px 8px;
+            padding: 2px var(--fluentcrm-space-sm);
             background: rgba(255, 255, 255, 0.2);
-            border-radius: 4px;
+            border-radius: var(--fluentcrm-radius-sm);
             font-size: 12px;
             font-weight: 600;
         }
@@ -338,35 +307,35 @@
             border-collapse: collapse;
 
             thead {
-                background: #f9fafb;
+                background: var(--fluentcrm-bg-light);
 
                 th {
-                    padding: 12px 16px;
+                    padding: var(--fluentcrm-space-md) var(--fluentcrm-space-lg);
                     text-align: left;
                     font-size: 13px;
                     font-weight: 600;
-                    color: #6b7280;
-                    border-bottom: 2px solid #e5e7eb;
+                    color: var(--fluentcrm-text-secondary);
+                    border-bottom: 2px solid var(--fluentcrm-border-light);
                 }
             }
 
             tbody {
                 tr {
-                    border-bottom: 1px solid #e5e7eb;
+                    border-bottom: 1px solid var(--fluentcrm-border-light);
                     transition: background 0.15s;
 
                     &:hover {
-                        background: #f9fafb;
+                        background: var(--fluentcrm-bg-light);
                     }
                 }
 
                 td {
-                    padding: 12px 16px;
-                    font-size: 14px;
-                    color: #374151;
+                    padding: var(--fluentcrm-space-md) var(--fluentcrm-space-lg);
+                    font-size: 13px;
+                    color: var(--fluentcrm-text-primary);
 
                     a {
-                        color: #3b82f6;
+                        color: var(--fluentcrm-primary);
                         text-decoration: none;
                         font-weight: 500;
 
@@ -376,27 +345,16 @@
                     }
 
                     .badge {
-                        display: inline-block;
-                        padding: 4px 10px;
-                        background: #dbeafe;
-                        color: #1e40af;
-                        border-radius: 12px;
-                        font-size: 13px;
-                        font-weight: 600;
+                        @extend .fluentcrm-badge;
+                        @extend .fluentcrm-badge-info;
                     }
 
                     .conversion-badge {
-                        display: inline-block;
-                        padding: 4px 10px;
-                        background: #fef3c7;
-                        color: #d97706;
-                        border-radius: 12px;
-                        font-size: 13px;
-                        font-weight: 600;
+                        @extend .fluentcrm-badge;
+                        @extend .fluentcrm-badge-warning;
 
                         &.high {
-                            background: #dcfce7;
-                            color: #15803d;
+                            @extend .fluentcrm-badge-success;
                         }
                     }
                 }

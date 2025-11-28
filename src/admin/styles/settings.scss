@@ -1,0 +1,311 @@
+/**
+ * WishCart Settings Page Styles
+ * FluentCRM-compatible design
+ */
+
+/* Override any remaining modern styles with WordPress admin aesthetics */
+.wishcart-admin-shell {
+  /* Settings page specific layout adjustments */
+  .fluentcrm-admin-content {
+    > * + * {
+      margin-top: var(--fluentcrm-space-lg);
+    }
+  }
+}
+
+/* Form sections within settings */
+.wishcart-settings-section {
+  background: var(--fluentcrm-bg-white);
+  border: 1px solid var(--fluentcrm-border);
+  border-radius: var(--fluentcrm-radius);
+  padding: var(--fluentcrm-space-xl);
+  margin-bottom: var(--fluentcrm-space-xl);
+  box-shadow: var(--fluentcrm-shadow-sm);
+
+  h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--fluentcrm-gray-900);
+    margin: 0 0 var(--fluentcrm-space-md);
+    padding-bottom: var(--fluentcrm-space-md);
+    border-bottom: 1px solid var(--fluentcrm-border-light);
+  }
+
+  h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--fluentcrm-gray-800);
+    margin: var(--fluentcrm-space-lg) 0 var(--fluentcrm-space-sm);
+  }
+
+  .description {
+    font-size: 13px;
+    color: var(--fluentcrm-text-secondary);
+    line-height: 1.5;
+    margin-bottom: var(--fluentcrm-space-md);
+  }
+}
+
+/* Toggle switch rows */
+.wishcart-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--fluentcrm-space-md) 0;
+  border-bottom: 1px solid var(--fluentcrm-gray-25);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  .toggle-info {
+    flex: 1;
+
+    h4 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--fluentcrm-gray-900);
+      margin: 0 0 4px;
+    }
+
+    p {
+      font-size: 13px;
+      color: var(--fluentcrm-text-secondary);
+      margin: 0;
+      line-height: 1.4;
+    }
+  }
+
+  .toggle-control {
+    flex-shrink: 0;
+    margin-left: var(--fluentcrm-space-lg);
+  }
+}
+
+/* Select dropdown styling */
+.wishcart-select-wrapper {
+  position: relative;
+  width: 100%;
+
+  select {
+    @extend .fluentcrm-select;
+    width: 100%;
+  }
+
+  label {
+    @extend .fluentcrm-label;
+  }
+}
+
+/* Custom CSS editor styling */
+.wishcart-code-editor {
+  .fluentcrm-textarea {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+    font-size: 12px;
+    min-height: 200px;
+  }
+}
+
+/* Page selector */
+.wishcart-page-selector {
+  margin-bottom: var(--fluentcrm-space-lg);
+
+  label {
+    @extend .fluentcrm-label;
+  }
+
+  select {
+    @extend .fluentcrm-select;
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .helper-text {
+    @extend .fluentcrm-form-helper;
+  }
+}
+
+/* Settings grid layout */
+.wishcart-settings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--fluentcrm-space-xl);
+  margin-top: var(--fluentcrm-space-lg);
+}
+
+/* Color picker integration */
+.wishcart-color-picker {
+  display: flex;
+  align-items: center;
+  gap: var(--fluentcrm-space-sm);
+
+  input[type="color"] {
+    width: 50px;
+    height: 32px;
+    border: 1px solid var(--fluentcrm-border-dark);
+    border-radius: var(--fluentcrm-radius);
+    cursor: pointer;
+  }
+
+  input[type="text"] {
+    @extend .fluentcrm-input;
+    flex: 1;
+    max-width: 120px;
+  }
+}
+
+/* Icon picker styles */
+.wishcart-icon-picker {
+  .icon-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+    gap: var(--fluentcrm-space-sm);
+    margin-top: var(--fluentcrm-space-md);
+  }
+
+  .icon-option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 50px;
+    border: 1px solid var(--fluentcrm-border);
+    border-radius: var(--fluentcrm-radius);
+    cursor: pointer;
+    transition: all 0.15s ease-in-out;
+    background: var(--fluentcrm-bg-white);
+
+    &:hover {
+      border-color: var(--fluentcrm-primary);
+      background: rgba(30, 115, 190, 0.05);
+    }
+
+    &.selected {
+      border-color: var(--fluentcrm-primary);
+      background: rgba(30, 115, 190, 0.1);
+      box-shadow: 0 0 0 1px var(--fluentcrm-primary);
+    }
+
+    svg {
+      width: 24px;
+      height: 24px;
+      color: var(--fluentcrm-gray-700);
+    }
+  }
+}
+
+/* Button preview section */
+.wishcart-button-preview {
+  background: var(--fluentcrm-gray-10);
+  border: 1px solid var(--fluentcrm-border-light);
+  border-radius: var(--fluentcrm-radius);
+  padding: var(--fluentcrm-space-2xl);
+  text-align: center;
+
+  .preview-label {
+    font-size: 12px;
+    color: var(--fluentcrm-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: var(--fluentcrm-space-lg);
+  }
+
+  .preview-buttons {
+    display: flex;
+    gap: var(--fluentcrm-space-lg);
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .wishcart-settings-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .wishcart-toggle-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--fluentcrm-space-md);
+
+    .toggle-control {
+      margin-left: 0;
+    }
+  }
+
+  .fluentcrm-admin-header-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--fluentcrm-space-md);
+  }
+
+  .fluentcrm-admin-header-right {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .fluentcrm-nav-tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Ensure shadcn/ui components integrate with FluentCRM theme */
+.wishcart-admin-shell {
+  /* Override button default styles */
+  button[class*="inline-flex"] {
+    height: 32px;
+    font-size: 13px;
+    font-weight: 400;
+    border-radius: var(--fluentcrm-radius-sm);
+  }
+
+  /* Override input styles */
+  input[class*="flex"] {
+    height: 32px;
+    font-size: 13px;
+    border-radius: var(--fluentcrm-radius);
+    border-color: var(--fluentcrm-border-dark);
+
+    &:focus {
+      border-color: var(--wp-admin-blue);
+      box-shadow: 0 0 0 1px var(--wp-admin-blue);
+    }
+  }
+
+  /* Override select styles */
+  select {
+    height: 32px;
+    font-size: 13px;
+    border-radius: var(--fluentcrm-radius);
+  }
+
+  /* Override card styles if any remain */
+  [class*="rounded-lg"],
+  [class*="rounded-xl"] {
+    border-radius: var(--fluentcrm-radius) !important;
+  }
+}
+
+/* Toast notification adjustments for FluentCRM theme */
+.wishcart-admin-shell {
+  [data-sonner-toast] {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+    font-size: 13px;
+  }
+
+  [data-sonner-toast][data-type="success"] {
+    background: var(--fluentcrm-success-bg);
+    border-color: var(--fluentcrm-success);
+    color: var(--fluentcrm-success);
+  }
+
+  [data-sonner-toast][data-type="error"] {
+    background: var(--fluentcrm-danger-bg);
+    border-color: var(--fluentcrm-danger);
+    color: var(--fluentcrm-danger);
+  }
+}
+
