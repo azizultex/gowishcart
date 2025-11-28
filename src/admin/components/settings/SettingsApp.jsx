@@ -14,9 +14,6 @@ import {
     ExternalLink,
     CheckCircle2,
     XCircle,
-    LifeBuoy,
-    ShieldCheck,
-    Wrench,
     Palette,
     BarChart3,
     Mail
@@ -248,18 +245,6 @@ const SettingsApp = () => {
                                         <Mail className="w-4 h-4" />
                                         {__('FluentCRM', 'wish-cart')}
                                     </TabsTrigger>
-                                    <TabsTrigger value="tools" className="flex items-center gap-2">
-                                        <Wrench className="w-4 h-4" />
-                                        {__('Tools', 'wish-cart')}
-                                    </TabsTrigger>
-                                    <TabsTrigger value="support" className="flex items-center gap-2">
-                                        <LifeBuoy className="w-4 h-4" />
-                                        {__('Support', 'wish-cart')}
-                                    </TabsTrigger>
-                                    <TabsTrigger value="license" className="flex items-center gap-2">
-                                        <ShieldCheck className="w-4 h-4" />
-                                        {__('License', 'wish-cart')}
-                                    </TabsTrigger>
                                 </TabsList>
 
                                 <TabsContent value="settings" className="space-y-6">
@@ -282,103 +267,6 @@ const SettingsApp = () => {
 
                                 <TabsContent value="fluentcrm" className="space-y-6">
                                     <FluentCRMSettings />
-                                </TabsContent>
-
-                                <TabsContent value="tools" className="space-y-4">
-                                    <p className="text-sm text-muted-foreground">
-                                        {__('Quick links to wishlist-related tools and pages.', 'wish-cart')}
-                                    </p>
-                                    <div className="grid gap-4 md:grid-cols-2">
-                                        <Card className="border-dashed">
-                                            <CardHeader>
-                                                <CardTitle className="text-sm">
-                                                    {__('Wishlist page', 'wish-cart')}
-                                                </CardTitle>
-                                                <CardDescription>
-                                                    {__('Preview the public wishlist page in a new tab.', 'wish-cart')}
-                                                </CardDescription>
-                                            </CardHeader>
-                                            <CardContent>
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    asChild
-                                                >
-                                                    <a
-                                                        href={WishCartSettings.pluginUrl}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                    >
-                                                        <ExternalLink className="mr-2 h-4 w-4" />
-                                                        {__('Open wishlist page', 'wish-cart')}
-                                                    </a>
-                                                </Button>
-                                            </CardContent>
-                                        </Card>
-                                    </div>
-                                </TabsContent>
-
-                                <TabsContent value="support" className="space-y-4">
-                                    <p className="text-sm text-muted-foreground">
-                                        {__('Need help? Get in touch with our team or browse documentation.', 'wish-cart')}
-                                    </p>
-                                    <div className="flex flex-wrap gap-3">
-                                        <Button
-                                            asChild
-                                        >
-                                            <a
-                                                href="https://wishcart.chat/support"
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                            >
-                                                <LifeBuoy className="mr-2 h-4 w-4" />
-                                                {__('Contact support', 'wish-cart')}
-                                            </a>
-                                        </Button>
-                                        <Button
-                                            variant="outline"
-                                            asChild
-                                        >
-                                            <a
-                                                href="https://wishcart.chat/docs"
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                            >
-                                                <ExternalLink className="mr-2 h-4 w-4" />
-                                                {__('View docs', 'wish-cart')}
-                                            </a>
-                                        </Button>
-                                    </div>
-                                </TabsContent>
-
-                                <TabsContent value="license" className="space-y-4">
-                                    <p className="text-sm text-muted-foreground">
-                                        {__('You are currently using the free version of WishCart. All core wishlist features are included.', 'wish-cart')}
-                                    </p>
-                                    <Card>
-                                        <CardHeader>
-                                            <CardTitle className="text-sm">
-                                                {__('Upgrade options', 'wish-cart')}
-                                            </CardTitle>
-                                            <CardDescription>
-                                                {__('Unlock advanced analytics and automation when available.', 'wish-cart')}
-                                            </CardDescription>
-                                        </CardHeader>
-                                        <CardContent>
-                                            <Button
-                                                variant="outline"
-                                                asChild
-                                            >
-                                                <a
-                                                    href="https://wishcart.chat"
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                >
-                                                    {__('Visit website', 'wish-cart')}
-                                                </a>
-                                            </Button>
-                                        </CardContent>
-                                    </Card>
                                 </TabsContent>
                             </Tabs>
 
