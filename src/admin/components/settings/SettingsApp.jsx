@@ -4,8 +4,6 @@ import { Toaster } from "@/components/ui/toaster"
 import { useToast } from "@/components/hooks/use-toast"
 import {
     Heart,
-    HelpCircle,
-    ExternalLink,
     CheckCircle2,
     XCircle,
     Palette,
@@ -145,8 +143,6 @@ const SettingsApp = () => {
         }));
     };
 
-    const pluginLogo = `${WishCartSettings.pluginUrl}assets/images/icons/menu-icon.svg`;
-
     const tabs = [
         { id: 'settings', label: __('Settings', 'wish-cart'), icon: Heart },
         { id: 'button-customization', label: __('Button Customization', 'wish-cart'), icon: Palette },
@@ -157,48 +153,6 @@ const SettingsApp = () => {
     return (
         <>
             <div className="wishcart-admin-shell fluentcrm-admin-page">
-                {/* Header Section - FluentCRM Style */}
-                <header className="fluentcrm-admin-header">
-                    <div className="fluentcrm-admin-header-content">
-                        <div className="fluentcrm-admin-header-left">
-                            <div className="fluentcrm-admin-logo">
-                                <img
-                                    src={pluginLogo}
-                                    alt={__('WishCart logo', 'wish-cart')}
-                                />
-                            </div>
-                            <div className="fluentcrm-admin-title-wrapper">
-                                <h1>{__('WishCart', 'wish-cart')}</h1>
-                                <p>{__('Wishlist & engagement tools for your store', 'wish-cart')}</p>
-                            </div>
-                        </div>
-                        <div className="fluentcrm-admin-header-right">
-                            <div className="fluentcrm-connection-status">
-                                <span className="status-dot"></span>
-                                <span>{__('You are connected', 'wish-cart')}</span>
-                            </div>
-                            <a
-                                href="https://wishcart.chat/support"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="fluentcrm-button fluentcrm-button-secondary fluentcrm-button-sm"
-                            >
-                                <HelpCircle style={{ width: '16px', height: '16px' }} />
-                                {__('Support', 'wish-cart')}
-                            </a>
-                            <a
-                                href="https://wishcart.chat/docs"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="fluentcrm-button fluentcrm-button-ghost fluentcrm-button-sm"
-                            >
-                                <ExternalLink style={{ width: '16px', height: '16px' }} />
-                                {__('Docs', 'wish-cart')}
-                            </a>
-                        </div>
-                    </div>
-                </header>
-
                 {/* Navigation Tabs - WordPress/FluentCRM Style */}
                 <nav className="fluentcrm-nav-tabs">
                     {tabs.map((tab) => {
