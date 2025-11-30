@@ -4,7 +4,7 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
     exit;
 }
 
-class WISHCAR_Uninstaller {
+class wishcart_Uninstaller {
 
     /**
      * Array of table names
@@ -25,11 +25,11 @@ class WISHCAR_Uninstaller {
      */
     public function __construct() {
         $this->tables = [
-            'wishcar_wishlist',
+            'wishcart_wishlist',
         ];
 
         $this->options = [
-            'wishcar_settings',
+            'wishcart_settings',
         ];
     }
 
@@ -77,5 +77,5 @@ class WISHCAR_Uninstaller {
 }
 
 // Execute the uninstallation
-$uninstaller = new WISHCAR_Uninstaller();
+$uninstaller = new wishcart_Uninstaller();
 $uninstaller->uninstall();

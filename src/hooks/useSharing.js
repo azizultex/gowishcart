@@ -8,8 +8,8 @@ export const useSharing = () => {
     const [shareData, setShareData] = useState(null);
     const [error, setError] = useState(null);
 
-    const apiUrl = window.WishCartWishlist?.apiUrl || '/wp-json/wishcart/v1/';
-    const nonce = window.WishCartWishlist?.nonce;
+    const apiUrl = window.wishcartWishlist?.apiUrl || '/wp-json/wishcart/v1/';
+    const nonce = window.wishcartWishlist?.nonce;
 
     // Create share link
     const createShare = useCallback(async (wishlistId, shareType = 'link', options = {}) => {

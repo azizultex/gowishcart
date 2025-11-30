@@ -1,6 +1,6 @@
 <?php
 
-namespace WishCart_Ai_Chat\Appsero;
+namespace wishcart_Ai_Chat\Appsero;
 
 /**
  * Appsero Client
@@ -110,7 +110,7 @@ class Client {
     /**
      * Initialize insights class
      *
-     * @return WishCart_Ai_Chat\Appsero\Insights
+     * @return wishcart_Ai_Chat\Appsero\Insights
      */
     public function insights() {
         if ( ! class_exists( __NAMESPACE__ . '\Insights' ) ) {
@@ -139,18 +139,18 @@ class Client {
         }
 
         // show deprecated notice
-        _deprecated_function( __CLASS__ . '::updater', '2.0', '\WishCart_Ai_Chat\Appsero\Updater::init($client);, for more details please visit: https://appsero.com/docs/appsero-developers-guide/appsero-client/appsero-sdk-updater-changes/' );
+        _deprecated_function( __CLASS__ . '::updater', '2.0', '\wishcart_Ai_Chat\Appsero\Updater::init($client);, for more details please visit: https://appsero.com/docs/appsero-developers-guide/appsero-client/appsero-sdk-updater-changes/' );
 
         // initialize the new updater
-        if ( method_exists( '\WishCart_Ai_Chat\Appsero\Updater', 'init' ) ) {
-            WishCart_Ai_Chat\Appsero\Updater::init( $this );
+        if ( method_exists( '\wishcart_Ai_Chat\Appsero\Updater', 'init' ) ) {
+            wishcart_Ai_Chat\Appsero\Updater::init( $this );
         }
     }
 
     /**
      * Initialize license checker
      *
-     * @return WishCart_Ai_Chat\Appsero\License
+     * @return wishcart_Ai_Chat\Appsero\License
      */
     public function license() {
         if ( ! class_exists( __NAMESPACE__ . '\License' ) ) {

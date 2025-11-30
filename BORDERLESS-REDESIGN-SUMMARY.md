@@ -1,7 +1,7 @@
 # Borderless Design Update - Implementation Summary
 
 ## Overview
-Removed all borders and border-related styling from the WishCart wishlist to match FluentCart cart's ultra-clean, minimal aesthetic with no visual borders.
+Removed all borders and border-related styling from the wishcart wishlist to match FluentCart cart's ultra-clean, minimal aesthetic with no visual borders.
 
 ## Implementation Date
 November 27, 2025
@@ -108,7 +108,7 @@ November 27, 2025
 - ✅ Spacing-based layout
 - ✅ Minimal visual clutter
 
-### WishCart Wishlist Now:
+### wishcart Wishlist Now:
 - ✅ No container borders
 - ✅ No item separators (border-bottom)
 - ✅ No borders on buttons/icons

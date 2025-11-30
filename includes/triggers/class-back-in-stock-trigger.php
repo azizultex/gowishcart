@@ -2,17 +2,17 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 /**
- * WishCart Back in Stock Trigger
+ * wishcart Back in Stock Trigger
  *
  * Triggers when a product in a wishlist comes back in stock
  *
  * @category WordPress
- * @package  WishCart
- * @author   WishCart Team <support@wishcart.chat>
+ * @package  wishcart
+ * @author   wishcart Team <support@wishcart.chat>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://wishcart.chat
  */
-class WISHCAR_Back_In_Stock_Trigger extends \FluentCrm\App\Services\Funnel\BaseTrigger {
+class wishcart_Back_In_Stock_Trigger extends \FluentCrm\App\Services\Funnel\BaseTrigger {
 
     /**
      * Constructor
@@ -31,7 +31,7 @@ class WISHCAR_Back_In_Stock_Trigger extends \FluentCrm\App\Services\Funnel\BaseT
      */
     public function getTrigger() {
         return array(
-            'category'      => __( 'WishCart', 'wish-car' ),
+            'category'      => __( 'wishcart', 'wish-car' ),
             'label'         => __( 'Item Back in Stock', 'wish-car' ) . ' (' . __( 'Upcoming', 'wish-car' ) . ')',
             'description'  => __( 'This funnel will be initiated when a product in a wishlist comes back in stock', 'wish-car' ),
             'icon'          => 'fc-icon-heart',

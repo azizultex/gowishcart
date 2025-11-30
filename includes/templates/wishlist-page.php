@@ -3,9 +3,9 @@
  * Template Name: Wishlist Page
  * 
  * This template is used for displaying the wishlist page.
- * The actual content is rendered via the [wishcar_wishlist] shortcode.
+ * The actual content is rendered via the [wishcart_wishlist] shortcode.
  *
- * @package WishCart
+ * @package wishcart
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

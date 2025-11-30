@@ -7,12 +7,12 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * Handles display of shared wishlists for public viewing
  *
  * @category WordPress
- * @package  WishCart
- * @author   WishCart Team <support@wishcart.chat>
+ * @package  wishcart
+ * @author   wishcart Team <support@wishcart.chat>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://wishcart.chat
  */
-class WISHCAR_Share_Page_Handler {
+class wishcart_Share_Page_Handler {
 
     /**
      * Display shared wishlist
@@ -22,11 +22,11 @@ class WISHCAR_Share_Page_Handler {
      */
     public function display_shared_wishlist($share_token) {
         // Enqueue necessary scripts and styles
-        wp_enqueue_style('wishcart-shared-wishlist', WISHCAR_PLUGIN_URL . 'build/wishlist-frontend.css', array(), WISHCAR_VERSION);
-        wp_enqueue_script('wishcart-shared-wishlist', WISHCAR_PLUGIN_URL . 'build/wishlist-frontend.js', array('wp-element'), WISHCAR_VERSION, true);
+        wp_enqueue_style('wishcart-shared-wishlist', wishcart_PLUGIN_URL . 'build/wishlist-frontend.css', array(), wishcart_VERSION);
+        wp_enqueue_script('wishcart-shared-wishlist', wishcart_PLUGIN_URL . 'build/wishlist-frontend.js', array('wp-element'), wishcart_VERSION, true);
         
         // Localize script with API data
-        wp_localize_script('wishcart-shared-wishlist', 'WishCartShared', array(
+        wp_localize_script('wishcart-shared-wishlist', 'wishcartShared', array(
             'apiUrl' => rest_url('wishcart/v1/'),
             'shareToken' => sanitize_text_field($share_token),
             'nonce' => wp_create_nonce('wp_rest'),

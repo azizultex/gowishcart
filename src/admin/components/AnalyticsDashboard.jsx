@@ -9,8 +9,8 @@ export const AnalyticsDashboard = () => {
     const [linkDetails, setLinkDetails] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
-    const apiUrl = window.WishCartSettings?.apiUrl || '/wp-json/wishcart/v1/';
-    const nonce = window.WishCartSettings?.nonce;
+    const apiUrl = window.wishcartSettings?.apiUrl || '/wp-json/wishcart/v1/';
+    const nonce = window.wishcartSettings?.nonce;
 
     useEffect(() => {
         fetchAnalytics();

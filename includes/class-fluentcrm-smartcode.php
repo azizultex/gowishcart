@@ -4,16 +4,16 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 /**
  * FluentCRM SmartCode Integration Class
  *
- * Provides dynamic shortcodes for WishCart triggers in FluentCRM email editor
+ * Provides dynamic shortcodes for wishcart triggers in FluentCRM email editor
  * Similar to FluentBooking's Booking Data shortcodes
  *
  * @category WordPress
- * @package  WishCart
- * @author   WishCart Team <support@wishcart.chat>
+ * @package  wishcart
+ * @author   wishcart Team <support@wishcart.chat>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://wishcart.chat
  */
-class WISHCAR_FluentCRM_SmartCode {
+class wishcart_FluentCRM_SmartCode {
 
     /**
      * Constructor
@@ -36,17 +36,17 @@ class WISHCAR_FluentCRM_SmartCode {
     }
 
     /**
-     * Add WishCart shortcode group to FluentCRM context
+     * Add wishcart shortcode group to FluentCRM context
      *
      * This adds the "Wishlist Data" tab when editing email actions
-     * in automations triggered by WishCart events
+     * in automations triggered by wishcart events
      *
      * @param array  $codes   Existing shortcode groups
      * @param string $context The trigger context (trigger name)
      * @return array Modified shortcode groups
      */
     public function push_context_codes( $codes, $context ) {
-        // Only add our shortcodes for WishCart triggers
+        // Only add our shortcodes for wishcart triggers
         $wishcart_triggers = array(
             'wishcart_item_added',
             'wishcart_item_removed',
@@ -69,7 +69,7 @@ class WISHCAR_FluentCRM_SmartCode {
     }
 
     /**
-     * Parse WishCart shortcode values
+     * Parse wishcart shortcode values
      *
      * This callback is triggered when FluentCRM encounters a {{wishcart.*}} shortcode
      *
@@ -118,8 +118,8 @@ class WISHCAR_FluentCRM_SmartCode {
         $product_id = intval( $funnelSub->source_ref_id );
 
         // Get the product using FluentCart helper or WooCommerce
-        if ( class_exists( 'WISHCAR_FluentCart_Helper' ) ) {
-            return WISHCAR_FluentCart_Helper::get_product( $product_id );
+        if ( class_exists( 'wishcart_FluentCart_Helper' ) ) {
+            return wishcart_FluentCart_Helper::get_product( $product_id );
         }
 
         // Fallback to WooCommerce
@@ -278,7 +278,7 @@ class WISHCAR_FluentCRM_SmartCode {
      * @return string Item count
      */
     private function get_wishlist_item_count( $subscriber ) {
-        if ( ! $subscriber || ! class_exists( 'WISHCAR_Wishlist_Handler' ) ) {
+        if ( ! $subscriber || ! class_exists( 'wishcart_Wishlist_Handler' ) ) {
             return '0';
         }
 
@@ -294,7 +294,7 @@ class WISHCAR_FluentCRM_SmartCode {
         $session_id = null;
 
         // If no user, try to find guest session
-        if ( ! $user_id && class_exists( 'WISHCAR_Guest_Handler' ) ) {
+        if ( ! $user_id && class_exists( 'wishcart_Guest_Handler' ) ) {
             global $wpdb;
             $guests_table = $wpdb->prefix . 'wishcart_guests';
             $guest = $wpdb->get_row(
@@ -310,7 +310,7 @@ class WISHCAR_FluentCRM_SmartCode {
         }
 
         // Get wishlist handler
-        $handler = new WISHCAR_Wishlist_Handler();
+        $handler = new wishcart_Wishlist_Handler();
         $wishlists = $handler->get_wishlists( $user_id, $session_id );
 
         if ( empty( $wishlists ) ) {
@@ -331,7 +331,7 @@ class WISHCAR_FluentCRM_SmartCode {
      */
     private function get_wishlist_url() {
         // Get wishlist page ID from options
-        $page_id = get_option( 'wishcar_wishlist_page_id' );
+        $page_id = get_option( 'wishcart_wishlist_page_id' );
         
         if ( $page_id ) {
             return get_permalink( $page_id );

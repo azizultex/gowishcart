@@ -7,12 +7,12 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * Manages guest user sessions and conversion tracking
  *
  * @category WordPress
- * @package  WishCart
- * @author   WishCart Team <support@wishcart.chat>
+ * @package  wishcart
+ * @author   wishcart Team <support@wishcart.chat>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://wishcart.chat
  */
-class WISHCAR_Guest_Handler {
+class wishcart_Guest_Handler {
 
     private $wpdb;
     private $guest_users_table;
@@ -42,7 +42,7 @@ class WISHCAR_Guest_Handler {
         $existing_guest = $this->get_guest_by_session($session_id);
 
         // Get expiration date
-        $settings = get_option('wishcar_settings', array());
+        $settings = get_option('wishcart_settings', array());
         $expiry_days = isset($settings['wishlist']['guest_cookie_expiry']) ? intval($settings['wishlist']['guest_cookie_expiry']) : 30;
         $date_expires = date('Y-m-d H:i:s', strtotime('+' . $expiry_days . ' days'));
 
@@ -318,8 +318,8 @@ class WISHCAR_Guest_Handler {
         }
 
         // Sync wishlists
-        if (class_exists('WISHCAR_Wishlist_Handler')) {
-            $wishlist_handler = new WISHCAR_Wishlist_Handler();
+        if (class_exists('wishcart_Wishlist_Handler')) {
+            $wishlist_handler = new wishcart_Wishlist_Handler();
             $sync_result = $wishlist_handler->sync_guest_wishlist_to_user($session_id, $user_id);
 
             if (is_wp_error($sync_result)) {

@@ -14,9 +14,9 @@ const SharedWishlistView = ({ shareToken }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const apiUrl = window.WishCartShared?.apiUrl || '/wp-json/wishcart/v1/';
-    const siteUrl = window.WishCartShared?.siteUrl || '';
-    const isUserLoggedIn = window.WishCartShared?.isUserLoggedIn || false;
+    const apiUrl = window.wishcartShared?.apiUrl || '/wp-json/wishcart/v1/';
+    const siteUrl = window.wishcartShared?.siteUrl || '';
+    const isUserLoggedIn = window.wishcartShared?.isUserLoggedIn || false;
     const [linkCopied, setLinkCopied] = useState(false);
 
     useEffect(() => {

@@ -7,12 +7,12 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * Handles wishlist sharing across social media platforms
  *
  * @category WordPress
- * @package  WishCart
- * @author   WishCart Team <support@wishcart.chat>
+ * @package  wishcart
+ * @author   wishcart Team <support@wishcart.chat>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://wishcart.chat
  */
-class WISHCAR_Sharing_Handler {
+class wishcart_Sharing_Handler {
 
     private $wpdb;
     private $shares_table;
@@ -127,7 +127,7 @@ class WISHCAR_Sharing_Handler {
         $share_id = $this->wpdb->insert_id;
 
         // Update analytics
-        if (class_exists('WISHCAR_Analytics_Handler')) {
+        if (class_exists('wishcart_Analytics_Handler')) {
             // Track share for all products in wishlist
             $items_table = $this->wpdb->prefix . 'fc_wishlist_items';
             $items = $this->wpdb->get_results(
@@ -138,15 +138,15 @@ class WISHCAR_Sharing_Handler {
                 ARRAY_A
             );
 
-            $analytics = new WISHCAR_Analytics_Handler();
+            $analytics = new wishcart_Analytics_Handler();
             foreach ($items as $item) {
                 $analytics->track_event($item['product_id'], $item['variation_id'], 'share');
             }
         }
 
         // Log activity
-        if (class_exists('WISHCAR_Activity_Logger')) {
-            $logger = new WISHCAR_Activity_Logger();
+        if (class_exists('wishcart_Activity_Logger')) {
+            $logger = new wishcart_Activity_Logger();
             $logger->log($wishlist_id, 'shared', $share_id, 'share', wp_json_encode(array('share_type' => $share_type)));
         }
 
@@ -261,7 +261,7 @@ class WISHCAR_Sharing_Handler {
      */
     public function get_share_url($share_token, $share_type = 'link') {
         // Use the new shared wishlist page URL with query parameter
-        $base_url = WISHCAR_Shared_Wishlist_Page::get_share_url($share_token);
+        $base_url = wishcart_Shared_Wishlist_Page::get_share_url($share_token);
         
         switch ($share_type) {
             case 'facebook':

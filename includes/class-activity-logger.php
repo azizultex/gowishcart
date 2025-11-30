@@ -7,12 +7,12 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * Logs all wishlist activities for audit trails and user history
  *
  * @category WordPress
- * @package  WishCart
- * @author   WishCart Team <support@wishcart.chat>
+ * @package  wishcart
+ * @author   wishcart Team <support@wishcart.chat>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://wishcart.chat
  */
-class WISHCAR_Activity_Logger {
+class wishcart_Activity_Logger {
 
     private $wpdb;
     private $activities_table;
@@ -51,7 +51,7 @@ class WISHCAR_Activity_Logger {
 
         if (!$user_id) {
             // Get session ID for guests
-            $cookie_name = 'wishcar_session_id';
+            $cookie_name = 'wishcart_session_id';
             if (isset($_COOKIE[$cookie_name])) {
                 $session_id = sanitize_text_field(wp_unslash($_COOKIE[$cookie_name]));
             }
@@ -152,7 +152,7 @@ class WISHCAR_Activity_Logger {
 
             // Add product name if object_type is product
             if ($activity['object_type'] === 'product' && $activity['object_id']) {
-                $product = WISHCAR_FluentCart_Helper::get_product($activity['object_id']);
+                $product = wishcart_FluentCart_Helper::get_product($activity['object_id']);
                 $enriched['product_name'] = $product ? $product->get_name() : __('Unknown Product', 'wish-car');
             }
 
@@ -262,7 +262,7 @@ class WISHCAR_Activity_Logger {
 
             // Add object name based on type
             if ($activity['object_type'] === 'product' && $activity['object_id']) {
-                $product = WISHCAR_FluentCart_Helper::get_product($activity['object_id']);
+                $product = wishcart_FluentCart_Helper::get_product($activity['object_id']);
                 $enriched['object_name'] = $product ? $product->get_name() : __('Unknown Product', 'wish-car');
             }
 

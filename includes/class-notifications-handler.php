@@ -7,12 +7,12 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * Handles email notifications for wishlist events
  *
  * @category WordPress
- * @package  WishCart
- * @author   WishCart Team <support@wishcart.chat>
+ * @package  wishcart
+ * @author   wishcart Team <support@wishcart.chat>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://wishcart.chat
  */
-class WISHCAR_Notifications_Handler {
+class wishcart_Notifications_Handler {
 
     private $wpdb;
     private $notifications_table;
@@ -27,8 +27,8 @@ class WISHCAR_Notifications_Handler {
         $this->notifications_table = $wpdb->prefix . 'fc_wishlist_notifications';
         
         // Initialize FluentCRM integration if available
-        if (class_exists('WISHCAR_FluentCRM_Integration')) {
-            $this->fluentcrm = new WISHCAR_FluentCRM_Integration();
+        if (class_exists('wishcart_FluentCRM_Integration')) {
+            $this->fluentcrm = new wishcart_FluentCRM_Integration();
         }
     }
 
@@ -539,7 +539,7 @@ class WISHCAR_Notifications_Handler {
         );
 
         foreach ($items as $item) {
-            $product = WISHCAR_FluentCart_Helper::get_product($item['product_id']);
+            $product = wishcart_FluentCart_Helper::get_product($item['product_id']);
             
             if (!$product) {
                 continue;
@@ -592,8 +592,8 @@ class WISHCAR_Notifications_Handler {
                             do_action('wishcart_price_drop_detected', $price_data);
 
                             // Fire FluentCRM automation trigger
-                            if ( class_exists( 'WISHCAR_FluentCRM_Triggers' ) ) {
-                                WISHCAR_FluentCRM_Triggers::fire_trigger( 'wishcart_price_drop', $price_data );
+                            if ( class_exists( 'wishcart_FluentCRM_Triggers' ) ) {
+                                wishcart_FluentCRM_Triggers::fire_trigger( 'wishcart_price_drop', $price_data );
                             }
                         }
                     }
@@ -630,7 +630,7 @@ class WISHCAR_Notifications_Handler {
         );
 
         foreach ($items as $item) {
-            $product = WISHCAR_FluentCart_Helper::get_product($item['product_id']);
+            $product = wishcart_FluentCart_Helper::get_product($item['product_id']);
             
             if (!$product) {
                 continue;
@@ -685,8 +685,8 @@ class WISHCAR_Notifications_Handler {
                             do_action('wishcart_back_in_stock', $stock_data);
 
                             // Fire FluentCRM automation trigger
-                            if ( class_exists( 'WISHCAR_FluentCRM_Triggers' ) ) {
-                                WISHCAR_FluentCRM_Triggers::fire_trigger( 'wishcart_back_in_stock', $stock_data );
+                            if ( class_exists( 'wishcart_FluentCRM_Triggers' ) ) {
+                                wishcart_FluentCRM_Triggers::fire_trigger( 'wishcart_back_in_stock', $stock_data );
                             }
                         }
                     }

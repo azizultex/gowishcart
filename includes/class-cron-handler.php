@@ -7,12 +7,12 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * Manages WordPress cron jobs for background processing
  *
  * @category WordPress
- * @package  WishCart
- * @author   WishCart Team <support@wishcart.chat>
+ * @package  wishcart
+ * @author   wishcart Team <support@wishcart.chat>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://wishcart.chat
  */
-class WISHCAR_Cron_Handler {
+class wishcart_Cron_Handler {
 
     /**
      * Constructor
@@ -128,7 +128,7 @@ class WISHCAR_Cron_Handler {
     public function process_notifications() {
         $this->log_debug('Processing notification queue...');
         
-        $notifications = new WISHCAR_Notifications_Handler();
+        $notifications = new wishcart_Notifications_Handler();
         $result = $notifications->process_queue(10); // Process up to 10 notifications per run
         
         if ($result['sent'] > 0 || $result['failed'] > 0) {
@@ -148,7 +148,7 @@ class WISHCAR_Cron_Handler {
     public function check_price_drops() {
         $this->log_debug('Checking for price drops...');
         
-        $notifications = new WISHCAR_Notifications_Handler();
+        $notifications = new wishcart_Notifications_Handler();
         $result = $notifications->check_price_drops();
         
         if ($result['notifications_queued'] > 0) {
@@ -167,7 +167,7 @@ class WISHCAR_Cron_Handler {
     public function check_back_in_stock() {
         $this->log_debug('Checking for back-in-stock products...');
         
-        $notifications = new WISHCAR_Notifications_Handler();
+        $notifications = new wishcart_Notifications_Handler();
         $result = $notifications->check_back_in_stock();
         
         if ($result['notifications_queued'] > 0) {
@@ -186,10 +186,10 @@ class WISHCAR_Cron_Handler {
     public function cleanup_expired_guests() {
         $this->log_debug('Cleaning up expired guest sessions...');
         
-        $guest_handler = new WISHCAR_Guest_Handler();
+        $guest_handler = new wishcart_Guest_Handler();
         
         // Get settings
-        $settings = get_option('wishcar_settings', array());
+        $settings = get_option('wishcart_settings', array());
         $delete_data = isset($settings['wishlist']['delete_expired_guests']) ? (bool) $settings['wishlist']['delete_expired_guests'] : false;
         
         $result = $guest_handler->cleanup_expired_sessions($delete_data);
@@ -210,7 +210,7 @@ class WISHCAR_Cron_Handler {
     public function cleanup_expired_shares() {
         $this->log_debug('Cleaning up expired shares...');
         
-        $sharing = new WISHCAR_Sharing_Handler();
+        $sharing = new wishcart_Sharing_Handler();
         $result = $sharing->cleanup_expired_shares();
         
         if ($result['deleted'] > 0) {
@@ -229,7 +229,7 @@ class WISHCAR_Cron_Handler {
     public function recalculate_analytics() {
         $this->log_debug('Recalculating analytics...');
         
-        $analytics = new WISHCAR_Analytics_Handler();
+        $analytics = new wishcart_Analytics_Handler();
         $result = $analytics->recalculate_all_analytics();
         
         if ($result['updated'] > 0) {
@@ -249,25 +249,25 @@ class WISHCAR_Cron_Handler {
         $this->log_debug('Running weekly cleanup...');
         
         // Get settings
-        $settings = get_option('wishcar_settings', array());
+        $settings = get_option('wishcart_settings', array());
         $activity_retention_days = isset($settings['wishlist']['activity_retention_days']) ? intval($settings['wishlist']['activity_retention_days']) : 365;
         $notification_retention_days = isset($settings['wishlist']['notification_retention_days']) ? intval($settings['wishlist']['notification_retention_days']) : 90;
         $analytics_retention_days = isset($settings['wishlist']['analytics_retention_days']) ? intval($settings['wishlist']['analytics_retention_days']) : 365;
         
         // Cleanup activities (anonymize instead of delete for audit)
-        $activity_logger = new WISHCAR_Activity_Logger();
+        $activity_logger = new wishcart_Activity_Logger();
         $activity_result = $activity_logger->cleanup_old_activities($activity_retention_days, true);
         
         // Cleanup notifications
-        $notifications = new WISHCAR_Notifications_Handler();
+        $notifications = new wishcart_Notifications_Handler();
         $notification_result = $notifications->cleanup_old_notifications($notification_retention_days);
         
         // Cleanup analytics
-        $analytics = new WISHCAR_Analytics_Handler();
+        $analytics = new wishcart_Analytics_Handler();
         $analytics_result = $analytics->cleanup_old_analytics($analytics_retention_days);
         
         // Anonymize old guest data
-        $guest_handler = new WISHCAR_Guest_Handler();
+        $guest_handler = new wishcart_Guest_Handler();
         $guest_result = $guest_handler->anonymize_old_guests(90);
         
         $this->log_debug(sprintf(
@@ -353,8 +353,8 @@ class WISHCAR_Cron_Handler {
     public function process_time_based_campaigns() {
         $this->log_debug('Processing time-based campaigns...');
         
-        if (class_exists('WISHCAR_CRM_Campaign_Handler')) {
-            $campaign_handler = new WISHCAR_CRM_Campaign_Handler();
+        if (class_exists('wishcart_CRM_Campaign_Handler')) {
+            $campaign_handler = new wishcart_CRM_Campaign_Handler();
             $campaign_handler->process_time_based_campaigns();
             
             $this->log_debug('Time-based campaigns processed');
@@ -371,8 +371,8 @@ class WISHCAR_Cron_Handler {
      * @return void
      */
     public function send_scheduled_email($contact_id, $subject, $body, $event_data) {
-        if (class_exists('WISHCAR_FluentCRM_Integration')) {
-            $fluentcrm = new WISHCAR_FluentCRM_Integration();
+        if (class_exists('wishcart_FluentCRM_Integration')) {
+            $fluentcrm = new wishcart_FluentCRM_Integration();
             $options = array();
             if (isset($event_data['campaign_id'])) {
                 $options['campaign_id'] = $event_data['campaign_id'];
@@ -389,7 +389,7 @@ class WISHCAR_Cron_Handler {
      */
     private function log_debug($message) {
         if (defined('WP_DEBUG') && WP_DEBUG) {
-            error_log('[WishCart Cron] ' . $message);
+            error_log('[wishcart Cron] ' . $message);
         }
     }
 }

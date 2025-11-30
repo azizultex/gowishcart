@@ -1,4 +1,4 @@
-# WishCart Plugin Activation Instructions
+# wishcart Plugin Activation Instructions
 
 ## Quick Start Guide
 
@@ -13,7 +13,7 @@ This will compile all React components into the `build/` directory.
 
 ### Step 2: Activate Plugin
 1. Go to WordPress Admin → Plugins
-2. Find "WishCart - Wishlist for FluentCart"
+2. Find "wishcart - Wishlist for FluentCart"
 3. Click "Activate"
 
 **What happens on activation:**
@@ -90,12 +90,12 @@ add_action('init', function() {
 1. Open browser DevTools (F12)
 2. Look for React errors
 3. Ensure `build/index.js` is loaded
-4. Check `WishCartWishlist` object exists in console
+4. Check `wishcartWishlist` object exists in console
 
 ### Issue: Table doesn't exist
 **Solution**: Deactivate and reactivate plugin
-1. Deactivate WishCart
-2. Reactivate WishCart
+1. Deactivate wishcart
+2. Reactivate wishcart
 3. Check database for tables
 
 ---
@@ -231,7 +231,7 @@ Should include: `wishcart_share_token`
 View page source and look for:
 ```html
 <script src=".../wishcart/build/index.js"></script>
-<script>var WishCartWishlist = {...};</script>
+<script>var wishcartWishlist = {...};</script>
 ```
 
 ### Check React Mount
@@ -244,7 +244,7 @@ Should exist on share pages.
 
 ### Check Localized Data
 ```javascript
-console.log(WishCartShared);
+console.log(wishcartShared);
 ```
 
 Should show:
@@ -398,9 +398,9 @@ define('WP_DEBUG_DISPLAY', false);
 Check logs: `wp-content/debug.log`
 
 ### Common Log Messages
-- `WishCart: Share created for wishlist ID {id}`
-- `WishCart: Share view tracked: {token}`
-- `WishCart: Activity logged: {type}`
+- `wishcart: Share created for wishlist ID {id}`
+- `wishcart: Share view tracked: {token}`
+- `wishcart: Activity logged: {type}`
 
 ### Get Support
 - **Documentation**: SHARE-FEATURE-IMPLEMENTATION.md

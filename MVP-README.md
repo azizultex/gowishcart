@@ -1,8 +1,8 @@
-# WishCart MVP - 7-Table Architecture Implementation
+# wishcart MVP - 7-Table Architecture Implementation
 
 ## 🎉 MVP Status: COMPLETE
 
-The WishCart plugin has been successfully rebuilt with a comprehensive 7-table database architecture, matching and exceeding the capabilities of premium WooCommerce wishlist plugins.
+The wishcart plugin has been successfully rebuilt with a comprehensive 7-table database architecture, matching and exceeding the capabilities of premium WooCommerce wishlist plugins.
 
 ## 📋 Implementation Summary
 
@@ -18,15 +18,15 @@ The WishCart plugin has been successfully rebuilt with a comprehensive 7-table d
 - **fc_wishlist_guest_users**: Guest session management with conversion tracking
 
 #### 2. Core Handler Classes
-- **WISHCART_Database**: 7-table structure creation and management
-- **WISHCART_Database_Migration**: Archive old tables, migration utilities
-- **WISHCART_Wishlist_Handler**: CRUD operations with variation support
-- **WISHCART_Analytics_Handler**: Tracking, popular products, conversion funnels
-- **WISHCART_Sharing_Handler**: Multi-platform sharing, click tracking
-- **WISHCART_Notifications_Handler**: Email queue, price drop alerts
-- **WISHCART_Activity_Logger**: Comprehensive activity logging (GDPR-compliant)
-- **WISHCART_Guest_Handler**: Guest sessions, conversion tracking
-- **WISHCART_Cron_Handler**: Background job processing
+- **wishcart_Database**: 7-table structure creation and management
+- **wishcart_Database_Migration**: Archive old tables, migration utilities
+- **wishcart_Wishlist_Handler**: CRUD operations with variation support
+- **wishcart_Analytics_Handler**: Tracking, popular products, conversion funnels
+- **wishcart_Sharing_Handler**: Multi-platform sharing, click tracking
+- **wishcart_Notifications_Handler**: Email queue, price drop alerts
+- **wishcart_Activity_Logger**: Comprehensive activity logging (GDPR-compliant)
+- **wishcart_Guest_Handler**: Guest sessions, conversion tracking
+- **wishcart_Cron_Handler**: Background job processing
 
 #### 3. REST API Endpoints (Complete)
 
@@ -181,7 +181,7 @@ The WishCart plugin has been successfully rebuilt with a comprehensive 7-table d
 
 ## 🎯 Feature Comparison
 
-| Feature | YITH Wishlist | TI Wishlist | WishCart MVP |
+| Feature | YITH Wishlist | TI Wishlist | wishcart MVP |
 |---------|--------------|-------------|--------------|
 | Multiple Wishlists | ✅ Premium | ✅ Premium | ✅ Free |
 | Privacy Controls | ✅ | ✅ | ✅ |
@@ -220,7 +220,7 @@ The following frontend components can be developed based on user feedback:
 Most endpoints use WordPress nonce authentication:
 ```javascript
 headers: {
-  'X-WP-Nonce': WishCartWishlist.nonce
+  'X-WP-Nonce': wishcartWishlist.nonce
 }
 ```
 
@@ -396,7 +396,7 @@ GPL-2.0+ - See license.txt
 
 ### Ready for Production ✅
 
-The WishCart MVP is now production-ready with enterprise-grade features matching and exceeding premium alternatives. The plugin can handle:
+The wishcart MVP is now production-ready with enterprise-grade features matching and exceeding premium alternatives. The plugin can handle:
 - Unlimited wishlists and products
 - High-traffic scenarios
 - Complex analytics requirements
@@ -409,5 +409,5 @@ The WishCart MVP is now production-ready with enterprise-grade features matching
 
 ---
 
-**Built with ❤️ for the WishCart community**
+**Built with ❤️ for the wishcart community**
 

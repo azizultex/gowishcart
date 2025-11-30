@@ -2,17 +2,17 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 /**
- * WishCart Price Drop Trigger
+ * wishcart Price Drop Trigger
  *
  * Triggers when a product in a wishlist has a price drop
  *
  * @category WordPress
- * @package  WishCart
- * @author   WishCart Team <support@wishcart.chat>
+ * @package  wishcart
+ * @author   wishcart Team <support@wishcart.chat>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://wishcart.chat
  */
-class WISHCAR_Price_Drop_Trigger extends \FluentCrm\App\Services\Funnel\BaseTrigger {
+class wishcart_Price_Drop_Trigger extends \FluentCrm\App\Services\Funnel\BaseTrigger {
 
     /**
      * Constructor
@@ -31,7 +31,7 @@ class WISHCAR_Price_Drop_Trigger extends \FluentCrm\App\Services\Funnel\BaseTrig
      */
     public function getTrigger() {
         return array(
-            'category'      => __( 'WishCart', 'wish-car' ),
+            'category'      => __( 'wishcart', 'wish-car' ),
             'label'         => __( 'Price Drop on Wishlist Item', 'wish-car' ) . ' (' . __( 'Upcoming', 'wish-car' ) . ')',
             'description'  => __( 'This funnel will be initiated when a product in a wishlist has a price drop', 'wish-car' ),
             'icon'          => 'fc-icon-heart',

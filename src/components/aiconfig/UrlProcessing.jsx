@@ -76,7 +76,7 @@ const UrlProcessing = ({ settings, updateSettings }) => {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-WP-Nonce': WishCartData.nonce
+                        'X-WP-Nonce': wishcartData.nonce
                     },
                     body: JSON.stringify({ urls: urlsToCheck })
                 }).catch(() => null);
@@ -92,7 +92,7 @@ const UrlProcessing = ({ settings, updateSettings }) => {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
-                                'X-WP-Nonce': WishCartData.nonce
+                                'X-WP-Nonce': wishcartData.nonce
                             },
                             body: JSON.stringify({ parent_url: url })
                         }).catch(() => null);
@@ -229,7 +229,7 @@ const UrlProcessing = ({ settings, updateSettings }) => {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-WP-Nonce': WishCartData.nonce
+                        'X-WP-Nonce': wishcartData.nonce
                     },
                     body: JSON.stringify(newSettings)
                 }).catch(error => {
@@ -269,7 +269,7 @@ const UrlProcessing = ({ settings, updateSettings }) => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-WP-Nonce': WishCartData.nonce
+                    'X-WP-Nonce': wishcartData.nonce
                 },
                 body: JSON.stringify({ parent_url: url })
             });
@@ -336,7 +336,7 @@ const UrlProcessing = ({ settings, updateSettings }) => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-WP-Nonce': WishCartData.nonce,
+                    'X-WP-Nonce': wishcartData.nonce,
                 },
                 body: JSON.stringify({
                     url: urlToDelete,
@@ -398,7 +398,7 @@ const UrlProcessing = ({ settings, updateSettings }) => {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
-                                'X-WP-Nonce': WishCartData.nonce
+                                'X-WP-Nonce': wishcartData.nonce
                             },
                             body: JSON.stringify({
                                 ...settings,
@@ -493,7 +493,7 @@ const UrlProcessing = ({ settings, updateSettings }) => {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-WP-Nonce': WishCartData.nonce
+                        'X-WP-Nonce': wishcartData.nonce
                     },
                     body: JSON.stringify(updatedSettings)
                 });
@@ -530,7 +530,7 @@ const UrlProcessing = ({ settings, updateSettings }) => {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-WP-Nonce': WishCartData.nonce
+                        'X-WP-Nonce': wishcartData.nonce
                     },
                     body: JSON.stringify({
                         website_url: url.toString(),
@@ -653,7 +653,7 @@ const UrlProcessing = ({ settings, updateSettings }) => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-WP-Nonce': WishCartData.nonce
+                    'X-WP-Nonce': wishcartData.nonce
                 },
                 body: JSON.stringify({
                     website_url: url.toString(),
@@ -764,7 +764,7 @@ const UrlProcessing = ({ settings, updateSettings }) => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-WP-Nonce': WishCartData.nonce,
+                    'X-WP-Nonce': wishcartData.nonce,
                 },
                 body: JSON.stringify({
                     parent_url: selectedUrlData.url,
@@ -804,7 +804,7 @@ const UrlProcessing = ({ settings, updateSettings }) => {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-WP-Nonce': WishCartData.nonce
+                        'X-WP-Nonce': wishcartData.nonce
                     },
                     body: JSON.stringify({
                         ...settings,
@@ -850,7 +850,7 @@ const UrlProcessing = ({ settings, updateSettings }) => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-WP-Nonce': WishCartData.nonce,
+                    'X-WP-Nonce': wishcartData.nonce,
                 },
                 body: JSON.stringify({
                     parent_url: selectedUrlData.url,
@@ -890,7 +890,7 @@ const UrlProcessing = ({ settings, updateSettings }) => {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-WP-Nonce': WishCartData.nonce
+                        'X-WP-Nonce': wishcartData.nonce
                     },
                     body: JSON.stringify({
                         ...settings,

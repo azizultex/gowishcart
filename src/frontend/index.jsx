@@ -8,11 +8,11 @@ import '../styles/WishlistPage.scss';
 import '../styles/SharedWishlistView.scss';
 
 const getSetting = (key, fallback) => {
-    if (!window.WishCartWishlist || !(key in window.WishCartWishlist)) {
+    if (!window.wishcartWishlist || !(key in window.wishcartWishlist)) {
         return fallback;
     }
 
-    return window.WishCartWishlist[key];
+    return window.wishcartWishlist[key];
 };
 
 const normalizeBoolean = (value, fallback = true) => {
@@ -133,7 +133,7 @@ const injectFluentCartContainer = () => {
         return null;
     }
 
-    const position = normalizePosition(null, window.WishCartWishlist?.buttonPosition);
+    const position = normalizePosition(null, window.wishcartWishlist?.buttonPosition);
 
     const container = document.createElement('div');
     container.className = `wishcart-wishlist-button-container wishcart-position-${position}`;
@@ -199,7 +199,7 @@ const injectWishlistIntoProductCards = () => {
             return;
         }
 
-        const position = normalizePosition(window.WishCartWishlist?.buttonPosition);
+        const position = normalizePosition(window.wishcartWishlist?.buttonPosition);
         const container = document.createElement('div');
         container.className = `wishcart-wishlist-button-container wishcart-position-${position} wishcart-card-container`;
         container.setAttribute('data-product-id', String(productId));
@@ -247,7 +247,7 @@ const injectWishlistIntoArchiveEntries = () => {
             return;
         }
 
-        const position = normalizePosition(window.WishCartWishlist?.buttonPosition);
+        const position = normalizePosition(window.wishcartWishlist?.buttonPosition);
         const container = document.createElement('div');
         container.className = `wishcart-wishlist-button-container wishcart-position-${position} wishcart-archive-container`;
         container.setAttribute('data-product-id', String(productId));
@@ -285,7 +285,7 @@ const injectWishlistNearActionButtons = () => {
             return;
         }
 
-        const position = normalizePosition(window.WishCartWishlist?.buttonPosition);
+        const position = normalizePosition(window.wishcartWishlist?.buttonPosition);
         const wrapper = button.closest('.fc-product-buttons-wrap') || button.parentElement;
 
         if (!wrapper) {
@@ -314,7 +314,7 @@ const injectWishlistNearActionButtons = () => {
 
 // Initialize session ID cookie management
 const initializeSessionId = () => {
-    if (window.WishCartWishlist?.isLoggedIn) {
+    if (window.wishcartWishlist?.isLoggedIn) {
         return; // Logged in users don't need session ID
     }
 
@@ -324,23 +324,23 @@ const initializeSessionId = () => {
     
     for (let cookie of cookies) {
         const [name] = cookie.trim().split('=');
-        if (name === 'wishcar_session_id') {
+        if (name === 'wishcart_session_id') {
             hasSessionId = true;
             break;
         }
     }
 
     // Create session ID if it doesn't exist
-    if (!hasSessionId && window.WishCartWishlist) {
+    if (!hasSessionId && window.wishcartWishlist) {
         const sessionId = 'wc_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
         const expiryDays = 30;
         const expiryDate = new Date();
         expiryDate.setTime(expiryDate.getTime() + (expiryDays * 24 * 60 * 60 * 1000));
-        document.cookie = `wishcar_session_id=${sessionId};expires=${expiryDate.toUTCString()};path=/;SameSite=Lax`;
+        document.cookie = `wishcart_session_id=${sessionId};expires=${expiryDate.toUTCString()};path=/;SameSite=Lax`;
         
         // Update global object
-        if (window.WishCartWishlist) {
-            window.WishCartWishlist.sessionId = sessionId;
+        if (window.wishcartWishlist) {
+            window.wishcartWishlist.sessionId = sessionId;
         }
     }
 };
@@ -387,7 +387,7 @@ const mountWishlistButtons = () => {
     containers.forEach((container) => {
         const position = normalizePosition(
             container.getAttribute('data-position'),
-            window.WishCartWishlist?.buttonPosition
+            window.wishcartWishlist?.buttonPosition
         );
         container.setAttribute('data-position', position);
         mountWishlistButtonAtContainer(container);
@@ -409,7 +409,7 @@ const mountSharedWishlistView = () => {
     const container = document.getElementById('shared-wishlist-app');
     
     if (container) {
-        const shareToken = container.getAttribute('data-share-token') || window.WishCartShared?.shareToken;
+        const shareToken = container.getAttribute('data-share-token') || window.wishcartShared?.shareToken;
         if (shareToken) {
             const root = createRoot(container);
             root.render(<SharedWishlistView shareToken={shareToken} />);
@@ -439,19 +439,19 @@ const wishlistStatusCache = new Map();
 
 // Get session ID helper
 const getSessionIdForTracking = () => {
-    if (window.WishCartWishlist?.isLoggedIn) {
+    if (window.wishcartWishlist?.isLoggedIn) {
         return null;
     }
     
     const cookies = document.cookie.split(';');
     for (let cookie of cookies) {
         const [name, value] = cookie.trim().split('=');
-        if (name === 'wishcar_session_id') {
+        if (name === 'wishcart_session_id') {
             return value;
         }
     }
     
-    return window.WishCartWishlist?.sessionId || null;
+    return window.wishcartWishlist?.sessionId || null;
 };
 
 // Check if product is in wishlist
@@ -461,17 +461,17 @@ const checkProductInWishlist = async (productId) => {
         return wishlistStatusCache.get(productId);
     }
     
-    if (!productId || !window.WishCartWishlist) {
+    if (!productId || !window.wishcartWishlist) {
         return false;
     }
     
     try {
         const sessionId = getSessionIdForTracking();
-        const url = `${window.WishCartWishlist.apiUrl}wishlist/check/${productId}${sessionId ? `?session_id=${sessionId}` : ''}`;
+        const url = `${window.wishcartWishlist.apiUrl}wishlist/check/${productId}${sessionId ? `?session_id=${sessionId}` : ''}`;
         
         const response = await fetch(url, {
             headers: {
-                'X-WP-Nonce': window.WishCartWishlist.nonce,
+                'X-WP-Nonce': window.wishcartWishlist.nonce,
             },
         });
         
@@ -541,7 +541,7 @@ const extractProductData = (element) => {
 
 // Track add to cart event if product is in wishlist
 const trackAddToCartIfInWishlist = async (productId, variationId = 0) => {
-    if (!productId || !window.WishCartWishlist) {
+    if (!productId || !window.wishcartWishlist) {
         return;
     }
     
@@ -555,7 +555,7 @@ const trackAddToCartIfInWishlist = async (productId, variationId = 0) => {
     // Track the event
     try {
         const sessionId = getSessionIdForTracking();
-        const trackUrl = `${window.WishCartWishlist.apiUrl}wishlist/track-cart`;
+        const trackUrl = `${window.wishcartWishlist.apiUrl}wishlist/track-cart`;
         const trackBody = {
             product_id: productId,
             variation_id: variationId || 0,
@@ -566,7 +566,7 @@ const trackAddToCartIfInWishlist = async (productId, variationId = 0) => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-WP-Nonce': window.WishCartWishlist.nonce,
+                'X-WP-Nonce': window.wishcartWishlist.nonce,
             },
             body: JSON.stringify(trackBody),
         });

@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 
 /**
  * Custom hook for wishlist operations
- * Integrates with WishCart 7-table backend
+ * Integrates with wishcart 7-table backend
  */
 export const useWishlist = (wishlistId = null) => {
     const [wishlists, setWishlists] = useState([]);
@@ -11,8 +11,8 @@ export const useWishlist = (wishlistId = null) => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const apiUrl = window.WishCartWishlist?.apiUrl || '/wp-json/wishcart/v1/';
-    const nonce = window.WishCartWishlist?.nonce;
+    const apiUrl = window.wishcartWishlist?.apiUrl || '/wp-json/wishcart/v1/';
+    const nonce = window.wishcartWishlist?.nonce;
 
     // Fetch all user's wishlists
     const fetchWishlists = useCallback(async () => {

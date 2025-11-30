@@ -45,7 +45,7 @@ const SettingsApp = () => {
         try {
             const response = await fetch('/wp-json/wishcart/v1/settings', {
                 headers: {
-                    'X-WP-Nonce': WishCartSettings.nonce
+                    'X-WP-Nonce': wishcartSettings.nonce
                 }
             });
             const data = await response.json();
@@ -98,7 +98,7 @@ const SettingsApp = () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-WP-Nonce': WishCartSettings.nonce
+                    'X-WP-Nonce': wishcartSettings.nonce
                 },
                 body: JSON.stringify(settings)
             });

@@ -17,7 +17,7 @@ const WishlistButton = ({ productId, className, customStyles, position = 'bottom
 
     // Get session ID from cookie or create one
     const getSessionId = () => {
-        if (window.WishCartWishlist?.isLoggedIn) {
+        if (window.wishcartWishlist?.isLoggedIn) {
             return null; // Logged in users don't need session ID
         }
         
@@ -25,13 +25,13 @@ const WishlistButton = ({ productId, className, customStyles, position = 'bottom
         const cookies = document.cookie.split(';');
         for (let cookie of cookies) {
             const [name, value] = cookie.trim().split('=');
-            if (name === 'wishcar_session_id') {
+            if (name === 'wishcart_session_id') {
                 return value;
             }
         }
 
-        if (window.WishCartWishlist?.sessionId) {
-            return window.WishCartWishlist.sessionId;
+        if (window.wishcartWishlist?.sessionId) {
+            return window.wishcartWishlist.sessionId;
         }
 
         // Create new session ID if not exists
@@ -39,9 +39,9 @@ const WishlistButton = ({ productId, className, customStyles, position = 'bottom
         const expiryDays = 30;
         const expiryDate = new Date();
         expiryDate.setTime(expiryDate.getTime() + (expiryDays * 24 * 60 * 60 * 1000));
-        document.cookie = `wishcar_session_id=${sessionId};expires=${expiryDate.toUTCString()};path=/;SameSite=Lax`;
-        if (window.WishCartWishlist) {
-            window.WishCartWishlist.sessionId = sessionId;
+        document.cookie = `wishcart_session_id=${sessionId};expires=${expiryDate.toUTCString()};path=/;SameSite=Lax`;
+        if (window.wishcartWishlist) {
+            window.wishcartWishlist.sessionId = sessionId;
         }
 
         return sessionId;
@@ -49,17 +49,17 @@ const WishlistButton = ({ productId, className, customStyles, position = 'bottom
 
     // Check if guest has email via API
     const checkGuestEmail = async () => {
-        if (window.WishCartWishlist?.isLoggedIn) {
+        if (window.wishcartWishlist?.isLoggedIn) {
             return true; // Logged in users don't need email check
         }
 
         try {
             const sessionId = getSessionId();
-            const url = `${window.WishCartWishlist.apiUrl}guest/check-email?session_id=${sessionId}`;
+            const url = `${window.wishcartWishlist.apiUrl}guest/check-email?session_id=${sessionId}`;
             
             const response = await fetch(url, {
                 headers: {
-                    'X-WP-Nonce': window.WishCartWishlist.nonce,
+                    'X-WP-Nonce': window.wishcartWishlist.nonce,
                 },
             });
 
@@ -80,18 +80,18 @@ const WishlistButton = ({ productId, className, customStyles, position = 'bottom
     // Check if product is in wishlist
     useEffect(() => {
         const checkWishlist = async () => {
-            if (!productId || !window.WishCartWishlist) {
+            if (!productId || !window.wishcartWishlist) {
                 setIsLoading(false);
                 return;
             }
 
             try {
                 const sessionId = getSessionId();
-                const url = `${window.WishCartWishlist.apiUrl}wishlist/check/${productId}${sessionId ? `?session_id=${sessionId}` : ''}`;
+                const url = `${window.wishcartWishlist.apiUrl}wishlist/check/${productId}${sessionId ? `?session_id=${sessionId}` : ''}`;
                 
                 const response = await fetch(url, {
                     headers: {
-                        'X-WP-Nonce': window.WishCartWishlist.nonce,
+                        'X-WP-Nonce': window.wishcartWishlist.nonce,
                     },
                 });
 
@@ -112,7 +112,7 @@ const WishlistButton = ({ productId, className, customStyles, position = 'bottom
     // Add product directly to default wishlist (when multiple wishlists disabled)
     const addToDefaultWishlist = async (skipEmailCheck = false) => {
         // Check if guest has email (unless we're executing after email was provided)
-        if (!skipEmailCheck && !window.WishCartWishlist?.isLoggedIn) {
+        if (!skipEmailCheck && !window.wishcartWishlist?.isLoggedIn) {
             const hasEmail = await checkGuestEmail();
             if (!hasEmail) {
                 // Store the pending action and show email modal
@@ -125,13 +125,13 @@ const WishlistButton = ({ productId, className, customStyles, position = 'bottom
         setIsAdding(true);
         try {
             const sessionId = getSessionId();
-            const url = `${window.WishCartWishlist.apiUrl}wishlist/add`;
+            const url = `${window.wishcartWishlist.apiUrl}wishlist/add`;
             
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-WP-Nonce': window.WishCartWishlist.nonce,
+                    'X-WP-Nonce': window.wishcartWishlist.nonce,
                 },
                 body: JSON.stringify({
                     product_id: productId,
@@ -159,7 +159,7 @@ const WishlistButton = ({ productId, className, customStyles, position = 'bottom
 
     // Toggle wishlist
     const toggleWishlist = async () => {
-        if (isAdding || !productId || !window.WishCartWishlist) {
+        if (isAdding || !productId || !window.wishcartWishlist) {
             return;
         }
 
@@ -168,13 +168,13 @@ const WishlistButton = ({ productId, className, customStyles, position = 'bottom
             setIsAdding(true);
             try {
                 const sessionId = getSessionId();
-                const url = `${window.WishCartWishlist.apiUrl}wishlist/remove`;
+                const url = `${window.wishcartWishlist.apiUrl}wishlist/remove`;
                 
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-WP-Nonce': window.WishCartWishlist.nonce,
+                        'X-WP-Nonce': window.wishcartWishlist.nonce,
                     },
                     body: JSON.stringify({
                         product_id: productId,
@@ -195,7 +195,7 @@ const WishlistButton = ({ productId, className, customStyles, position = 'bottom
             }
         } else {
             // For guests, check if they have email first
-            if (!window.WishCartWishlist?.isLoggedIn) {
+            if (!window.wishcartWishlist?.isLoggedIn) {
                 const hasEmail = await checkGuestEmail();
                 if (!hasEmail) {
                     // Store the pending action and show email modal
@@ -206,7 +206,7 @@ const WishlistButton = ({ productId, className, customStyles, position = 'bottom
             }
 
             // Check if multiple wishlists are enabled
-            const enableMultipleWishlists = window.WishCartWishlist?.enableMultipleWishlists || false;
+            const enableMultipleWishlists = window.wishcartWishlist?.enableMultipleWishlists || false;
             
             if (enableMultipleWishlists) {
                 // If multiple wishlists enabled, open modal to select wishlist
@@ -228,7 +228,7 @@ const WishlistButton = ({ productId, className, customStyles, position = 'bottom
             await addToDefaultWishlist(true); // Skip email check since we just got it
         } else if (pendingAddAction === 'toggle') {
             // Re-run the toggle logic but skip email check
-            const enableMultipleWishlists = window.WishCartWishlist?.enableMultipleWishlists || false;
+            const enableMultipleWishlists = window.wishcartWishlist?.enableMultipleWishlists || false;
             
             if (enableMultipleWishlists) {
                 setIsModalOpen(true);
@@ -258,7 +258,7 @@ const WishlistButton = ({ productId, className, customStyles, position = 'bottom
     };
 
     // Get customization settings
-    const customization = window.WishCartWishlist?.buttonCustomization || {};
+    const customization = window.wishcartWishlist?.buttonCustomization || {};
     const colors = customization.colors || {};
     const iconConfig = customization.icon || {};
     const labels = customization.labels || {};

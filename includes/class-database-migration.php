@@ -2,17 +2,17 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 /**
- * Database Migration Handler for WishCart Plugin
+ * Database Migration Handler for wishcart Plugin
  *
  * Handles migration from old 2-table structure to new 7-table structure
  *
  * @category WordPress
- * @package  WishCart
- * @author   WishCart Team <support@wishcart.chat>
+ * @package  wishcart
+ * @author   wishcart Team <support@wishcart.chat>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://wishcart.chat
  */
-class WISHCAR_Database_Migration {
+class wishcart_Database_Migration {
 
     private $wpdb;
     private $table_prefix;
@@ -47,8 +47,8 @@ class WISHCAR_Database_Migration {
 
         // Archive old tables
         $old_tables = array(
-            'wishcar_wishlists',
-            'wishcar_wishlist',
+            'wishcart_wishlists',
+            'wishcart_wishlist',
         );
 
         $timestamp = date('Y_m_d_His');
@@ -87,7 +87,7 @@ class WISHCAR_Database_Migration {
         // Create new 7-table structure
         if ($results['success']) {
             try {
-                $database = new WISHCAR_Database();
+                $database = new wishcart_Database();
                 $this->log_debug('New 7-table structure created successfully');
             } catch (Exception $e) {
                 $results['errors'][] = 'Failed to create new tables: ' . $e->getMessage();
@@ -171,8 +171,8 @@ class WISHCAR_Database_Migration {
 
         // Restore old tables
         $old_tables = array(
-            'wishcar_wishlists',
-            'wishcar_wishlist',
+            'wishcart_wishlists',
+            'wishcart_wishlist',
         );
 
         foreach ($old_tables as $old_table) {
@@ -328,7 +328,7 @@ class WISHCAR_Database_Migration {
      */
     private function log_debug($message) {
         if (defined('WP_DEBUG') && WP_DEBUG) {
-            error_log('[WishCart Migration] ' . $message);
+            error_log('[wishcart Migration] ' . $message);
         }
     }
 }

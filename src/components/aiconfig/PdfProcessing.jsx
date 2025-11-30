@@ -27,15 +27,15 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
 
     // Helper function to get max upload size
     const getMaxUploadSize = () => {
-        if (window.WishCartSettings && window.WishCartSettings.maxUploadSize) {
-            return (window.WishCartSettings.maxUploadSize / (1024 * 1024)).toFixed(1) + ' MB';
+        if (window.wishcartSettings && window.wishcartSettings.maxUploadSize) {
+            return (window.wishcartSettings.maxUploadSize / (1024 * 1024)).toFixed(1) + ' MB';
         }
         return '2 MB'; // Default fallback
     };
 
     // Helper function to validate file size
     const validateFileSize = (file) => {
-        const maxSize = window.WishCartSettings?.maxUploadSize || 2 * 1024 * 1024; // Default 2MB
+        const maxSize = window.wishcartSettings?.maxUploadSize || 2 * 1024 * 1024; // Default 2MB
         if (file.size > maxSize) {
             setPdfError(sprintf(
                 __('File size exceeds the maximum allowed size of %s. This is limited by your server configuration.', 'wish-car'),
@@ -112,7 +112,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
                 const settingsResponse = await fetch('/wp-json/wishcart/v1/settings', {
                     method: 'GET',
                     headers: {
-                        'X-WP-Nonce': window.WishCartData.nonce
+                        'X-WP-Nonce': window.wishcartData.nonce
                     },
                 });
 
@@ -165,7 +165,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-WP-Nonce': window.WishCartData.nonce
+                        'X-WP-Nonce': window.wishcartData.nonce
                     },
                     body: JSON.stringify(currentSettings)
                 });
@@ -194,7 +194,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
             const response = await fetch('/wp-json/wishcart/v1/process-pdf', {
                 method: 'POST',
                 headers: {
-                    'X-WP-Nonce': window.WishCartData.nonce
+                    'X-WP-Nonce': window.wishcartData.nonce
                 },
                 body: formData
             });
@@ -239,7 +239,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-WP-Nonce': window.WishCartData.nonce
+                        'X-WP-Nonce': window.wishcartData.nonce
                     },
                     body: JSON.stringify(currentSettings)
                 }).catch(error => {
@@ -275,7 +275,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
                 const settingsResponse = await fetch('/wp-json/wishcart/v1/settings', {
                     method: 'GET',
                     headers: {
-                        'X-WP-Nonce': window.WishCartData.nonce
+                        'X-WP-Nonce': window.wishcartData.nonce
                     },
                 });
 
@@ -294,7 +294,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
-                                'X-WP-Nonce': window.WishCartData.nonce
+                                'X-WP-Nonce': window.wishcartData.nonce
                             },
                             body: JSON.stringify(freshSettings)
                         }).catch(error => {
@@ -317,7 +317,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
             try {
                 const response = await fetch(`/wp-json/wishcart/v1/pdf-job-status?job_id=${queueId}`, {
                     headers: {
-                        'X-WP-Nonce': window.WishCartData.nonce
+                        'X-WP-Nonce': window.wishcartData.nonce
                     }
                 });
 
@@ -358,7 +358,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
-                                'X-WP-Nonce': window.WishCartData.nonce
+                                'X-WP-Nonce': window.wishcartData.nonce
                             },
                             body: JSON.stringify(currentSettings)
                         }).catch(error => {
@@ -399,7 +399,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
         if (!pdf.job_id) return pdf;
         try {
             const response = await fetch(`/wp-json/wishcart/v1/pdf-job-status?job_id=${pdf.job_id}`, {
-                headers: { 'X-WP-Nonce': window.WishCartData.nonce }
+                headers: { 'X-WP-Nonce': window.wishcartData.nonce }
             });
             if (!response.ok) return pdf;
             const data = await response.json();
@@ -465,7 +465,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-WP-Nonce': window.WishCartData.nonce
+                        'X-WP-Nonce': window.wishcartData.nonce
                     },
                     body: JSON.stringify({
                         job_id: pdfToRemove.job_id
@@ -499,7 +499,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
                         const response = await fetch('/wp-json/wishcart/v1/settings', {
                             method: 'GET',
                             headers: {
-                                'X-WP-Nonce': window.WishCartData.nonce
+                                'X-WP-Nonce': window.wishcartData.nonce
                             }
                         });
 
@@ -538,7 +538,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-WP-Nonce': window.WishCartData.nonce
+                            'X-WP-Nonce': window.wishcartData.nonce
                         },
                         body: JSON.stringify(freshSettings)
                     }).catch(error => {
@@ -565,7 +565,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
                     const response = await fetch('/wp-json/wishcart/v1/settings', {
                         method: 'GET',
                         headers: {
-                            'X-WP-Nonce': window.WishCartData.nonce
+                            'X-WP-Nonce': window.wishcartData.nonce
                         }
                     });
 
@@ -608,7 +608,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-WP-Nonce': window.WishCartData.nonce
+                        'X-WP-Nonce': window.wishcartData.nonce
                     },
                     body: JSON.stringify(freshSettings)
                 }).catch(error => {
@@ -637,7 +637,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
     const fetchPdfQueueList = useCallback(async () => {
         try {
             const response = await fetch('/wp-json/wishcart/v1/pdf-queue-list', {
-                headers: { 'X-WP-Nonce': window.WishCartData.nonce }
+                headers: { 'X-WP-Nonce': window.wishcartData.nonce }
             });
             if (!response.ok) return;
             const pdfQueue = await response.json();
@@ -791,7 +791,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
                                     const file = e.target.files[0];
                                     if (file) {
                                         // Check file size on client side
-                                        // const maxSize = window.WishCartSettings?.maxUploadSize || 2 * 1024 * 1024; // Default 2MB
+                                        // const maxSize = window.wishcartSettings?.maxUploadSize || 2 * 1024 * 1024; // Default 2MB
                                         const maxSize = getMaxUploadSize();
 
                                         if (file.size > maxSize) {

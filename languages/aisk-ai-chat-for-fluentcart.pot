@@ -1,8 +1,8 @@
-# Copyright (C) 2025 WishCart Team <support@wishcart.chat>
+# Copyright (C) 2025 wishcart Team <support@wishcart.chat>
 # This file is distributed under the GPL-2.0+.
 msgid ""
 msgstr ""
-"Project-Id-Version: WishCart - Wishlist for FluentCart 1.0.0\n"
+"Project-Id-Version: wishcart - Wishlist for FluentCart 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wish-cart\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,7 +16,7 @@ msgstr ""
 
 #. Plugin Name of the plugin
 #: wish-cart.php
-msgid "WishCart - Wishlist for FluentCart"
+msgid "wishcart - Wishlist for FluentCart"
 msgstr ""
 
 #. Plugin URI of the plugin
@@ -31,7 +31,7 @@ msgstr ""
 
 #. Author of the plugin
 #: wish-cart.php
-msgid "WishCart Team <support@wishcart.chat>"
+msgid "wishcart Team <support@wishcart.chat>"
 msgstr ""
 
 #. Author URI of the plugin
@@ -41,7 +41,7 @@ msgstr ""
 
 #: includes/class-wishcart-admin.php:65
 #: includes/class-wishcart-admin.php:66
-msgid "WishCart"
+msgid "wishcart"
 msgstr ""
 
 #: includes/class-wishcart-admin.php:76
@@ -815,7 +815,7 @@ msgstr ""
 
 #: build/chat-admin.js:673
 #: src/admin/components/settings/SettingsApp.jsx:172
-msgid "WishCart Settings"
+msgid "wishcart Settings"
 msgstr ""
 
 #: build/chat-admin.js:673
@@ -870,7 +870,7 @@ msgstr ""
 
 #: build/chat-admin.js:673
 #: src/admin/components/settings/SettingsApp.jsx:239
-msgid "WishCart Auth Key"
+msgid "wishcart Auth Key"
 msgstr ""
 
 #: build/chat-admin.js:673

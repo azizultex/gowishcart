@@ -8,17 +8,17 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * Updated for 7-table structure with full feature support
  *
  * @category WordPress
- * @package  WishCart
- * @author   WishCart Team <support@wishcart.chat>
+ * @package  wishcart
+ * @author   wishcart Team <support@wishcart.chat>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://wishcart.chat
  */
-class WISHCAR_Wishlist_Handler {
+class wishcart_Wishlist_Handler {
 
     private $wpdb;
     private $wishlists_table;
     private $items_table;
-    private $guest_cookie_name = 'wishcar_guest_wishlist';
+    private $guest_cookie_name = 'wishcart_guest_wishlist';
 
     /**
      * Constructor
@@ -52,7 +52,7 @@ class WISHCAR_Wishlist_Handler {
         
         if ( $attempt >= $max_attempts ) {
             // Fallback: use hash-based token
-            $token = hash('sha256', uniqid('wishcar_', true) . wp_rand());
+            $token = hash('sha256', uniqid('wishcart_', true) . wp_rand());
         }
         
         return $token;
@@ -113,7 +113,7 @@ class WISHCAR_Wishlist_Handler {
      * @return string Session ID
      */
     public function get_or_create_session_id() {
-        $cookie_name = 'wishcar_session_id';
+        $cookie_name = 'wishcart_session_id';
         
         // Check if session ID exists in cookie (check multiple sources)
         if ( isset( $_COOKIE[ $cookie_name ] ) && ! empty( $_COOKIE[ $cookie_name ] ) ) {
@@ -153,7 +153,7 @@ class WISHCAR_Wishlist_Handler {
         
         // Set cookie (30 days expiry by default)
         // Note: HttpOnly set to false so JavaScript can read it for API requests
-        $settings = get_option( 'wishcar_settings', [] );
+        $settings = get_option( 'wishcart_settings', [] );
         $expiry_days = isset( $settings['wishlist']['guest_cookie_expiry'] ) ? intval( $settings['wishlist']['guest_cookie_expiry'] ) : 30;
         $expiry = time() + ( $expiry_days * DAY_IN_SECONDS );
         
@@ -529,7 +529,7 @@ class WISHCAR_Wishlist_Handler {
         }
 
         // Verify product exists
-        $product = WISHCAR_FluentCart_Helper::get_product($product_id);
+        $product = wishcart_FluentCart_Helper::get_product($product_id);
         if (!$product) {
             return new WP_Error('product_not_found', __('Product not found', 'wish-car'));
         }
@@ -549,14 +549,14 @@ class WISHCAR_Wishlist_Handler {
         if (empty($user_id) && !empty($session_id) && isset($options['guest_email']) && !empty($options['guest_email'])) {
             $guest_email = sanitize_email($options['guest_email']);
             if (is_email($guest_email)) {
-                $guest_handler = new WISHCAR_Guest_Handler();
+                $guest_handler = new wishcart_Guest_Handler();
                 $guest_result = $guest_handler->create_or_update_guest($session_id, array(
                     'guest_email' => $guest_email,
                 ));
 
                 // Sync to FluentCRM if available (don't block wishlist addition on failure)
-                if (!is_wp_error($guest_result) && class_exists('WISHCAR_FluentCRM_Integration')) {
-                    $fluentcrm = new WISHCAR_FluentCRM_Integration();
+                if (!is_wp_error($guest_result) && class_exists('wishcart_FluentCRM_Integration')) {
+                    $fluentcrm = new wishcart_FluentCRM_Integration();
                     if ($fluentcrm->is_available()) {
                         $settings = $fluentcrm->get_settings();
                         if ($settings['enabled']) {
@@ -572,7 +572,7 @@ class WISHCAR_Wishlist_Handler {
                                 }
                             } catch (Exception $e) {
                                 // Log error but don't block wishlist addition
-                                error_log('[WishCart] FluentCRM sync error: ' . $e->getMessage());
+                                error_log('[wishcart] FluentCRM sync error: ' . $e->getMessage());
                             }
                         }
                     }
@@ -667,8 +667,8 @@ class WISHCAR_Wishlist_Handler {
                 $contact_email = $user->user_email;
                 
                 // Ensure contact exists in FluentCRM for logged-in users
-                if (class_exists('WISHCAR_FluentCRM_Integration')) {
-                    $fluentcrm = new WISHCAR_FluentCRM_Integration();
+                if (class_exists('wishcart_FluentCRM_Integration')) {
+                    $fluentcrm = new wishcart_FluentCRM_Integration();
                     if ($fluentcrm->is_available()) {
                         $settings = $fluentcrm->get_settings();
                         if ($settings['enabled'] && $settings['auto_create_contacts']) {
@@ -688,7 +688,7 @@ class WISHCAR_Wishlist_Handler {
                                 } catch (Exception $e) {
                                     // Log error but don't block wishlist addition
                                     if (defined('WP_DEBUG') && WP_DEBUG) {
-                                        error_log('[WishCart] FluentCRM sync error for logged-in user: ' . $e->getMessage());
+                                        error_log('[wishcart] FluentCRM sync error for logged-in user: ' . $e->getMessage());
                                     }
                                 }
                             }
@@ -698,8 +698,8 @@ class WISHCAR_Wishlist_Handler {
             }
         } elseif (!empty($session_id)) {
             // For guest users, try to get email from guest handler
-            if (class_exists('WISHCAR_Guest_Handler')) {
-                $guest_handler = new WISHCAR_Guest_Handler();
+            if (class_exists('wishcart_Guest_Handler')) {
+                $guest_handler = new wishcart_Guest_Handler();
                 $guest = $guest_handler->get_guest_by_session($session_id);
                 if ($guest && !empty($guest['guest_email']) && is_email($guest['guest_email'])) {
                     $contact_email = $guest['guest_email'];
@@ -734,20 +734,20 @@ class WISHCAR_Wishlist_Handler {
         
         // Debug logging
         if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-            error_log( '[WishCart] Item added to wishlist - Firing wishcar_item_added action' );
-            error_log( '[WishCart] Item data: ' . print_r( $item_data, true ) );
+            error_log( '[wishcart] Item added to wishlist - Firing wishcart_item_added action' );
+            error_log( '[wishcart] Item data: ' . print_r( $item_data, true ) );
         }
 
         // Fire FluentCRM automation trigger (contact should exist by now)
         // Note: fire_trigger() internally calls do_action() so we don't call it separately
-        if ( class_exists( 'WISHCAR_FluentCRM_Triggers' ) ) {
+        if ( class_exists( 'wishcart_FluentCRM_Triggers' ) ) {
             if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                error_log( '[WishCart] Firing FluentCRM trigger for wishcar_item_added' );
+                error_log( '[wishcart] Firing FluentCRM trigger for wishcart_item_added' );
             }
-            WISHCAR_FluentCRM_Triggers::fire_trigger( 'wishcar_item_added', $item_data );
+            wishcart_FluentCRM_Triggers::fire_trigger( 'wishcart_item_added', $item_data );
         } else {
             if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                error_log( '[WishCart] Warning: WISHCAR_FluentCRM_Triggers class not found. FluentCRM trigger not fired.' );
+                error_log( '[wishcart] Warning: wishcart_FluentCRM_Triggers class not found. FluentCRM trigger not fired.' );
             }
         }
 
@@ -795,7 +795,7 @@ class WISHCAR_Wishlist_Handler {
         }
 
         // Get product object before deletion (needed for trigger data)
-        $product = WISHCAR_FluentCart_Helper::get_product($product_id);
+        $product = wishcart_FluentCart_Helper::get_product($product_id);
         if (!$product) {
             return new WP_Error('product_not_found', __('Product not found', 'wish-car'));
         }
@@ -810,8 +810,8 @@ class WISHCAR_Wishlist_Handler {
             }
         } else if (!empty($session_id)) {
             // For guest users, try to get email from guest handler
-            if (class_exists('WISHCAR_Guest_Handler')) {
-                $guest_handler = new WISHCAR_Guest_Handler();
+            if (class_exists('wishcart_Guest_Handler')) {
+                $guest_handler = new wishcart_Guest_Handler();
                 $guest = $guest_handler->get_guest_by_session($session_id);
                 if ($guest && !empty($guest['guest_email']) && is_email($guest['guest_email'])) {
                     $contact_email = $guest['guest_email'];
@@ -861,20 +861,20 @@ class WISHCAR_Wishlist_Handler {
         
         // Debug logging
         if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-            error_log( '[WishCart] Item removed from wishlist - Firing wishcar_item_removed action' );
-            error_log( '[WishCart] Item data: ' . print_r( $item_data, true ) );
+            error_log( '[wishcart] Item removed from wishlist - Firing wishcart_item_removed action' );
+            error_log( '[wishcart] Item data: ' . print_r( $item_data, true ) );
         }
 
         // Fire FluentCRM automation trigger (contact should exist by now)
         // Note: fire_trigger() internally calls do_action() so we don't call it separately
-        if ( class_exists( 'WISHCAR_FluentCRM_Triggers' ) ) {
+        if ( class_exists( 'wishcart_FluentCRM_Triggers' ) ) {
             if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                error_log( '[WishCart] Firing FluentCRM trigger for wishcar_item_removed' );
+                error_log( '[wishcart] Firing FluentCRM trigger for wishcart_item_removed' );
             }
-            WISHCAR_FluentCRM_Triggers::fire_trigger( 'wishcar_item_removed', $item_data );
+            wishcart_FluentCRM_Triggers::fire_trigger( 'wishcart_item_removed', $item_data );
         } else {
             if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                error_log( '[WishCart] Warning: WISHCAR_FluentCRM_Triggers class not found. FluentCRM trigger not fired.' );
+                error_log( '[wishcart] Warning: wishcart_FluentCRM_Triggers class not found. FluentCRM trigger not fired.' );
             }
         }
 
@@ -1086,8 +1086,8 @@ class WISHCAR_Wishlist_Handler {
      */
     private function log_activity($wishlist_id, $activity_type, $object_id = null, $object_type = null, $activity_data = null) {
         // Use activity logger if available
-        if (class_exists('WISHCAR_Activity_Logger')) {
-            $logger = new WISHCAR_Activity_Logger();
+        if (class_exists('wishcart_Activity_Logger')) {
+            $logger = new wishcart_Activity_Logger();
             $logger->log($wishlist_id, $activity_type, $object_id, $object_type, $activity_data);
         }
     }
@@ -1102,8 +1102,8 @@ class WISHCAR_Wishlist_Handler {
      */
     private function update_analytics($product_id, $variation_id, $action) {
         // Use analytics handler if available
-        if (class_exists('WISHCAR_Analytics_Handler')) {
-            $analytics = new WISHCAR_Analytics_Handler();
+        if (class_exists('wishcart_Analytics_Handler')) {
+            $analytics = new wishcart_Analytics_Handler();
             $analytics->track_event($product_id, $variation_id, $action);
         }
     }
@@ -1122,8 +1122,8 @@ class WISHCAR_Wishlist_Handler {
         }
 
         // Use guest handler if available
-        if (class_exists('WISHCAR_Guest_Handler')) {
-            $guest_handler = new WISHCAR_Guest_Handler();
+        if (class_exists('wishcart_Guest_Handler')) {
+            $guest_handler = new wishcart_Guest_Handler();
             
             // Create or update guest record
             $guest_handler->create_or_update_guest($session_id);
@@ -1156,6 +1156,6 @@ class WISHCAR_Wishlist_Handler {
      */
     private function clear_wishlist_cache($user_id, $session_id) {
         $cache_key = $this->get_cache_key($user_id, $session_id);
-        wp_cache_delete($cache_key, 'wishcar_wishlist');
+        wp_cache_delete($cache_key, 'wishcart_wishlist');
     }
 }

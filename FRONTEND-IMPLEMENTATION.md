@@ -1,7 +1,7 @@
-# WishCart Frontend Implementation - 7-Table Integration
+# wishcart Frontend Implementation - 7-Table Integration
 
 ## Overview
-This document details the complete frontend implementation for WishCart, fully integrated with the new 7-table database backend. The implementation includes React components, custom hooks, and styling for a modern, feature-rich wishlist experience.
+This document details the complete frontend implementation for wishcart, fully integrated with the new 7-table database backend. The implementation includes React components, custom hooks, and styling for a modern, feature-rich wishlist experience.
 
 ## Implementation Date
 November 18, 2025
@@ -265,7 +265,7 @@ User Action → Component → useWishlist Hook → REST API → Handler Class �
 1. User clicks "Add to Wishlist"
 2. WishlistPage calls addProduct()
 3. useWishlist sends POST to /wishcart/v1/wishlist/add
-4. WISHCART_Wishlist_Handler::add_to_wishlist()
+4. wishcart_Wishlist_Handler::add_to_wishlist()
 5. Insert into fc_wishlist_items table
 6. Log activity to fc_wishlist_activities
 7. Update analytics in fc_wishlist_analytics
@@ -280,7 +280,7 @@ User Action → Component → useWishlist Hook → REST API → Handler Class �
 2. ShareWishlistModal opens
 3. useSharing.createShare() called
 4. POST to /wishcart/v1/share/create
-5. WISHCART_Sharing_Handler::create_share()
+5. wishcart_Sharing_Handler::create_share()
 6. Generate unique share_token
 7. Insert into fc_wishlist_shares table
 8. Return share URL
@@ -296,7 +296,7 @@ User Action → Component → useWishlist Hook → REST API → Handler Class �
    - GET /analytics/overview
    - GET /analytics/popular
    - GET /analytics/conversion
-4. WISHCART_Analytics_Handler queries fc_wishlist_analytics
+4. wishcart_Analytics_Handler queries fc_wishlist_analytics
 5. Aggregates data from all 7 tables
 6. Returns formatted JSON
 7. Dashboard renders visualizations
@@ -349,7 +349,7 @@ User Action → Component → useWishlist Hook → REST API → Handler Class �
 **1. WordPress Nonce Verification**:
 ```javascript
 headers: {
-  'X-WP-Nonce': window.WishCartSettings.nonce
+  'X-WP-Nonce': window.wishcartSettings.nonce
 }
 ```
 All API requests include nonce for CSRF protection.

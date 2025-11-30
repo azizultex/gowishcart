@@ -2,35 +2,35 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 /**
- * WishCart Item Added Trigger
+ * wishcart Item Added Trigger
  *
  * Triggers when a product is added to a wishlist
  *
  * @category WordPress
- * @package  WishCart
- * @author   WishCart Team <support@wishcart.chat>
+ * @package  wishcart
+ * @author   wishcart Team <support@wishcart.chat>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://wishcart.chat
  */
-class WISHCAR_Item_Added_Trigger extends \FluentCrm\App\Services\Funnel\BaseTrigger {
+class wishcart_Item_Added_Trigger extends \FluentCrm\App\Services\Funnel\BaseTrigger {
 
     /**
      * Constructor
      */
     public function __construct() {
-        $this->triggerName = 'wishcar_item_added';
+        $this->triggerName = 'wishcart_item_added';
         $this->priority = 20;
         $this->actionArgNum = 1;
         
         if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-            error_log( '[WishCart] WISHCAR_Item_Added_Trigger constructor called' );
-            error_log( '[WishCart] Trigger name: ' . $this->triggerName );
+            error_log( '[wishcart] wishcart_Item_Added_Trigger constructor called' );
+            error_log( '[wishcart] Trigger name: ' . $this->triggerName );
         }
         
         parent::__construct();
         
         if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-            error_log( '[WishCart] WISHCAR_Item_Added_Trigger initialized successfully' );
+            error_log( '[wishcart] wishcart_Item_Added_Trigger initialized successfully' );
         }
     }
 
@@ -41,7 +41,7 @@ class WISHCAR_Item_Added_Trigger extends \FluentCrm\App\Services\Funnel\BaseTrig
      */
     public function getTrigger() {
         return array(
-            'category'    => __( 'WishCart', 'wish-car' ),
+            'category'    => __( 'wishcart', 'wish-car' ),
             'label'       => __( 'Item Added to Wishlist', 'wish-car' ),
             'description' => __( 'This funnel will be initiated when a product is added to a wishlist', 'wish-car' ),
             'icon'        => 'fc-icon-heart',
@@ -80,15 +80,15 @@ class WISHCAR_Item_Added_Trigger extends \FluentCrm\App\Services\Funnel\BaseTrig
         $item_data = isset( $originalArgs[0] ) && is_array( $originalArgs[0] ) ? $originalArgs[0] : array();
         
         if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-            error_log( '[WishCart] Item Added Trigger - handle() method called' );
-            error_log( '[WishCart] Funnel ID: ' . ( isset( $funnel->id ) ? $funnel->id : 'N/A' ) );
-            error_log( '[WishCart] Item data: ' . print_r( $item_data, true ) );
+            error_log( '[wishcart] Item Added Trigger - handle() method called' );
+            error_log( '[wishcart] Funnel ID: ' . ( isset( $funnel->id ) ? $funnel->id : 'N/A' ) );
+            error_log( '[wishcart] Item data: ' . print_r( $item_data, true ) );
         }
         
         // Validate that we have the required data
         if ( empty( $item_data ) || ! is_array( $item_data ) ) {
             if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                error_log( '[WishCart] Warning: Item data is empty or not an array' );
+                error_log( '[wishcart] Warning: Item data is empty or not an array' );
             }
             return;
         }
@@ -101,7 +101,7 @@ class WISHCAR_Item_Added_Trigger extends \FluentCrm\App\Services\Funnel\BaseTrig
         
         if ( ! $willProcess ) {
             if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                error_log( '[WishCart] Funnel will not process this trigger' );
+                error_log( '[wishcart] Funnel will not process this trigger' );
             }
             return;
         }
@@ -118,8 +118,8 @@ class WISHCAR_Item_Added_Trigger extends \FluentCrm\App\Services\Funnel\BaseTrig
         }
         
         // If still no email, try to get from session_id (guest)
-        if ( empty( $email ) && ! empty( $item_data['session_id'] ) && class_exists( 'WISHCAR_Guest_Handler' ) ) {
-            $guest_handler = new WISHCAR_Guest_Handler();
+        if ( empty( $email ) && ! empty( $item_data['session_id'] ) && class_exists( 'wishcart_Guest_Handler' ) ) {
+            $guest_handler = new wishcart_Guest_Handler();
             $guest = $guest_handler->get_guest_by_session( $item_data['session_id'] );
             if ( $guest && ! empty( $guest['guest_email'] ) && is_email( $guest['guest_email'] ) ) {
                 $email = $guest['guest_email'];
@@ -128,7 +128,7 @@ class WISHCAR_Item_Added_Trigger extends \FluentCrm\App\Services\Funnel\BaseTrig
         
         if ( empty( $email ) || ! is_email( $email ) ) {
             if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                error_log( '[WishCart] Cannot process trigger: No valid email found' );
+                error_log( '[wishcart] Cannot process trigger: No valid email found' );
             }
             return;
         }
@@ -149,7 +149,7 @@ class WISHCAR_Item_Added_Trigger extends \FluentCrm\App\Services\Funnel\BaseTrig
         ) );
         
         if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-            error_log( '[WishCart] Subscriber data: ' . print_r( $subscriberData, true ) );
+            error_log( '[wishcart] Subscriber data: ' . print_r( $subscriberData, true ) );
         }
         
         // Use FunnelProcessor to start the funnel sequence (same as fluent-booking)
@@ -169,17 +169,17 @@ class WISHCAR_Item_Added_Trigger extends \FluentCrm\App\Services\Funnel\BaseTrig
                 ) );
                 
                 if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                    error_log( '[WishCart] FunnelProcessor->startFunnelSequence() called successfully' );
+                    error_log( '[wishcart] FunnelProcessor->startFunnelSequence() called successfully' );
                 }
             } catch ( Exception $e ) {
                 if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                    error_log( '[WishCart] Error in FunnelProcessor: ' . $e->getMessage() );
-                    error_log( '[WishCart] Error trace: ' . $e->getTraceAsString() );
+                    error_log( '[wishcart] Error in FunnelProcessor: ' . $e->getMessage() );
+                    error_log( '[wishcart] Error trace: ' . $e->getTraceAsString() );
                 }
             }
         } else {
             if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                error_log( '[WishCart] FunnelProcessor class not found' );
+                error_log( '[wishcart] FunnelProcessor class not found' );
             }
         }
     }
@@ -208,8 +208,8 @@ class WISHCAR_Item_Added_Trigger extends \FluentCrm\App\Services\Funnel\BaseTrig
             }
             
             // If still no email, try to get from session_id (guest)
-            if ( empty( $email ) && ! empty( $item_data['session_id'] ) && class_exists( 'WISHCAR_Guest_Handler' ) ) {
-                $guest_handler = new WISHCAR_Guest_Handler();
+            if ( empty( $email ) && ! empty( $item_data['session_id'] ) && class_exists( 'wishcart_Guest_Handler' ) ) {
+                $guest_handler = new wishcart_Guest_Handler();
                 $guest = $guest_handler->get_guest_by_session( $item_data['session_id'] );
                 if ( $guest && ! empty( $guest['guest_email'] ) && is_email( $guest['guest_email'] ) ) {
                     $email = $guest['guest_email'];

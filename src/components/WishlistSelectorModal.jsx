@@ -18,20 +18,20 @@ const WishlistSelectorModal = ({ isOpen, onClose, productId, onSuccess }) => {
 
     // Get session ID from cookie
     const getSessionId = () => {
-        if (window.WishCartWishlist?.isLoggedIn) {
+        if (window.wishcartWishlist?.isLoggedIn) {
             return null;
         }
         
         const cookies = document.cookie.split(';');
         for (let cookie of cookies) {
             const [name, value] = cookie.trim().split('=');
-            if (name === 'wishcar_session_id') {
+            if (name === 'wishcart_session_id') {
                 return value;
             }
         }
 
-        if (window.WishCartWishlist?.sessionId) {
-            return window.WishCartWishlist.sessionId;
+        if (window.wishcartWishlist?.sessionId) {
+            return window.wishcartWishlist.sessionId;
         }
 
         return null;
@@ -40,12 +40,12 @@ const WishlistSelectorModal = ({ isOpen, onClose, productId, onSuccess }) => {
     // Check if user needs to provide email
     const checkEmailRequirement = async () => {
         // If user is logged in, no email needed
-        if (window.WishCartWishlist?.isLoggedIn) {
+        if (window.wishcartWishlist?.isLoggedIn) {
             return false;
         }
 
         // Check localStorage first
-        const storedEmail = localStorage.getItem('wishcar_guest_email');
+        const storedEmail = localStorage.getItem('wishcart_guest_email');
         if (storedEmail) {
             setGuestEmail(storedEmail);
             return false;
@@ -58,10 +58,10 @@ const WishlistSelectorModal = ({ isOpen, onClose, productId, onSuccess }) => {
                 return true; // Need email if no session
             }
 
-            const url = `${window.WishCartWishlist.apiUrl}guest/check-email?session_id=${sessionId}`;
+            const url = `${window.wishcartWishlist.apiUrl}guest/check-email?session_id=${sessionId}`;
             const response = await fetch(url, {
                 headers: {
-                    'X-WP-Nonce': window.WishCartWishlist.nonce,
+                    'X-WP-Nonce': window.wishcartWishlist.nonce,
                 },
             });
 
@@ -69,7 +69,7 @@ const WishlistSelectorModal = ({ isOpen, onClose, productId, onSuccess }) => {
                 const data = await response.json();
                 if (data.has_email && data.email) {
                     setGuestEmail(data.email);
-                    localStorage.setItem('wishcar_guest_email', data.email);
+                    localStorage.setItem('wishcart_guest_email', data.email);
                     return false;
                 }
             }
@@ -108,11 +108,11 @@ const WishlistSelectorModal = ({ isOpen, onClose, productId, onSuccess }) => {
         
         try {
             const sessionId = getSessionId();
-            const url = `${window.WishCartWishlist.apiUrl}wishlists${sessionId ? `?session_id=${sessionId}` : ''}`;
+            const url = `${window.wishcartWishlist.apiUrl}wishlists${sessionId ? `?session_id=${sessionId}` : ''}`;
             
             const response = await fetch(url, {
                 headers: {
-                    'X-WP-Nonce': window.WishCartWishlist.nonce,
+                    'X-WP-Nonce': window.wishcartWishlist.nonce,
                 },
             });
 
@@ -150,13 +150,13 @@ const WishlistSelectorModal = ({ isOpen, onClose, productId, onSuccess }) => {
 
         try {
             const sessionId = getSessionId();
-            const url = `${window.WishCartWishlist.apiUrl}wishlists`;
+            const url = `${window.wishcartWishlist.apiUrl}wishlists`;
             
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-WP-Nonce': window.WishCartWishlist.nonce,
+                    'X-WP-Nonce': window.wishcartWishlist.nonce,
                 },
                 body: JSON.stringify({
                     name: newWishlistName.trim(),
@@ -189,7 +189,7 @@ const WishlistSelectorModal = ({ isOpen, onClose, productId, onSuccess }) => {
 
         try {
             const sessionId = getSessionId();
-            const url = `${window.WishCartWishlist.apiUrl}wishlist/add`;
+            const url = `${window.wishcartWishlist.apiUrl}wishlist/add`;
             
             const requestBody = {
                 product_id: productId,
@@ -198,7 +198,7 @@ const WishlistSelectorModal = ({ isOpen, onClose, productId, onSuccess }) => {
             };
 
             // Include email if available and user is not logged in
-            if (!window.WishCartWishlist?.isLoggedIn && guestEmail) {
+            if (!window.wishcartWishlist?.isLoggedIn && guestEmail) {
                 requestBody.guest_email = guestEmail;
             }
             
@@ -206,7 +206,7 @@ const WishlistSelectorModal = ({ isOpen, onClose, productId, onSuccess }) => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-WP-Nonce': window.WishCartWishlist.nonce,
+                    'X-WP-Nonce': window.wishcartWishlist.nonce,
                 },
                 body: JSON.stringify(requestBody),
             });

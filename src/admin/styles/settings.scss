@@ -1,5 +1,5 @@
 /**
- * WishCart Settings Page Styles
+ * wishcart Settings Page Styles
  * FluentCart-compatible design
  */
 
@@ -229,6 +229,7 @@
 
     .toggle-control {
       margin-left: 0;
+      margin-top: var(--fluentcart-space-md);
     }
   }
 
@@ -258,6 +259,15 @@
     font-size: 13px;
     font-weight: 400;
     border-radius: var(--fluentcart-radius-sm);
+  }
+
+  .toggle-control button {
+    max-height: 24px;
+
+    span {
+      width: 14px;
+      height: 14px;
+    }
   }
 
   /* Override input styles */

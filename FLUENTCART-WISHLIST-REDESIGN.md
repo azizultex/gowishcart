@@ -1,7 +1,7 @@
 # FluentCart-Style Wishlist Redesign - Implementation Summary
 
 ## Overview
-Successfully redesigned the WishCart wishlist page to match FluentCart's cart page design, creating a clean, minimal single-column vertical list layout that seamlessly integrates as a FluentCart addon.
+Successfully redesigned the wishcart wishlist page to match FluentCart's cart page design, creating a clean, minimal single-column vertical list layout that seamlessly integrates as a FluentCart addon.
 
 ## Implementation Date
 November 27, 2025

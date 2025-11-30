@@ -5,18 +5,18 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * Shared Wishlist Shortcode Handler
  *
  * @category WordPress
- * @package  WishCart
- * @author   WishCart Team <support@wishcart.chat>
+ * @package  wishcart
+ * @author   wishcart Team <support@wishcart.chat>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://wishcart.chat
  */
-class WISHCAR_Shared_Wishlist_Shortcode {
+class wishcart_Shared_Wishlist_Shortcode {
 
     /**
      * Constructor
      */
     public function __construct() {
-        add_shortcode( 'wishcar_shared_wishlist', array( $this, 'render_shared_wishlist' ) );
+        add_shortcode( 'wishcart_shared_wishlist', array( $this, 'render_shared_wishlist' ) );
     }
 
     /**
@@ -28,7 +28,7 @@ class WISHCAR_Shared_Wishlist_Shortcode {
     public function render_shared_wishlist( $atts ) {
         $atts = shortcode_atts( array(
             'token' => '',
-        ), $atts, 'wishcar_shared_wishlist' );
+        ), $atts, 'wishcart_shared_wishlist' );
 
         // Get token from query parameter if not in shortcode
         if ( empty( $atts['token'] ) ) {
@@ -38,23 +38,23 @@ class WISHCAR_Shared_Wishlist_Shortcode {
         // Enqueue scripts and styles
         wp_enqueue_script(
             'wishcart-shared-wishlist',
-            WISHCAR_PLUGIN_URL . 'build/wishlist-frontend.js',
+            wishcart_PLUGIN_URL . 'build/wishlist-frontend.js',
             array( 'wp-element', 'wp-api-fetch' ),
-            WISHCAR_VERSION,
+            wishcart_VERSION,
             true
         );
 
         wp_enqueue_style(
             'wishcart-shared-wishlist',
-            WISHCAR_PLUGIN_URL . 'build/wishlist-frontend.css',
+            wishcart_PLUGIN_URL . 'build/wishlist-frontend.css',
             array(),
-            WISHCAR_VERSION
+            wishcart_VERSION
         );
 
         // Localize script with API data
         wp_localize_script(
             'wishcart-shared-wishlist',
-            'WishCartShared',
+            'wishcartShared',
             array(
                 'apiUrl' => trailingslashit( rest_url( 'wishcart/v1' ) ),
                 'shareToken' => sanitize_text_field( $atts['token'] ),
@@ -70,5 +70,5 @@ class WISHCAR_Shared_Wishlist_Shortcode {
     }
 }
 
-new WISHCAR_Shared_Wishlist_Shortcode();
+new wishcart_Shared_Wishlist_Shortcode();
 

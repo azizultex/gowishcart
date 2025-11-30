@@ -229,7 +229,7 @@ const WishlistPage = () => {
 
                     <div className="wishlist-actions">
                         {/* Wishlist Selector - Only show if multiple wishlists are enabled */}
-                        {window.WishCartWishlist?.enableMultipleWishlists && (
+                        {window.wishcartWishlist?.enableMultipleWishlists && (
                             <WishlistSelector
                                 wishlists={wishlists}
                                 currentWishlist={currentWishlist}

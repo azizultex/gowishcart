@@ -19,9 +19,9 @@ const FluentCRMSettings = () => {
 
     const loadSettings = async () => {
         try {
-            const response = await fetch(`${WishCartSettings.apiUrl}fluentcrm/settings`, {
+            const response = await fetch(`${wishcartSettings.apiUrl}fluentcrm/settings`, {
                 headers: {
-                    'X-WP-Nonce': WishCartSettings.nonce
+                    'X-WP-Nonce': wishcartSettings.nonce
                 }
             });
 
@@ -52,11 +52,11 @@ const FluentCRMSettings = () => {
         setSaveMessage('');
 
         try {
-            const response = await fetch(`${WishCartSettings.apiUrl}fluentcrm/settings`, {
+            const response = await fetch(`${wishcartSettings.apiUrl}fluentcrm/settings`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-WP-Nonce': WishCartSettings.nonce
+                    'X-WP-Nonce': wishcartSettings.nonce
                 },
                 body: JSON.stringify(settings)
             });
@@ -144,7 +144,7 @@ const FluentCRMSettings = () => {
                         <span className="fluentcart-badge fluentcart-badge-warning">{__('PRO', 'wish-car')}</span>
                         <span className="fluentcart-badge fluentcart-badge-info">{__('COMING SOON', 'wish-car')}</span>
                     </div>
-                    <p style={{fontSize: '13px', margin: '0'}}>{__('This feature is available in WishCart Pro', 'wish-car')}</p>
+                    <p style={{fontSize: '13px', margin: '0'}}>{__('This feature is available in wishcart Pro', 'wish-car')}</p>
                     <p style={{fontSize: '13px', margin: '4px 0 0', color: 'var(--fluentcart-text-muted)'}}>{__('Please upgrade to get all the advanced features.', 'wish-car')}</p>
                 </div>
             </div>

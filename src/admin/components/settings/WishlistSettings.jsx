@@ -207,7 +207,7 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                     </SelectContent>
                 </Select>
                 <p className="fluentcart-form-helper">
-                    {__('Select the page where the wishlist will be displayed. Make sure the page contains the [wishcar_wishlist] shortcode.', 'wish-car')}
+                    {__('Select the page where the wishlist will be displayed. Make sure the page contains the [wishcart_wishlist] shortcode.', 'wish-car')}
                 </p>
             </div>
 
@@ -234,7 +234,7 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                     </SelectContent>
                 </Select>
                 <p className="fluentcart-form-helper">
-                    {__('Select the page where shared wishlists will be displayed. Make sure the page contains the [wishcar_shared_wishlist] shortcode.', 'wish-car')}
+                    {__('Select the page where shared wishlists will be displayed. Make sure the page contains the [wishcart_shared_wishlist] shortcode.', 'wish-car')}
                 </p>
             </div>
 

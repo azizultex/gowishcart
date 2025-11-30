@@ -4,7 +4,7 @@
  *
  * @category WordPress
  * @package  AISK
- * @author   WishCart Team <support@wishcart.chat>
+ * @author   wishcart Team <support@wishcart.chat>
  * @license  GPL-2.0+ http://www.gnu.org/licenses/gpl-2.0.txt
  * @link     https://wishcart.com
  */
@@ -18,11 +18,11 @@ if ( ! defined('ABSPATH') ) {
  *
  * @category Class
  * @package  AISK
- * @author   WishCart Team <support@wishcart.chat>
+ * @author   wishcart Team <support@wishcart.chat>
  * @license  GPL-2.0+ http://www.gnu.org/licenses/gpl-2.0.txt
  * @link     https://wishcart.com
  */
-class WISHCAR_Admin {
+class wishcart_Admin {
 
 
     private $plugin_slug = 'wishcart';
@@ -33,7 +33,7 @@ class WISHCAR_Admin {
      *
      * @since 1.0.0
      *
-     * @return WISHCAR_Admin Instance of the class
+     * @return wishcart_Admin Instance of the class
      */
     public static function get_instance() {
         if ( null === self::$instance ) {
@@ -52,7 +52,7 @@ class WISHCAR_Admin {
             add_action('admin_enqueue_scripts', [ $this, 'enqueue_admin_styles' ]);
         }
 
-        add_action('rest_api_init', [ $this, 'wishcar_register_settings_endpoints' ]);
+        add_action('rest_api_init', [ $this, 'wishcart_register_settings_endpoints' ]);
     }
     
     /**
@@ -63,7 +63,7 @@ class WISHCAR_Admin {
             'wishcart-admin-style', 
             plugin_dir_url( dirname( __FILE__ ) ) . 'assets/css/admin-style.css',
             [],
-            WISHCAR_VERSION
+            wishcart_VERSION
         );
     }
 
@@ -77,8 +77,8 @@ class WISHCAR_Admin {
     public function register_admin_menu() {
 
         add_menu_page(
-            esc_html__( 'WishCart', 'wish-car' ),
-            esc_html__( 'WishCart', 'wish-car' ),
+            esc_html__( 'wishcart', 'wish-car' ),
+            esc_html__( 'wishcart', 'wish-car' ),
             'manage_options',
             $this->plugin_slug,
             [ $this, 'render_settings_page' ],
@@ -121,18 +121,18 @@ class WISHCAR_Admin {
         // Register and enqueue admin styles
         wp_register_style(
             'wishcart-admin',
-            WISHCAR_PLUGIN_URL . 'build/admin.css',
+            wishcart_PLUGIN_URL . 'build/admin.css',
             [],
-            WISHCAR_VERSION
+            wishcart_VERSION
         );
         wp_enqueue_style('wishcart-admin');
 
         // Register and enqueue admin scripts
         wp_register_script(
             'wishcart-admin',
-            WISHCAR_PLUGIN_URL . 'build/admin.js',
+            wishcart_PLUGIN_URL . 'build/admin.js',
             ['wp-element', 'wp-components', 'wp-api-fetch', 'wp-i18n'],
-            WISHCAR_VERSION,
+            wishcart_VERSION,
             [
                 'in_footer' => true,
                 'strategy' => 'defer'
@@ -142,12 +142,12 @@ class WISHCAR_Admin {
 
         wp_localize_script(
             'wishcart-admin',
-            'WishCartSettings',
+            'wishcartSettings',
             [
                 'apiUrl' => trailingslashit( rest_url( 'wishcart/v1' ) ),
                 'nonce' => wp_create_nonce('wp_rest'),
-                'pluginUrl' => WISHCAR_PLUGIN_URL,
-                'isFluentCartActive' => WISHCAR_FluentCart_Helper::is_fluentcart_active(),
+                'pluginUrl' => wishcart_PLUGIN_URL,
+                'isFluentCartActive' => wishcart_FluentCart_Helper::is_fluentcart_active(),
                 'maxUploadSize' => wp_max_upload_size(),
             ]
         );
@@ -161,19 +161,19 @@ class WISHCAR_Admin {
      *
      * @return void
      */
-    public function wishcar_register_settings_endpoints() {
+    public function wishcart_register_settings_endpoints() {
         register_rest_route(
             'wishcart/v1', '/settings', [
 				[
 					'methods' => 'GET',
-					'callback' => [ $this, 'wishcar_get_settings' ],
+					'callback' => [ $this, 'wishcart_get_settings' ],
 					'permission_callback' => function () {
 						return current_user_can('manage_options');
 					},
 				],
 				[
 					'methods' => 'POST',
-					'callback' => [ $this, 'wishcar_update_settings' ],
+					'callback' => [ $this, 'wishcart_update_settings' ],
 					'permission_callback' => function () {
 						return current_user_can('manage_options');
 					},
@@ -531,7 +531,7 @@ class WISHCAR_Admin {
     }
 
     public function install_fluentcart() {
-        if ( ! WISHCAR_FluentCart_Helper::is_fluentcart_active() ) {
+        if ( ! wishcart_FluentCart_Helper::is_fluentcart_active() ) {
             require_once ABSPATH . 'wp-admin/includes/plugin.php';
             require_once ABSPATH . 'wp-admin/includes/plugin-install.php';
             require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
@@ -622,13 +622,13 @@ class WISHCAR_Admin {
                 }
 
                 // Clear detection cache after installation
-                WISHCAR_FluentCart_Helper::clear_detection_cache();
+                wishcart_FluentCart_Helper::clear_detection_cache();
                 
                 // Force reload of plugin cache if needed
                 wp_cache_flush();
                 
                 // Re-check status after activation
-                $is_active = WISHCAR_FluentCart_Helper::is_fluentcart_active();
+                $is_active = wishcart_FluentCart_Helper::is_fluentcart_active();
 
                 return array(
                     'success' => true,
@@ -642,12 +642,12 @@ class WISHCAR_Admin {
         }
 
         // Clear cache and return current status
-        WISHCAR_FluentCart_Helper::clear_detection_cache();
+        wishcart_FluentCart_Helper::clear_detection_cache();
 
         return array(
             'success' => true,
             'message' => 'FluentCart is already installed and activated',
-            'isActive' => WISHCAR_FluentCart_Helper::is_fluentcart_active(),
+            'isActive' => wishcart_FluentCart_Helper::is_fluentcart_active(),
         );
     }
 
@@ -658,9 +658,9 @@ class WISHCAR_Admin {
      */
     public function check_fluentcart_status() {
         // Clear cache before checking to ensure fresh status
-        WISHCAR_FluentCart_Helper::clear_detection_cache();
+        wishcart_FluentCart_Helper::clear_detection_cache();
         
-        $is_active = WISHCAR_FluentCart_Helper::is_fluentcart_active();
+        $is_active = wishcart_FluentCart_Helper::is_fluentcart_active();
         
         return rest_ensure_response(array(
             'success' => true,
@@ -687,11 +687,11 @@ class WISHCAR_Admin {
      *
      * @return WP_REST_Response
      */
-    public function wishcar_get_settings() {
-        $settings = get_option('wishcar_settings', []);
-        $page_id  = WISHCAR_Wishlist_Page::create_wishlist_page();
+    public function wishcart_get_settings() {
+        $settings = get_option('wishcart_settings', []);
+        $page_id  = wishcart_Wishlist_Page::create_wishlist_page();
 
-        $defaults = WISHCAR_Wishlist_Page::get_default_settings( $page_id );
+        $defaults = wishcart_Wishlist_Page::get_default_settings( $page_id );
         $changed  = false;
 
         if ( ! isset( $settings['wishlist'] ) || ! is_array( $settings['wishlist'] ) ) {
@@ -711,7 +711,7 @@ class WISHCAR_Admin {
         }
 
         if ( $changed ) {
-            update_option( 'wishcar_settings', $settings );
+            update_option( 'wishcart_settings', $settings );
         }
 
         return rest_ensure_response( $settings );
@@ -726,11 +726,11 @@ class WISHCAR_Admin {
      *
      * @return WP_REST_Response
      */
-    public function wishcar_update_settings( $request ) {
+    public function wishcart_update_settings( $request ) {
         $settings = $request->get_json_params();
 
 
-        update_option('wishcar_settings', $settings);
+        update_option('wishcart_settings', $settings);
         return rest_ensure_response([ 'success' => true ]);
     }
 
@@ -796,7 +796,7 @@ class WISHCAR_Admin {
      * @return WP_REST_Response
      */
     public function get_products( $request ) {
-        $product_post_type = WISHCAR_FluentCart_Helper::get_product_post_type();
+        $product_post_type = wishcart_FluentCart_Helper::get_product_post_type();
 
         $search = is_string( $request->get_param( 'search' ) ) ? sanitize_text_field( $request->get_param( 'search' ) ) : '';
         $per_page = intval( $request->get_param( 'per_page' ) );
@@ -860,7 +860,7 @@ class WISHCAR_Admin {
      * @return WP_REST_Response
      */
     public function wishlist_add( $request ) {
-        $handler = new WISHCAR_Wishlist_Handler();
+        $handler = new wishcart_Wishlist_Handler();
         $params = $request->get_json_params();
         $product_id = isset( $params['product_id'] ) ? intval( $params['product_id'] ) : 0;
         $session_id = isset( $params['session_id'] ) ? sanitize_text_field( wp_unslash( $params['session_id'] ) ) : null;
@@ -912,7 +912,7 @@ class WISHCAR_Admin {
      * @return WP_REST_Response
      */
     public function wishlist_remove( $request ) {
-        $handler = new WISHCAR_Wishlist_Handler();
+        $handler = new wishcart_Wishlist_Handler();
         $params = $request->get_json_params();
         $product_id = isset( $params['product_id'] ) ? intval( $params['product_id'] ) : 0;
         $session_id = isset( $params['session_id'] ) ? sanitize_text_field( wp_unslash( $params['session_id'] ) ) : null;
@@ -943,8 +943,8 @@ class WISHCAR_Admin {
      */
     public function wishlist_track_cart( $request ) {
         global $wpdb;
-        $analytics_handler = new WISHCAR_Analytics_Handler();
-        $handler = new WISHCAR_Wishlist_Handler();
+        $analytics_handler = new wishcart_Analytics_Handler();
+        $handler = new wishcart_Wishlist_Handler();
         
         $params = $request->get_json_params();
         $product_id = isset( $params['product_id'] ) ? intval( $params['product_id'] ) : 0;
@@ -975,7 +975,7 @@ class WISHCAR_Admin {
         
         if ( ! $user_id ) {
             // Try to get session_id from cookie or request
-            $cookie_name = 'wishcar_session_id';
+            $cookie_name = 'wishcart_session_id';
             if ( isset( $_COOKIE[ $cookie_name ] ) && ! empty( $_COOKIE[ $cookie_name ] ) ) {
                 $session_id = sanitize_text_field( wp_unslash( $_COOKIE[ $cookie_name ] ) );
             } elseif ( isset( $params['session_id'] ) ) {
@@ -1040,13 +1040,13 @@ class WISHCAR_Admin {
      */
     public function wishlist_get( $request ) {
         global $wpdb;
-        $handler = new WISHCAR_Wishlist_Handler();
+        $handler = new wishcart_Wishlist_Handler();
         $session_id = $request->get_param( 'session_id' );
         $session_id = is_string( $session_id ) ? sanitize_text_field( wp_unslash( $session_id ) ) : null;
         
         // If session_id not provided in query, try to read from cookie
         if ( empty( $session_id ) && ! is_user_logged_in() ) {
-            $cookie_name = 'wishcar_session_id';
+            $cookie_name = 'wishcart_session_id';
             if ( isset( $_COOKIE[ $cookie_name ] ) && ! empty( $_COOKIE[ $cookie_name ] ) ) {
                 $session_id = sanitize_text_field( wp_unslash( $_COOKIE[ $cookie_name ] ) );
             }
@@ -1164,7 +1164,7 @@ class WISHCAR_Admin {
             $product_id = $item['product_id'];
             $created_at = $item['created_at'];
             
-            $product = WISHCAR_FluentCart_Helper::get_product( $product_id );
+            $product = wishcart_FluentCart_Helper::get_product( $product_id );
             if ( $product ) {
                 $image_id = $product->get_image_id();
                 $image_url = $image_id ? wp_get_attachment_image_url( $image_id, 'medium' ) : '';
@@ -1212,7 +1212,7 @@ class WISHCAR_Admin {
      * @return WP_REST_Response
      */
     public function wishlist_check( $request ) {
-        $handler = new WISHCAR_Wishlist_Handler();
+        $handler = new wishcart_Wishlist_Handler();
         $product_id = intval( $request->get_param( 'product_id' ) );
         $session_id = $request->get_param( 'session_id' );
         $session_id = is_string( $session_id ) ? sanitize_text_field( wp_unslash( $session_id ) ) : null;
@@ -1241,7 +1241,7 @@ class WISHCAR_Admin {
             );
         }
 
-        $handler = new WISHCAR_Wishlist_Handler();
+        $handler = new wishcart_Wishlist_Handler();
         $params = $request->get_json_params();
         $session_id = isset( $params['session_id'] ) ? sanitize_text_field( $params['session_id'] ) : null;
         $user_id = get_current_user_id();
@@ -1278,7 +1278,7 @@ class WISHCAR_Admin {
      */
     public function wishlist_get_users( $request ) {
         global $wpdb;
-        $table_name = $wpdb->prefix . 'wishcar_wishlist';
+        $table_name = $wpdb->prefix . 'wishcart_wishlist';
         
         // Get distinct user IDs that have wishlist items (excluding NULL and session-based entries)
         $user_ids = $wpdb->get_results(
@@ -1318,13 +1318,13 @@ class WISHCAR_Admin {
      * @return WP_REST_Response
      */
     public function wishlists_get( $request ) {
-        $handler = new WISHCAR_Wishlist_Handler();
+        $handler = new wishcart_Wishlist_Handler();
         $session_id = $request->get_param( 'session_id' );
         $session_id = is_string( $session_id ) ? sanitize_text_field( wp_unslash( $session_id ) ) : null;
         
         // If session_id not provided in query, try to read from cookie
         if ( empty( $session_id ) && ! is_user_logged_in() ) {
-            $cookie_name = 'wishcar_session_id';
+            $cookie_name = 'wishcart_session_id';
             if ( isset( $_COOKIE[ $cookie_name ] ) && ! empty( $_COOKIE[ $cookie_name ] ) ) {
                 $session_id = sanitize_text_field( wp_unslash( $_COOKIE[ $cookie_name ] ) );
             }
@@ -1346,7 +1346,7 @@ class WISHCAR_Admin {
      * @return WP_REST_Response
      */
     public function wishlists_create( $request ) {
-        $handler = new WISHCAR_Wishlist_Handler();
+        $handler = new wishcart_Wishlist_Handler();
         $params = $request->get_json_params();
         
         $name = isset( $params['name'] ) ? sanitize_text_field( $params['name'] ) : 'New Wishlist';
@@ -1355,7 +1355,7 @@ class WISHCAR_Admin {
         
         // If session_id not provided in request body, try to read from cookie
         if ( empty( $session_id ) && ! is_user_logged_in() ) {
-            $cookie_name = 'wishcar_session_id';
+            $cookie_name = 'wishcart_session_id';
             if ( isset( $_COOKIE[ $cookie_name ] ) && ! empty( $_COOKIE[ $cookie_name ] ) ) {
                 $session_id = sanitize_text_field( wp_unslash( $_COOKIE[ $cookie_name ] ) );
             }
@@ -1385,7 +1385,7 @@ class WISHCAR_Admin {
      * @return WP_REST_Response
      */
     public function wishlists_update( $request ) {
-        $handler = new WISHCAR_Wishlist_Handler();
+        $handler = new wishcart_Wishlist_Handler();
         $wishlist_id = intval( $request->get_param( 'id' ) );
         $params = $request->get_json_params();
         
@@ -1415,7 +1415,7 @@ class WISHCAR_Admin {
      * @return WP_REST_Response
      */
     public function wishlists_delete( $request ) {
-        $handler = new WISHCAR_Wishlist_Handler();
+        $handler = new wishcart_Wishlist_Handler();
         $wishlist_id = intval( $request->get_param( 'id' ) );
         
         $result = $handler->delete_wishlist( $wishlist_id );
@@ -1442,7 +1442,7 @@ class WISHCAR_Admin {
      */
     public function wishlist_get_by_share_code( $request ) {
         global $wpdb;
-        $handler = new WISHCAR_Wishlist_Handler();
+        $handler = new wishcart_Wishlist_Handler();
         $share_code = sanitize_text_field( $request->get_param( 'share_code' ) );
         
         $wishlist = $handler->get_wishlist_by_share_code( $share_code );
@@ -1459,7 +1459,7 @@ class WISHCAR_Admin {
         $wishlist_id = $wishlist['id'];
         $wishlist_items = $wpdb->get_results(
             $wpdb->prepare(
-                "SELECT product_id, created_at FROM {$wpdb->prefix}wishcar_wishlist 
+                "SELECT product_id, created_at FROM {$wpdb->prefix}wishcart_wishlist 
                 WHERE wishlist_id = %d ORDER BY created_at DESC",
                 $wishlist_id
             ),
@@ -1472,7 +1472,7 @@ class WISHCAR_Admin {
             $product_id = $item['product_id'];
             $created_at = $item['created_at'];
             
-            $product = WISHCAR_FluentCart_Helper::get_product( $product_id );
+            $product = wishcart_FluentCart_Helper::get_product( $product_id );
             if ( $product ) {
                 $image_id = $product->get_image_id();
                 $image_url = $image_id ? wp_get_attachment_image_url( $image_id, 'medium' ) : '';
@@ -1514,7 +1514,7 @@ class WISHCAR_Admin {
      * @return WP_REST_Response
      */
     public function analytics_get_overview($request) {
-        $analytics = new WISHCAR_Analytics_Handler();
+        $analytics = new wishcart_Analytics_Handler();
         $overview = $analytics->get_overview();
         
         return rest_ensure_response(array(
@@ -1530,7 +1530,7 @@ class WISHCAR_Admin {
      * @return WP_REST_Response
      */
     public function analytics_get_popular_products($request) {
-        $analytics = new WISHCAR_Analytics_Handler();
+        $analytics = new wishcart_Analytics_Handler();
         $limit = $request->get_param('limit') ? intval($request->get_param('limit')) : 10;
         $order_by = $request->get_param('order_by') ? sanitize_text_field($request->get_param('order_by')) : 'wishlist_count';
         
@@ -1550,7 +1550,7 @@ class WISHCAR_Admin {
      * @return WP_REST_Response
      */
     public function analytics_get_conversion($request) {
-        $analytics = new WISHCAR_Analytics_Handler();
+        $analytics = new wishcart_Analytics_Handler();
         $funnel = $analytics->get_conversion_funnel();
         
         return rest_ensure_response(array(
@@ -1566,7 +1566,7 @@ class WISHCAR_Admin {
      * @return WP_REST_Response
      */
     public function analytics_get_links($request) {
-        $analytics = new WISHCAR_Analytics_Handler();
+        $analytics = new wishcart_Analytics_Handler();
         $link_details = $analytics->get_link_details();
         
         return rest_ensure_response(array(
@@ -1583,7 +1583,7 @@ class WISHCAR_Admin {
      * @return WP_REST_Response
      */
     public function analytics_get_product($request) {
-        $analytics = new WISHCAR_Analytics_Handler();
+        $analytics = new wishcart_Analytics_Handler();
         $product_id = intval($request->get_param('product_id'));
         $variation_id = $request->get_param('variation_id') ? intval($request->get_param('variation_id')) : 0;
         
@@ -1606,7 +1606,7 @@ class WISHCAR_Admin {
      * @return WP_REST_Response
      */
     public function share_create($request) {
-        $sharing = new WISHCAR_Sharing_Handler();
+        $sharing = new wishcart_Sharing_Handler();
         $params = $request->get_json_params();
         
         $wishlist_id = isset($params['wishlist_id']) ? intval($params['wishlist_id']) : 0;
@@ -1647,7 +1647,7 @@ class WISHCAR_Admin {
      * @return WP_REST_Response
      */
     public function share_get_stats($request) {
-        $sharing = new WISHCAR_Sharing_Handler();
+        $sharing = new wishcart_Sharing_Handler();
         $share_token = $request->get_param('share_token');
         
         $share = $sharing->get_share_by_token($share_token);
@@ -1671,7 +1671,7 @@ class WISHCAR_Admin {
      * @return WP_REST_Response
      */
     public function share_track_click($request) {
-        $sharing = new WISHCAR_Sharing_Handler();
+        $sharing = new wishcart_Sharing_Handler();
         $share_token = $request->get_param('share_token');
         
         $share = $sharing->get_share_by_token($share_token);
@@ -1697,7 +1697,7 @@ class WISHCAR_Admin {
         global $wpdb;
         
         $share_token = $request->get_param('share_token');
-        $sharing = new WISHCAR_Sharing_Handler();
+        $sharing = new wishcart_Sharing_Handler();
         
         // Get share by token
         $share = $sharing->get_share_by_token($share_token);
@@ -1738,7 +1738,7 @@ class WISHCAR_Admin {
         $products = array();
         foreach ($items as $item) {
             $product_id = $item['product_id'];
-            $product = WISHCAR_FluentCart_Helper::get_product($product_id);
+            $product = wishcart_FluentCart_Helper::get_product($product_id);
             
             if (!$product) {
                 continue;
@@ -1762,7 +1762,7 @@ class WISHCAR_Admin {
             
             // If it's a variation, get variation details
             if ($item['variation_id'] && $item['variation_id'] > 0) {
-                $variation = WISHCAR_FluentCart_Helper::get_product($item['variation_id']);
+                $variation = wishcart_FluentCart_Helper::get_product($item['variation_id']);
                 if ($variation) {
                     // For variations, update prices
                     $product_data['price'] = $variation->get_price();
@@ -1778,9 +1778,9 @@ class WISHCAR_Admin {
         $sharing->track_share_click($share['share_id']);
         
         // Log activity
-        if (class_exists('WISHCAR_Activity_Logger')) {
-            $logger = new WISHCAR_Activity_Logger();
-            $session_id = isset($_COOKIE['wishcar_session']) ? sanitize_text_field($_COOKIE['wishcar_session']) : null;
+        if (class_exists('wishcart_Activity_Logger')) {
+            $logger = new wishcart_Activity_Logger();
+            $session_id = isset($_COOKIE['wishcart_session']) ? sanitize_text_field($_COOKIE['wishcart_session']) : null;
             $ip_address = isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field($_SERVER['REMOTE_ADDR']) : null;
             $user_agent = isset($_SERVER['HTTP_USER_AGENT']) ? sanitize_text_field($_SERVER['HTTP_USER_AGENT']) : null;
             $referrer = isset($_SERVER['HTTP_REFERER']) ? esc_url_raw($_SERVER['HTTP_REFERER']) : null;
@@ -1837,7 +1837,7 @@ class WISHCAR_Admin {
      * @return WP_REST_Response
      */
     public function notifications_subscribe($request) {
-        $notifications = new WISHCAR_Notifications_Handler();
+        $notifications = new wishcart_Notifications_Handler();
         $params = $request->get_json_params();
         
         $notification_type = isset($params['notification_type']) ? sanitize_text_field($params['notification_type']) : '';
@@ -1877,7 +1877,7 @@ class WISHCAR_Admin {
             return new WP_Error('not_logged_in', __('User must be logged in', 'wish-car'), array('status' => 401));
         }
         
-        $notifications = new WISHCAR_Notifications_Handler();
+        $notifications = new wishcart_Notifications_Handler();
         $user_id = get_current_user_id();
         $status = $request->get_param('status');
         
@@ -1897,7 +1897,7 @@ class WISHCAR_Admin {
      * @return WP_REST_Response
      */
     public function notifications_get_stats($request) {
-        $notifications = new WISHCAR_Notifications_Handler();
+        $notifications = new wishcart_Notifications_Handler();
         $stats = $notifications->get_statistics();
         
         return rest_ensure_response(array(
@@ -1913,7 +1913,7 @@ class WISHCAR_Admin {
      * @return WP_REST_Response
      */
     public function activity_get_wishlist($request) {
-        $logger = new WISHCAR_Activity_Logger();
+        $logger = new wishcart_Activity_Logger();
         $wishlist_id = intval($request->get_param('wishlist_id'));
         $limit = $request->get_param('limit') ? intval($request->get_param('limit')) : 50;
         $offset = $request->get_param('offset') ? intval($request->get_param('offset')) : 0;
@@ -1934,7 +1934,7 @@ class WISHCAR_Admin {
      * @return WP_REST_Response
      */
     public function activity_get_recent($request) {
-        $logger = new WISHCAR_Activity_Logger();
+        $logger = new wishcart_Activity_Logger();
         $limit = $request->get_param('limit') ? intval($request->get_param('limit')) : 20;
         $activity_type = $request->get_param('type');
         
@@ -1954,14 +1954,14 @@ class WISHCAR_Admin {
      * @return WP_REST_Response
      */
     public function fluentcrm_get_settings($request) {
-        if (!class_exists('WISHCAR_FluentCRM_Integration')) {
+        if (!class_exists('wishcart_FluentCRM_Integration')) {
             return new WP_Error('not_available', __('FluentCRM integration not available', 'wish-car'), array('status' => 404));
         }
 
         // Clear cache to force fresh detection
-        WISHCAR_FluentCRM_Integration::clear_detection_cache();
+        wishcart_FluentCRM_Integration::clear_detection_cache();
         
-        $fluentcrm = new WISHCAR_FluentCRM_Integration();
+        $fluentcrm = new wishcart_FluentCRM_Integration();
         $settings = $fluentcrm->get_settings();
         $is_available = $fluentcrm->is_available();
 
@@ -1979,11 +1979,11 @@ class WISHCAR_Admin {
      * @return WP_REST_Response
      */
     public function fluentcrm_update_settings($request) {
-        if (!class_exists('WISHCAR_FluentCRM_Integration')) {
+        if (!class_exists('wishcart_FluentCRM_Integration')) {
             return new WP_Error('not_available', __('FluentCRM integration not available', 'wish-car'), array('status' => 404));
         }
 
-        $fluentcrm = new WISHCAR_FluentCRM_Integration();
+        $fluentcrm = new wishcart_FluentCRM_Integration();
         $params = $request->get_json_params();
         
         $result = $fluentcrm->update_settings($params);
@@ -2005,11 +2005,11 @@ class WISHCAR_Admin {
      * @return WP_REST_Response
      */
     public function fluentcrm_get_tags($request) {
-        if (!class_exists('WISHCAR_FluentCRM_Integration')) {
+        if (!class_exists('wishcart_FluentCRM_Integration')) {
             return new WP_Error('not_available', __('FluentCRM integration not available', 'wish-car'), array('status' => 404));
         }
 
-        $fluentcrm = new WISHCAR_FluentCRM_Integration();
+        $fluentcrm = new wishcart_FluentCRM_Integration();
         $tags = $fluentcrm->get_tags();
 
         return rest_ensure_response(array(
@@ -2025,11 +2025,11 @@ class WISHCAR_Admin {
      * @return WP_REST_Response
      */
     public function fluentcrm_get_lists($request) {
-        if (!class_exists('WISHCAR_FluentCRM_Integration')) {
+        if (!class_exists('wishcart_FluentCRM_Integration')) {
             return new WP_Error('not_available', __('FluentCRM integration not available', 'wish-car'), array('status' => 404));
         }
 
-        $fluentcrm = new WISHCAR_FluentCRM_Integration();
+        $fluentcrm = new wishcart_FluentCRM_Integration();
         $lists = $fluentcrm->get_lists();
 
         return rest_ensure_response(array(
@@ -2045,11 +2045,11 @@ class WISHCAR_Admin {
      * @return WP_REST_Response
      */
     public function campaigns_get($request) {
-        if (!class_exists('WISHCAR_CRM_Campaign_Handler')) {
+        if (!class_exists('wishcart_CRM_Campaign_Handler')) {
             return new WP_Error('not_available', __('Campaign handler not available', 'wish-car'), array('status' => 404));
         }
 
-        $campaign_handler = new WISHCAR_CRM_Campaign_Handler();
+        $campaign_handler = new wishcart_CRM_Campaign_Handler();
         $trigger_type = $request->get_param('trigger_type');
         $status = $request->get_param('status');
 
@@ -2094,11 +2094,11 @@ class WISHCAR_Admin {
      * @return WP_REST_Response
      */
     public function campaigns_create($request) {
-        if (!class_exists('WISHCAR_CRM_Campaign_Handler')) {
+        if (!class_exists('wishcart_CRM_Campaign_Handler')) {
             return new WP_Error('not_available', __('Campaign handler not available', 'wish-car'), array('status' => 404));
         }
 
-        $campaign_handler = new WISHCAR_CRM_Campaign_Handler();
+        $campaign_handler = new wishcart_CRM_Campaign_Handler();
         $params = $request->get_json_params();
 
         $result = $campaign_handler->create_campaign($params);
@@ -2125,11 +2125,11 @@ class WISHCAR_Admin {
      * @return WP_REST_Response
      */
     public function campaigns_get_single($request) {
-        if (!class_exists('WISHCAR_CRM_Campaign_Handler')) {
+        if (!class_exists('wishcart_CRM_Campaign_Handler')) {
             return new WP_Error('not_available', __('Campaign handler not available', 'wish-car'), array('status' => 404));
         }
 
-        $campaign_handler = new WISHCAR_CRM_Campaign_Handler();
+        $campaign_handler = new wishcart_CRM_Campaign_Handler();
         $campaign_id = intval($request->get_param('id'));
 
         $campaign = $campaign_handler->get_campaign($campaign_id);
@@ -2151,11 +2151,11 @@ class WISHCAR_Admin {
      * @return WP_REST_Response
      */
     public function campaigns_update($request) {
-        if (!class_exists('WISHCAR_CRM_Campaign_Handler')) {
+        if (!class_exists('wishcart_CRM_Campaign_Handler')) {
             return new WP_Error('not_available', __('Campaign handler not available', 'wish-car'), array('status' => 404));
         }
 
-        $campaign_handler = new WISHCAR_CRM_Campaign_Handler();
+        $campaign_handler = new wishcart_CRM_Campaign_Handler();
         $campaign_id = intval($request->get_param('id'));
         $params = $request->get_json_params();
 
@@ -2182,7 +2182,7 @@ class WISHCAR_Admin {
      * @return WP_REST_Response
      */
     public function campaigns_delete($request) {
-        if (!class_exists('WISHCAR_CRM_Campaign_Handler')) {
+        if (!class_exists('wishcart_CRM_Campaign_Handler')) {
             return new WP_Error('not_available', __('Campaign handler not available', 'wish-car'), array('status' => 404));
         }
 
@@ -2209,11 +2209,11 @@ class WISHCAR_Admin {
      * @return WP_REST_Response
      */
     public function campaigns_get_analytics($request) {
-        if (!class_exists('WISHCAR_CRM_Campaign_Handler')) {
+        if (!class_exists('wishcart_CRM_Campaign_Handler')) {
             return new WP_Error('not_available', __('Campaign handler not available', 'wish-car'), array('status' => 404));
         }
 
-        $campaign_handler = new WISHCAR_CRM_Campaign_Handler();
+        $campaign_handler = new wishcart_CRM_Campaign_Handler();
         $campaign_id = intval($request->get_param('id'));
 
         $campaign = $campaign_handler->get_campaign($campaign_id);
@@ -2252,7 +2252,7 @@ class WISHCAR_Admin {
             ) );
         }
 
-        $guest_handler = new WISHCAR_Guest_Handler();
+        $guest_handler = new wishcart_Guest_Handler();
         $guest = $guest_handler->get_guest_by_session( $session_id );
 
         if ( $guest && ! empty( $guest['guest_email'] ) ) {
@@ -2295,7 +2295,7 @@ class WISHCAR_Admin {
             );
         }
 
-        $guest_handler = new WISHCAR_Guest_Handler();
+        $guest_handler = new wishcart_Guest_Handler();
         $result = $guest_handler->create_or_update_guest( $session_id, array(
             'guest_email' => $email,
         ) );
@@ -2309,8 +2309,8 @@ class WISHCAR_Admin {
         }
 
         // Sync to FluentCRM if available
-        if ( class_exists( 'WISHCAR_FluentCRM_Integration' ) ) {
-            $fluentcrm = new WISHCAR_FluentCRM_Integration();
+        if ( class_exists( 'wishcart_FluentCRM_Integration' ) ) {
+            $fluentcrm = new wishcart_FluentCRM_Integration();
             if ( $fluentcrm->is_available() ) {
                 $settings = $fluentcrm->get_settings();
                 if ( $settings['enabled'] ) {
@@ -2335,4 +2335,4 @@ class WISHCAR_Admin {
     }
 }
 
-WISHCAR_Admin::get_instance();
+wishcart_Admin::get_instance();

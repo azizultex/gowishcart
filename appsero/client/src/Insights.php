@@ -1,6 +1,6 @@
 <?php
 
-namespace WishCart_Ai_Chat\Appsero;
+namespace wishcart_Ai_Chat\Appsero;
 
 /**
  * Appsero Insights
@@ -34,7 +34,7 @@ class Insights {
     protected $extra_data = [];
 
     /**
-     * WishCart_Ai_Chat\AppSero\Client
+     * wishcart_Ai_Chat\AppSero\Client
      *
      * @var object
      */
@@ -58,7 +58,7 @@ class Insights {
             $client = new Client($client, $name, $file);
         }
 
-        if ( is_object($client) && is_a($client, 'WishCart_Ai_Chat\Appsero\Client') ) {
+        if ( is_object($client) && is_a($client, 'wishcart_Ai_Chat\Appsero\Client') ) {
             $this->client = $client;
         }
     }

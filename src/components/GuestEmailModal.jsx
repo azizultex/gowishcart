@@ -38,12 +38,12 @@ const GuestEmailModal = ({ isOpen, onClose, onEmailSubmitted }) => {
                 const cookies = document.cookie.split(';');
                 for (let cookie of cookies) {
                     const [name, value] = cookie.trim().split('=');
-                    if (name === 'wishcar_session_id') {
+                    if (name === 'wishcart_session_id') {
                         return value;
                     }
                 }
-                if (window.WishCartWishlist?.sessionId) {
-                    return window.WishCartWishlist.sessionId;
+                if (window.wishcartWishlist?.sessionId) {
+                    return window.wishcartWishlist.sessionId;
                 }
                 return null;
             };
@@ -51,12 +51,12 @@ const GuestEmailModal = ({ isOpen, onClose, onEmailSubmitted }) => {
             const sessionId = getSessionId();
             
             // Save email to guest user record
-            const url = `${window.WishCartWishlist.apiUrl}guest/update-email`;
+            const url = `${window.wishcartWishlist.apiUrl}guest/update-email`;
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-WP-Nonce': window.WishCartWishlist.nonce,
+                    'X-WP-Nonce': window.wishcartWishlist.nonce,
                 },
                 body: JSON.stringify({
                     email: email.trim(),
@@ -66,7 +66,7 @@ const GuestEmailModal = ({ isOpen, onClose, onEmailSubmitted }) => {
 
             if (response.ok) {
                 // Store email in localStorage to avoid asking again in this session
-                localStorage.setItem('wishcar_guest_email', email.trim());
+                localStorage.setItem('wishcart_guest_email', email.trim());
                 
                 // Call success callback
                 if (onEmailSubmitted) {

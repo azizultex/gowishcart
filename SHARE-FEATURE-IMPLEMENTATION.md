@@ -1,4 +1,4 @@
-# WishCart Share Feature Implementation Summary
+# wishcart Share Feature Implementation Summary
 
 ## Implementation Date
 November 18, 2025
@@ -46,7 +46,7 @@ Complete implementation of the wishlist sharing feature with public view pages, 
 
 #### Share Page Handler
 - **File**: `includes/class-share-page-handler.php`
-- **Class**: `WISHCART_Share_Page_Handler`
+- **Class**: `wishcart_Share_Page_Handler`
 - **Features**:
   - Detects share token in URL
   - Enqueues React component scripts
@@ -136,7 +136,7 @@ Complete implementation of the wishlist sharing feature with public view pages, 
 ```
 1. User visits /wishlist/share/{token}
 2. WordPress matches rewrite rule
-3. WISHCART_Share_Page_Handler loads
+3. wishcart_Share_Page_Handler loads
 4. Enqueues React component
 5. SharedWishlistView mounts
 6. GET /wishcart/v1/share/{token}/view
@@ -457,7 +457,7 @@ https://yoursite.com/wishlist/share/a1b2c3d4...xyz123
 
 ## 🎉 Conclusion
 
-The WishCart share feature is now **fully implemented and functional**. Users can:
+The wishcart share feature is now **fully implemented and functional**. Users can:
 - Share wishlists via unique links
 - Control privacy (private/shared/public)
 - Share on social media (Facebook, Twitter, WhatsApp)

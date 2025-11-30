@@ -7,12 +7,12 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * Handles campaign rule engine, trigger evaluation, and campaign execution
  *
  * @category WordPress
- * @package  WishCart
- * @author   WishCart Team <support@wishcart.chat>
+ * @package  wishcart
+ * @author   wishcart Team <support@wishcart.chat>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://wishcart.chat
  */
-class WISHCAR_CRM_Campaign_Handler {
+class wishcart_CRM_Campaign_Handler {
 
     private $wpdb;
     private $campaigns_table;
@@ -27,8 +27,8 @@ class WISHCAR_CRM_Campaign_Handler {
         $this->campaigns_table = $wpdb->prefix . 'fc_wishlist_crm_campaigns';
         
         // Initialize FluentCRM integration
-        if (class_exists('WISHCAR_FluentCRM_Integration')) {
-            $this->fluentcrm = new WISHCAR_FluentCRM_Integration();
+        if (class_exists('wishcart_FluentCRM_Integration')) {
+            $this->fluentcrm = new wishcart_FluentCRM_Integration();
         }
 
         // Hook into wishlist events
@@ -439,7 +439,7 @@ class WISHCAR_CRM_Campaign_Handler {
     /**
      * Build product tags from product object (supports both WooCommerce and FluentCart)
      *
-     * @param WC_Product|WISHCAR_FluentCart_Product $product Product object
+     * @param WC_Product|wishcart_FluentCart_Product $product Product object
      * @return array Array of formatted tag strings
      */
     private function build_product_tags($product) {
@@ -646,7 +646,7 @@ class WISHCAR_CRM_Campaign_Handler {
                 // Handle guest users with email addresses
                 else if (!empty($item_data['session_id'])) {
                     // Check if guest user has email in guest_users table
-                    $guest_handler = new WISHCAR_Guest_Handler();
+                    $guest_handler = new wishcart_Guest_Handler();
                     $guest = $guest_handler->get_guest_by_session($item_data['session_id']);
                     
                     if ($guest && !empty($guest['guest_email']) && is_email($guest['guest_email'])) {

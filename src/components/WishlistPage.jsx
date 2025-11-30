@@ -26,20 +26,20 @@ const WishlistPage = () => {
 
     // Get session ID from cookie
     const getSessionId = () => {
-        if (window.WishCartWishlist?.isLoggedIn) {
+        if (window.wishcartWishlist?.isLoggedIn) {
             return null;
         }
         
         const cookies = document.cookie.split(';');
         for (let cookie of cookies) {
             const [name, value] = cookie.trim().split('=');
-            if (name === 'wishcar_session_id') {
+            if (name === 'wishcart_session_id') {
                 return value;
             }
         }
 
-        if (window.WishCartWishlist?.sessionId) {
-            return window.WishCartWishlist.sessionId;
+        if (window.wishcartWishlist?.sessionId) {
+            return window.wishcartWishlist.sessionId;
         }
 
         return null;
@@ -48,27 +48,27 @@ const WishlistPage = () => {
     // Load wishlists
     useEffect(() => {
         const loadWishlists = async () => {
-            if (!window.WishCartWishlist) {
+            if (!window.wishcartWishlist) {
                 return;
             }
 
-            const shareCode = window.WishCartWishlist?.shareCode;
+            const shareCode = window.wishcartWishlist?.shareCode;
             
             // If viewing a shared wishlist, load it directly
             if (shareCode) {
                 // Debug: Log share code extraction
-                console.log('WishCart: Loading shared wishlist with share code:', shareCode);
+                console.log('wishcart: Loading shared wishlist with share code:', shareCode);
                 // Mark as loading immediately to prevent second useEffect from running
                 hasLoadedRef.current = true;
                 setIsLoadingWishlists(true);
                 setError(null); // Clear any previous errors
                 try {
-                    const url = `${window.WishCartWishlist.apiUrl}wishlist/share/${shareCode}`;
+                    const url = `${window.wishcartWishlist.apiUrl}wishlist/share/${shareCode}`;
                     
                     // Build headers - make nonce optional for public endpoints
                     const headers = {};
-                    if (window.WishCartWishlist.nonce) {
-                        headers['X-WP-Nonce'] = window.WishCartWishlist.nonce;
+                    if (window.wishcartWishlist.nonce) {
+                        headers['X-WP-Nonce'] = window.wishcartWishlist.nonce;
                     }
                     
                     const response = await fetch(url, {
@@ -128,10 +128,10 @@ const WishlistPage = () => {
             setIsLoadingWishlists(true);
             try {
                 const sessionId = getSessionId();
-                const url = `${window.WishCartWishlist.apiUrl}wishlists${sessionId ? `?session_id=${sessionId}` : ''}`;
+                const url = `${window.wishcartWishlist.apiUrl}wishlists${sessionId ? `?session_id=${sessionId}` : ''}`;
                 const response = await fetch(url, {
                     headers: {
-                        'X-WP-Nonce': window.WishCartWishlist.nonce,
+                        'X-WP-Nonce': window.wishcartWishlist.nonce,
                     },
                 });
 
@@ -160,14 +160,14 @@ const WishlistPage = () => {
     // Shared helper to load wishlist products
     const loadWishlist = useCallback(
         async (wishlistOverride = null, { forceReload = false } = {}) => {
-            if (!window.WishCartWishlist) {
+            if (!window.wishcartWishlist) {
                 setIsLoading(false);
                 return;
             }
 
             // Skip if viewing shared wishlist (already loaded in first effect)
             // IMPORTANT: If shareCode exists, completely skip this loader to prevent session_id fallback
-            const shareCode = window.WishCartWishlist?.shareCode;
+            const shareCode = window.wishcartWishlist?.shareCode;
             if (shareCode) {
                 // Share code exists - first useEffect will handle loading
                 // Don't make any session_id requests when viewing a shared wishlist
@@ -186,11 +186,11 @@ const WishlistPage = () => {
                 setIsLoading(true);
                 try {
                     const sessionId = getSessionId();
-                    const url = `${window.WishCartWishlist.apiUrl}wishlist${sessionId ? `?session_id=${sessionId}` : ''}`;
+                    const url = `${window.wishcartWishlist.apiUrl}wishlist${sessionId ? `?session_id=${sessionId}` : ''}`;
                     
                     const response = await fetch(url, {
                         headers: {
-                            'X-WP-Nonce': window.WishCartWishlist.nonce,
+                            'X-WP-Nonce': window.wishcartWishlist.nonce,
                         },
                     });
 
@@ -221,7 +221,7 @@ const WishlistPage = () => {
             setIsLoading(true);
             try {
                 const sessionId = getSessionId();
-                let url = `${window.WishCartWishlist.apiUrl}wishlist`;
+                let url = `${window.wishcartWishlist.apiUrl}wishlist`;
                 const params = new URLSearchParams();
                 
                 // Use share_code if available, otherwise use wishlist_id
@@ -239,7 +239,7 @@ const WishlistPage = () => {
                 
                 const response = await fetch(url, {
                     headers: {
-                        'X-WP-Nonce': window.WishCartWishlist.nonce,
+                        'X-WP-Nonce': window.wishcartWishlist.nonce,
                     },
                 });
 
@@ -279,17 +279,17 @@ const WishlistPage = () => {
     // Remove product from wishlist
     const removeProduct = async (productId) => {
         // Check if viewing a shared wishlist (not owned by current user)
-        const shareCode = window.WishCartWishlist?.shareCode;
+        const shareCode = window.wishcartWishlist?.shareCode;
         const isViewingShared = shareCode && currentWishlist && 
-            (currentWishlist.user_id !== window.WishCartWishlist?.userId || 
-             (currentWishlist.user_id && !window.WishCartWishlist?.isLoggedIn));
+            (currentWishlist.user_id !== window.wishcartWishlist?.userId || 
+             (currentWishlist.user_id && !window.wishcartWishlist?.isLoggedIn));
         
         if (isViewingShared) {
             alert('You can only remove items from your own wishlist');
             return;
         }
 
-        if (removingIds.has(productId) || !window.WishCartWishlist) {
+        if (removingIds.has(productId) || !window.wishcartWishlist) {
             return;
         }
 
@@ -297,7 +297,7 @@ const WishlistPage = () => {
 
         try {
             const sessionId = getSessionId();
-            const url = `${window.WishCartWishlist.apiUrl}wishlist/remove`;
+            const url = `${window.wishcartWishlist.apiUrl}wishlist/remove`;
             
             const body = {
                 product_id: productId,
@@ -312,7 +312,7 @@ const WishlistPage = () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-WP-Nonce': window.WishCartWishlist.nonce,
+                    'X-WP-Nonce': window.wishcartWishlist.nonce,
                 },
                 body: JSON.stringify(body),
             });
@@ -357,7 +357,7 @@ const WishlistPage = () => {
 
     // Add product to cart
     const addToCart = async (productId) => {
-        if (addingToCartIds.has(productId) || !window.WishCartWishlist) {
+        if (addingToCartIds.has(productId) || !window.wishcartWishlist) {
             return;
         }
 
@@ -373,7 +373,7 @@ const WishlistPage = () => {
 
             // Track the add to cart event
             const sessionId = getSessionId();
-            const trackUrl = `${window.WishCartWishlist.apiUrl}wishlist/track-cart`;
+            const trackUrl = `${window.wishcartWishlist.apiUrl}wishlist/track-cart`;
             
             const trackBody = {
                 product_id: productId,
@@ -386,7 +386,7 @@ const WishlistPage = () => {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-WP-Nonce': window.WishCartWishlist.nonce,
+                        'X-WP-Nonce': window.wishcartWishlist.nonce,
                     },
                     body: JSON.stringify(trackBody),
                 });
@@ -518,11 +518,11 @@ const WishlistPage = () => {
 
         setIsGeneratingShare(true);
         try {
-            const response = await fetch(`${window.WishCartWishlist.apiUrl}share/create`, {
+            const response = await fetch(`${window.wishcartWishlist.apiUrl}share/create`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-WP-Nonce': window.WishCartWishlist.nonce,
+                    'X-WP-Nonce': window.wishcartWishlist.nonce,
                 },
                 body: JSON.stringify({
                     wishlist_id: currentWishlist.id,
@@ -698,11 +698,11 @@ const WishlistPage = () => {
         }
 
         try {
-            const response = await fetch(`${window.WishCartWishlist.apiUrl}wishlists/${currentWishlist.id}`, {
+            const response = await fetch(`${window.wishcartWishlist.apiUrl}wishlists/${currentWishlist.id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-WP-Nonce': window.WishCartWishlist.nonce,
+                    'X-WP-Nonce': window.wishcartWishlist.nonce,
                 },
                 body: JSON.stringify({
                     privacy_status: newPrivacy,
@@ -734,7 +734,7 @@ const WishlistPage = () => {
 
     // Create new wishlist
     const createNewWishlist = async () => {
-        if (!window.WishCartWishlist) {
+        if (!window.wishcartWishlist) {
             return;
         }
 
@@ -744,11 +744,11 @@ const WishlistPage = () => {
         }
 
         try {
-            const response = await fetch(`${window.WishCartWishlist.apiUrl}wishlists`, {
+            const response = await fetch(`${window.wishcartWishlist.apiUrl}wishlists`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-WP-Nonce': window.WishCartWishlist.nonce,
+                    'X-WP-Nonce': window.wishcartWishlist.nonce,
                 },
                 body: JSON.stringify({
                     name: name,
@@ -759,9 +759,9 @@ const WishlistPage = () => {
             if (response.ok) {
                 const data = await response.json();
                 // Reload wishlists
-                const wishlistsResponse = await fetch(`${window.WishCartWishlist.apiUrl}wishlists`, {
+                const wishlistsResponse = await fetch(`${window.wishcartWishlist.apiUrl}wishlists`, {
                     headers: {
-                        'X-WP-Nonce': window.WishCartWishlist.nonce,
+                        'X-WP-Nonce': window.wishcartWishlist.nonce,
                     },
                 });
                 if (wishlistsResponse.ok) {
@@ -782,10 +782,10 @@ const WishlistPage = () => {
     };
 
     // Check if viewing shared wishlist
-    const shareCode = window.WishCartWishlist?.shareCode;
+    const shareCode = window.wishcartWishlist?.shareCode;
     const isViewingShared = shareCode && currentWishlist && 
-        (currentWishlist.user_id !== window.WishCartWishlist?.userId || 
-         (currentWishlist.user_id && !window.WishCartWishlist?.isLoggedIn));
+        (currentWishlist.user_id !== window.wishcartWishlist?.userId || 
+         (currentWishlist.user_id && !window.wishcartWishlist?.isLoggedIn));
 
     return (
         <div className="wishcart-wishlist-page">
