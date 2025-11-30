@@ -10,13 +10,13 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://wishcart.chat
  */
-class WISHCART_Shared_Wishlist_Shortcode {
+class WISHCAR_Shared_Wishlist_Shortcode {
 
     /**
      * Constructor
      */
     public function __construct() {
-        add_shortcode( 'wishcart_shared_wishlist', array( $this, 'render_shared_wishlist' ) );
+        add_shortcode( 'wishcar_shared_wishlist', array( $this, 'render_shared_wishlist' ) );
     }
 
     /**
@@ -28,7 +28,7 @@ class WISHCART_Shared_Wishlist_Shortcode {
     public function render_shared_wishlist( $atts ) {
         $atts = shortcode_atts( array(
             'token' => '',
-        ), $atts, 'wishcart_shared_wishlist' );
+        ), $atts, 'wishcar_shared_wishlist' );
 
         // Get token from query parameter if not in shortcode
         if ( empty( $atts['token'] ) ) {
@@ -38,17 +38,17 @@ class WISHCART_Shared_Wishlist_Shortcode {
         // Enqueue scripts and styles
         wp_enqueue_script(
             'wishcart-shared-wishlist',
-            WISHCART_PLUGIN_URL . 'build/wishlist-frontend.js',
+            WISHCAR_PLUGIN_URL . 'build/wishlist-frontend.js',
             array( 'wp-element', 'wp-api-fetch' ),
-            WISHCART_VERSION,
+            WISHCAR_VERSION,
             true
         );
 
         wp_enqueue_style(
             'wishcart-shared-wishlist',
-            WISHCART_PLUGIN_URL . 'build/wishlist-frontend.css',
+            WISHCAR_PLUGIN_URL . 'build/wishlist-frontend.css',
             array(),
-            WISHCART_VERSION
+            WISHCAR_VERSION
         );
 
         // Localize script with API data
@@ -70,5 +70,5 @@ class WISHCART_Shared_Wishlist_Shortcode {
     }
 }
 
-new WISHCART_Shared_Wishlist_Shortcode();
+new WISHCAR_Shared_Wishlist_Shortcode();
 

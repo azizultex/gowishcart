@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://wishcart.chat
  */
-class WISHCART_Share_Page_Handler {
+class WISHCAR_Share_Page_Handler {
 
     /**
      * Display shared wishlist
@@ -22,8 +22,8 @@ class WISHCART_Share_Page_Handler {
      */
     public function display_shared_wishlist($share_token) {
         // Enqueue necessary scripts and styles
-        wp_enqueue_style('wishcart-shared-wishlist', WISHCART_PLUGIN_URL . 'build/wishlist-frontend.css', array(), WISHCART_VERSION);
-        wp_enqueue_script('wishcart-shared-wishlist', WISHCART_PLUGIN_URL . 'build/wishlist-frontend.js', array('wp-element'), WISHCART_VERSION, true);
+        wp_enqueue_style('wishcart-shared-wishlist', WISHCAR_PLUGIN_URL . 'build/wishlist-frontend.css', array(), WISHCAR_VERSION);
+        wp_enqueue_script('wishcart-shared-wishlist', WISHCAR_PLUGIN_URL . 'build/wishlist-frontend.js', array('wp-element'), WISHCAR_VERSION, true);
         
         // Localize script with API data
         wp_localize_script('wishcart-shared-wishlist', 'WishCartShared', array(

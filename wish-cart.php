@@ -9,7 +9,7 @@
  * Author:      WishCart Team <support@wishcart.chat>
  * Author URI:  https://wishcart.chat/
  * Contributors: wishcart, zrshishir, sabbirxprt
- * Text Domain:  wish-cart
+ * Text Domain:  wish-car
  * Domain Path: /languages/
  * License: GPL2
  * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
@@ -63,14 +63,14 @@ if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
  * @license  GPL-2.0+ http://www.gnu.org/licenses/gpl-2.0.txt
  * @link     https://wishcart.chat
  */
-class WISHCART_Wishlist {
+class WISHCAR_Wishlist {
 
     private static $instance = null;
 
     /**
      * Get singleton instance of this class
      *
-     * @return WISHCART_Wishlist Instance of this class
+     * @return WISHCAR_Wishlist Instance of this class
      */
     public static function get_instance() {
         if ( null === self::$instance ) {
@@ -84,11 +84,11 @@ class WISHCART_Wishlist {
      */
     private function __construct() {
         // Define constants
-        define('WISHCART_PLUGIN_FILE', __FILE__);
-        define('WISHCART_VERSION', '1.0.0');
-        define('WISHCART_PLUGIN_DIR', plugin_dir_path(__FILE__));
-        define('WISHCART_PLUGIN_URL', plugin_dir_url(__FILE__));
-        define('WISHCART_TEXT_DOMAIN', 'wish-cart');
+        define('WISHCAR_PLUGIN_FILE', __FILE__);
+        define('WISHCAR_VERSION', '1.0.0');
+        define('WISHCAR_PLUGIN_DIR', plugin_dir_path(__FILE__));
+        define('WISHCAR_PLUGIN_URL', plugin_dir_url(__FILE__));
+        define('WISHCAR_TEXT_DOMAIN', 'wish-car');
 
 
         // Initialize components
@@ -111,10 +111,10 @@ class WISHCART_Wishlist {
         add_action('deactivated_plugin', [ $this, 'clear_fluentcart_cache' ]);
         
         // Add custom cron schedules
-        add_filter('cron_schedules', [ 'WISHCART_Cron_Handler', 'add_cron_schedules' ]);
+        add_filter('cron_schedules', [ 'WISHCAR_Cron_Handler', 'add_cron_schedules' ]);
         
         // Initialize cron handler
-        new WISHCART_Cron_Handler();
+        new WISHCAR_Cron_Handler();
     }
 
     /**
@@ -128,8 +128,8 @@ class WISHCART_Wishlist {
         if ( strpos( $plugin, 'fluentcart' ) !== false || 
              strpos( $plugin, 'fluent-cart' ) !== false ||
              strpos( $plugin, 'wish-cart' ) !== false ) {
-            if ( class_exists( 'WISHCART_FluentCart_Helper' ) ) {
-                WISHCART_FluentCart_Helper::clear_detection_cache();
+            if ( class_exists( 'WISHCAR_FluentCart_Helper' ) ) {
+                WISHCAR_FluentCart_Helper::clear_detection_cache();
             }
         }
     }
@@ -141,82 +141,82 @@ class WISHCART_Wishlist {
      */
     private function load_dependencies() {
         // Core classes
-        include_once WISHCART_PLUGIN_DIR . 'includes/class-database.php';
-        include_once WISHCART_PLUGIN_DIR . 'includes/class-database-migration.php';
-        include_once WISHCART_PLUGIN_DIR . 'includes/class-fluentcart-helper.php';
+        include_once WISHCAR_PLUGIN_DIR . 'includes/class-database.php';
+        include_once WISHCAR_PLUGIN_DIR . 'includes/class-database-migration.php';
+        include_once WISHCAR_PLUGIN_DIR . 'includes/class-fluentcart-helper.php';
         
         // Handler classes
-        include_once WISHCART_PLUGIN_DIR . 'includes/class-wishlist-handler.php';
-        include_once WISHCART_PLUGIN_DIR . 'includes/class-analytics-handler.php';
-        include_once WISHCART_PLUGIN_DIR . 'includes/class-sharing-handler.php';
-        include_once WISHCART_PLUGIN_DIR . 'includes/class-notifications-handler.php';
-        include_once WISHCART_PLUGIN_DIR . 'includes/class-activity-logger.php';
-        include_once WISHCART_PLUGIN_DIR . 'includes/class-guest-handler.php';
-        include_once WISHCART_PLUGIN_DIR . 'includes/class-cron-handler.php';
-        include_once WISHCART_PLUGIN_DIR . 'includes/class-cart-tracking.php';
+        include_once WISHCAR_PLUGIN_DIR . 'includes/class-wishlist-handler.php';
+        include_once WISHCAR_PLUGIN_DIR . 'includes/class-analytics-handler.php';
+        include_once WISHCAR_PLUGIN_DIR . 'includes/class-sharing-handler.php';
+        include_once WISHCAR_PLUGIN_DIR . 'includes/class-notifications-handler.php';
+        include_once WISHCAR_PLUGIN_DIR . 'includes/class-activity-logger.php';
+        include_once WISHCAR_PLUGIN_DIR . 'includes/class-guest-handler.php';
+        include_once WISHCAR_PLUGIN_DIR . 'includes/class-cron-handler.php';
+        include_once WISHCAR_PLUGIN_DIR . 'includes/class-cart-tracking.php';
         
         // FluentCRM integration classes
-        include_once WISHCART_PLUGIN_DIR . 'includes/class-fluentcrm-integration.php';
-        include_once WISHCART_PLUGIN_DIR . 'includes/class-fluentcrm-triggers.php';
-        include_once WISHCART_PLUGIN_DIR . 'includes/class-fluentcrm-smartcode.php';
-        include_once WISHCART_PLUGIN_DIR . 'includes/class-crm-campaign-handler.php';
+        include_once WISHCAR_PLUGIN_DIR . 'includes/class-fluentcrm-integration.php';
+        include_once WISHCAR_PLUGIN_DIR . 'includes/class-fluentcrm-triggers.php';
+        include_once WISHCAR_PLUGIN_DIR . 'includes/class-fluentcrm-smartcode.php';
+        include_once WISHCAR_PLUGIN_DIR . 'includes/class-crm-campaign-handler.php';
         
         // FluentCRM trigger classes (only load if FluentCRM BaseTrigger exists)
         if ( class_exists( '\FluentCrm\App\Services\Funnel\BaseTrigger' ) ) {
-            include_once WISHCART_PLUGIN_DIR . 'includes/triggers/class-item-added-trigger.php';
-            include_once WISHCART_PLUGIN_DIR . 'includes/triggers/class-item-removed-trigger.php';
-            include_once WISHCART_PLUGIN_DIR . 'includes/triggers/class-price-drop-trigger.php';
-            include_once WISHCART_PLUGIN_DIR . 'includes/triggers/class-back-in-stock-trigger.php';
+            include_once WISHCAR_PLUGIN_DIR . 'includes/triggers/class-item-added-trigger.php';
+            include_once WISHCAR_PLUGIN_DIR . 'includes/triggers/class-item-removed-trigger.php';
+            include_once WISHCAR_PLUGIN_DIR . 'includes/triggers/class-price-drop-trigger.php';
+            include_once WISHCAR_PLUGIN_DIR . 'includes/triggers/class-back-in-stock-trigger.php';
         }
         
         // Frontend classes
-        include_once WISHCART_PLUGIN_DIR . 'includes/class-wishlist-frontend.php';
-        include_once WISHCART_PLUGIN_DIR . 'includes/class-wishlist-page.php';
-        include_once WISHCART_PLUGIN_DIR . 'includes/class-shared-wishlist-page.php';
-        include_once WISHCART_PLUGIN_DIR . 'includes/class-share-page-handler.php';
-        include_once WISHCART_PLUGIN_DIR . 'includes/shortcodes/class-wishlist-shortcode.php';
-        include_once WISHCART_PLUGIN_DIR . 'includes/shortcodes/class-shared-wishlist-shortcode.php';
+        include_once WISHCAR_PLUGIN_DIR . 'includes/class-wishlist-frontend.php';
+        include_once WISHCAR_PLUGIN_DIR . 'includes/class-wishlist-page.php';
+        include_once WISHCAR_PLUGIN_DIR . 'includes/class-shared-wishlist-page.php';
+        include_once WISHCAR_PLUGIN_DIR . 'includes/class-share-page-handler.php';
+        include_once WISHCAR_PLUGIN_DIR . 'includes/shortcodes/class-wishlist-shortcode.php';
+        include_once WISHCAR_PLUGIN_DIR . 'includes/shortcodes/class-shared-wishlist-shortcode.php';
         
         // Admin class
-        include_once WISHCART_PLUGIN_DIR . 'includes/class-wishcart-admin.php';
+        include_once WISHCAR_PLUGIN_DIR . 'includes/class-wishcart-admin.php';
 
         // Initialize admin/API class so REST routes register for all requests
-        WISHCART_Admin::get_instance();
+        WISHCAR_Admin::get_instance();
 
         // Initialize frontend handler
-        new WISHCART_Wishlist_Frontend();
+        new WISHCAR_Wishlist_Frontend();
 
         // Initialize wishlist page handler (for rewrite rules)
-        new WISHCART_Wishlist_Page();
+        new WISHCAR_Wishlist_Page();
         
         // Initialize FluentCRM integration if available
-        if (class_exists('WISHCART_FluentCRM_Integration')) {
-            new WISHCART_FluentCRM_Integration();
+        if (class_exists('WISHCAR_FluentCRM_Integration')) {
+            new WISHCAR_FluentCRM_Integration();
         }
 
         // Initialize FluentCRM triggers if available
-        if (class_exists('WISHCART_FluentCRM_Triggers')) {
-            new WISHCART_FluentCRM_Triggers();
+        if (class_exists('WISHCAR_FluentCRM_Triggers')) {
+            new WISHCAR_FluentCRM_Triggers();
         }
 
         // Initialize FluentCRM SmartCode (dynamic shortcodes for email editor)
-        if (class_exists('WISHCART_FluentCRM_SmartCode')) {
-            new WISHCART_FluentCRM_SmartCode();
+        if (class_exists('WISHCAR_FluentCRM_SmartCode')) {
+            new WISHCAR_FluentCRM_SmartCode();
         }
         
         // Initialize CRM campaign handler
-        if (class_exists('WISHCART_CRM_Campaign_Handler')) {
-            new WISHCART_CRM_Campaign_Handler();
+        if (class_exists('WISHCAR_CRM_Campaign_Handler')) {
+            new WISHCAR_CRM_Campaign_Handler();
         }
 
         // Initialize cart and purchase tracking
-        if (class_exists('WISHCART_Cart_Tracking')) {
-            new WISHCART_Cart_Tracking();
+        if (class_exists('WISHCAR_Cart_Tracking')) {
+            new WISHCAR_Cart_Tracking();
         }
 
         // Ensure database tables exist even after updates (without reactivation)
         // Safe to call: dbDelta is idempotent
-        try { new WISHCART_Database(); } catch ( \Throwable $e ) {}
+        try { new WISHCAR_Database(); } catch ( \Throwable $e ) {}
     }
 
     /**
@@ -226,16 +226,16 @@ class WISHCART_Wishlist {
      */
     public function activate() {
         // Ensure database tables exist
-        new WISHCART_Database();
+        new WISHCAR_Database();
         
         // Create wishlist page
-        WISHCART_Wishlist_Page::create_wishlist_page();
+        WISHCAR_Wishlist_Page::create_wishlist_page();
         
         // Create shared wishlist page
-        WISHCART_Shared_Wishlist_Page::create_shared_page();
+        WISHCAR_Shared_Wishlist_Page::create_shared_page();
         
         // Schedule cron events
-        WISHCART_Cron_Handler::schedule_events();
+        WISHCAR_Cron_Handler::schedule_events();
         
         // Flush rewrite rules to register new routes
         flush_rewrite_rules();
@@ -248,7 +248,7 @@ class WISHCART_Wishlist {
      */
     public static function deactivate() {
         // Unschedule cron events
-        WISHCART_Cron_Handler::unschedule_events();
+        WISHCAR_Cron_Handler::unschedule_events();
         
         // Flush rewrite rules
         flush_rewrite_rules();
@@ -257,4 +257,4 @@ class WISHCART_Wishlist {
 }
 
 // Initialize the plugin
-WISHCART_Wishlist::get_instance();
+WISHCAR_Wishlist::get_instance();

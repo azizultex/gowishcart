@@ -96,9 +96,9 @@ const FluentCRMSettings = () => {
                 <div className="fluentcart-notice fluentcart-notice-warning">
                     <AlertCircle style={{width: '18px', height: '18px', flexShrink: 0}} />
                     <div>
-                        <strong>{__('FluentCRM Not Available', 'wish-cart')}</strong>
+                        <strong>{__('FluentCRM Not Available', 'wish-car')}</strong>
                         <p style={{margin: '4px 0 0'}}>
-                            {__('FluentCRM plugin is not installed or activated. Please install FluentCRM to use this integration.', 'wish-cart')}
+                            {__('FluentCRM plugin is not installed or activated. Please install FluentCRM to use this integration.', 'wish-car')}
                         </p>
                     </div>
                 </div>
@@ -111,21 +111,21 @@ const FluentCRMSettings = () => {
             {saveMessage === 'success' && (
                 <div className="fluentcart-notice fluentcart-notice-success">
                     <CheckCircle2 style={{width: '18px', height: '18px', flexShrink: 0}} />
-                    <span>{__('Settings saved successfully!', 'wish-cart')}</span>
+                    <span>{__('Settings saved successfully!', 'wish-car')}</span>
                 </div>
             )}
 
             {saveMessage === 'error' && (
                 <div className="fluentcart-notice fluentcart-notice-error">
                     <XCircle style={{width: '18px', height: '18px', flexShrink: 0}} />
-                    <span>{__('Failed to save settings. Please try again.', 'wish-cart')}</span>
+                    <span>{__('Failed to save settings. Please try again.', 'wish-car')}</span>
                 </div>
             )}
 
             <div className="wishcart-toggle-row">
                 <div className="toggle-info">
-                    <h4>{__('Enable FluentCRM Integration', 'wish-cart')}</h4>
-                    <p>{__('Activate FluentCRM integration for automated campaigns, contact creation, welcome emails, price drops, back-in-stock alerts, time-based reminders, and progressive discounts', 'wish-cart')}</p>
+                    <h4>{__('Enable FluentCRM Integration', 'wish-car')}</h4>
+                    <p>{__('Activate FluentCRM integration for automated campaigns, contact creation, welcome emails, price drops, back-in-stock alerts, time-based reminders, and progressive discounts', 'wish-car')}</p>
                 </div>
                 <div className="toggle-control">
                     <Switch
@@ -140,12 +140,12 @@ const FluentCRMSettings = () => {
                 <Lock style={{width: '18px', height: '18px', flexShrink: 0}} />
                 <div style={{flex: 1}}>
                     <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px'}}>
-                        <strong>{__('REST API Credentials', 'wish-cart')}</strong>
-                        <span className="fluentcart-badge fluentcart-badge-warning">{__('PRO', 'wish-cart')}</span>
-                        <span className="fluentcart-badge fluentcart-badge-info">{__('COMING SOON', 'wish-cart')}</span>
+                        <strong>{__('REST API Credentials', 'wish-car')}</strong>
+                        <span className="fluentcart-badge fluentcart-badge-warning">{__('PRO', 'wish-car')}</span>
+                        <span className="fluentcart-badge fluentcart-badge-info">{__('COMING SOON', 'wish-car')}</span>
                     </div>
-                    <p style={{fontSize: '13px', margin: '0'}}>{__('This feature is available in WishCart Pro', 'wish-cart')}</p>
-                    <p style={{fontSize: '13px', margin: '4px 0 0', color: 'var(--fluentcart-text-muted)'}}>{__('Please upgrade to get all the advanced features.', 'wish-cart')}</p>
+                    <p style={{fontSize: '13px', margin: '0'}}>{__('This feature is available in WishCart Pro', 'wish-car')}</p>
+                    <p style={{fontSize: '13px', margin: '4px 0 0', color: 'var(--fluentcart-text-muted)'}}>{__('Please upgrade to get all the advanced features.', 'wish-car')}</p>
                 </div>
             </div>
 
@@ -155,7 +155,7 @@ const FluentCRMSettings = () => {
                     disabled={saving}
                     className="fluentcart-button fluentcart-button-primary"
                 >
-                    {saving ? __('Saving...', 'wish-cart') : __('Save Settings', 'wish-cart')}
+                    {saving ? __('Saving...', 'wish-car') : __('Save Settings', 'wish-car')}
                 </button>
             </div>
         </div>

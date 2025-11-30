@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://wishcart.chat
  */
-class WISHCART_Wishlist_Page {
+class WISHCAR_Wishlist_Page {
 
     /**
      * Constructor - Initialize rewrite rules
@@ -81,8 +81,8 @@ class WISHCART_Wishlist_Page {
 
         if ( ! $page_id ) {
             $page_data = array(
-                'post_title'   => __( 'Wishlist', 'wish-cart' ),
-                'post_content' => '[wishcart_wishlist]',
+                'post_title'   => __( 'Wishlist', 'wish-car' ),
+                'post_content' => '[wishcar_wishlist]',
                 'post_status'  => 'publish',
                 'post_type'    => 'page',
                 'post_name'    => 'wishlist',
@@ -99,7 +99,7 @@ class WISHCART_Wishlist_Page {
         }
 
         if ( $page_id ) {
-            update_option( 'wishcart_wishlist_page_id', $page_id );
+            update_option( 'wishcar_wishlist_page_id', $page_id );
             self::ensure_default_settings( $page_id );
         }
 
@@ -112,14 +112,14 @@ class WISHCART_Wishlist_Page {
      * @return int Page ID
      */
     public static function get_wishlist_page_id() {
-        $settings = get_option( 'wishcart_settings', array() );
+        $settings = get_option( 'wishcar_settings', array() );
         
         if ( isset( $settings['wishlist']['wishlist_page_id'] ) && $settings['wishlist']['wishlist_page_id'] > 0 ) {
             return intval( $settings['wishlist']['wishlist_page_id'] );
         }
 
         // Fallback to option
-        return intval( get_option( 'wishcart_wishlist_page_id', 0 ) );
+        return intval( get_option( 'wishcar_wishlist_page_id', 0 ) );
     }
 
     /**
@@ -128,13 +128,13 @@ class WISHCART_Wishlist_Page {
      * @return int Page ID
      */
     private static function locate_existing_page() {
-        $stored_id = intval( get_option( 'wishcart_wishlist_page_id', 0 ) );
+        $stored_id = intval( get_option( 'wishcar_wishlist_page_id', 0 ) );
 
         if ( $stored_id && get_post( $stored_id ) ) {
             return $stored_id;
         }
 
-        $settings = get_option( 'wishcart_settings', array() );
+        $settings = get_option( 'wishcar_settings', array() );
         if ( isset( $settings['wishlist']['wishlist_page_id'] ) ) {
             $settings_id = intval( $settings['wishlist']['wishlist_page_id'] );
             if ( $settings_id && get_post( $settings_id ) ) {
@@ -186,8 +186,8 @@ class WISHCART_Wishlist_Page {
         }
 
         $content = $page->post_content ?? '';
-        if ( strpos( $content, '[wishcart_wishlist]' ) === false ) {
-            $content                     = trim( $content . "\n\n[wishcart_wishlist]\n" );
+        if ( strpos( $content, '[wishcar_wishlist]' ) === false ) {
+            $content                     = trim( $content . "\n\n[wishcar_wishlist]\n" );
             $updated_data['post_content'] = $content;
             $needs_update                = true;
         }
@@ -209,7 +209,7 @@ class WISHCART_Wishlist_Page {
      * @return void
      */
     private static function ensure_default_settings( $page_id ) {
-        $settings          = get_option( 'wishcart_settings', array() );
+        $settings          = get_option( 'wishcar_settings', array() );
         $wishlist_defaults = self::get_default_settings( $page_id );
 
         if ( ! isset( $settings['wishlist'] ) || ! is_array( $settings['wishlist'] ) ) {
@@ -219,7 +219,7 @@ class WISHCART_Wishlist_Page {
         $settings['wishlist'] = wp_parse_args( $settings['wishlist'], $wishlist_defaults );
         $settings['wishlist']['wishlist_page_id'] = intval( $page_id );
 
-        update_option( 'wishcart_settings', $settings );
+        update_option( 'wishcar_settings', $settings );
     }
 
     /**
@@ -257,8 +257,8 @@ class WISHCART_Wishlist_Page {
                     'customUrl'  => '',
                 ),
                 'labels' => array(
-                    'add'    => __( 'Add to Wishlist', 'wish-cart' ),
-                    'saved'  => __( 'Saved to Wishlist', 'wish-cart' ),
+                    'add'    => __( 'Add to Wishlist', 'wish-car' ),
+                    'saved'  => __( 'Saved to Wishlist', 'wish-car' ),
                 ),
             ),
         );

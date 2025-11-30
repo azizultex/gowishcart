@@ -38,7 +38,7 @@ const GuestEmailModal = ({ isOpen, onClose, onEmailSubmitted }) => {
                 const cookies = document.cookie.split(';');
                 for (let cookie of cookies) {
                     const [name, value] = cookie.trim().split('=');
-                    if (name === 'wishcart_session_id') {
+                    if (name === 'wishcar_session_id') {
                         return value;
                     }
                 }
@@ -66,7 +66,7 @@ const GuestEmailModal = ({ isOpen, onClose, onEmailSubmitted }) => {
 
             if (response.ok) {
                 // Store email in localStorage to avoid asking again in this session
-                localStorage.setItem('wishcart_guest_email', email.trim());
+                localStorage.setItem('wishcar_guest_email', email.trim());
                 
                 // Call success callback
                 if (onEmailSubmitted) {

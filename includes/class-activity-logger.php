@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://wishcart.chat
  */
-class WISHCART_Activity_Logger {
+class WISHCAR_Activity_Logger {
 
     private $wpdb;
     private $activities_table;
@@ -43,7 +43,7 @@ class WISHCART_Activity_Logger {
         );
 
         if (!in_array($activity_type, $valid_types)) {
-            return new WP_Error('invalid_type', __('Invalid activity type', 'wish-cart'));
+            return new WP_Error('invalid_type', __('Invalid activity type', 'wish-car'));
         }
 
         $user_id = is_user_logged_in() ? get_current_user_id() : null;
@@ -51,7 +51,7 @@ class WISHCART_Activity_Logger {
 
         if (!$user_id) {
             // Get session ID for guests
-            $cookie_name = 'wishcart_session_id';
+            $cookie_name = 'wishcar_session_id';
             if (isset($_COOKIE[$cookie_name])) {
                 $session_id = sanitize_text_field(wp_unslash($_COOKIE[$cookie_name]));
             }
@@ -84,7 +84,7 @@ class WISHCART_Activity_Logger {
         $result = $this->wpdb->insert($this->activities_table, $data, $format);
 
         if (false === $result) {
-            return new WP_Error('db_error', __('Failed to log activity', 'wish-cart'));
+            return new WP_Error('db_error', __('Failed to log activity', 'wish-car'));
         }
 
         return $this->wpdb->insert_id;
@@ -145,15 +145,15 @@ class WISHCART_Activity_Logger {
             // Add user name if user_id exists
             if ($activity['user_id']) {
                 $user = get_userdata($activity['user_id']);
-                $enriched['user_name'] = $user ? $user->display_name : __('Unknown User', 'wish-cart');
+                $enriched['user_name'] = $user ? $user->display_name : __('Unknown User', 'wish-car');
             } else {
-                $enriched['user_name'] = __('Guest', 'wish-cart');
+                $enriched['user_name'] = __('Guest', 'wish-car');
             }
 
             // Add product name if object_type is product
             if ($activity['object_type'] === 'product' && $activity['object_id']) {
-                $product = WISHCART_FluentCart_Helper::get_product($activity['object_id']);
-                $enriched['product_name'] = $product ? $product->get_name() : __('Unknown Product', 'wish-cart');
+                $product = WISHCAR_FluentCart_Helper::get_product($activity['object_id']);
+                $enriched['product_name'] = $product ? $product->get_name() : __('Unknown Product', 'wish-car');
             }
 
             // Parse activity_data if it's JSON
@@ -242,9 +242,9 @@ class WISHCART_Activity_Logger {
             // Add user name
             if ($activity['user_id']) {
                 $user = get_userdata($activity['user_id']);
-                $enriched['user_name'] = $user ? $user->display_name : __('Unknown User', 'wish-cart');
+                $enriched['user_name'] = $user ? $user->display_name : __('Unknown User', 'wish-car');
             } else {
-                $enriched['user_name'] = __('Guest', 'wish-cart');
+                $enriched['user_name'] = __('Guest', 'wish-car');
             }
 
             // Add wishlist name
@@ -257,13 +257,13 @@ class WISHCART_Activity_Logger {
                     ),
                     ARRAY_A
                 );
-                $enriched['wishlist_name'] = $wishlist ? $wishlist['wishlist_name'] : __('Unknown Wishlist', 'wish-cart');
+                $enriched['wishlist_name'] = $wishlist ? $wishlist['wishlist_name'] : __('Unknown Wishlist', 'wish-car');
             }
 
             // Add object name based on type
             if ($activity['object_type'] === 'product' && $activity['object_id']) {
-                $product = WISHCART_FluentCart_Helper::get_product($activity['object_id']);
-                $enriched['object_name'] = $product ? $product->get_name() : __('Unknown Product', 'wish-cart');
+                $product = WISHCAR_FluentCart_Helper::get_product($activity['object_id']);
+                $enriched['object_name'] = $product ? $product->get_name() : __('Unknown Product', 'wish-car');
             }
 
             // Parse activity_data if it's JSON
@@ -440,7 +440,7 @@ class WISHCART_Activity_Logger {
         );
 
         if (false === $result) {
-            return new WP_Error('db_error', __('Failed to delete user activities', 'wish-cart'));
+            return new WP_Error('db_error', __('Failed to delete user activities', 'wish-car'));
         }
 
         return true;

@@ -25,7 +25,7 @@ const WishlistSelectorModal = ({ isOpen, onClose, productId, onSuccess }) => {
         const cookies = document.cookie.split(';');
         for (let cookie of cookies) {
             const [name, value] = cookie.trim().split('=');
-            if (name === 'wishcart_session_id') {
+            if (name === 'wishcar_session_id') {
                 return value;
             }
         }
@@ -45,7 +45,7 @@ const WishlistSelectorModal = ({ isOpen, onClose, productId, onSuccess }) => {
         }
 
         // Check localStorage first
-        const storedEmail = localStorage.getItem('wishcart_guest_email');
+        const storedEmail = localStorage.getItem('wishcar_guest_email');
         if (storedEmail) {
             setGuestEmail(storedEmail);
             return false;
@@ -69,7 +69,7 @@ const WishlistSelectorModal = ({ isOpen, onClose, productId, onSuccess }) => {
                 const data = await response.json();
                 if (data.has_email && data.email) {
                     setGuestEmail(data.email);
-                    localStorage.setItem('wishcart_guest_email', data.email);
+                    localStorage.setItem('wishcar_guest_email', data.email);
                     return false;
                 }
             }

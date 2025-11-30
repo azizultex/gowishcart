@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://wishcart.chat
  */
-class WISHCART_Back_In_Stock_Trigger extends \FluentCrm\App\Services\Funnel\BaseTrigger {
+class WISHCAR_Back_In_Stock_Trigger extends \FluentCrm\App\Services\Funnel\BaseTrigger {
 
     /**
      * Constructor
@@ -31,13 +31,13 @@ class WISHCART_Back_In_Stock_Trigger extends \FluentCrm\App\Services\Funnel\Base
      */
     public function getTrigger() {
         return array(
-            'category'      => __( 'WishCart', 'wish-cart' ),
-            'label'         => __( 'Item Back in Stock', 'wish-cart' ) . ' (' . __( 'Upcoming', 'wish-cart' ) . ')',
-            'description'  => __( 'This funnel will be initiated when a product in a wishlist comes back in stock', 'wish-cart' ),
+            'category'      => __( 'WishCart', 'wish-car' ),
+            'label'         => __( 'Item Back in Stock', 'wish-car' ) . ' (' . __( 'Upcoming', 'wish-car' ) . ')',
+            'description'  => __( 'This funnel will be initiated when a product in a wishlist comes back in stock', 'wish-car' ),
             'icon'          => 'fc-icon-heart',
             'upcoming'      => true,
-            'upcoming_label' => __( 'Upcoming', 'wish-cart' ),
-            'badge'         => __( 'Upcoming', 'wish-cart' ),
+            'upcoming_label' => __( 'Upcoming', 'wish-car' ),
+            'badge'         => __( 'Upcoming', 'wish-car' ),
             'is_pro'        => false,
             'disabled'      => true,
             'is_disabled'   => true,

@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://wishcart.chat
  */
-class WISHCART_Shared_Wishlist_Page {
+class WISHCAR_Shared_Wishlist_Page {
 
     /**
      * Create default shared wishlist page on activation
@@ -24,7 +24,7 @@ class WISHCART_Shared_Wishlist_Page {
 
         if ( ! $page_id ) {
             $page_data = array(
-                'post_title'   => __( 'Shared Wishlist', 'wish-cart' ),
+                'post_title'   => __( 'Shared Wishlist', 'wish-car' ),
                 'post_content' => '[wishcart_shared_wishlist]',
                 'post_status'  => 'publish',
                 'post_type'    => 'page',
@@ -55,7 +55,7 @@ class WISHCART_Shared_Wishlist_Page {
      * @return int Page ID
      */
     public static function get_shared_page_id() {
-        $settings = get_option( 'wishcart_settings', array() );
+        $settings = get_option( 'wishcar_settings', array() );
         
         if ( isset( $settings['wishlist']['shared_wishlist_page_id'] ) && $settings['wishlist']['shared_wishlist_page_id'] > 0 ) {
             return intval( $settings['wishlist']['shared_wishlist_page_id'] );
@@ -77,7 +77,7 @@ class WISHCART_Shared_Wishlist_Page {
             return $stored_id;
         }
 
-        $settings = get_option( 'wishcart_settings', array() );
+        $settings = get_option( 'wishcar_settings', array() );
         if ( isset( $settings['wishlist']['shared_wishlist_page_id'] ) ) {
             $settings_id = intval( $settings['wishlist']['shared_wishlist_page_id'] );
             if ( $settings_id && get_post( $settings_id ) ) {
@@ -152,7 +152,7 @@ class WISHCART_Shared_Wishlist_Page {
      * @return void
      */
     private static function ensure_default_settings( $page_id ) {
-        $settings = get_option( 'wishcart_settings', array() );
+        $settings = get_option( 'wishcar_settings', array() );
 
         if ( ! isset( $settings['wishlist'] ) || ! is_array( $settings['wishlist'] ) ) {
             $settings['wishlist'] = array();
@@ -160,7 +160,7 @@ class WISHCART_Shared_Wishlist_Page {
 
         $settings['wishlist']['shared_wishlist_page_id'] = intval( $page_id );
 
-        update_option( 'wishcart_settings', $settings );
+        update_option( 'wishcar_settings', $settings );
     }
 
     /**

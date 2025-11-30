@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://wishcart.chat
  */
-class WISHCART_Price_Drop_Trigger extends \FluentCrm\App\Services\Funnel\BaseTrigger {
+class WISHCAR_Price_Drop_Trigger extends \FluentCrm\App\Services\Funnel\BaseTrigger {
 
     /**
      * Constructor
@@ -31,13 +31,13 @@ class WISHCART_Price_Drop_Trigger extends \FluentCrm\App\Services\Funnel\BaseTri
      */
     public function getTrigger() {
         return array(
-            'category'      => __( 'WishCart', 'wish-cart' ),
-            'label'         => __( 'Price Drop on Wishlist Item', 'wish-cart' ) . ' (' . __( 'Upcoming', 'wish-cart' ) . ')',
-            'description'  => __( 'This funnel will be initiated when a product in a wishlist has a price drop', 'wish-cart' ),
+            'category'      => __( 'WishCart', 'wish-car' ),
+            'label'         => __( 'Price Drop on Wishlist Item', 'wish-car' ) . ' (' . __( 'Upcoming', 'wish-car' ) . ')',
+            'description'  => __( 'This funnel will be initiated when a product in a wishlist has a price drop', 'wish-car' ),
             'icon'          => 'fc-icon-heart',
             'upcoming'      => true,
-            'upcoming_label' => __( 'Upcoming', 'wish-cart' ),
-            'badge'         => __( 'Upcoming', 'wish-cart' ),
+            'upcoming_label' => __( 'Upcoming', 'wish-car' ),
+            'badge'         => __( 'Upcoming', 'wish-car' ),
             'is_pro'        => false,
             'disabled'      => true,
             'is_disabled'   => true,

@@ -34,8 +34,8 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                 customUrl: '',
             },
             labels: {
-                add: __('Add to Wishlist', 'wish-cart'),
-                saved: __('Saved to Wishlist', 'wish-cart'),
+                add: __('Add to Wishlist', 'wish-car'),
+                saved: __('Saved to Wishlist', 'wish-car'),
             },
         },
     };
@@ -89,8 +89,8 @@ const WishlistSettings = ({ settings, updateSettings }) => {
             {/* Enable Wishlist */}
             <div className="wishcart-toggle-row">
                 <div className="toggle-info">
-                    <h4>{__('Enable Wishlist', 'wish-cart')}</h4>
-                    <p>{__('Enable or disable wishlist functionality', 'wish-cart')}</p>
+                    <h4>{__('Enable Wishlist', 'wish-car')}</h4>
+                    <p>{__('Enable or disable wishlist functionality', 'wish-car')}</p>
                 </div>
                 <div className="toggle-control">
                     <Switch
@@ -104,8 +104,8 @@ const WishlistSettings = ({ settings, updateSettings }) => {
             {/* Enable Multiple Wishlists */}
             <div className="wishcart-toggle-row">
                 <div className="toggle-info">
-                    <h4>{__('Enable Multiple Wishlists', 'wish-cart')}</h4>
-                    <p>{__('Allow users to create and manage multiple wishlists. When disabled, products are added directly to the default wishlist.', 'wish-cart')}</p>
+                    <h4>{__('Enable Multiple Wishlists', 'wish-car')}</h4>
+                    <p>{__('Allow users to create and manage multiple wishlists. When disabled, products are added directly to the default wishlist.', 'wish-car')}</p>
                 </div>
                 <div className="toggle-control">
                     <Switch
@@ -120,8 +120,8 @@ const WishlistSettings = ({ settings, updateSettings }) => {
             {/* Shop Page Button */}
             <div className="wishcart-toggle-row">
                 <div className="toggle-info">
-                    <h4>{__('Show Button on Shop Page', 'wish-cart')}</h4>
-                    <p>{__('Display wishlist button on product archive/shop pages', 'wish-cart')}</p>
+                    <h4>{__('Show Button on Shop Page', 'wish-car')}</h4>
+                    <p>{__('Display wishlist button on product archive/shop pages', 'wish-car')}</p>
                 </div>
                 <div className="toggle-control">
                     <Switch
@@ -136,8 +136,8 @@ const WishlistSettings = ({ settings, updateSettings }) => {
             {/* Product Page Button */}
             <div className="wishcart-toggle-row">
                 <div className="toggle-info">
-                    <h4>{__('Show Button on Product Page', 'wish-cart')}</h4>
-                    <p>{__('Display wishlist button on single product pages', 'wish-cart')}</p>
+                    <h4>{__('Show Button on Product Page', 'wish-car')}</h4>
+                    <p>{__('Display wishlist button on single product pages', 'wish-car')}</p>
                 </div>
                 <div className="toggle-control">
                     <Switch
@@ -153,7 +153,7 @@ const WishlistSettings = ({ settings, updateSettings }) => {
             {wishlistSettings.product_page_button && (
                 <div className="fluentcart-form-group" style={{borderTop: '1px solid var(--fluentcart-gray-25)', paddingTop: '16px'}}>
                     <label className="fluentcart-label" htmlFor="button_position">
-                        {__('Button Position', 'wish-cart')}
+                        {__('Button Position', 'wish-car')}
                     </label>
                     <Select
                         value={buttonPosition}
@@ -165,21 +165,21 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="top">
-                                {__('Above product actions', 'wish-cart')}
+                                {__('Above product actions', 'wish-car')}
                             </SelectItem>
                             <SelectItem value="bottom">
-                                {__('Below product actions', 'wish-cart')}
+                                {__('Below product actions', 'wish-car')}
                             </SelectItem>
                             <SelectItem value="left">
-                                {__('Left of Add to Cart button', 'wish-cart')}
+                                {__('Left of Add to Cart button', 'wish-car')}
                             </SelectItem>
                             <SelectItem value="right">
-                                {__('Right of Add to Cart button', 'wish-cart')}
+                                {__('Right of Add to Cart button', 'wish-car')}
                             </SelectItem>
                         </SelectContent>
                     </Select>
                     <p className="fluentcart-form-helper">
-                        {__('Choose where to display the wishlist button relative to the purchase actions.', 'wish-cart')}
+                        {__('Choose where to display the wishlist button relative to the purchase actions.', 'wish-car')}
                     </p>
                 </div>
             )}
@@ -187,7 +187,7 @@ const WishlistSettings = ({ settings, updateSettings }) => {
             {/* Wishlist Page */}
             <div className="fluentcart-form-group" style={{borderTop: '1px solid var(--fluentcart-gray-25)', paddingTop: '16px'}}>
                 <label className="fluentcart-label" htmlFor="wishlist_page">
-                    {__('Wishlist Page', 'wish-cart')}
+                    {__('Wishlist Page', 'wish-car')}
                 </label>
                 <Select
                     value={String(wishlistSettings.wishlist_page_id || 0)}
@@ -195,10 +195,10 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                     disabled={!wishlistSettings.enabled || loadingPages}
                 >
                     <SelectTrigger id="wishlist_page" className="fluentcart-select">
-                        <SelectValue placeholder={__('Select a page', 'wish-cart')} />
+                        <SelectValue placeholder={__('Select a page', 'wish-car')} />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="0">{__('-- Select Page --', 'wish-cart')}</SelectItem>
+                        <SelectItem value="0">{__('-- Select Page --', 'wish-car')}</SelectItem>
                         {wishlistPages.map((page) => (
                             <SelectItem key={page.id} value={String(page.id)}>
                                 {page.title.rendered}
@@ -207,14 +207,14 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                     </SelectContent>
                 </Select>
                 <p className="fluentcart-form-helper">
-                    {__('Select the page where the wishlist will be displayed. Make sure the page contains the [wishcart_wishlist] shortcode.', 'wish-cart')}
+                    {__('Select the page where the wishlist will be displayed. Make sure the page contains the [wishcar_wishlist] shortcode.', 'wish-car')}
                 </p>
             </div>
 
             {/* Shareable Page */}
             <div className="fluentcart-form-group">
                 <label className="fluentcart-label" htmlFor="shared_wishlist_page">
-                    {__('Shareable Page', 'wish-cart')}
+                    {__('Shareable Page', 'wish-car')}
                 </label>
                 <Select
                     value={String(wishlistSettings.shared_wishlist_page_id || 0)}
@@ -222,10 +222,10 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                     disabled={!wishlistSettings.enabled || loadingPages}
                 >
                     <SelectTrigger id="shared_wishlist_page" className="fluentcart-select">
-                        <SelectValue placeholder={__('Select a page', 'wish-cart')} />
+                        <SelectValue placeholder={__('Select a page', 'wish-car')} />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="0">{__('-- Select Page --', 'wish-cart')}</SelectItem>
+                        <SelectItem value="0">{__('-- Select Page --', 'wish-car')}</SelectItem>
                         {wishlistPages.map((page) => (
                             <SelectItem key={page.id} value={String(page.id)}>
                                 {page.title.rendered}
@@ -234,14 +234,14 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                     </SelectContent>
                 </Select>
                 <p className="fluentcart-form-helper">
-                    {__('Select the page where shared wishlists will be displayed. Make sure the page contains the [wishcart_shared_wishlist] shortcode.', 'wish-cart')}
+                    {__('Select the page where shared wishlists will be displayed. Make sure the page contains the [wishcar_shared_wishlist] shortcode.', 'wish-car')}
                 </p>
             </div>
 
             {/* Guest Cookie Expiry */}
             <div className="fluentcart-form-group">
                 <label className="fluentcart-label" htmlFor="guest_cookie_expiry">
-                    {__('Guest Wishlist Expiry (Days)', 'wish-cart')}
+                    {__('Guest Wishlist Expiry (Days)', 'wish-car')}
                 </label>
                 <Input
                     id="guest_cookie_expiry"
@@ -255,26 +255,26 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                     style={{maxWidth: '200px'}}
                 />
                 <p className="fluentcart-form-helper">
-                    {__('Number of days guest wishlists are stored in cookies', 'wish-cart')}
+                    {__('Number of days guest wishlists are stored in cookies', 'wish-car')}
                 </p>
             </div>
 
             {/* Custom CSS */}
             <div className="fluentcart-form-group wishcart-code-editor">
                 <label className="fluentcart-label" htmlFor="custom_css">
-                    {__('Custom CSS', 'wish-cart')}
+                    {__('Custom CSS', 'wish-car')}
                 </label>
                 <Textarea
                     id="custom_css"
                     rows={8}
                     value={wishlistSettings.custom_css || ''}
                     onChange={(e) => updateWishlistSetting('custom_css', e.target.value)}
-                    placeholder={__('Add custom CSS for wishlist button styling...', 'wish-cart')}
+                    placeholder={__('Add custom CSS for wishlist button styling...', 'wish-car')}
                     disabled={!wishlistSettings.enabled}
                     className="fluentcart-textarea"
                 />
                 <p className="fluentcart-form-helper">
-                    {__('Add custom CSS to style the wishlist button. Use selector: .wishcart-wishlist-button', 'wish-cart')}
+                    {__('Add custom CSS to style the wishlist button. Use selector: .wishcart-wishlist-button', 'wish-car')}
                 </p>
             </div>
         </div>

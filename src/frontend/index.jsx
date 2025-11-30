@@ -324,7 +324,7 @@ const initializeSessionId = () => {
     
     for (let cookie of cookies) {
         const [name] = cookie.trim().split('=');
-        if (name === 'wishcart_session_id') {
+        if (name === 'wishcar_session_id') {
             hasSessionId = true;
             break;
         }
@@ -336,7 +336,7 @@ const initializeSessionId = () => {
         const expiryDays = 30;
         const expiryDate = new Date();
         expiryDate.setTime(expiryDate.getTime() + (expiryDays * 24 * 60 * 60 * 1000));
-        document.cookie = `wishcart_session_id=${sessionId};expires=${expiryDate.toUTCString()};path=/;SameSite=Lax`;
+        document.cookie = `wishcar_session_id=${sessionId};expires=${expiryDate.toUTCString()};path=/;SameSite=Lax`;
         
         // Update global object
         if (window.WishCartWishlist) {
@@ -446,7 +446,7 @@ const getSessionIdForTracking = () => {
     const cookies = document.cookie.split(';');
     for (let cookie of cookies) {
         const [name, value] = cookie.trim().split('=');
-        if (name === 'wishcart_session_id') {
+        if (name === 'wishcar_session_id') {
             return value;
         }
     }

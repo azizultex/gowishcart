@@ -108,10 +108,10 @@ const SettingsApp = () => {
                     title: (
                         <div className="flex items-center gap-2">
                             <CheckCircle2 className="h-4 w-4 text-green-500" />
-                            <span>{__('Settings saved successfully!', 'wish-cart')}</span>
+                            <span>{__('Settings saved successfully!', 'wish-car')}</span>
                         </div>
                     ),
-                    description: __('Your changes have been applied.', 'wish-cart'),
+                    description: __('Your changes have been applied.', 'wish-car'),
                     className: "bg-green-50 border-green-200"
                 });
             } else {
@@ -122,10 +122,10 @@ const SettingsApp = () => {
                 title: (
                     <div className="flex items-center gap-2">
                         <XCircle className="h-4 w-4 text-red-500" />
-                        <span>{__('Failed to save settings', 'wish-cart')}</span>
+                        <span>{__('Failed to save settings', 'wish-car')}</span>
                     </div>
                 ),
-                description: __('Please try again or contact support if the problem persists.', 'wish-cart'),
+                description: __('Please try again or contact support if the problem persists.', 'wish-car'),
                 className: "bg-red-50 border-red-200"
             });
         } finally {
@@ -144,10 +144,10 @@ const SettingsApp = () => {
     };
 
     const tabs = [
-        { id: 'settings', label: __('Settings', 'wish-cart'), icon: Heart },
-        { id: 'button-customization', label: __('Button Customization', 'wish-cart'), icon: Palette },
-        { id: 'analytics', label: __('Analytics', 'wish-cart'), icon: BarChart3 },
-        { id: 'fluentcrm', label: __('FluentCRM', 'wish-cart'), icon: Mail },
+        { id: 'settings', label: __('Settings', 'wish-car'), icon: Heart },
+        { id: 'button-customization', label: __('Button Customization', 'wish-car'), icon: Palette },
+        { id: 'analytics', label: __('Analytics', 'wish-car'), icon: BarChart3 },
+        { id: 'fluentcrm', label: __('FluentCRM', 'wish-car'), icon: Mail },
     ];
 
     const activeTabData = tabs.find(tab => tab.id === activeTab) || tabs[0];
@@ -218,7 +218,7 @@ const SettingsApp = () => {
                                     disabled={isSaving}
                                     className="fluentcart-button fluentcart-button-primary"
                                 >
-                                    {isSaving ? __('Saving...', 'wish-cart') : __('Save Settings', 'wish-cart')}
+                                    {isSaving ? __('Saving...', 'wish-car') : __('Save Settings', 'wish-car')}
                                 </button>
                             </div>
                         )}

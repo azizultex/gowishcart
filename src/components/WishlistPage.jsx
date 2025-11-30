@@ -33,7 +33,7 @@ const WishlistPage = () => {
         const cookies = document.cookie.split(';');
         for (let cookie of cookies) {
             const [name, value] = cookie.trim().split('=');
-            if (name === 'wishcart_session_id') {
+            if (name === 'wishcar_session_id') {
                 return value;
             }
         }

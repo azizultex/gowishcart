@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://wishcart.chat
  */
-class WISHCART_Cart_Tracking {
+class WISHCAR_Cart_Tracking {
 
     private $wpdb;
     private $analytics_handler;
@@ -25,7 +25,7 @@ class WISHCART_Cart_Tracking {
     public function __construct() {
         global $wpdb;
         $this->wpdb = $wpdb;
-        $this->analytics_handler = new WISHCART_Analytics_Handler();
+        $this->analytics_handler = new WISHCAR_Analytics_Handler();
         $this->items_table = $wpdb->prefix . 'fc_wishlist_items';
         $this->wishlists_table = $wpdb->prefix . 'fc_wishlists';
 
@@ -96,7 +96,7 @@ class WISHCART_Cart_Tracking {
      * @return void
      */
     public function track_fluentcart_purchase( $order_id ) {
-        $order = WISHCART_FluentCart_Helper::get_order( $order_id );
+        $order = WISHCAR_FluentCart_Helper::get_order( $order_id );
         if ( ! $order ) {
             return;
         }
@@ -111,7 +111,7 @@ class WISHCART_Cart_Tracking {
      * @return void
      */
     public function track_fluentcart_purchase_on_create( $order_id ) {
-        $order = WISHCART_FluentCart_Helper::get_order( $order_id );
+        $order = WISHCAR_FluentCart_Helper::get_order( $order_id );
         if ( ! $order ) {
             return;
         }
@@ -137,7 +137,7 @@ class WISHCART_Cart_Tracking {
             return;
         }
 
-        $order = WISHCART_FluentCart_Helper::get_order( $order_id );
+        $order = WISHCAR_FluentCart_Helper::get_order( $order_id );
         if ( ! $order ) {
             return;
         }

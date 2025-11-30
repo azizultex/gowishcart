@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://wishcart.chat
  */
-class WISHCART_Guest_Handler {
+class WISHCAR_Guest_Handler {
 
     private $wpdb;
     private $guest_users_table;
@@ -35,14 +35,14 @@ class WISHCART_Guest_Handler {
      */
     public function create_or_update_guest($session_id, $data = array()) {
         if (empty($session_id)) {
-            return new WP_Error('invalid_session', __('Invalid session ID', 'wish-cart'));
+            return new WP_Error('invalid_session', __('Invalid session ID', 'wish-car'));
         }
 
         // Check if guest exists
         $existing_guest = $this->get_guest_by_session($session_id);
 
         // Get expiration date
-        $settings = get_option('wishcart_settings', array());
+        $settings = get_option('wishcar_settings', array());
         $expiry_days = isset($settings['wishlist']['guest_cookie_expiry']) ? intval($settings['wishlist']['guest_cookie_expiry']) : 30;
         $date_expires = date('Y-m-d H:i:s', strtotime('+' . $expiry_days . ' days'));
 
@@ -80,7 +80,7 @@ class WISHCART_Guest_Handler {
             );
 
             if (false === $result) {
-                return new WP_Error('db_error', __('Failed to update guest user', 'wish-cart'));
+                return new WP_Error('db_error', __('Failed to update guest user', 'wish-car'));
             }
 
             return $existing_guest['guest_id'];
@@ -102,7 +102,7 @@ class WISHCART_Guest_Handler {
             $result = $this->wpdb->insert($this->guest_users_table, $insert_data, $format);
 
             if (false === $result) {
-                return new WP_Error('db_error', __('Failed to create guest user', 'wish-cart'));
+                return new WP_Error('db_error', __('Failed to create guest user', 'wish-car'));
             }
 
             return $this->wpdb->insert_id;
@@ -215,7 +215,7 @@ class WISHCART_Guest_Handler {
      */
     public function update_guest_wishlist_data($session_id, $wishlist_ids = null) {
         if (empty($session_id)) {
-            return new WP_Error('invalid_session', __('Invalid session ID', 'wish-cart'));
+            return new WP_Error('invalid_session', __('Invalid session ID', 'wish-car'));
         }
 
         // If no wishlist_ids provided, fetch from database
@@ -249,7 +249,7 @@ class WISHCART_Guest_Handler {
         );
 
         if (false === $result) {
-            return new WP_Error('db_error', __('Failed to update wishlist data', 'wish-cart'));
+            return new WP_Error('db_error', __('Failed to update wishlist data', 'wish-car'));
         }
 
         return true;
@@ -264,7 +264,7 @@ class WISHCART_Guest_Handler {
      */
     public function add_wishlist_to_guest($session_id, $wishlist_id) {
         if (empty($session_id) || empty($wishlist_id)) {
-            return new WP_Error('invalid_params', __('Invalid parameters', 'wish-cart'));
+            return new WP_Error('invalid_params', __('Invalid parameters', 'wish-car'));
         }
 
         // Get current wishlist data
@@ -295,13 +295,13 @@ class WISHCART_Guest_Handler {
      */
     public function convert_guest_to_user($session_id, $user_id) {
         if (empty($session_id) || empty($user_id)) {
-            return new WP_Error('invalid_params', __('Invalid parameters', 'wish-cart'));
+            return new WP_Error('invalid_params', __('Invalid parameters', 'wish-car'));
         }
 
         // Get guest data
         $guest = $this->get_guest_by_session($session_id);
         if (!$guest) {
-            return new WP_Error('guest_not_found', __('Guest user not found', 'wish-cart'));
+            return new WP_Error('guest_not_found', __('Guest user not found', 'wish-car'));
         }
 
         // Update guest record with conversion data
@@ -314,12 +314,12 @@ class WISHCART_Guest_Handler {
         );
 
         if (false === $result) {
-            return new WP_Error('db_error', __('Failed to record conversion', 'wish-cart'));
+            return new WP_Error('db_error', __('Failed to record conversion', 'wish-car'));
         }
 
         // Sync wishlists
-        if (class_exists('WISHCART_Wishlist_Handler')) {
-            $wishlist_handler = new WISHCART_Wishlist_Handler();
+        if (class_exists('WISHCAR_Wishlist_Handler')) {
+            $wishlist_handler = new WISHCAR_Wishlist_Handler();
             $sync_result = $wishlist_handler->sync_guest_wishlist_to_user($session_id, $user_id);
 
             if (is_wp_error($sync_result)) {
@@ -630,7 +630,7 @@ class WISHCART_Guest_Handler {
         );
 
         if (false === $result) {
-            return new WP_Error('db_error', __('Failed to delete guest data', 'wish-cart'));
+            return new WP_Error('db_error', __('Failed to delete guest data', 'wish-car'));
         }
 
         return true;

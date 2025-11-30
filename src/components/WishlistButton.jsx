@@ -25,7 +25,7 @@ const WishlistButton = ({ productId, className, customStyles, position = 'bottom
         const cookies = document.cookie.split(';');
         for (let cookie of cookies) {
             const [name, value] = cookie.trim().split('=');
-            if (name === 'wishcart_session_id') {
+            if (name === 'wishcar_session_id') {
                 return value;
             }
         }
@@ -39,7 +39,7 @@ const WishlistButton = ({ productId, className, customStyles, position = 'bottom
         const expiryDays = 30;
         const expiryDate = new Date();
         expiryDate.setTime(expiryDate.getTime() + (expiryDays * 24 * 60 * 60 * 1000));
-        document.cookie = `wishcart_session_id=${sessionId};expires=${expiryDate.toUTCString()};path=/;SameSite=Lax`;
+        document.cookie = `wishcar_session_id=${sessionId};expires=${expiryDate.toUTCString()};path=/;SameSite=Lax`;
         if (window.WishCartWishlist) {
             window.WishCartWishlist.sessionId = sessionId;
         }
@@ -292,12 +292,12 @@ const WishlistButton = ({ productId, className, customStyles, position = 'bottom
     }
 
     // Get button labels
-    const defaultAddLabel = __('Add to Wishlist', 'wish-cart');
-    const defaultSavedLabel = __('Saved to Wishlist', 'wish-cart');
+    const defaultAddLabel = __('Add to Wishlist', 'wish-car');
+    const defaultSavedLabel = __('Saved to Wishlist', 'wish-car');
     const buttonLabel = isInWishlist 
         ? (labels.saved || defaultSavedLabel)
         : (labels.add || defaultAddLabel);
-    const srLabel = isInWishlist ? __('Remove from wishlist', 'wish-cart') : __('Add to wishlist', 'wish-cart');
+    const srLabel = isInWishlist ? __('Remove from wishlist', 'wish-car') : __('Add to wishlist', 'wish-car');
 
     // Get icon component based on wishlist state
     const getIconComponent = () => {

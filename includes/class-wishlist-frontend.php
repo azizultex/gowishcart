@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://wishcart.chat
  */
-class WISHCART_Wishlist_Frontend {
+class WISHCAR_Wishlist_Frontend {
 
     private $handler;
 
@@ -20,7 +20,7 @@ class WISHCART_Wishlist_Frontend {
      * Constructor
      */
     public function __construct() {
-        $this->handler = new WISHCART_Wishlist_Handler();
+        $this->handler = new WISHCAR_Wishlist_Handler();
         
         // Enqueue scripts and styles
         add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
@@ -43,7 +43,7 @@ class WISHCART_Wishlist_Frontend {
      */
     private function get_button_position( $wishlist_settings = null ) {
         if ( null === $wishlist_settings ) {
-            $settings = get_option( 'wishcart_settings', array() );
+            $settings = get_option( 'wishcar_settings', array() );
             $wishlist_settings = isset( $settings['wishlist'] ) ? $settings['wishlist'] : array();
         }
 
@@ -70,7 +70,7 @@ class WISHCART_Wishlist_Frontend {
      * @return void
      */
     public function enqueue_scripts() {
-        $settings = get_option( 'wishcart_settings', array() );
+        $settings = get_option( 'wishcar_settings', array() );
         $wishlist_settings = isset( $settings['wishlist'] ) ? $settings['wishlist'] : array();
 
         if ( empty( $wishlist_settings['enabled'] ) ) {
@@ -80,17 +80,17 @@ class WISHCART_Wishlist_Frontend {
         // Enqueue wishlist frontend script
         wp_enqueue_script(
             'wishcart-wishlist-frontend',
-            WISHCART_PLUGIN_URL . 'build/wishlist-frontend.js',
+            WISHCAR_PLUGIN_URL . 'build/wishlist-frontend.js',
             array( 'wp-element', 'wp-api-fetch' ),
-            WISHCART_VERSION,
+            WISHCAR_VERSION,
             true
         );
 
         wp_enqueue_style(
             'wishcart-wishlist-frontend',
-            WISHCART_PLUGIN_URL . 'build/wishlist-frontend.css',
+            WISHCAR_PLUGIN_URL . 'build/wishlist-frontend.css',
             array(),
-            WISHCART_VERSION
+            WISHCAR_VERSION
         );
 
         // Localize script
@@ -98,7 +98,7 @@ class WISHCART_Wishlist_Frontend {
         
         // Get button customization settings
         $button_customization = isset( $wishlist_settings['button_customization'] ) ? $wishlist_settings['button_customization'] : array();
-        $default_customization = WISHCART_Wishlist_Page::get_default_settings();
+        $default_customization = WISHCAR_Wishlist_Page::get_default_settings();
         $button_customization = wp_parse_args( $button_customization, isset( $default_customization['button_customization'] ) ? $default_customization['button_customization'] : array() );
         
         wp_localize_script(
@@ -130,7 +130,7 @@ class WISHCART_Wishlist_Frontend {
      * @return void
      */
     private function add_product_hooks() {
-        $settings = get_option( 'wishcart_settings', array() );
+        $settings = get_option( 'wishcar_settings', array() );
         $wishlist_settings = isset( $settings['wishlist'] ) ? $settings['wishlist'] : array();
         
         if ( empty( $wishlist_settings['enabled'] ) ) {
@@ -198,7 +198,7 @@ class WISHCART_Wishlist_Frontend {
         }
 
         // Check if it's a FluentCart product
-        $product_type = WISHCART_FluentCart_Helper::get_product_post_type();
+        $product_type = WISHCAR_FluentCart_Helper::get_product_post_type();
         $post_type = get_post_type( $product_id );
         
         if ( $post_type !== $product_type && $post_type !== 'product' ) {
@@ -224,7 +224,7 @@ class WISHCART_Wishlist_Frontend {
      */
     public function sync_on_login( $user_login, $user ) {
         // Get session ID from cookie
-        $cookie_name = 'wishcart_session_id';
+        $cookie_name = 'wishcar_session_id';
         if ( ! isset( $_COOKIE[ $cookie_name ] ) || empty( $_COOKIE[ $cookie_name ] ) ) {
             return;
         }
@@ -241,7 +241,7 @@ class WISHCART_Wishlist_Frontend {
      * @return void
      */
     public function output_custom_css() {
-        $settings = get_option( 'wishcart_settings', array() );
+        $settings = get_option( 'wishcar_settings', array() );
         $custom_css = isset( $settings['wishlist']['custom_css'] ) ? $settings['wishlist']['custom_css'] : '';
         
         if ( ! empty( $custom_css ) ) {
@@ -255,7 +255,7 @@ class WISHCART_Wishlist_Frontend {
      * @return bool
      */
     private function is_product_page() {
-        $product_type = WISHCART_FluentCart_Helper::get_product_post_type();
+        $product_type = WISHCAR_FluentCart_Helper::get_product_post_type();
         
         return is_singular( $product_type ) || 
                is_singular( 'product' ) || 

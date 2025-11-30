@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://wishcart.chat
  */
-class WISHCART_Analytics_Handler {
+class WISHCAR_Analytics_Handler {
 
     private $wpdb;
     private $analytics_table;
@@ -196,7 +196,7 @@ class WISHCART_Analytics_Handler {
         // Enrich with product data
         $products = array();
         foreach ($results as $row) {
-            $product = WISHCART_FluentCart_Helper::get_product($row['product_id']);
+            $product = WISHCAR_FluentCart_Helper::get_product($row['product_id']);
             if ($product) {
                 $products[] = array(
                     'product_id' => $row['product_id'],
@@ -545,7 +545,7 @@ class WISHCART_Analytics_Handler {
         }
 
         $links_data = array();
-        $sharing_handler = new WISHCART_Sharing_Handler();
+        $sharing_handler = new WISHCAR_Sharing_Handler();
 
         foreach ($shares as $share) {
             // Get items for this wishlist
@@ -568,8 +568,8 @@ class WISHCART_Analytics_Handler {
             foreach ($items as $item) {
                 // Get product name
                 $product_name = '';
-                if (class_exists('WISHCART_FluentCart_Helper')) {
-                    $product = WISHCART_FluentCart_Helper::get_product($item['product_id']);
+                if (class_exists('WISHCAR_FluentCart_Helper')) {
+                    $product = WISHCAR_FluentCart_Helper::get_product($item['product_id']);
                     if ($product) {
                         $product_name = $product->get_name();
                     }
@@ -580,7 +580,7 @@ class WISHCART_Analytics_Handler {
 
                 $items_data[] = array(
                     'product_id' => intval($item['product_id']),
-                    'product_name' => $product_name ? $product_name : __('Product #' . $item['product_id'], 'wish-cart'),
+                    'product_name' => $product_name ? $product_name : __('Product #' . $item['product_id'], 'wish-car'),
                     'variation_id' => intval($item['variation_id']),
                     'quantity' => intval($item['quantity']),
                 );
@@ -592,8 +592,8 @@ class WISHCART_Analytics_Handler {
                 $share_url = $sharing_handler->get_share_url($share['share_token'], $share['share_type']);
             } else {
                 // Fallback URL construction
-                if (class_exists('WISHCART_Shared_Wishlist_Page')) {
-                    $share_url = WISHCART_Shared_Wishlist_Page::get_share_url($share['share_token']);
+                if (class_exists('WISHCAR_Shared_Wishlist_Page')) {
+                    $share_url = WISHCAR_Shared_Wishlist_Page::get_share_url($share['share_token']);
                 } else {
                     $share_url = home_url('/wishlist/share/' . $share['share_token']);
                 }

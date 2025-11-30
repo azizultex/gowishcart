@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://wishcart.chat
  */
-class WISHCART_FluentCRM_SmartCode {
+class WISHCAR_FluentCRM_SmartCode {
 
     /**
      * Constructor
@@ -61,7 +61,7 @@ class WISHCART_FluentCRM_SmartCode {
         // Add the Wishlist Data group
         $codes[] = array(
             'key'        => 'wishcart',
-            'title'      => __( 'Wishlist Data', 'wish-cart' ),
+            'title'      => __( 'Wishlist Data', 'wish-car' ),
             'shortcodes' => $this->get_smart_codes(),
         );
 
@@ -118,8 +118,8 @@ class WISHCART_FluentCRM_SmartCode {
         $product_id = intval( $funnelSub->source_ref_id );
 
         // Get the product using FluentCart helper or WooCommerce
-        if ( class_exists( 'WISHCART_FluentCart_Helper' ) ) {
-            return WISHCART_FluentCart_Helper::get_product( $product_id );
+        if ( class_exists( 'WISHCAR_FluentCart_Helper' ) ) {
+            return WISHCAR_FluentCart_Helper::get_product( $product_id );
         }
 
         // Fallback to WooCommerce
@@ -278,7 +278,7 @@ class WISHCART_FluentCRM_SmartCode {
      * @return string Item count
      */
     private function get_wishlist_item_count( $subscriber ) {
-        if ( ! $subscriber || ! class_exists( 'WISHCART_Wishlist_Handler' ) ) {
+        if ( ! $subscriber || ! class_exists( 'WISHCAR_Wishlist_Handler' ) ) {
             return '0';
         }
 
@@ -294,7 +294,7 @@ class WISHCART_FluentCRM_SmartCode {
         $session_id = null;
 
         // If no user, try to find guest session
-        if ( ! $user_id && class_exists( 'WISHCART_Guest_Handler' ) ) {
+        if ( ! $user_id && class_exists( 'WISHCAR_Guest_Handler' ) ) {
             global $wpdb;
             $guests_table = $wpdb->prefix . 'wishcart_guests';
             $guest = $wpdb->get_row(
@@ -310,7 +310,7 @@ class WISHCART_FluentCRM_SmartCode {
         }
 
         // Get wishlist handler
-        $handler = new WISHCART_Wishlist_Handler();
+        $handler = new WISHCAR_Wishlist_Handler();
         $wishlists = $handler->get_wishlists( $user_id, $session_id );
 
         if ( empty( $wishlists ) ) {
@@ -331,7 +331,7 @@ class WISHCART_FluentCRM_SmartCode {
      */
     private function get_wishlist_url() {
         // Get wishlist page ID from options
-        $page_id = get_option( 'wishcart_wishlist_page_id' );
+        $page_id = get_option( 'wishcar_wishlist_page_id' );
         
         if ( $page_id ) {
             return get_permalink( $page_id );
@@ -367,24 +367,24 @@ class WISHCART_FluentCRM_SmartCode {
     private function get_smart_codes() {
         return array(
             // Customer Data
-            '{{wishcart.customer.first_name}}'  => __( 'Customer First Name', 'wish-cart' ),
-            '{{wishcart.customer.last_name}}'   => __( 'Customer Last Name', 'wish-cart' ),
-            '{{wishcart.customer.full_name}}'   => __( 'Customer Full Name', 'wish-cart' ),
-            '{{wishcart.customer.email}}'       => __( 'Customer Email', 'wish-cart' ),
+            '{{wishcart.customer.first_name}}'  => __( 'Customer First Name', 'wish-car' ),
+            '{{wishcart.customer.last_name}}'   => __( 'Customer Last Name', 'wish-car' ),
+            '{{wishcart.customer.full_name}}'   => __( 'Customer Full Name', 'wish-car' ),
+            '{{wishcart.customer.email}}'       => __( 'Customer Email', 'wish-car' ),
             
             // Product Data
-            '{{wishcart.product.name}}'           => __( 'Product Name', 'wish-cart' ),
-            '{{wishcart.product.price}}'          => __( 'Current Product Price', 'wish-cart' ),
-            '{{wishcart.product.regular_price}}'  => __( 'Regular Price', 'wish-cart' ),
-            '{{wishcart.product.sale_price}}'     => __( 'Sale Price (if on sale)', 'wish-cart' ),
-            '{{wishcart.product.sku}}'            => __( 'Product SKU', 'wish-cart' ),
-            '##wishcart.product.url##'            => __( 'Product URL (button/link)', 'wish-cart' ),
-            '{{wishcart.product.image_url}}'      => __( 'Product Image URL', 'wish-cart' ),
-            '##wishcart.product.add_to_cart_url##' => __( 'Add to Cart URL (button/link)', 'wish-cart' ),
+            '{{wishcart.product.name}}'           => __( 'Product Name', 'wish-car' ),
+            '{{wishcart.product.price}}'          => __( 'Current Product Price', 'wish-car' ),
+            '{{wishcart.product.regular_price}}'  => __( 'Regular Price', 'wish-car' ),
+            '{{wishcart.product.sale_price}}'     => __( 'Sale Price (if on sale)', 'wish-car' ),
+            '{{wishcart.product.sku}}'            => __( 'Product SKU', 'wish-car' ),
+            '##wishcart.product.url##'            => __( 'Product URL (button/link)', 'wish-car' ),
+            '{{wishcart.product.image_url}}'      => __( 'Product Image URL', 'wish-car' ),
+            '##wishcart.product.add_to_cart_url##' => __( 'Add to Cart URL (button/link)', 'wish-car' ),
             
             // Wishlist Data
-            '{{wishcart.wishlist.item_count}}'  => __( 'Total Items in Wishlist', 'wish-cart' ),
-            '##wishcart.wishlist.url##'         => __( 'Wishlist Page URL (button/link)', 'wish-cart' ),
+            '{{wishcart.wishlist.item_count}}'  => __( 'Total Items in Wishlist', 'wish-car' ),
+            '##wishcart.wishlist.url##'         => __( 'Wishlist Page URL (button/link)', 'wish-car' ),
         );
     }
 }

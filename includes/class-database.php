@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  */
 
 /**
- * WISHCART_Database Class
+ * WISHCAR_Database Class
  *
  * @category WordPress
  * @package  WishCart
@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://wishcart.chat
  */
-class WISHCART_Database {
+class WISHCAR_Database {
 
     private $wpdb;
     private $table_prefix;
@@ -34,9 +34,9 @@ class WISHCART_Database {
         $this->wpdb = $wpdb;
         $this->table_prefix = $wpdb->prefix;
 		
-		$this->log_debug('WISHCART_Database::__construct start');
+		$this->log_debug('WISHCAR_Database::__construct start');
 		$this->create_tables();
-		$this->log_debug('WISHCART_Database::__construct end');
+		$this->log_debug('WISHCAR_Database::__construct end');
     }
 
     /**
