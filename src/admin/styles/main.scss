@@ -2,11 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Import FluentCRM Design System */
-@import './fluentcrm-theme.scss';
+/* Import FluentCart Design System */
+@import './fluentcart-theme.scss';
 @import './settings.scss';
 
-/* FluentCRM-aligned color system for Tailwind/shadcn components */
+/* FluentCart-aligned color system for Tailwind/shadcn components */
 :root {
   /* Background colors - WordPress admin */
   --background: 0 0% 94%;  /* #f0f0f1 */
@@ -20,8 +20,8 @@
   --popover: 0 0% 100%;
   --popover-foreground: 210 13% 12%;
   
-  /* Primary - FluentCRM/WordPress Admin Blue */
-  --primary: 207 73% 43%;  /* #1e73be - FluentCRM primary */
+  /* Primary - FluentCart/WordPress Admin Blue */
+  --primary: 207 73% 43%;  /* #1e73be - FluentCart primary */
   --primary-foreground: 0 0% 100%;
   
   /* Secondary - WordPress admin gray */
@@ -72,10 +72,10 @@
   --ring: 207 73% 63%;
 }
 
-/* Ensure admin shell uses WordPress/FluentCRM typography */
+/* Ensure admin shell uses WordPress/FluentCart typography */
 .wishcart-admin-shell {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
   font-size: 13px;
   line-height: 1.4em;
-  color: var(--fluentcrm-text-primary);
+  color: var(--fluentcart-text-primary);
 }

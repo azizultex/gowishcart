@@ -83,7 +83,7 @@ const FluentCRMSettings = () => {
     if (loading) {
         return (
             <div className="wishcart-settings-section">
-                <div className="fluentcrm-flex-center" style={{padding: '40px'}}>
+                <div className="fluentcart-flex-center" style={{padding: '40px'}}>
                     <Loader2 style={{width: '24px', height: '24px'}} className="animate-spin" />
                 </div>
             </div>
@@ -93,7 +93,7 @@ const FluentCRMSettings = () => {
     if (!isAvailable) {
         return (
             <div className="wishcart-settings-section">
-                <div className="fluentcrm-notice fluentcrm-notice-warning">
+                <div className="fluentcart-notice fluentcart-notice-warning">
                     <AlertCircle style={{width: '18px', height: '18px', flexShrink: 0}} />
                     <div>
                         <strong>{__('FluentCRM Not Available', 'wish-cart')}</strong>
@@ -109,14 +109,14 @@ const FluentCRMSettings = () => {
     return (
         <div className="wishcart-settings-section">
             {saveMessage === 'success' && (
-                <div className="fluentcrm-notice fluentcrm-notice-success">
+                <div className="fluentcart-notice fluentcart-notice-success">
                     <CheckCircle2 style={{width: '18px', height: '18px', flexShrink: 0}} />
                     <span>{__('Settings saved successfully!', 'wish-cart')}</span>
                 </div>
             )}
 
             {saveMessage === 'error' && (
-                <div className="fluentcrm-notice fluentcrm-notice-error">
+                <div className="fluentcart-notice fluentcart-notice-error">
                     <XCircle style={{width: '18px', height: '18px', flexShrink: 0}} />
                     <span>{__('Failed to save settings. Please try again.', 'wish-cart')}</span>
                 </div>
@@ -136,24 +136,24 @@ const FluentCRMSettings = () => {
             </div>
 
             {/* REST API Credentials Section - Pro/Upcoming Feature */}
-            <div className="fluentcrm-notice fluentcrm-notice-info" style={{marginTop: '16px'}}>
+            <div className="fluentcart-notice fluentcart-notice-info" style={{marginTop: '16px'}}>
                 <Lock style={{width: '18px', height: '18px', flexShrink: 0}} />
                 <div style={{flex: 1}}>
                     <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px'}}>
                         <strong>{__('REST API Credentials', 'wish-cart')}</strong>
-                        <span className="fluentcrm-badge fluentcrm-badge-warning">{__('PRO', 'wish-cart')}</span>
-                        <span className="fluentcrm-badge fluentcrm-badge-info">{__('COMING SOON', 'wish-cart')}</span>
+                        <span className="fluentcart-badge fluentcart-badge-warning">{__('PRO', 'wish-cart')}</span>
+                        <span className="fluentcart-badge fluentcart-badge-info">{__('COMING SOON', 'wish-cart')}</span>
                     </div>
                     <p style={{fontSize: '13px', margin: '0'}}>{__('This feature is available in WishCart Pro', 'wish-cart')}</p>
-                    <p style={{fontSize: '13px', margin: '4px 0 0', color: 'var(--fluentcrm-text-muted)'}}>{__('Please upgrade to get all the advanced features.', 'wish-cart')}</p>
+                    <p style={{fontSize: '13px', margin: '4px 0 0', color: 'var(--fluentcart-text-muted)'}}>{__('Please upgrade to get all the advanced features.', 'wish-cart')}</p>
                 </div>
             </div>
 
-            <div className="fluentcrm-card-footer">
+            <div className="fluentcart-card-footer">
                 <button
                     onClick={saveSettings}
                     disabled={saving}
-                    className="fluentcrm-button fluentcrm-button-primary"
+                    className="fluentcart-button fluentcart-button-primary"
                 >
                     {saving ? __('Saving...', 'wish-cart') : __('Save Settings', 'wish-cart')}
                 </button>

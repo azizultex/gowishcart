@@ -152,16 +152,16 @@ const SettingsApp = () => {
 
     return (
         <>
-            <div className="wishcart-admin-shell fluentcrm-admin-page">
-                {/* Navigation Tabs - WordPress/FluentCRM Style */}
-                <nav className="fluentcrm-nav-tabs">
+            <div className="wishcart-admin-shell fluentcart-admin-page">
+                {/* Navigation Tabs - WordPress/FluentCart Style */}
+                <nav className="fluentcart-nav-tabs">
                     {tabs.map((tab) => {
                         const Icon = tab.icon;
                         return (
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
-                                className={`fluentcrm-nav-tab ${activeTab === tab.id ? 'active' : ''}`}
+                                className={`fluentcart-nav-tab ${activeTab === tab.id ? 'active' : ''}`}
                             >
                                 <Icon />
                                 {tab.label}
@@ -171,16 +171,16 @@ const SettingsApp = () => {
                 </nav>
 
                 {/* Main Content Area */}
-                <div className="fluentcrm-admin-body">
-                    <div className="fluentcrm-admin-content">
+                <div className="fluentcart-admin-body">
+                    <div className="fluentcart-admin-content">
                         {/* Settings Tab */}
                         {activeTab === 'settings' && (
                             <>
-                                <div className="fluentcrm-card-header">
-                                    <h2 className="fluentcrm-card-title">
+                                <div className="fluentcart-card-header">
+                                    <h2 className="fluentcart-card-title">
                                         {__('Wishlist Settings', 'wish-cart')}
                                     </h2>
-                                    <p className="fluentcrm-card-description">
+                                    <p className="fluentcart-card-description">
                                         {__('Configure wishlist functionality and button placement', 'wish-cart')}
                                     </p>
                                 </div>
@@ -194,11 +194,11 @@ const SettingsApp = () => {
                         {/* Button Customization Tab */}
                         {activeTab === 'button-customization' && (
                             <>
-                                <div className="fluentcrm-card-header">
-                                    <h2 className="fluentcrm-card-title">
+                                <div className="fluentcart-card-header">
+                                    <h2 className="fluentcart-card-title">
                                         {__('Button Customization', 'wish-cart')}
                                     </h2>
-                                    <p className="fluentcrm-card-description">
+                                    <p className="fluentcart-card-description">
                                         {__('Customize the appearance and behavior of wishlist buttons', 'wish-cart')}
                                     </p>
                                 </div>
@@ -217,11 +217,11 @@ const SettingsApp = () => {
                         {/* FluentCRM Tab */}
                         {activeTab === 'fluentcrm' && (
                             <>
-                                <div className="fluentcrm-card-header">
-                                    <h2 className="fluentcrm-card-title">
+                                <div className="fluentcart-card-header">
+                                    <h2 className="fluentcart-card-title">
                                         {__('FluentCRM Integration', 'wish-cart')}
                                     </h2>
-                                    <p className="fluentcrm-card-description">
+                                    <p className="fluentcart-card-description">
                                         {__('Connect WishCart with FluentCRM for advanced email marketing', 'wish-cart')}
                                     </p>
                                 </div>
@@ -231,11 +231,11 @@ const SettingsApp = () => {
 
                         {/* Save Button - Only show for tabs that need it */}
                         {activeTab !== 'fluentcrm' && activeTab !== 'analytics' && (
-                            <div className="fluentcrm-card-footer" style={{ marginTop: '24px' }}>
+                            <div className="fluentcart-card-footer" style={{ marginTop: '24px' }}>
                                 <button
                                     onClick={saveSettings}
                                     disabled={isSaving}
-                                    className="fluentcrm-button fluentcrm-button-primary"
+                                    className="fluentcart-button fluentcart-button-primary"
                                 >
                                     {isSaving ? __('Saving...', 'wish-cart') : __('Save Settings', 'wish-cart')}
                                 </button>

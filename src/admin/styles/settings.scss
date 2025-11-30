@@ -1,48 +1,48 @@
 /**
  * WishCart Settings Page Styles
- * FluentCRM-compatible design
+ * FluentCart-compatible design
  */
 
 /* Override any remaining modern styles with WordPress admin aesthetics */
 .wishcart-admin-shell {
   /* Settings page specific layout adjustments */
-  .fluentcrm-admin-content {
+  .fluentcart-admin-content {
     > * + * {
-      margin-top: var(--fluentcrm-space-lg);
+      margin-top: var(--fluentcart-space-lg);
     }
   }
 }
 
 /* Form sections within settings */
 .wishcart-settings-section {
-  background: var(--fluentcrm-bg-white);
-  border: 1px solid var(--fluentcrm-border);
-  border-radius: var(--fluentcrm-radius);
-  padding: var(--fluentcrm-space-xl);
-  margin-bottom: var(--fluentcrm-space-xl);
-  box-shadow: var(--fluentcrm-shadow-sm);
+  background: var(--fluentcart-bg-white);
+  border: 1px solid var(--fluentcart-border);
+  border-radius: var(--fluentcart-radius);
+  padding: var(--fluentcart-space-xl);
+  margin-bottom: var(--fluentcart-space-xl);
+  box-shadow: var(--fluentcart-shadow-sm);
 
   h3 {
     font-size: 16px;
     font-weight: 600;
-    color: var(--fluentcrm-gray-900);
-    margin: 0 0 var(--fluentcrm-space-md);
-    padding-bottom: var(--fluentcrm-space-md);
-    border-bottom: 1px solid var(--fluentcrm-border-light);
+    color: var(--fluentcart-gray-900);
+    margin: 0 0 var(--fluentcart-space-md);
+    padding-bottom: var(--fluentcart-space-md);
+    border-bottom: 1px solid var(--fluentcart-border-light);
   }
 
   h4 {
     font-size: 14px;
     font-weight: 600;
-    color: var(--fluentcrm-gray-800);
-    margin: var(--fluentcrm-space-lg) 0 var(--fluentcrm-space-sm);
+    color: var(--fluentcart-gray-800);
+    margin: var(--fluentcart-space-lg) 0 var(--fluentcart-space-sm);
   }
 
   .description {
     font-size: 13px;
-    color: var(--fluentcrm-text-secondary);
+    color: var(--fluentcart-text-secondary);
     line-height: 1.5;
-    margin-bottom: var(--fluentcrm-space-md);
+    margin-bottom: var(--fluentcart-space-md);
   }
 }
 
@@ -51,8 +51,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--fluentcrm-space-md) 0;
-  border-bottom: 1px solid var(--fluentcrm-gray-25);
+  padding: var(--fluentcart-space-md) 0;
+  border-bottom: 1px solid var(--fluentcart-gray-25);
 
   &:last-child {
     border-bottom: none;
@@ -64,13 +64,13 @@
     h4 {
       font-size: 14px;
       font-weight: 600;
-      color: var(--fluentcrm-gray-900);
+      color: var(--fluentcart-gray-900);
       margin: 0 0 4px;
     }
 
     p {
       font-size: 13px;
-      color: var(--fluentcrm-text-secondary);
+      color: var(--fluentcart-text-secondary);
       margin: 0;
       line-height: 1.4;
     }
@@ -78,7 +78,7 @@
 
   .toggle-control {
     flex-shrink: 0;
-    margin-left: var(--fluentcrm-space-lg);
+    margin-left: var(--fluentcart-space-lg);
   }
 }
 
@@ -88,18 +88,18 @@
   width: 100%;
 
   select {
-    @extend .fluentcrm-select;
+    @extend .fluentcart-select;
     width: 100%;
   }
 
   label {
-    @extend .fluentcrm-label;
+    @extend .fluentcart-label;
   }
 }
 
 /* Custom CSS editor styling */
 .wishcart-code-editor {
-  .fluentcrm-textarea {
+  .fluentcart-textarea {
     font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
     font-size: 12px;
     min-height: 200px;
@@ -108,20 +108,20 @@
 
 /* Page selector */
 .wishcart-page-selector {
-  margin-bottom: var(--fluentcrm-space-lg);
+  margin-bottom: var(--fluentcart-space-lg);
 
   label {
-    @extend .fluentcrm-label;
+    @extend .fluentcart-label;
   }
 
   select {
-    @extend .fluentcrm-select;
+    @extend .fluentcart-select;
     width: 100%;
     max-width: 400px;
   }
 
   .helper-text {
-    @extend .fluentcrm-form-helper;
+    @extend .fluentcart-form-helper;
   }
 }
 
@@ -129,26 +129,26 @@
 .wishcart-settings-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: var(--fluentcrm-space-xl);
-  margin-top: var(--fluentcrm-space-lg);
+  gap: var(--fluentcart-space-xl);
+  margin-top: var(--fluentcart-space-lg);
 }
 
 /* Color picker integration */
 .wishcart-color-picker {
   display: flex;
   align-items: center;
-  gap: var(--fluentcrm-space-sm);
+  gap: var(--fluentcart-space-sm);
 
   input[type="color"] {
     width: 50px;
     height: 32px;
-    border: 1px solid var(--fluentcrm-border-dark);
-    border-radius: var(--fluentcrm-radius);
+    border: 1px solid var(--fluentcart-border-dark);
+    border-radius: var(--fluentcart-radius);
     cursor: pointer;
   }
 
   input[type="text"] {
-    @extend .fluentcrm-input;
+    @extend .fluentcart-input;
     flex: 1;
     max-width: 120px;
   }
@@ -159,8 +159,8 @@
   .icon-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
-    gap: var(--fluentcrm-space-sm);
-    margin-top: var(--fluentcrm-space-md);
+    gap: var(--fluentcart-space-sm);
+    margin-top: var(--fluentcart-space-md);
   }
 
   .icon-option {
@@ -168,50 +168,50 @@
     align-items: center;
     justify-content: center;
     height: 50px;
-    border: 1px solid var(--fluentcrm-border);
-    border-radius: var(--fluentcrm-radius);
+    border: 1px solid var(--fluentcart-border);
+    border-radius: var(--fluentcart-radius);
     cursor: pointer;
     transition: all 0.15s ease-in-out;
-    background: var(--fluentcrm-bg-white);
+    background: var(--fluentcart-bg-white);
 
     &:hover {
-      border-color: var(--fluentcrm-primary);
+      border-color: var(--fluentcart-primary);
       background: rgba(30, 115, 190, 0.05);
     }
 
     &.selected {
-      border-color: var(--fluentcrm-primary);
+      border-color: var(--fluentcart-primary);
       background: rgba(30, 115, 190, 0.1);
-      box-shadow: 0 0 0 1px var(--fluentcrm-primary);
+      box-shadow: 0 0 0 1px var(--fluentcart-primary);
     }
 
     svg {
       width: 24px;
       height: 24px;
-      color: var(--fluentcrm-gray-700);
+      color: var(--fluentcart-gray-700);
     }
   }
 }
 
 /* Button preview section */
 .wishcart-button-preview {
-  background: var(--fluentcrm-gray-10);
-  border: 1px solid var(--fluentcrm-border-light);
-  border-radius: var(--fluentcrm-radius);
-  padding: var(--fluentcrm-space-2xl);
+  background: var(--fluentcart-gray-10);
+  border: 1px solid var(--fluentcart-border-light);
+  border-radius: var(--fluentcart-radius);
+  padding: var(--fluentcart-space-2xl);
   text-align: center;
 
   .preview-label {
     font-size: 12px;
-    color: var(--fluentcrm-text-muted);
+    color: var(--fluentcart-text-muted);
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    margin-bottom: var(--fluentcrm-space-lg);
+    margin-bottom: var(--fluentcart-space-lg);
   }
 
   .preview-buttons {
     display: flex;
-    gap: var(--fluentcrm-space-lg);
+    gap: var(--fluentcart-space-lg);
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
@@ -227,47 +227,47 @@
   .wishcart-toggle-row {
     flex-direction: column;
     align-items: flex-start;
-    gap: var(--fluentcrm-space-md);
+    gap: var(--fluentcart-space-md);
 
     .toggle-control {
       margin-left: 0;
     }
   }
 
-  .fluentcrm-admin-header-content {
+  .fluentcart-admin-header-content {
     flex-direction: column;
     align-items: flex-start;
-    gap: var(--fluentcrm-space-md);
+    gap: var(--fluentcart-space-md);
   }
 
-  .fluentcrm-admin-header-right {
+  .fluentcart-admin-header-right {
     width: 100%;
     flex-wrap: wrap;
   }
 
-  .fluentcrm-nav-tabs {
+  .fluentcart-nav-tabs {
     overflow-x: auto;
     flex-wrap: nowrap;
     -webkit-overflow-scrolling: touch;
   }
 }
 
-/* Ensure shadcn/ui components integrate with FluentCRM theme */
+/* Ensure shadcn/ui components integrate with FluentCart theme */
 .wishcart-admin-shell {
   /* Override button default styles */
   button[class*="inline-flex"] {
     height: 32px;
     font-size: 13px;
     font-weight: 400;
-    border-radius: var(--fluentcrm-radius-sm);
+    border-radius: var(--fluentcart-radius-sm);
   }
 
   /* Override input styles */
   input[class*="flex"] {
     height: 32px;
     font-size: 13px;
-    border-radius: var(--fluentcrm-radius);
-    border-color: var(--fluentcrm-border-dark);
+    border-radius: var(--fluentcart-radius);
+    border-color: var(--fluentcart-border-dark);
 
     &:focus {
       border-color: var(--wp-admin-blue);
@@ -279,17 +279,17 @@
   select {
     height: 32px;
     font-size: 13px;
-    border-radius: var(--fluentcrm-radius);
+    border-radius: var(--fluentcart-radius);
   }
 
   /* Override card styles if any remain */
   [class*="rounded-lg"],
   [class*="rounded-xl"] {
-    border-radius: var(--fluentcrm-radius) !important;
+    border-radius: var(--fluentcart-radius) !important;
   }
 }
 
-/* Toast notification adjustments for FluentCRM theme */
+/* Toast notification adjustments for FluentCart theme */
 .wishcart-admin-shell {
   [data-sonner-toast] {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
@@ -297,15 +297,15 @@
   }
 
   [data-sonner-toast][data-type="success"] {
-    background: var(--fluentcrm-success-bg);
-    border-color: var(--fluentcrm-success);
-    color: var(--fluentcrm-success);
+    background: var(--fluentcart-success-bg);
+    border-color: var(--fluentcart-success);
+    color: var(--fluentcart-success);
   }
 
   [data-sonner-toast][data-type="error"] {
-    background: var(--fluentcrm-danger-bg);
-    border-color: var(--fluentcrm-danger);
-    color: var(--fluentcrm-danger);
+    background: var(--fluentcart-danger-bg);
+    border-color: var(--fluentcart-danger);
+    color: var(--fluentcart-danger);
   }
 }
 

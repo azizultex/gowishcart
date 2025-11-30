@@ -151,8 +151,8 @@ const WishlistSettings = ({ settings, updateSettings }) => {
 
             {/* Button Position */}
             {wishlistSettings.product_page_button && (
-                <div className="fluentcrm-form-group" style={{borderTop: '1px solid var(--fluentcrm-gray-25)', paddingTop: '16px'}}>
-                    <label className="fluentcrm-label" htmlFor="button_position">
+                <div className="fluentcart-form-group" style={{borderTop: '1px solid var(--fluentcart-gray-25)', paddingTop: '16px'}}>
+                    <label className="fluentcart-label" htmlFor="button_position">
                         {__('Button Position', 'wish-cart')}
                     </label>
                     <Select
@@ -160,7 +160,7 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                         onValueChange={(value) => updateWishlistSetting('button_position', value)}
                         disabled={!wishlistSettings.enabled}
                     >
-                        <SelectTrigger id="button_position" className="fluentcrm-select">
+                        <SelectTrigger id="button_position" className="fluentcart-select">
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -178,15 +178,15 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                             </SelectItem>
                         </SelectContent>
                     </Select>
-                    <p className="fluentcrm-form-helper">
+                    <p className="fluentcart-form-helper">
                         {__('Choose where to display the wishlist button relative to the purchase actions.', 'wish-cart')}
                     </p>
                 </div>
             )}
 
             {/* Wishlist Page */}
-            <div className="fluentcrm-form-group" style={{borderTop: '1px solid var(--fluentcrm-gray-25)', paddingTop: '16px'}}>
-                <label className="fluentcrm-label" htmlFor="wishlist_page">
+            <div className="fluentcart-form-group" style={{borderTop: '1px solid var(--fluentcart-gray-25)', paddingTop: '16px'}}>
+                <label className="fluentcart-label" htmlFor="wishlist_page">
                     {__('Wishlist Page', 'wish-cart')}
                 </label>
                 <Select
@@ -194,7 +194,7 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                     onValueChange={(value) => updateWishlistSetting('wishlist_page_id', parseInt(value, 10))}
                     disabled={!wishlistSettings.enabled || loadingPages}
                 >
-                    <SelectTrigger id="wishlist_page" className="fluentcrm-select">
+                    <SelectTrigger id="wishlist_page" className="fluentcart-select">
                         <SelectValue placeholder={__('Select a page', 'wish-cart')} />
                     </SelectTrigger>
                     <SelectContent>
@@ -206,14 +206,14 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                         ))}
                     </SelectContent>
                 </Select>
-                <p className="fluentcrm-form-helper">
+                <p className="fluentcart-form-helper">
                     {__('Select the page where the wishlist will be displayed. Make sure the page contains the [wishcart_wishlist] shortcode.', 'wish-cart')}
                 </p>
             </div>
 
             {/* Shareable Page */}
-            <div className="fluentcrm-form-group">
-                <label className="fluentcrm-label" htmlFor="shared_wishlist_page">
+            <div className="fluentcart-form-group">
+                <label className="fluentcart-label" htmlFor="shared_wishlist_page">
                     {__('Shareable Page', 'wish-cart')}
                 </label>
                 <Select
@@ -221,7 +221,7 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                     onValueChange={(value) => updateWishlistSetting('shared_wishlist_page_id', parseInt(value, 10))}
                     disabled={!wishlistSettings.enabled || loadingPages}
                 >
-                    <SelectTrigger id="shared_wishlist_page" className="fluentcrm-select">
+                    <SelectTrigger id="shared_wishlist_page" className="fluentcart-select">
                         <SelectValue placeholder={__('Select a page', 'wish-cart')} />
                     </SelectTrigger>
                     <SelectContent>
@@ -233,14 +233,14 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                         ))}
                     </SelectContent>
                 </Select>
-                <p className="fluentcrm-form-helper">
+                <p className="fluentcart-form-helper">
                     {__('Select the page where shared wishlists will be displayed. Make sure the page contains the [wishcart_shared_wishlist] shortcode.', 'wish-cart')}
                 </p>
             </div>
 
             {/* Guest Cookie Expiry */}
-            <div className="fluentcrm-form-group">
-                <label className="fluentcrm-label" htmlFor="guest_cookie_expiry">
+            <div className="fluentcart-form-group">
+                <label className="fluentcart-label" htmlFor="guest_cookie_expiry">
                     {__('Guest Wishlist Expiry (Days)', 'wish-cart')}
                 </label>
                 <Input
@@ -251,17 +251,17 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                     value={wishlistSettings.guest_cookie_expiry || 30}
                     onChange={(e) => updateWishlistSetting('guest_cookie_expiry', parseInt(e.target.value, 10))}
                     disabled={!wishlistSettings.enabled}
-                    className="fluentcrm-input"
+                    className="fluentcart-input"
                     style={{maxWidth: '200px'}}
                 />
-                <p className="fluentcrm-form-helper">
+                <p className="fluentcart-form-helper">
                     {__('Number of days guest wishlists are stored in cookies', 'wish-cart')}
                 </p>
             </div>
 
             {/* Custom CSS */}
-            <div className="fluentcrm-form-group wishcart-code-editor">
-                <label className="fluentcrm-label" htmlFor="custom_css">
+            <div className="fluentcart-form-group wishcart-code-editor">
+                <label className="fluentcart-label" htmlFor="custom_css">
                     {__('Custom CSS', 'wish-cart')}
                 </label>
                 <Textarea
@@ -271,9 +271,9 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                     onChange={(e) => updateWishlistSetting('custom_css', e.target.value)}
                     placeholder={__('Add custom CSS for wishlist button styling...', 'wish-cart')}
                     disabled={!wishlistSettings.enabled}
-                    className="fluentcrm-textarea"
+                    className="fluentcart-textarea"
                 />
-                <p className="fluentcrm-form-helper">
+                <p className="fluentcart-form-helper">
                     {__('Add custom CSS to style the wishlist button. Use selector: .wishcart-wishlist-button', 'wish-cart')}
                 </p>
             </div>

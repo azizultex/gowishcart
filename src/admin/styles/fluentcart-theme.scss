@@ -1,19 +1,19 @@
 /**
- * FluentCRM Design System
+ * FluentCart Design System
  * 
- * This file contains all design tokens and styles to match FluentCRM's visual design
+ * This file contains all design tokens and styles to match FluentCart's visual design
  * as a cohesive addon integration with WordPress admin aesthetics.
  */
 
 /* ==========================================
-   FluentCRM Color System
+   FluentCart Color System
    ========================================== */
 
 :root {
-  /* Primary Colors - FluentCRM Brand */
-  --fluentcrm-primary: #1e73be;
-  --fluentcrm-primary-hover: #1a5fa0;
-  --fluentcrm-primary-active: #165082;
+  /* Primary Colors - FluentCart Brand */
+  --fluentcart-primary: #1e73be;
+  --fluentcart-primary-hover: #1a5fa0;
+  --fluentcart-primary-active: #165082;
   
   /* WordPress Admin Blues */
   --wp-admin-blue: #2271b1;
@@ -21,128 +21,128 @@
   --wp-admin-blue-active: #0a4b78;
   
   /* Status Colors */
-  --fluentcrm-success: #00a32a;
-  --fluentcrm-success-bg: #e7f7ed;
-  --fluentcrm-warning: #dba617;
-  --fluentcrm-warning-bg: #fcf9e8;
-  --fluentcrm-danger: #d63638;
-  --fluentcrm-danger-bg: #fcf0f1;
-  --fluentcrm-info: #2271b1;
-  --fluentcrm-info-bg: #e5f5fa;
+  --fluentcart-success: #00a32a;
+  --fluentcart-success-bg: #e7f7ed;
+  --fluentcart-warning: #dba617;
+  --fluentcart-warning-bg: #fcf9e8;
+  --fluentcart-danger: #d63638;
+  --fluentcart-danger-bg: #fcf0f1;
+  --fluentcart-info: #2271b1;
+  --fluentcart-info-bg: #e5f5fa;
   
   /* Gray Scale - WordPress Admin */
-  --fluentcrm-gray-900: #1d2327;
-  --fluentcrm-gray-800: #2c3338;
-  --fluentcrm-gray-700: #3c434a;
-  --fluentcrm-gray-600: #50575e;
-  --fluentcrm-gray-500: #646970;
-  --fluentcrm-gray-400: #787c82;
-  --fluentcrm-gray-300: #8c8f94;
-  --fluentcrm-gray-200: #a7aaad;
-  --fluentcrm-gray-100: #c3c4c7;
-  --fluentcrm-gray-50: #dcdcde;
-  --fluentcrm-gray-25: #f0f0f1;
-  --fluentcrm-gray-10: #f6f7f7;
+  --fluentcart-gray-900: #1d2327;
+  --fluentcart-gray-800: #2c3338;
+  --fluentcart-gray-700: #3c434a;
+  --fluentcart-gray-600: #50575e;
+  --fluentcart-gray-500: #646970;
+  --fluentcart-gray-400: #787c82;
+  --fluentcart-gray-300: #8c8f94;
+  --fluentcart-gray-200: #a7aaad;
+  --fluentcart-gray-100: #c3c4c7;
+  --fluentcart-gray-50: #dcdcde;
+  --fluentcart-gray-25: #f0f0f1;
+  --fluentcart-gray-10: #f6f7f7;
   
   /* Background Colors */
-  --fluentcrm-bg-body: #f0f0f1;
-  --fluentcrm-bg-white: #ffffff;
-  --fluentcrm-bg-light: #f6f7f7;
+  --fluentcart-bg-body: #f0f0f1;
+  --fluentcart-bg-white: #ffffff;
+  --fluentcart-bg-light: #f6f7f7;
   
   /* Border Colors */
-  --fluentcrm-border: #c3c4c7;
-  --fluentcrm-border-light: #dcdcde;
-  --fluentcrm-border-dark: #8c8f94;
+  --fluentcart-border: #c3c4c7;
+  --fluentcart-border-light: #dcdcde;
+  --fluentcart-border-dark: #8c8f94;
   
   /* Text Colors */
-  --fluentcrm-text-primary: #1d2327;
-  --fluentcrm-text-secondary: #50575e;
-  --fluentcrm-text-muted: #646970;
-  --fluentcrm-text-light: #787c82;
+  --fluentcart-text-primary: #1d2327;
+  --fluentcart-text-secondary: #50575e;
+  --fluentcart-text-muted: #646970;
+  --fluentcart-text-light: #787c82;
   
   /* Shadows */
-  --fluentcrm-shadow-sm: 0 1px 1px rgba(0, 0, 0, 0.04);
-  --fluentcrm-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  --fluentcrm-shadow-md: 0 2px 4px rgba(0, 0, 0, 0.08);
+  --fluentcart-shadow-sm: 0 1px 1px rgba(0, 0, 0, 0.04);
+  --fluentcart-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --fluentcart-shadow-md: 0 2px 4px rgba(0, 0, 0, 0.08);
   
   /* Border Radius */
-  --fluentcrm-radius-sm: 3px;
-  --fluentcrm-radius: 4px;
-  --fluentcrm-radius-md: 6px;
+  --fluentcart-radius-sm: 3px;
+  --fluentcart-radius: 4px;
+  --fluentcart-radius-md: 6px;
   
   /* Spacing (WordPress Admin Standard) */
-  --fluentcrm-space-xs: 4px;
-  --fluentcrm-space-sm: 8px;
-  --fluentcrm-space-md: 12px;
-  --fluentcrm-space-lg: 16px;
-  --fluentcrm-space-xl: 20px;
-  --fluentcrm-space-2xl: 24px;
-  --fluentcrm-space-3xl: 32px;
+  --fluentcart-space-xs: 4px;
+  --fluentcart-space-sm: 8px;
+  --fluentcart-space-md: 12px;
+  --fluentcart-space-lg: 16px;
+  --fluentcart-space-xl: 20px;
+  --fluentcart-space-2xl: 24px;
+  --fluentcart-space-3xl: 32px;
 }
 
 /* ==========================================
    Typography System
    ========================================== */
 
-.fluentcrm-typography {
+.fluentcart-typography {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
   font-size: 13px;
   line-height: 1.4em;
-  color: var(--fluentcrm-text-primary);
+  color: var(--fluentcart-text-primary);
 }
 
-.fluentcrm-h1 {
+.fluentcart-h1 {
   font-size: 23px;
   font-weight: 400;
   line-height: 1.3;
-  color: var(--fluentcrm-gray-900);
+  color: var(--fluentcart-gray-900);
   margin: 0 0 20px;
   padding: 9px 0 4px;
 }
 
-.fluentcrm-h2 {
+.fluentcart-h2 {
   font-size: 18px;
   font-weight: 600;
   line-height: 1.4;
-  color: var(--fluentcrm-gray-900);
+  color: var(--fluentcart-gray-900);
   margin: 0 0 16px;
 }
 
-.fluentcrm-h3 {
+.fluentcart-h3 {
   font-size: 16px;
   font-weight: 600;
   line-height: 1.4;
-  color: var(--fluentcrm-gray-900);
+  color: var(--fluentcart-gray-900);
   margin: 0 0 12px;
 }
 
-.fluentcrm-h4 {
+.fluentcart-h4 {
   font-size: 14px;
   font-weight: 600;
   line-height: 1.4;
-  color: var(--fluentcrm-gray-800);
+  color: var(--fluentcart-gray-800);
   margin: 0 0 8px;
 }
 
-.fluentcrm-body {
+.fluentcart-body {
   font-size: 13px;
   font-weight: 400;
   line-height: 1.4em;
-  color: var(--fluentcrm-text-primary);
+  color: var(--fluentcart-text-primary);
 }
 
-.fluentcrm-body-sm {
+.fluentcart-body-sm {
   font-size: 12px;
   font-weight: 400;
   line-height: 1.4em;
-  color: var(--fluentcrm-text-secondary);
+  color: var(--fluentcart-text-secondary);
 }
 
-.fluentcrm-label {
+.fluentcart-label {
   font-size: 13px;
   font-weight: 600;
   line-height: 1.4em;
-  color: var(--fluentcrm-gray-800);
+  color: var(--fluentcart-gray-800);
   display: block;
   margin-bottom: 6px;
 }
@@ -151,7 +151,7 @@
    Button Styles - WordPress Admin
    ========================================== */
 
-.fluentcrm-button {
+.fluentcart-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -161,7 +161,7 @@
   font-size: 13px;
   font-weight: 400;
   line-height: 1;
-  border-radius: var(--fluentcrm-radius-sm);
+  border-radius: var(--fluentcart-radius-sm);
   border: 1px solid transparent;
   cursor: pointer;
   text-decoration: none;
@@ -179,7 +179,7 @@
   }
 }
 
-.fluentcrm-button-primary {
+.fluentcart-button-primary {
   background: var(--wp-admin-blue);
   color: #ffffff;
   border-color: var(--wp-admin-blue);
@@ -195,54 +195,54 @@
   }
 }
 
-.fluentcrm-button-secondary {
+.fluentcart-button-secondary {
   background: #f6f7f7;
-  color: var(--fluentcrm-gray-700);
-  border-color: var(--fluentcrm-border);
+  color: var(--fluentcart-gray-700);
+  border-color: var(--fluentcart-border);
   
   &:hover:not(:disabled) {
     background: #ffffff;
-    border-color: var(--fluentcrm-border-dark);
+    border-color: var(--fluentcart-border-dark);
   }
 }
 
-.fluentcrm-button-outline {
+.fluentcart-button-outline {
   background: #ffffff;
   color: var(--wp-admin-blue);
   border-color: var(--wp-admin-blue);
   
   &:hover:not(:disabled) {
-    background: var(--fluentcrm-info-bg);
+    background: var(--fluentcart-info-bg);
   }
 }
 
-.fluentcrm-button-ghost {
+.fluentcart-button-ghost {
   background: transparent;
-  color: var(--fluentcrm-gray-700);
+  color: var(--fluentcart-gray-700);
   border-color: transparent;
   
   &:hover:not(:disabled) {
-    background: var(--fluentcrm-gray-25);
+    background: var(--fluentcart-gray-25);
   }
 }
 
-.fluentcrm-button-danger {
-  background: var(--fluentcrm-danger);
+.fluentcart-button-danger {
+  background: var(--fluentcart-danger);
   color: #ffffff;
-  border-color: var(--fluentcrm-danger);
+  border-color: var(--fluentcart-danger);
   
   &:hover:not(:disabled) {
     background: #b32d2e;
   }
 }
 
-.fluentcrm-button-sm {
+.fluentcart-button-sm {
   height: 28px;
   padding: 0 10px;
   font-size: 12px;
 }
 
-.fluentcrm-button-lg {
+.fluentcart-button-lg {
   height: 36px;
   padding: 0 16px;
   font-size: 14px;
@@ -252,16 +252,16 @@
    Form Controls - WordPress Admin
    ========================================== */
 
-.fluentcrm-input {
+.fluentcart-input {
   width: 100%;
   height: 32px;
   padding: 0 8px;
   font-size: 13px;
   line-height: 1.4em;
-  color: var(--fluentcrm-text-primary);
+  color: var(--fluentcart-text-primary);
   background: #ffffff;
-  border: 1px solid var(--fluentcrm-border-dark);
-  border-radius: var(--fluentcrm-radius);
+  border: 1px solid var(--fluentcart-border-dark);
+  border-radius: var(--fluentcart-radius);
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.07);
   transition: border-color 0.15s ease-in-out;
   
@@ -272,26 +272,26 @@
   }
   
   &::placeholder {
-    color: var(--fluentcrm-gray-200);
+    color: var(--fluentcart-gray-200);
   }
   
   &:disabled {
-    background: var(--fluentcrm-gray-25);
-    color: var(--fluentcrm-text-muted);
+    background: var(--fluentcart-gray-25);
+    color: var(--fluentcart-text-muted);
     cursor: not-allowed;
   }
 }
 
-.fluentcrm-textarea {
-  @extend .fluentcrm-input;
+.fluentcart-textarea {
+  @extend .fluentcart-input;
   height: auto;
   min-height: 80px;
   padding: 6px 8px;
   resize: vertical;
 }
 
-.fluentcrm-select {
-  @extend .fluentcrm-input;
+.fluentcart-select {
+  @extend .fluentcart-input;
   cursor: pointer;
   padding-right: 24px;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23646970' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
@@ -300,8 +300,8 @@
   background-size: 12px;
 }
 
-.fluentcrm-checkbox,
-.fluentcrm-radio {
+.fluentcart-checkbox,
+.fluentcart-radio {
   width: 16px;
   height: 16px;
   margin: 0;
@@ -313,7 +313,7 @@
   }
 }
 
-.fluentcrm-toggle {
+.fluentcart-toggle {
   position: relative;
   display: inline-block;
   width: 36px;
@@ -324,7 +324,7 @@
     width: 0;
     height: 0;
     
-    &:checked + .fluentcrm-toggle-slider {
+    &:checked + .fluentcart-toggle-slider {
       background: var(--wp-admin-blue);
       
       &:before {
@@ -332,20 +332,20 @@
       }
     }
     
-    &:focus + .fluentcrm-toggle-slider {
+    &:focus + .fluentcart-toggle-slider {
       box-shadow: 0 0 0 2px rgba(34, 113, 177, 0.2);
     }
   }
 }
 
-.fluentcrm-toggle-slider {
+.fluentcart-toggle-slider {
   position: absolute;
   cursor: pointer;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: var(--fluentcrm-gray-100);
+  background: var(--fluentcart-gray-100);
   border-radius: 20px;
   transition: 0.2s;
   
@@ -366,69 +366,72 @@
    Card/Panel Styles - WordPress Admin
    ========================================== */
 
-.fluentcrm-card {
-  background: var(--fluentcrm-bg-white);
-  border: 1px solid var(--fluentcrm-border);
-  border-radius: var(--fluentcrm-radius);
-  box-shadow: var(--fluentcrm-shadow-sm);
-  padding: var(--fluentcrm-space-xl);
-  margin-bottom: var(--fluentcrm-space-xl);
+.fluentcart-card {
+  background: var(--fluentcart-bg-white);
+  border: 1px solid var(--fluentcart-border);
+  border-radius: var(--fluentcart-radius);
+  box-shadow: var(--fluentcart-shadow-sm);
+  padding: var(--fluentcart-space-xl);
+  margin-bottom: var(--fluentcart-space-xl);
 }
 
-.fluentcrm-card-header {
-  margin-bottom: var(--fluentcrm-space-lg);
-  padding-bottom: var(--fluentcrm-space-md);
-  border-bottom: 1px solid var(--fluentcrm-border-light);
+.fluentcart-card-header {
+  margin-bottom: var(--fluentcart-space-lg);
+  padding-bottom: var(--fluentcart-space-md);
+  border-bottom: 1px solid var(--fluentcart-border-light);
 }
 
-.fluentcrm-card-title {
+.fluentcart-card-title {
   font-size: 14px;
   font-weight: 600;
-  color: var(--fluentcrm-gray-900);
+  color: var(--fluentcart-gray-900);
   margin: 0;
 }
 
-.fluentcrm-card-description {
+.fluentcart-card-description {
   font-size: 13px;
-  color: var(--fluentcrm-text-secondary);
+  color: var(--fluentcart-text-secondary);
   margin: 4px 0 0;
 }
 
-.fluentcrm-card-content {
+.fluentcart-card-content {
   /* Content area - no default styles */
 }
 
-.fluentcrm-card-footer {
-  margin-top: var(--fluentcrm-space-lg);
-  padding-top: var(--fluentcrm-space-lg);
-  border-top: 1px solid var(--fluentcrm-border-light);
+.fluentcart-card-footer {
+  margin-top: var(--fluentcart-space-lg);
+  padding-top: var(--fluentcart-space-lg);
+  border-top: 1px solid var(--fluentcart-border-light);
   display: flex;
   justify-content: flex-end;
-  gap: var(--fluentcrm-space-sm);
+  gap: var(--fluentcart-space-sm);
 }
 
 /* ==========================================
    Navigation Tabs - WordPress Admin Style
    ========================================== */
 
-.fluentcrm-nav-tabs {
+.fluentcart-nav-tabs {
   display: flex;
   gap: 0;
-  border-bottom: 1px solid var(--fluentcrm-border);
-  background: var(--fluentcrm-bg-white);
+  border-bottom: 1px solid var(--fluentcart-border);
+  background: var(--fluentcart-bg-white);
   margin: 0;
   padding: 0;
   list-style: none;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
+  justify-content: flex-end;
+  margin-bottom: 50px;
 }
 
-.fluentcrm-nav-tab {
+.fluentcart-nav-tab {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 12px 16px;
+  padding: 14px 20px;
   font-size: 13px;
   font-weight: 400;
-  color: var(--fluentcrm-text-secondary);
+  color: var(--fluentcart-text-secondary);
   text-decoration: none;
   border-bottom: 3px solid transparent;
   cursor: pointer;
@@ -437,14 +440,17 @@
   border-left: none;
   border-right: none;
   border-top: none;
+  position: relative;
   
   &:hover {
-    color: var(--fluentcrm-primary);
+    color: var(--fluentcart-primary);
+    background: rgba(30, 115, 190, 0.05);
   }
   
   &.active {
-    color: var(--fluentcrm-primary);
-    border-bottom-color: var(--fluentcrm-primary);
+    color: var(--fluentcart-primary);
+    background: rgba(30, 115, 190, 0.1);
+    border-bottom-color: var(--fluentcart-primary);
     font-weight: 600;
   }
   
@@ -458,21 +464,21 @@
    WordPress Admin Layout
    ========================================== */
 
-.fluentcrm-admin-page {
-  background: var(--fluentcrm-bg-body);
+.fluentcart-admin-page {
+  background: var(--fluentcart-bg-body);
   min-height: 100vh;
   padding: 0;
   margin: 0 0 0 -20px;
 }
 
-.fluentcrm-admin-header {
-  background: var(--fluentcrm-bg-white);
-  border-bottom: 1px solid var(--fluentcrm-border);
+.fluentcart-admin-header {
+  background: var(--fluentcart-bg-white);
+  border-bottom: 1px solid var(--fluentcart-border);
   padding: 20px 24px;
   margin-bottom: 0;
 }
 
-.fluentcrm-admin-header-content {
+.fluentcart-admin-header-content {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -480,20 +486,20 @@
   margin: 0 auto;
 }
 
-.fluentcrm-admin-header-left {
+.fluentcart-admin-header-left {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.fluentcrm-admin-logo {
+.fluentcart-admin-logo {
   width: 40px;
   height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: rgba(30, 115, 190, 0.08);
-  border-radius: var(--fluentcrm-radius);
+  border-radius: var(--fluentcart-radius);
   
   img {
     width: 24px;
@@ -501,38 +507,38 @@
   }
 }
 
-.fluentcrm-admin-title-wrapper {
+.fluentcart-admin-title-wrapper {
   h1 {
     font-size: 23px;
     font-weight: 400;
     margin: 0;
     padding: 0;
     line-height: 1.3;
-    color: var(--fluentcrm-gray-900);
+    color: var(--fluentcart-gray-900);
   }
   
   p {
     font-size: 13px;
-    color: var(--fluentcrm-text-secondary);
+    color: var(--fluentcart-text-secondary);
     margin: 2px 0 0;
     line-height: 1.4;
   }
 }
 
-.fluentcrm-admin-header-right {
+.fluentcart-admin-header-right {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.fluentcrm-admin-body {
+.fluentcart-admin-body {
   max-width: 1400px;
   margin: 0 auto;
   padding: 0;
 }
 
-.fluentcrm-admin-content {
-  background: var(--fluentcrm-bg-white);
+.fluentcart-admin-content {
+  background: var(--fluentcart-bg-white);
   padding: 24px;
 }
 
@@ -540,43 +546,43 @@
    Notices - WordPress Admin Style
    ========================================== */
 
-.fluentcrm-notice {
+.fluentcart-notice {
   padding: 12px 16px;
-  border-left: 4px solid var(--fluentcrm-border);
-  background: var(--fluentcrm-bg-white);
+  border-left: 4px solid var(--fluentcart-border);
+  background: var(--fluentcart-bg-white);
   margin: 16px 0;
   display: flex;
   align-items: flex-start;
   gap: 12px;
   font-size: 13px;
-  box-shadow: var(--fluentcrm-shadow-sm);
+  box-shadow: var(--fluentcart-shadow-sm);
 }
 
-.fluentcrm-notice-success {
-  border-left-color: var(--fluentcrm-success);
-  background: var(--fluentcrm-success-bg);
+.fluentcart-notice-success {
+  border-left-color: var(--fluentcart-success);
+  background: var(--fluentcart-success-bg);
 }
 
-.fluentcrm-notice-warning {
-  border-left-color: var(--fluentcrm-warning);
-  background: var(--fluentcrm-warning-bg);
+.fluentcart-notice-warning {
+  border-left-color: var(--fluentcart-warning);
+  background: var(--fluentcart-warning-bg);
 }
 
-.fluentcrm-notice-error {
-  border-left-color: var(--fluentcrm-danger);
-  background: var(--fluentcrm-danger-bg);
+.fluentcart-notice-error {
+  border-left-color: var(--fluentcart-danger);
+  background: var(--fluentcart-danger-bg);
 }
 
-.fluentcrm-notice-info {
-  border-left-color: var(--fluentcrm-info);
-  background: var(--fluentcrm-info-bg);
+.fluentcart-notice-info {
+  border-left-color: var(--fluentcart-info);
+  background: var(--fluentcart-info-bg);
 }
 
 /* ==========================================
    Status Badge
    ========================================== */
 
-.fluentcrm-badge {
+.fluentcart-badge {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -589,42 +595,42 @@
   letter-spacing: 0.3px;
 }
 
-.fluentcrm-badge-success {
-  background: var(--fluentcrm-success-bg);
-  color: var(--fluentcrm-success);
+.fluentcart-badge-success {
+  background: var(--fluentcart-success-bg);
+  color: var(--fluentcart-success);
 }
 
-.fluentcrm-badge-warning {
-  background: var(--fluentcrm-warning-bg);
-  color: var(--fluentcrm-warning);
+.fluentcart-badge-warning {
+  background: var(--fluentcart-warning-bg);
+  color: var(--fluentcart-warning);
 }
 
-.fluentcrm-badge-danger {
-  background: var(--fluentcrm-danger-bg);
-  color: var(--fluentcrm-danger);
+.fluentcart-badge-danger {
+  background: var(--fluentcart-danger-bg);
+  color: var(--fluentcart-danger);
 }
 
-.fluentcrm-badge-info {
-  background: var(--fluentcrm-info-bg);
-  color: var(--fluentcrm-info);
+.fluentcart-badge-info {
+  background: var(--fluentcart-info-bg);
+  color: var(--fluentcart-info);
 }
 
-.fluentcrm-badge-neutral {
-  background: var(--fluentcrm-gray-25);
-  color: var(--fluentcrm-text-secondary);
+.fluentcart-badge-neutral {
+  background: var(--fluentcart-gray-25);
+  color: var(--fluentcart-text-secondary);
 }
 
 /* ==========================================
    Connection Status Badge
    ========================================== */
 
-.fluentcrm-connection-status {
+.fluentcart-connection-status {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   padding: 4px 12px;
-  background: var(--fluentcrm-success-bg);
-  color: var(--fluentcrm-success);
+  background: var(--fluentcart-success-bg);
+  color: var(--fluentcart-success);
   border-radius: 16px;
   font-size: 12px;
   font-weight: 500;
@@ -633,7 +639,7 @@
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: var(--fluentcrm-success);
+    background: var(--fluentcart-success);
   }
 }
 
@@ -641,31 +647,31 @@
    Form Group
    ========================================== */
 
-.fluentcrm-form-group {
-  margin-bottom: var(--fluentcrm-space-lg);
+.fluentcart-form-group {
+  margin-bottom: var(--fluentcart-space-lg);
 }
 
-.fluentcrm-form-row {
+.fluentcart-form-row {
   display: flex;
-  gap: var(--fluentcrm-space-lg);
-  margin-bottom: var(--fluentcrm-space-lg);
+  gap: var(--fluentcart-space-lg);
+  margin-bottom: var(--fluentcart-space-lg);
   
-  .fluentcrm-form-group {
+  .fluentcart-form-group {
     flex: 1;
     margin-bottom: 0;
   }
 }
 
-.fluentcrm-form-helper {
+.fluentcart-form-helper {
   font-size: 12px;
-  color: var(--fluentcrm-text-muted);
+  color: var(--fluentcart-text-muted);
   margin-top: 4px;
   line-height: 1.4;
 }
 
-.fluentcrm-form-error {
+.fluentcart-form-error {
   font-size: 12px;
-  color: var(--fluentcrm-danger);
+  color: var(--fluentcart-danger);
   margin-top: 4px;
   line-height: 1.4;
 }
@@ -674,53 +680,53 @@
    Utility Classes
    ========================================== */
 
-.fluentcrm-text-center {
+.fluentcart-text-center {
   text-align: center;
 }
 
-.fluentcrm-text-right {
+.fluentcart-text-right {
   text-align: right;
 }
 
-.fluentcrm-flex {
+.fluentcart-flex {
   display: flex;
 }
 
-.fluentcrm-flex-center {
+.fluentcart-flex-center {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.fluentcrm-flex-between {
+.fluentcart-flex-between {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.fluentcrm-gap-sm {
-  gap: var(--fluentcrm-space-sm);
+.fluentcart-gap-sm {
+  gap: var(--fluentcart-space-sm);
 }
 
-.fluentcrm-gap-md {
-  gap: var(--fluentcrm-space-md);
+.fluentcart-gap-md {
+  gap: var(--fluentcart-space-md);
 }
 
-.fluentcrm-gap-lg {
-  gap: var(--fluentcrm-space-lg);
+.fluentcart-gap-lg {
+  gap: var(--fluentcart-space-lg);
 }
 
-.fluentcrm-mt-0 { margin-top: 0; }
-.fluentcrm-mt-xs { margin-top: var(--fluentcrm-space-xs); }
-.fluentcrm-mt-sm { margin-top: var(--fluentcrm-space-sm); }
-.fluentcrm-mt-md { margin-top: var(--fluentcrm-space-md); }
-.fluentcrm-mt-lg { margin-top: var(--fluentcrm-space-lg); }
-.fluentcrm-mt-xl { margin-top: var(--fluentcrm-space-xl); }
+.fluentcart-mt-0 { margin-top: 0; }
+.fluentcart-mt-xs { margin-top: var(--fluentcart-space-xs); }
+.fluentcart-mt-sm { margin-top: var(--fluentcart-space-sm); }
+.fluentcart-mt-md { margin-top: var(--fluentcart-space-md); }
+.fluentcart-mt-lg { margin-top: var(--fluentcart-space-lg); }
+.fluentcart-mt-xl { margin-top: var(--fluentcart-space-xl); }
 
-.fluentcrm-mb-0 { margin-bottom: 0; }
-.fluentcrm-mb-xs { margin-bottom: var(--fluentcrm-space-xs); }
-.fluentcrm-mb-sm { margin-bottom: var(--fluentcrm-space-sm); }
-.fluentcrm-mb-md { margin-bottom: var(--fluentcrm-space-md); }
-.fluentcrm-mb-lg { margin-bottom: var(--fluentcrm-space-lg); }
-.fluentcrm-mb-xl { margin-bottom: var(--fluentcrm-space-xl); }
+.fluentcart-mb-0 { margin-bottom: 0; }
+.fluentcart-mb-xs { margin-bottom: var(--fluentcart-space-xs); }
+.fluentcart-mb-sm { margin-bottom: var(--fluentcart-space-sm); }
+.fluentcart-mb-md { margin-bottom: var(--fluentcart-space-md); }
+.fluentcart-mb-lg { margin-bottom: var(--fluentcart-space-lg); }
+.fluentcart-mb-xl { margin-bottom: var(--fluentcart-space-xl); }
 

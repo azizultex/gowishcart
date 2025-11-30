@@ -1,4 +1,4 @@
-@import '../admin/styles/fluentcrm-theme.scss';
+@import '../admin/styles/fluentcart-theme.scss';
 
 .analytics-dashboard {
     padding: 0;
@@ -7,21 +7,21 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: var(--fluentcrm-space-xl);
-        padding-bottom: var(--fluentcrm-space-lg);
-        border-bottom: 1px solid var(--fluentcrm-border-light);
+        margin-bottom: var(--fluentcart-space-xl);
+        padding-bottom: var(--fluentcart-space-lg);
+        border-bottom: 1px solid var(--fluentcart-border-light);
 
         h2 {
             margin: 0;
             font-size: 18px;
             font-weight: 600;
-            color: var(--fluentcrm-gray-900);
+            color: var(--fluentcart-gray-900);
         }
 
         .refresh-button {
-            @extend .fluentcrm-button;
-            @extend .fluentcrm-button-secondary;
-            @extend .fluentcrm-button-sm;
+            @extend .fluentcart-button;
+            @extend .fluentcart-button-secondary;
+            @extend .fluentcart-button-sm;
         }
     }
 
@@ -35,15 +35,15 @@
         .spinner {
             width: 40px;
             height: 40px;
-            border: 4px solid var(--fluentcrm-border-light);
+            border: 4px solid var(--fluentcart-border-light);
             border-top-color: var(--wp-admin-blue);
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
 
         p {
-            margin-top: var(--fluentcrm-space-lg);
-            color: var(--fluentcrm-text-secondary);
+            margin-top: var(--fluentcart-space-lg);
+            color: var(--fluentcart-text-secondary);
             font-size: 13px;
         }
     }
@@ -55,13 +55,13 @@
     .overview-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-        gap: var(--fluentcrm-space-xl);
-        margin-bottom: var(--fluentcrm-space-2xl);
+        gap: var(--fluentcart-space-xl);
+        margin-bottom: var(--fluentcart-space-2xl);
     }
 
     .stat-card {
-        @extend .fluentcrm-card;
-        padding: var(--fluentcrm-space-lg);
+        @extend .fluentcart-card;
+        padding: var(--fluentcart-space-lg);
 
         .stat-content {
             display: flex;
@@ -74,22 +74,22 @@
             justify-content: center;
             width: 48px;
             height: 48px;
-            border-radius: var(--fluentcrm-radius-md);
-            margin-bottom: var(--fluentcrm-space-md);
+            border-radius: var(--fluentcart-radius-md);
+            margin-bottom: var(--fluentcart-space-md);
 
             &.wishlist {
                 background: rgba(30, 115, 190, 0.1);
-                color: var(--fluentcrm-primary);
+                color: var(--fluentcart-primary);
             }
 
             &.items {
                 background: rgba(0, 163, 42, 0.1);
-                color: var(--fluentcrm-success);
+                color: var(--fluentcart-success);
             }
 
             &.conversion {
                 background: rgba(219, 166, 23, 0.1);
-                color: var(--fluentcrm-warning);
+                color: var(--fluentcart-warning);
             }
 
             &.shares {
@@ -100,20 +100,20 @@
 
         .stat-label {
             font-size: 13px;
-            color: var(--fluentcrm-text-secondary);
+            color: var(--fluentcart-text-secondary);
             margin: 0 0 4px 0;
         }
 
         .stat-value {
             font-size: 28px;
             font-weight: 700;
-            color: var(--fluentcrm-gray-900);
+            color: var(--fluentcart-gray-900);
             margin: 0;
         }
 
         .stat-meta {
             font-size: 12px;
-            color: var(--fluentcrm-text-muted);
+            color: var(--fluentcart-text-muted);
             margin: 4px 0 0 0;
         }
     }
@@ -121,14 +121,14 @@
     .funnel-card,
     .popular-products-card,
     .links-card {
-        @extend .fluentcrm-card;
-        margin-bottom: var(--fluentcrm-space-xl);
+        @extend .fluentcart-card;
+        margin-bottom: var(--fluentcart-space-xl);
 
         h3 {
-            margin: 0 0 var(--fluentcrm-space-lg) 0;
+            margin: 0 0 var(--fluentcart-space-lg) 0;
             font-size: 16px;
             font-weight: 600;
-            color: var(--fluentcrm-gray-900);
+            color: var(--fluentcart-gray-900);
         }
     }
 
@@ -137,7 +137,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: var(--fluentcrm-space-lg);
+            margin-bottom: var(--fluentcart-space-lg);
 
             h3 {
                 margin: 0;
@@ -146,8 +146,8 @@
             }
 
             .total-links-badge {
-                @extend .fluentcrm-badge;
-                @extend .fluentcrm-badge-info;
+                @extend .fluentcart-badge;
+                @extend .fluentcart-badge-info;
             }
         }
 
@@ -159,36 +159,36 @@
                 border-collapse: collapse;
 
                 thead {
-                    background: var(--fluentcrm-bg-light);
+                    background: var(--fluentcart-bg-light);
 
                     th {
-                        padding: var(--fluentcrm-space-md) var(--fluentcrm-space-lg);
+                        padding: var(--fluentcart-space-md) var(--fluentcart-space-lg);
                         text-align: left;
                         font-size: 13px;
                         font-weight: 600;
-                        color: var(--fluentcrm-text-secondary);
-                        border-bottom: 2px solid var(--fluentcrm-border-light);
+                        color: var(--fluentcart-text-secondary);
+                        border-bottom: 2px solid var(--fluentcart-border-light);
                     }
                 }
 
                 tbody {
                     tr {
-                        border-bottom: 1px solid var(--fluentcrm-border-light);
+                        border-bottom: 1px solid var(--fluentcart-border-light);
                         transition: background 0.15s;
 
                         &:hover {
-                            background: var(--fluentcrm-bg-light);
+                            background: var(--fluentcart-bg-light);
                         }
                     }
 
                     td {
-                        padding: var(--fluentcrm-space-md) var(--fluentcrm-space-lg);
+                        padding: var(--fluentcart-space-md) var(--fluentcart-space-lg);
                         font-size: 13px;
-                        color: var(--fluentcrm-text-primary);
+                        color: var(--fluentcart-text-primary);
                         vertical-align: top;
 
                         .share-link {
-                            color: var(--fluentcrm-primary);
+                            color: var(--fluentcart-primary);
                             text-decoration: none;
                             font-weight: 500;
                             font-family: monospace;
@@ -202,45 +202,45 @@
                         .products-list {
                             display: flex;
                             flex-wrap: wrap;
-                            gap: var(--fluentcrm-space-xs);
+                            gap: var(--fluentcart-space-xs);
                             max-width: 300px;
 
                             .product-tag {
-                                @extend .fluentcrm-badge;
-                                @extend .fluentcrm-badge-info;
+                                @extend .fluentcart-badge;
+                                @extend .fluentcart-badge-info;
                             }
 
                             .more-items {
-                                @extend .fluentcrm-badge;
-                                @extend .fluentcrm-badge-neutral;
+                                @extend .fluentcart-badge;
+                                @extend .fluentcart-badge-neutral;
                                 font-style: italic;
                             }
 
                             .no-items {
-                                color: var(--fluentcrm-text-muted);
+                                color: var(--fluentcart-text-muted);
                                 font-style: italic;
                                 font-size: 13px;
                             }
                         }
 
                         .click-count {
-                            @extend .fluentcrm-badge;
-                            @extend .fluentcrm-badge-neutral;
+                            @extend .fluentcart-badge;
+                            @extend .fluentcart-badge-neutral;
 
                             &.has-clicks {
-                                @extend .fluentcrm-badge-info;
+                                @extend .fluentcart-badge-info;
                             }
                         }
 
                         .share-type-badge {
-                            @extend .fluentcrm-badge;
-                            @extend .fluentcrm-badge-warning;
+                            @extend .fluentcart-badge;
+                            @extend .fluentcart-badge-warning;
                             text-transform: capitalize;
                         }
 
                         .badge {
-                            @extend .fluentcrm-badge;
-                            @extend .fluentcrm-badge-info;
+                            @extend .fluentcart-badge;
+                            @extend .fluentcart-badge-info;
                         }
                     }
                 }
@@ -250,7 +250,7 @@
         .empty-state {
             padding: 40px 20px;
             text-align: center;
-            color: var(--fluentcrm-text-muted);
+            color: var(--fluentcart-text-muted);
             font-size: 13px;
         }
     }
@@ -258,7 +258,7 @@
     .funnel-visualization {
         display: flex;
         flex-direction: column;
-        gap: var(--fluentcrm-space-md);
+        gap: var(--fluentcart-space-md);
     }
 
     .funnel-stage {
@@ -266,16 +266,16 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: var(--fluentcrm-space-lg) var(--fluentcrm-space-xl);
-            background: linear-gradient(135deg, var(--fluentcrm-primary) 0%, var(--wp-admin-blue) 100%);
-            border-radius: var(--fluentcrm-radius);
+            padding: var(--fluentcart-space-lg) var(--fluentcart-space-xl);
+            background: linear-gradient(135deg, var(--fluentcart-primary) 0%, var(--wp-admin-blue) 100%);
+            border-radius: var(--fluentcart-radius);
             color: white;
             transition: all 0.2s ease-in-out;
             min-width: 200px;
 
             &:hover {
                 transform: translateX(4px);
-                box-shadow: var(--fluentcrm-shadow-md);
+                box-shadow: var(--fluentcart-shadow-md);
             }
         }
 
@@ -287,13 +287,13 @@
         .funnel-value {
             font-weight: 700;
             font-size: 16px;
-            margin-right: var(--fluentcrm-space-sm);
+            margin-right: var(--fluentcart-space-sm);
         }
 
         .funnel-rate {
-            padding: 2px var(--fluentcrm-space-sm);
+            padding: 2px var(--fluentcart-space-sm);
             background: rgba(255, 255, 255, 0.2);
-            border-radius: var(--fluentcrm-radius-sm);
+            border-radius: var(--fluentcart-radius-sm);
             font-size: 12px;
             font-weight: 600;
         }
@@ -307,35 +307,35 @@
             border-collapse: collapse;
 
             thead {
-                background: var(--fluentcrm-bg-light);
+                background: var(--fluentcart-bg-light);
 
                 th {
-                    padding: var(--fluentcrm-space-md) var(--fluentcrm-space-lg);
+                    padding: var(--fluentcart-space-md) var(--fluentcart-space-lg);
                     text-align: left;
                     font-size: 13px;
                     font-weight: 600;
-                    color: var(--fluentcrm-text-secondary);
-                    border-bottom: 2px solid var(--fluentcrm-border-light);
+                    color: var(--fluentcart-text-secondary);
+                    border-bottom: 2px solid var(--fluentcart-border-light);
                 }
             }
 
             tbody {
                 tr {
-                    border-bottom: 1px solid var(--fluentcrm-border-light);
+                    border-bottom: 1px solid var(--fluentcart-border-light);
                     transition: background 0.15s;
 
                     &:hover {
-                        background: var(--fluentcrm-bg-light);
+                        background: var(--fluentcart-bg-light);
                     }
                 }
 
                 td {
-                    padding: var(--fluentcrm-space-md) var(--fluentcrm-space-lg);
+                    padding: var(--fluentcart-space-md) var(--fluentcart-space-lg);
                     font-size: 13px;
-                    color: var(--fluentcrm-text-primary);
+                    color: var(--fluentcart-text-primary);
 
                     a {
-                        color: var(--fluentcrm-primary);
+                        color: var(--fluentcart-primary);
                         text-decoration: none;
                         font-weight: 500;
 
@@ -345,16 +345,16 @@
                     }
 
                     .badge {
-                        @extend .fluentcrm-badge;
-                        @extend .fluentcrm-badge-info;
+                        @extend .fluentcart-badge;
+                        @extend .fluentcart-badge-info;
                     }
 
                     .conversion-badge {
-                        @extend .fluentcrm-badge;
-                        @extend .fluentcrm-badge-warning;
+                        @extend .fluentcart-badge;
+                        @extend .fluentcart-badge-warning;
 
                         &.high {
-                            @extend .fluentcrm-badge-success;
+                            @extend .fluentcart-badge-success;
                         }
                     }
                 }
