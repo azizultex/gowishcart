@@ -150,6 +150,8 @@ const SettingsApp = () => {
         { id: 'fluentcrm', label: __('FluentCRM', 'wish-cart'), icon: Mail },
     ];
 
+    const activeTabData = tabs.find(tab => tab.id === activeTab) || tabs[0];
+
     return (
         <>
             <div className="wishcart-admin-shell fluentcart-admin-page">
@@ -170,43 +172,32 @@ const SettingsApp = () => {
                     })}
                 </nav>
 
+                {/* Active Tab Header */}
+                <div className="fluentcart-admin-page-header">
+                    <div className="fluentcart-admin-page-header-content">
+                        <h1 className="fluentcart-admin-page-title">
+                            {activeTabData.label}
+                        </h1>
+                    </div>
+                </div>
+
                 {/* Main Content Area */}
                 <div className="fluentcart-admin-body">
                     <div className="fluentcart-admin-content">
                         {/* Settings Tab */}
                         {activeTab === 'settings' && (
-                            <>
-                                <div className="fluentcart-card-header">
-                                    <h2 className="fluentcart-card-title">
-                                        {__('Wishlist Settings', 'wish-cart')}
-                                    </h2>
-                                    <p className="fluentcart-card-description">
-                                        {__('Configure wishlist functionality and button placement', 'wish-cart')}
-                                    </p>
-                                </div>
-                                <WishlistSettings
-                                    settings={settings}
-                                    updateSettings={updateSettings}
-                                />
-                            </>
+                            <WishlistSettings
+                                settings={settings}
+                                updateSettings={updateSettings}
+                            />
                         )}
 
                         {/* Button Customization Tab */}
                         {activeTab === 'button-customization' && (
-                            <>
-                                <div className="fluentcart-card-header">
-                                    <h2 className="fluentcart-card-title">
-                                        {__('Button Customization', 'wish-cart')}
-                                    </h2>
-                                    <p className="fluentcart-card-description">
-                                        {__('Customize the appearance and behavior of wishlist buttons', 'wish-cart')}
-                                    </p>
-                                </div>
-                                <ButtonCustomizationSettings
-                                    settings={settings}
-                                    updateSettings={updateSettings}
-                                />
-                            </>
+                            <ButtonCustomizationSettings
+                                settings={settings}
+                                updateSettings={updateSettings}
+                            />
                         )}
 
                         {/* Analytics Tab */}
@@ -216,17 +207,7 @@ const SettingsApp = () => {
 
                         {/* FluentCRM Tab */}
                         {activeTab === 'fluentcrm' && (
-                            <>
-                                <div className="fluentcart-card-header">
-                                    <h2 className="fluentcart-card-title">
-                                        {__('FluentCRM Integration', 'wish-cart')}
-                                    </h2>
-                                    <p className="fluentcart-card-description">
-                                        {__('Connect WishCart with FluentCRM for advanced email marketing', 'wish-cart')}
-                                    </p>
-                                </div>
-                                <FluentCRMSettings />
-                            </>
+                            <FluentCRMSettings />
                         )}
 
                         {/* Save Button - Only show for tabs that need it */}
