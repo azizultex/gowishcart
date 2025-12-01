@@ -308,11 +308,6 @@ const WishlistSelectorModal = ({ isOpen, onClose, productId, onSuccess }) => {
                 </div>
 
                 <div className="wishcart-modal-body">
-                    {successMessage && (
-                        <div className="wishcart-modal-success">
-                            {successMessage}
-                        </div>
-                    )}
                     
                     {error && (
                         <div className="wishcart-modal-error">
@@ -413,36 +408,36 @@ const WishlistSelectorModal = ({ isOpen, onClose, productId, onSuccess }) => {
                     )}
                 </div>
 
-                <div className="wishcart-modal-footer">
-                    <Button
-                        variant="outline"
-                        onClick={onClose}
-                        disabled={isSubmitting || successMessage}
-                    >
-                        Cancel
-                    </Button>
-                    <Button
-                        onClick={handleSubmit}
-                        disabled={isSubmitting || successMessage || (!selectedWishlistId && !isCreatingNew) || (isCreatingNew && !newWishlistName.trim())}
-                        className={successMessage ? 'wishcart-button-success' : ''}
-                    >
-                        {successMessage ? (
-                            <>
-                                <Check size={16} />
-                                Added!
-                            </>
-                        ) : isSubmitting ? (
-                            <>
-                                <div className="wishcart-button-spinner"></div>
-                                Adding...
-                            </>
-                        ) : isCreatingNew ? (
-                            'Create & Add'
-                        ) : (
-                            'Add to Wishlist'
-                        )}
-                    </Button>
-                </div>
+                {!successMessage && (
+                    <div className="wishcart-modal-footer">
+                        <Button
+                            variant="outline"
+                            onClick={onClose}
+                            disabled={isSubmitting}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            onClick={handleSubmit}
+                            disabled={
+                                isSubmitting ||
+                                (!selectedWishlistId && !isCreatingNew) ||
+                                (isCreatingNew && !newWishlistName.trim())
+                            }
+                        >
+                            {isSubmitting ? (
+                                <>
+                                    <div className="wishcart-button-spinner"></div>
+                                    Adding...
+                                </>
+                            ) : isCreatingNew ? (
+                                'Create & Add'
+                            ) : (
+                                'Add to Wishlist'
+                            )}
+                        </Button>
+                    </div>
+                )}
             </div>
         </div>
     );

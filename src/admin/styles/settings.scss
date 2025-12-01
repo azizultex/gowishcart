@@ -95,6 +95,46 @@
   }
 }
 
+.wishcart-pro-field {
+  border: 1px solid var(--fluentcart-border-light);
+  border-radius: var(--fluentcart-radius);
+  padding: var(--fluentcart-space-lg);
+  background: var(--fluentcart-bg-white);
+  margin-bottom: var(--fluentcart-space-lg);
+
+  &.is-locked {
+    background: var(--fluentcart-gray-5);
+  }
+
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--fluentcart-space-md);
+    margin-bottom: var(--fluentcart-space-sm);
+  }
+
+  &__badges {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--fluentcart-space-xs);
+
+    svg {
+      color: var(--fluentcart-text-muted);
+    }
+  }
+
+  &__upsell {
+    font-size: 12px;
+    color: var(--fluentcart-text-muted);
+    margin-top: var(--fluentcart-space-sm);
+  }
+
+  .fluentcart-select {
+    width: 100%;
+  }
+}
+
 /* Custom CSS editor styling */
 .wishcart-code-editor {
   .fluentcart-textarea {

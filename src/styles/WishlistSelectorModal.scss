@@ -120,42 +120,21 @@
     font-size: 0.875rem;
 }
 
-.wishcart-modal-success {
-    background-color: #1f2937;
-    border: 1px solid #374151;
-    color: #ffffff;
-    padding: 0.75rem 1rem;
-    border-radius: 6px;
-    margin-bottom: 1rem;
-    font-size: 0.875rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    animation: slideDown 0.3s ease-out;
-}
-
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
 .wishcart-modal-loading {
     text-align: center;
-    padding: 2rem;
+    padding: 2.5rem 1.5rem;
     color: #6b7280;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 1rem;
+    min-height: 220px;
+    justify-content: center;
 
     p {
         margin: 0;
+        color: #111827;
+        font-size: 1rem;
     }
 }
 

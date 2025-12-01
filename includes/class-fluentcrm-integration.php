@@ -144,6 +144,11 @@ class WishCart_FluentCRM_Integration {
             'time_based_enabled' => true,
             'progressive_discounts' => true,
             'discount_code_prefix' => 'WISHLIST',
+            // FluentCRM UI configuration
+            'fluentcrm_list_id' => 0,
+            'fluentcrm_auto_tag_by_product_name' => false,
+            'fluentcrm_auto_tag_by_product_tags' => false,
+            'fluentcrm_auto_tag_by_product_categories' => false,
         );
 
         $settings = get_option('wishcart_fluentcrm_settings', array());
@@ -197,7 +202,25 @@ class WishCart_FluentCRM_Integration {
                 $settings['progressive_discounts'] = false;
             }
         }
-        
+
+        // Sanitize new FluentCRM UI configuration fields
+        if (isset($settings['fluentcrm_list_id'])) {
+            $settings['fluentcrm_list_id'] = absint($settings['fluentcrm_list_id']);
+        }
+
+        $auto_tag_keys = array(
+            'fluentcrm_auto_tag_by_product_name',
+            'fluentcrm_auto_tag_by_product_tags',
+            'fluentcrm_auto_tag_by_product_categories',
+        );
+
+        foreach ($auto_tag_keys as $auto_tag_key) {
+            if (isset($settings[$auto_tag_key])) {
+                // Normalize various truthy/falsy values coming from REST/JS
+                $settings[$auto_tag_key] = (bool) $settings[$auto_tag_key];
+            }
+        }
+
         return update_option('wishcart_fluentcrm_settings', $settings);
     }
 
