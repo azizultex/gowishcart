@@ -7,12 +7,12 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * Creates and manages the shared wishlist page
  *
  * @category WordPress
- * @package  wishcart
- * @author   wishcart Team <support@wishcart.chat>
+ * @package  WishCart
+ * @author   WishCart Team <support@wishcart.chat>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://wishcart.chat
  */
-class wishcart_Shared_Wishlist_Page {
+class WishCart_Shared_Wishlist_Page {
 
     /**
      * Create default shared wishlist page on activation
@@ -24,7 +24,7 @@ class wishcart_Shared_Wishlist_Page {
 
         if ( ! $page_id ) {
             $page_data = array(
-                'post_title'   => __( 'Shared Wishlist', 'wish-car' ),
+                'post_title'   => __( 'Shared Wishlist', 'wishcart' ),
                 'post_content' => '[wishcart_shared_wishlist]',
                 'post_status'  => 'publish',
                 'post_type'    => 'page',

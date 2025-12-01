@@ -8,12 +8,12 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * Updated for 7-table structure with full feature support
  *
  * @category WordPress
- * @package  wishcart
- * @author   wishcart Team <support@wishcart.chat>
+ * @package  WishCart
+ * @author   WishCart Team <support@wishcart.chat>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://wishcart.chat
  */
-class wishcart_Wishlist_Handler {
+class WishCart_Wishlist_Handler {
 
     private $wpdb;
     private $wishlists_table;
@@ -229,7 +229,7 @@ class wishcart_Wishlist_Handler {
         $result = $this->wpdb->insert($this->wishlists_table, $data, $format);
 
         if ( false === $result ) {
-            return new WP_Error( 'db_error', __( 'Failed to create wishlist', 'wish-car' ) );
+            return new WP_Error( 'db_error', __( 'Failed to create wishlist', 'wishcart' ) );
         }
 
         $wishlist_id = $this->wpdb->insert_id;
@@ -430,7 +430,7 @@ class wishcart_Wishlist_Handler {
         }
 
         if (empty($update_data)) {
-            return new WP_Error('invalid_data', __('No valid fields to update', 'wish-car'));
+            return new WP_Error('invalid_data', __('No valid fields to update', 'wishcart'));
         }
 
         // If setting as default, unset other defaults
@@ -466,7 +466,7 @@ class wishcart_Wishlist_Handler {
         );
 
         if (false === $result) {
-            return new WP_Error('db_error', __('Failed to update wishlist', 'wish-car'));
+            return new WP_Error('db_error', __('Failed to update wishlist', 'wishcart'));
         }
 
         // Log activity
@@ -484,12 +484,12 @@ class wishcart_Wishlist_Handler {
     public function delete_wishlist($wishlist_id) {
         $wishlist = $this->get_wishlist($wishlist_id);
         if (!$wishlist) {
-            return new WP_Error('not_found', __('Wishlist not found', 'wish-car'));
+            return new WP_Error('not_found', __('Wishlist not found', 'wishcart'));
         }
 
         // Don't allow deleting default wishlist
         if ($wishlist['is_default']) {
-            return new WP_Error('cannot_delete_default', __('Cannot delete default wishlist', 'wish-car'));
+            return new WP_Error('cannot_delete_default', __('Cannot delete default wishlist', 'wishcart'));
         }
 
         // Soft delete: update status to 'deleted'
@@ -502,7 +502,7 @@ class wishcart_Wishlist_Handler {
         );
 
         if (false === $result) {
-            return new WP_Error('db_error', __('Failed to delete wishlist', 'wish-car'));
+            return new WP_Error('db_error', __('Failed to delete wishlist', 'wishcart'));
         }
 
         // Log activity
@@ -525,13 +525,13 @@ class wishcart_Wishlist_Handler {
         $product_id = intval($product_id);
         
         if ($product_id <= 0) {
-            return new WP_Error('invalid_product', __('Invalid product ID', 'wish-car'));
+            return new WP_Error('invalid_product', __('Invalid product ID', 'wishcart'));
         }
 
         // Verify product exists
-        $product = wishcart_FluentCart_Helper::get_product($product_id);
+        $product = WishCart_FluentCart_Helper::get_product($product_id);
         if (!$product) {
-            return new WP_Error('product_not_found', __('Product not found', 'wish-car'));
+            return new WP_Error('product_not_found', __('Product not found', 'wishcart'));
         }
 
         // Determine user_id or session_id
@@ -555,8 +555,8 @@ class wishcart_Wishlist_Handler {
                 ));
 
                 // Sync to FluentCRM if available (don't block wishlist addition on failure)
-                if (!is_wp_error($guest_result) && class_exists('wishcart_FluentCRM_Integration')) {
-                    $fluentcrm = new wishcart_FluentCRM_Integration();
+                if (!is_wp_error($guest_result) && class_exists('WishCart_FluentCRM_Integration')) {
+                    $fluentcrm = new WishCart_FluentCRM_Integration();
                     if ($fluentcrm->is_available()) {
                         $settings = $fluentcrm->get_settings();
                         if ($settings['enabled']) {
@@ -586,7 +586,7 @@ class wishcart_Wishlist_Handler {
             if ($default_wishlist) {
                 $wishlist_id = $default_wishlist['id'];
             } else {
-                return new WP_Error('no_wishlist', __('Could not find or create wishlist', 'wish-car'));
+                return new WP_Error('no_wishlist', __('Could not find or create wishlist', 'wishcart'));
             }
         }
 
@@ -641,7 +641,7 @@ class wishcart_Wishlist_Handler {
         $result = $this->wpdb->insert($this->items_table, $data, $format);
 
         if (false === $result) {
-            return new WP_Error('db_error', __('Failed to add product to wishlist', 'wish-car'));
+            return new WP_Error('db_error', __('Failed to add product to wishlist', 'wishcart'));
         }
 
         // Log activity
@@ -667,8 +667,8 @@ class wishcart_Wishlist_Handler {
                 $contact_email = $user->user_email;
                 
                 // Ensure contact exists in FluentCRM for logged-in users
-                if (class_exists('wishcart_FluentCRM_Integration')) {
-                    $fluentcrm = new wishcart_FluentCRM_Integration();
+                if (class_exists('WishCart_FluentCRM_Integration')) {
+                    $fluentcrm = new WishCart_FluentCRM_Integration();
                     if ($fluentcrm->is_available()) {
                         $settings = $fluentcrm->get_settings();
                         if ($settings['enabled'] && $settings['auto_create_contacts']) {
@@ -740,14 +740,14 @@ class wishcart_Wishlist_Handler {
 
         // Fire FluentCRM automation trigger (contact should exist by now)
         // Note: fire_trigger() internally calls do_action() so we don't call it separately
-        if ( class_exists( 'wishcart_FluentCRM_Triggers' ) ) {
+        if ( class_exists( 'WishCart_FluentCRM_Triggers' ) ) {
             if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
                 error_log( '[wishcart] Firing FluentCRM trigger for wishcart_item_added' );
             }
-            wishcart_FluentCRM_Triggers::fire_trigger( 'wishcart_item_added', $item_data );
+            WishCart_FluentCRM_Triggers::fire_trigger( 'wishcart_item_added', $item_data );
         } else {
             if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                error_log( '[wishcart] Warning: wishcart_FluentCRM_Triggers class not found. FluentCRM trigger not fired.' );
+                error_log( '[wishcart] Warning: WishCart_FluentCRM_Triggers class not found. FluentCRM trigger not fired.' );
             }
         }
 
@@ -768,7 +768,7 @@ class wishcart_Wishlist_Handler {
         $product_id = intval($product_id);
         
         if ($product_id <= 0) {
-            return new WP_Error('invalid_product', __('Invalid product ID', 'wish-car'));
+            return new WP_Error('invalid_product', __('Invalid product ID', 'wishcart'));
         }
 
         // Determine user_id or session_id
@@ -791,13 +791,13 @@ class wishcart_Wishlist_Handler {
         }
 
         if (empty($wishlist_id)) {
-            return new WP_Error('no_wishlist', __('Wishlist not found', 'wish-car'));
+            return new WP_Error('no_wishlist', __('Wishlist not found', 'wishcart'));
         }
 
         // Get product object before deletion (needed for trigger data)
-        $product = wishcart_FluentCart_Helper::get_product($product_id);
+        $product = WishCart_FluentCart_Helper::get_product($product_id);
         if (!$product) {
-            return new WP_Error('product_not_found', __('Product not found', 'wish-car'));
+            return new WP_Error('product_not_found', __('Product not found', 'wishcart'));
         }
 
         // Get email for trigger data (similar to add_to_wishlist)
@@ -831,7 +831,7 @@ class wishcart_Wishlist_Handler {
         );
 
         if (false === $result) {
-            return new WP_Error('db_error', __('Failed to remove product from wishlist', 'wish-car'));
+            return new WP_Error('db_error', __('Failed to remove product from wishlist', 'wishcart'));
         }
 
         // Log activity
@@ -867,14 +867,14 @@ class wishcart_Wishlist_Handler {
 
         // Fire FluentCRM automation trigger (contact should exist by now)
         // Note: fire_trigger() internally calls do_action() so we don't call it separately
-        if ( class_exists( 'wishcart_FluentCRM_Triggers' ) ) {
+        if ( class_exists( 'WishCart_FluentCRM_Triggers' ) ) {
             if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
                 error_log( '[wishcart] Firing FluentCRM trigger for wishcart_item_removed' );
             }
-            wishcart_FluentCRM_Triggers::fire_trigger( 'wishcart_item_removed', $item_data );
+            WishCart_FluentCRM_Triggers::fire_trigger( 'wishcart_item_removed', $item_data );
         } else {
             if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                error_log( '[wishcart] Warning: wishcart_FluentCRM_Triggers class not found. FluentCRM trigger not fired.' );
+                error_log( '[wishcart] Warning: WishCart_FluentCRM_Triggers class not found. FluentCRM trigger not fired.' );
             }
         }
 
@@ -927,7 +927,7 @@ class wishcart_Wishlist_Handler {
         }
 
         if (empty($update_data)) {
-            return new WP_Error('invalid_data', __('No valid fields to update', 'wish-car'));
+            return new WP_Error('invalid_data', __('No valid fields to update', 'wishcart'));
         }
 
         $result = $this->wpdb->update(
@@ -939,7 +939,7 @@ class wishcart_Wishlist_Handler {
         );
 
         if (false === $result) {
-            return new WP_Error('db_error', __('Failed to update wishlist item', 'wish-car'));
+            return new WP_Error('db_error', __('Failed to update wishlist item', 'wishcart'));
         }
 
         return true;
@@ -999,7 +999,7 @@ class wishcart_Wishlist_Handler {
      */
     public function sync_guest_wishlist_to_user($session_id, $user_id) {
         if (empty($user_id)) {
-            return new WP_Error('invalid_params', __('Invalid parameters', 'wish-car'));
+            return new WP_Error('invalid_params', __('Invalid parameters', 'wishcart'));
         }
 
         // Get guest's default wishlist
@@ -1102,8 +1102,8 @@ class wishcart_Wishlist_Handler {
      */
     private function update_analytics($product_id, $variation_id, $action) {
         // Use analytics handler if available
-        if (class_exists('wishcart_Analytics_Handler')) {
-            $analytics = new wishcart_Analytics_Handler();
+        if (class_exists('WishCart_Analytics_Handler')) {
+            $analytics = new WishCart_Analytics_Handler();
             $analytics->track_event($product_id, $variation_id, $action);
         }
     }
@@ -1156,6 +1156,6 @@ class wishcart_Wishlist_Handler {
      */
     private function clear_wishlist_cache($user_id, $session_id) {
         $cache_key = $this->get_cache_key($user_id, $session_id);
-        wp_cache_delete($cache_key, 'wishcart_wishlist');
+        wp_cache_delete($cache_key, 'WishCart_Wishlist');
     }
 }

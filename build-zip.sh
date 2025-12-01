@@ -2,7 +2,7 @@
 
 set -e
 
-PLUGIN_SLUG="wish-cart"
+PLUGIN_SLUG="wishcart"
 TMP_DIR="../${PLUGIN_SLUG}-release"
 ZIP_PATH="../${PLUGIN_SLUG}.zip"
 

@@ -5,12 +5,12 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * Shared Wishlist Shortcode Handler
  *
  * @category WordPress
- * @package  wishcart
- * @author   wishcart Team <support@wishcart.chat>
+ * @package  WishCart
+ * @author   WishCart Team <support@wishcart.chat>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://wishcart.chat
  */
-class wishcart_Shared_Wishlist_Shortcode {
+class WishCart_Shared_Wishlist_Shortcode {
 
     /**
      * Constructor
@@ -38,17 +38,17 @@ class wishcart_Shared_Wishlist_Shortcode {
         // Enqueue scripts and styles
         wp_enqueue_script(
             'wishcart-shared-wishlist',
-            wishcart_PLUGIN_URL . 'build/wishlist-frontend.js',
+            WishCart_PLUGIN_URL . 'build/wishlist-frontend.js',
             array( 'wp-element', 'wp-api-fetch' ),
-            wishcart_VERSION,
+            WishCart_VERSION,
             true
         );
 
         wp_enqueue_style(
             'wishcart-shared-wishlist',
-            wishcart_PLUGIN_URL . 'build/wishlist-frontend.css',
+            WishCart_PLUGIN_URL . 'build/wishlist-frontend.css',
             array(),
-            wishcart_VERSION
+            WishCart_VERSION
         );
 
         // Localize script with API data
@@ -70,5 +70,5 @@ class wishcart_Shared_Wishlist_Shortcode {
     }
 }
 
-new wishcart_Shared_Wishlist_Shortcode();
+new WishCart_Shared_Wishlist_Shortcode();
 

@@ -7,12 +7,12 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * Handles integration with FluentCRM for automated marketing campaigns
  *
  * @category WordPress
- * @package  wishcart
- * @author   wishcart Team <support@wishcart.chat>
+ * @package  WishCart
+ * @author   WishCart Team <support@wishcart.chat>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://wishcart.chat
  */
-class wishcart_FluentCRM_Integration {
+class WishCart_FluentCRM_Integration {
 
     private $wpdb;
     private $is_available = null;
@@ -211,12 +211,12 @@ class wishcart_FluentCRM_Integration {
      */
     public function create_or_update_contact($user_id = null, $email = null, $data = array()) {
         if (!$this->is_available()) {
-            return new WP_Error('fluentcrm_not_available', __('FluentCRM is not available', 'wish-car'));
+            return new WP_Error('fluentcrm_not_available', __('FluentCRM is not available', 'wishcart'));
         }
 
         $settings = $this->get_settings();
         if (!$settings['enabled']) {
-            return new WP_Error('integration_disabled', __('FluentCRM integration is disabled', 'wish-car'));
+            return new WP_Error('integration_disabled', __('FluentCRM integration is disabled', 'wishcart'));
         }
 
         // Get email from user if not provided
@@ -228,7 +228,7 @@ class wishcart_FluentCRM_Integration {
         }
 
         if (empty($email) || !is_email($email)) {
-            return new WP_Error('invalid_email', __('Invalid email address', 'wish-car'));
+            return new WP_Error('invalid_email', __('Invalid email address', 'wishcart'));
         }
 
         try {
@@ -341,7 +341,7 @@ class wishcart_FluentCRM_Integration {
                 return $contact_id;
             }
 
-            return new WP_Error('fluentcrm_api_not_found', __('FluentCRM API not found', 'wish-car'));
+            return new WP_Error('fluentcrm_api_not_found', __('FluentCRM API not found', 'wishcart'));
         } catch (Exception $e) {
             return new WP_Error('fluentcrm_error', $e->getMessage());
         }
@@ -356,7 +356,7 @@ class wishcart_FluentCRM_Integration {
      */
     public function attach_tags($contact_id, $tag_ids) {
         if (!$this->is_available()) {
-            return new WP_Error('fluentcrm_not_available', __('FluentCRM is not available', 'wish-car'));
+            return new WP_Error('fluentcrm_not_available', __('FluentCRM is not available', 'wishcart'));
         }
 
         try {
@@ -392,7 +392,7 @@ class wishcart_FluentCRM_Integration {
                     return true;
                 }
             }
-            return new WP_Error('contact_not_found', __('Contact not found', 'wish-car'));
+            return new WP_Error('contact_not_found', __('Contact not found', 'wishcart'));
         } catch (Exception $e) {
             return new WP_Error('fluentcrm_error', $e->getMessage());
         }
@@ -407,7 +407,7 @@ class wishcart_FluentCRM_Integration {
      */
     public function attach_lists($contact_id, $list_ids) {
         if (!$this->is_available()) {
-            return new WP_Error('fluentcrm_not_available', __('FluentCRM is not available', 'wish-car'));
+            return new WP_Error('fluentcrm_not_available', __('FluentCRM is not available', 'wishcart'));
         }
 
         try {
@@ -440,7 +440,7 @@ class wishcart_FluentCRM_Integration {
                     return true;
                 }
             }
-            return new WP_Error('contact_not_found', __('Contact not found', 'wish-car'));
+            return new WP_Error('contact_not_found', __('Contact not found', 'wishcart'));
         } catch (Exception $e) {
             return new WP_Error('fluentcrm_error', $e->getMessage());
         }
@@ -513,22 +513,22 @@ class wishcart_FluentCRM_Integration {
      */
     public function send_email($contact_id, $subject, $body, $options = array()) {
         if (!$this->is_available()) {
-            error_log('[wishcart FluentCRM] FluentCRM is not available');
-            return new WP_Error('fluentcrm_not_available', __('FluentCRM is not available', 'wish-car'));
+            error_log('[WishCart FluentCRM] FluentCRM is not available');
+            return new WP_Error('fluentcrm_not_available', __('FluentCRM is not available', 'wishcart'));
         }
 
         try {
             // Get contact
             $contact = $this->get_contact_by_id($contact_id);
             if (!$contact) {
-                error_log('[wishcart FluentCRM] Contact not found: ' . $contact_id);
-                return new WP_Error('contact_not_found', __('Contact not found', 'wish-car'));
+                error_log('[WishCart FluentCRM] Contact not found: ' . $contact_id);
+                return new WP_Error('contact_not_found', __('Contact not found', 'wishcart'));
             }
 
             $email_address = is_object($contact) ? $contact->email : (isset($contact['email']) ? $contact['email'] : null);
             if (!$email_address) {
-                error_log('[wishcart FluentCRM] Contact email not found for contact ID: ' . $contact_id);
-                return new WP_Error('no_email', __('Contact email not found', 'wish-car'));
+                error_log('[WishCart FluentCRM] Contact email not found for contact ID: ' . $contact_id);
+                return new WP_Error('no_email', __('Contact email not found', 'wishcart'));
             }
 
             // Convert plain text body to HTML if needed
@@ -538,7 +538,7 @@ class wishcart_FluentCRM_Integration {
                 $html_body = '<html><body>' . nl2br(esc_html($body)) . '</body></html>';
             }
 
-            error_log('[wishcart FluentCRM] Attempting to send email to contact ID: ' . $contact_id . ' (' . $email_address . ')');
+            error_log('[WishCart FluentCRM] Attempting to send email to contact ID: ' . $contact_id . ' (' . $email_address . ')');
 
             // Use FluentCRM's email sending - try multiple methods
             $email_sent = false;
@@ -547,7 +547,7 @@ class wishcart_FluentCRM_Integration {
             // Method 1: Use FluentCRM API helper function if available
             if (function_exists('fluentCrmApi')) {
                 try {
-                    error_log('[wishcart FluentCRM] Trying fluentCrmApi helper function');
+                    error_log('[WishCart FluentCRM] Trying fluentCrmApi helper function');
                     $api = fluentCrmApi('contacts');
                     if (method_exists($api, 'sendEmail')) {
                         $result = $api->sendEmail($contact_id, array(
@@ -556,23 +556,23 @@ class wishcart_FluentCRM_Integration {
                             'email_type' => 'custom'
                         ));
                         if ($result && !is_wp_error($result)) {
-                            error_log('[wishcart FluentCRM] Email sent successfully via fluentCrmApi');
+                            error_log('[WishCart FluentCRM] Email sent successfully via fluentCrmApi');
                             $email_sent = true;
                         } else {
                             $last_error = is_wp_error($result) ? $result->get_error_message() : 'Unknown error';
-                            error_log('[wishcart FluentCRM] fluentCrmApi sendEmail failed: ' . $last_error);
+                            error_log('[WishCart FluentCRM] fluentCrmApi sendEmail failed: ' . $last_error);
                         }
                     }
                 } catch (Exception $e) {
                     $last_error = $e->getMessage();
-                    error_log('[wishcart FluentCRM] fluentCrmApi exception: ' . $last_error);
+                    error_log('[WishCart FluentCRM] fluentCrmApi exception: ' . $last_error);
                 }
             }
 
             // Method 2: Use FluentCRM API class directly
             if (!$email_sent && class_exists('\FluentCrm\App\Api\FluentCrmApi')) {
                 try {
-                    error_log('[wishcart FluentCRM] Trying FluentCrmApi class');
+                    error_log('[WishCart FluentCRM] Trying FluentCrmApi class');
                     $api = \FluentCrm\App\Api\FluentCrmApi::contacts();
                     if (method_exists($api, 'sendEmail')) {
                         $result = $api->sendEmail($contact_id, array(
@@ -581,62 +581,62 @@ class wishcart_FluentCRM_Integration {
                             'email_type' => 'custom'
                         ));
                         if ($result && !is_wp_error($result)) {
-                            error_log('[wishcart FluentCRM] Email sent successfully via FluentCrmApi class');
+                            error_log('[WishCart FluentCRM] Email sent successfully via FluentCrmApi class');
                             $email_sent = true;
                         } else {
                             $last_error = is_wp_error($result) ? $result->get_error_message() : 'Unknown error';
-                            error_log('[wishcart FluentCRM] FluentCrmApi sendEmail failed: ' . $last_error);
+                            error_log('[WishCart FluentCRM] FluentCrmApi sendEmail failed: ' . $last_error);
                         }
                     }
                 } catch (Exception $e) {
                     $last_error = $e->getMessage();
-                    error_log('[wishcart FluentCRM] FluentCrmApi class exception: ' . $last_error);
+                    error_log('[WishCart FluentCRM] FluentCrmApi class exception: ' . $last_error);
                 }
             }
 
             // Method 3: Use FluentCRM Mailer service
             if (!$email_sent && class_exists('\FluentCrm\App\Services\Mailer')) {
                 try {
-                    error_log('[wishcart FluentCRM] Trying FluentCRM Mailer service');
+                    error_log('[WishCart FluentCRM] Trying FluentCRM Mailer service');
                     $mailer = \FluentCrm\App\Services\Mailer::getInstance();
                     if ($mailer && method_exists($mailer, 'send')) {
                         // Try sending via Mailer service
                         $result = $mailer->send($email_address, $subject, $html_body);
                         if ($result) {
-                            error_log('[wishcart FluentCRM] Email sent successfully via Mailer service');
+                            error_log('[WishCart FluentCRM] Email sent successfully via Mailer service');
                             $email_sent = true;
                         } else {
-                            error_log('[wishcart FluentCRM] Mailer service send returned false');
+                            error_log('[WishCart FluentCRM] Mailer service send returned false');
                         }
                     }
                 } catch (Exception $e) {
                     $last_error = $e->getMessage();
-                    error_log('[wishcart FluentCRM] Mailer service exception: ' . $last_error);
+                    error_log('[WishCart FluentCRM] Mailer service exception: ' . $last_error);
                 }
             }
 
             // Method 4: Use FluentCRM's sendEmail method on contact object
             if (!$email_sent && is_object($contact) && method_exists($contact, 'sendEmail')) {
                 try {
-                    error_log('[wishcart FluentCRM] Trying contact sendEmail method');
+                    error_log('[WishCart FluentCRM] Trying contact sendEmail method');
                     $result = $contact->sendEmail($subject, $html_body);
                     if ($result && !is_wp_error($result)) {
-                        error_log('[wishcart FluentCRM] Email sent successfully via contact sendEmail');
+                        error_log('[WishCart FluentCRM] Email sent successfully via contact sendEmail');
                         $email_sent = true;
                     } else {
                         $last_error = is_wp_error($result) ? $result->get_error_message() : 'Unknown error';
-                        error_log('[wishcart FluentCRM] contact sendEmail failed: ' . $last_error);
+                        error_log('[WishCart FluentCRM] contact sendEmail failed: ' . $last_error);
                     }
                 } catch (Exception $e) {
                     $last_error = $e->getMessage();
-                    error_log('[wishcart FluentCRM] contact sendEmail exception: ' . $last_error);
+                    error_log('[WishCart FluentCRM] contact sendEmail exception: ' . $last_error);
                 }
             }
 
             // Method 5: Use FluentCRM action hook
             if (!$email_sent) {
                 try {
-                    error_log('[wishcart FluentCRM] Trying fluentcrm_send_custom_email action hook');
+                    error_log('[WishCart FluentCRM] Trying fluentcrm_send_custom_email action hook');
                     do_action('fluentcrm_send_custom_email', array(
                         'contact_id' => $contact_id,
                         'to' => $email_address,
@@ -644,42 +644,42 @@ class wishcart_FluentCRM_Integration {
                         'body' => $html_body,
                     ));
                     // Note: Action hooks don't return values, so we assume success
-                    error_log('[wishcart FluentCRM] fluentcrm_send_custom_email action fired (assuming success)');
+                    error_log('[WishCart FluentCRM] fluentcrm_send_custom_email action fired (assuming success)');
                     $email_sent = true;
                 } catch (Exception $e) {
                     $last_error = $e->getMessage();
-                    error_log('[wishcart FluentCRM] fluentcrm_send_custom_email exception: ' . $last_error);
+                    error_log('[WishCart FluentCRM] fluentcrm_send_custom_email exception: ' . $last_error);
                 }
             }
 
             // Method 6: Fallback to WordPress wp_mail (FluentCRM will track if contact exists)
             if (!$email_sent) {
                 try {
-                    error_log('[wishcart FluentCRM] Falling back to wp_mail');
+                    error_log('[WishCart FluentCRM] Falling back to wp_mail');
                     $headers = array('Content-Type: text/html; charset=UTF-8');
                     $result = wp_mail($email_address, $subject, $html_body, $headers);
                     if ($result) {
-                        error_log('[wishcart FluentCRM] Email sent successfully via wp_mail fallback');
+                        error_log('[WishCart FluentCRM] Email sent successfully via wp_mail fallback');
                         $email_sent = true;
                     } else {
-                        error_log('[wishcart FluentCRM] wp_mail returned false');
+                        error_log('[WishCart FluentCRM] wp_mail returned false');
                     }
                 } catch (Exception $e) {
                     $last_error = $e->getMessage();
-                    error_log('[wishcart FluentCRM] wp_mail exception: ' . $last_error);
+                    error_log('[WishCart FluentCRM] wp_mail exception: ' . $last_error);
                 }
             }
             
             if ($email_sent) {
-                error_log('[wishcart FluentCRM] Email sent successfully to ' . $email_address);
+                error_log('[WishCart FluentCRM] Email sent successfully to ' . $email_address);
                 return true;
             } else {
-                $error_message = $last_error ? $last_error : __('Failed to send email', 'wish-car');
-                error_log('[wishcart FluentCRM] All email sending methods failed. Last error: ' . $error_message);
+                $error_message = $last_error ? $last_error : __('Failed to send email', 'wishcart');
+                error_log('[WishCart FluentCRM] All email sending methods failed. Last error: ' . $error_message);
                 return new WP_Error('send_failed', $error_message);
             }
         } catch (Exception $e) {
-            error_log('[wishcart FluentCRM] Exception in send_email: ' . $e->getMessage());
+            error_log('[WishCart FluentCRM] Exception in send_email: ' . $e->getMessage());
             return new WP_Error('fluentcrm_error', $e->getMessage());
         }
     }
@@ -694,12 +694,12 @@ class wishcart_FluentCRM_Integration {
     public function sync_wishlist_user($user_id, $wishlist_data = array()) {
         $settings = $this->get_settings();
         if (!$settings['enabled'] || !$settings['auto_create_contacts']) {
-            return new WP_Error('sync_disabled', __('Contact sync is disabled', 'wish-car'));
+            return new WP_Error('sync_disabled', __('Contact sync is disabled', 'wishcart'));
         }
 
         $user = get_userdata($user_id);
         if (!$user) {
-            return new WP_Error('user_not_found', __('User not found', 'wish-car'));
+            return new WP_Error('user_not_found', __('User not found', 'wishcart'));
         }
 
         // Get wishlist stats
@@ -837,11 +837,11 @@ class wishcart_FluentCRM_Integration {
      */
     public function create_list_if_not_exists($list_name) {
         if (!$this->is_available()) {
-            return new WP_Error('fluentcrm_not_available', __('FluentCRM is not available', 'wish-car'));
+            return new WP_Error('fluentcrm_not_available', __('FluentCRM is not available', 'wishcart'));
         }
 
         if (empty($list_name)) {
-            return new WP_Error('invalid_list_name', __('Invalid list name', 'wish-car'));
+            return new WP_Error('invalid_list_name', __('Invalid list name', 'wishcart'));
         }
 
         try {
@@ -863,10 +863,10 @@ class wishcart_FluentCRM_Integration {
                     return $list->id;
                 }
 
-                return new WP_Error('list_creation_failed', __('Failed to create list', 'wish-car'));
+                return new WP_Error('list_creation_failed', __('Failed to create list', 'wishcart'));
             }
 
-            return new WP_Error('fluentcrm_api_not_found', __('FluentCRM API not found', 'wish-car'));
+            return new WP_Error('fluentcrm_api_not_found', __('FluentCRM API not found', 'wishcart'));
         } catch (Exception $e) {
             return new WP_Error('fluentcrm_error', $e->getMessage());
         }

@@ -1,25 +1,25 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
 /**
- * Database handling class for wishcart plugin
+ * Database handling class for WishCart plugin
  *
  * @category WordPress
- * @package  wishcart
- * @author   wishcart Team <support@wishcart.chat>
+ * @package  WishCart
+ * @author   WishCart Team <support@wishcart.chat>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://wishcart.chat
  */
 
 /**
- * wishcart_Database Class
+ * WishCart_Database Class
  *
  * @category WordPress
- * @package  wishcart
- * @author   wishcart Team <support@wishcart.chat>
+ * @package  WishCart
+ * @author   WishCart Team <support@wishcart.chat>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://wishcart.chat
  */
-class wishcart_Database {
+class WishCart_Database {
 
     private $wpdb;
     private $table_prefix;
@@ -34,9 +34,9 @@ class wishcart_Database {
         $this->wpdb = $wpdb;
         $this->table_prefix = $wpdb->prefix;
 		
-		$this->log_debug('wishcart_Database::__construct start');
+		$this->log_debug('WishCart_Database::__construct start');
 		$this->create_tables();
-		$this->log_debug('wishcart_Database::__construct end');
+		$this->log_debug('WishCart_Database::__construct end');
     }
 
     /**
@@ -311,7 +311,7 @@ class wishcart_Database {
 	private function log_debug($message) {
 		if (defined('WP_DEBUG') && WP_DEBUG) {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Debug logging is properly guarded
-			error_log('[wishcart DB] ' . $message);
+			error_log('[WishCart DB] ' . $message);
 		}
 	}
 }

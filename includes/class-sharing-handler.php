@@ -7,12 +7,12 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * Handles wishlist sharing across social media platforms
  *
  * @category WordPress
- * @package  wishcart
- * @author   wishcart Team <support@wishcart.chat>
+ * @package  WishCart
+ * @author   WishCart Team <support@wishcart.chat>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://wishcart.chat
  */
-class wishcart_Sharing_Handler {
+class WishCart_Sharing_Handler {
 
     private $wpdb;
     private $shares_table;
@@ -75,7 +75,7 @@ class wishcart_Sharing_Handler {
         );
 
         if (!$wishlist) {
-            return new WP_Error('wishlist_not_found', __('Wishlist not found', 'wish-car'));
+            return new WP_Error('wishlist_not_found', __('Wishlist not found', 'wishcart'));
         }
 
         // Check if share already exists for this type
@@ -121,13 +121,13 @@ class wishcart_Sharing_Handler {
         $result = $this->wpdb->insert($this->shares_table, $data, $format);
 
         if (false === $result) {
-            return new WP_Error('db_error', __('Failed to create share', 'wish-car'));
+            return new WP_Error('db_error', __('Failed to create share', 'wishcart'));
         }
 
         $share_id = $this->wpdb->insert_id;
 
         // Update analytics
-        if (class_exists('wishcart_Analytics_Handler')) {
+        if (class_exists('WishCart_Analytics_Handler')) {
             // Track share for all products in wishlist
             $items_table = $this->wpdb->prefix . 'fc_wishlist_items';
             $items = $this->wpdb->get_results(
@@ -138,7 +138,7 @@ class wishcart_Sharing_Handler {
                 ARRAY_A
             );
 
-            $analytics = new wishcart_Analytics_Handler();
+            $analytics = new WishCart_Analytics_Handler();
             foreach ($items as $item) {
                 $analytics->track_event($item['product_id'], $item['variation_id'], 'share');
             }
@@ -261,22 +261,22 @@ class wishcart_Sharing_Handler {
      */
     public function get_share_url($share_token, $share_type = 'link') {
         // Use the new shared wishlist page URL with query parameter
-        $base_url = wishcart_Shared_Wishlist_Page::get_share_url($share_token);
+        $base_url = WishCart_Shared_Wishlist_Page::get_share_url($share_token);
         
         switch ($share_type) {
             case 'facebook':
                 return 'https://www.facebook.com/sharer/sharer.php?u=' . urlencode($base_url);
                 
             case 'twitter':
-                $text = __('Check out my wishlist!', 'wish-car');
+                $text = __('Check out my wishlist!', 'wishcart');
                 return 'https://twitter.com/intent/tweet?url=' . urlencode($base_url) . '&text=' . urlencode($text);
                 
             case 'pinterest':
-                $description = __('My Wishlist', 'wish-car');
+                $description = __('My Wishlist', 'wishcart');
                 return 'https://pinterest.com/pin/create/button/?url=' . urlencode($base_url) . '&description=' . urlencode($description);
                 
             case 'whatsapp':
-                $text = __('Check out my wishlist:', 'wish-car') . ' ' . $base_url;
+                $text = __('Check out my wishlist:', 'wishcart') . ' ' . $base_url;
                 return 'https://wa.me/?text=' . urlencode($text);
                 
             case 'instagram':
@@ -284,8 +284,8 @@ class wishcart_Sharing_Handler {
                 return $base_url;
                 
             case 'email':
-                $subject = __('Check out my wishlist', 'wish-car');
-                $body = __('I wanted to share my wishlist with you:', 'wish-car') . "\n\n" . $base_url;
+                $subject = __('Check out my wishlist', 'wishcart');
+                $body = __('I wanted to share my wishlist with you:', 'wishcart') . "\n\n" . $base_url;
                 return 'mailto:?subject=' . rawurlencode($subject) . '&body=' . rawurlencode($body);
                 
             default:
@@ -352,7 +352,7 @@ class wishcart_Sharing_Handler {
         );
 
         if (false === $result) {
-            return new WP_Error('db_error', __('Failed to delete share', 'wish-car'));
+            return new WP_Error('db_error', __('Failed to delete share', 'wishcart'));
         }
 
         return true;
@@ -393,7 +393,7 @@ class wishcart_Sharing_Handler {
     public function send_share_email($share_id, $to_email, $message = '') {
         $share = $this->get_share($share_id);
         if (!$share) {
-            return new WP_Error('share_not_found', __('Share not found', 'wish-car'));
+            return new WP_Error('share_not_found', __('Share not found', 'wishcart'));
         }
 
         // Get wishlist
@@ -406,21 +406,21 @@ class wishcart_Sharing_Handler {
         );
 
         if (!$wishlist) {
-            return new WP_Error('wishlist_not_found', __('Wishlist not found', 'wish-car'));
+            return new WP_Error('wishlist_not_found', __('Wishlist not found', 'wishcart'));
         }
 
         $share_url = $this->get_share_url($share['share_token'], 'link');
-        $subject = sprintf(__('%s shared a wishlist with you', 'wish-car'), get_bloginfo('name'));
+        $subject = sprintf(__('%s shared a wishlist with you', 'wishcart'), get_bloginfo('name'));
 
         // Build email content
-        $email_content = sprintf(__('Hello,%s%sYou have received a shared wishlist from %s.', 'wish-car'), "\n\n", "\n\n", get_bloginfo('name'));
+        $email_content = sprintf(__('Hello,%s%sYou have received a shared wishlist from %s.', 'wishcart'), "\n\n", "\n\n", get_bloginfo('name'));
         
         if (!empty($message)) {
-            $email_content .= "\n\n" . __('Personal message:', 'wish-car') . "\n" . sanitize_textarea_field($message);
+            $email_content .= "\n\n" . __('Personal message:', 'wishcart') . "\n" . sanitize_textarea_field($message);
         }
 
-        $email_content .= "\n\n" . sprintf(__('Wishlist name: %s', 'wish-car'), $wishlist['wishlist_name']);
-        $email_content .= "\n\n" . __('View the wishlist here:', 'wish-car') . "\n" . $share_url;
+        $email_content .= "\n\n" . sprintf(__('Wishlist name: %s', 'wishcart'), $wishlist['wishlist_name']);
+        $email_content .= "\n\n" . __('View the wishlist here:', 'wishcart') . "\n" . $share_url;
 
         // Send email
         $result = wp_mail(
@@ -443,7 +443,7 @@ class wishcart_Sharing_Handler {
             return true;
         }
 
-        return new WP_Error('email_failed', __('Failed to send email', 'wish-car'));
+        return new WP_Error('email_failed', __('Failed to send email', 'wishcart'));
     }
 }
 

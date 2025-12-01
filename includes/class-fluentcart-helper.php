@@ -8,7 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  *
  * @category Functionality
  * @package  AISK
- * @author   wishcart Team <support@wishcart.chat>
+ * @author   WishCart Team <support@wishcart.chat>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://wishcart.chat
  */
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 /**
  * AISK FluentCart Product Wrapper Class
  */
-class wishcart_FluentCart_Product {
+class WishCart_FluentCart_Product {
     private $post_id;
     private $post;
     private $meta_cache = [];
@@ -242,7 +242,7 @@ class wishcart_FluentCart_Product {
 /**
  * AISK FluentCart Order Wrapper Class
  */
-class wishcart_FluentCart_Order {
+class WishCart_FluentCart_Order {
     private $fc_order;
     private $meta_cache = [];
 
@@ -315,7 +315,7 @@ class wishcart_FluentCart_Order {
         if ( ! $this->fc_order ) {
             return null;
         }
-        return new wishcart_FluentCart_DateTime( $this->fc_order->created_at );
+        return new WishCart_FluentCart_DateTime( $this->fc_order->created_at );
     }
 
     public function get_formatted_order_total() {
@@ -409,7 +409,7 @@ class wishcart_FluentCart_Order {
         // Get order items from relationship
         if ( $this->fc_order->order_items ) {
             foreach ( $this->fc_order->order_items as $fc_item ) {
-                $items[] = new wishcart_FluentCart_Order_Item( [
+                $items[] = new WishCart_FluentCart_Order_Item( [
                     'id' => $fc_item->id,
                     'name' => $fc_item->title,
                     'product_id' => $fc_item->post_id,
@@ -466,7 +466,7 @@ class wishcart_FluentCart_Order {
 /**
  * AISK FluentCart Order Item Wrapper Class
  */
-class wishcart_FluentCart_Order_Item {
+class WishCart_FluentCart_Order_Item {
     private $item_data;
 
     public function __construct( $item_data ) {
@@ -483,7 +483,7 @@ class wishcart_FluentCart_Order_Item {
 
     public function get_product() {
         $product_id = isset( $this->item_data['product_id'] ) ? $this->item_data['product_id'] : null;
-        return $product_id ? wishcart_FluentCart_Helper::get_product( $product_id ) : null;
+        return $product_id ? WishCart_FluentCart_Helper::get_product( $product_id ) : null;
     }
 
     public function get_total() {
@@ -494,7 +494,7 @@ class wishcart_FluentCart_Order_Item {
 /**
  * AISK FluentCart DateTime Wrapper Class
  */
-class wishcart_FluentCart_DateTime {
+class WishCart_FluentCart_DateTime {
     private $datetime;
 
     public function __construct( $datetime_string ) {
@@ -507,17 +507,17 @@ class wishcart_FluentCart_DateTime {
 }
 
 /**
- * wishcart_FluentCart_Helper Class
+ * WishCart_FluentCart_Helper Class
  *
  * Handles FluentCart-specific operations for products and orders
  *
  * @category Class
  * @package  AISK
- * @author   wishcart Team <support@wishcart.chat>
+ * @author   WishCart Team <support@wishcart.chat>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://wishcart.chat
  */
-class wishcart_FluentCart_Helper {
+class WishCart_FluentCart_Helper {
 
     /**
      * Cached result of FluentCart detection to avoid repeated checks
@@ -605,7 +605,7 @@ class wishcart_FluentCart_Helper {
      * Get product by ID (replaces wc_get_product)
      *
      * @param int|WP_Post $product_id Product ID or post object
-     * @return wishcart_FluentCart_Product|null FluentCart product object or null
+     * @return WishCart_FluentCart_Product|null FluentCart product object or null
      */
     public static function get_product( $product_id ) {
         if ( ! self::is_fluentcart_active() ) {
@@ -627,14 +627,14 @@ class wishcart_FluentCart_Helper {
             return null;
         }
 
-        return new wishcart_FluentCart_Product( $post );
+        return new WishCart_FluentCart_Product( $post );
     }
 
     /**
      * Get order by ID (replaces wc_get_order)
      *
      * @param int|string $order_id Order ID or order number
-     * @return wishcart_FluentCart_Order|null FluentCart order object or null
+     * @return WishCart_FluentCart_Order|null FluentCart order object or null
      */
     public static function get_order( $order_id ) {
         if ( ! self::is_fluentcart_active() ) {
@@ -664,7 +664,7 @@ class wishcart_FluentCart_Helper {
                     ->find( $order_id );
                 
                 if ( $fc_order ) {
-                    return new wishcart_FluentCart_Order( $fc_order );
+                    return new WishCart_FluentCart_Order( $fc_order );
                 }
             } catch ( Exception $e ) {
                 return null;
@@ -778,7 +778,7 @@ class wishcart_FluentCart_Helper {
                 $orders = [];
                 
                 foreach ( $fc_orders as $fc_order ) {
-                    $orders[] = new wishcart_FluentCart_Order( $fc_order );
+                    $orders[] = new WishCart_FluentCart_Order( $fc_order );
                 }
                 
                 return $orders;
@@ -805,7 +805,7 @@ class wishcart_FluentCart_Helper {
             }
         }
         // Fallback placeholder
-        return wishcart_PLUGIN_URL . 'assets/images/placeholder.png';
+        return WishCart_PLUGIN_URL . 'assets/images/placeholder.png';
     }
 
     /**

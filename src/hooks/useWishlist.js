@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 
 /**
  * Custom hook for wishlist operations
- * Integrates with wishcart 7-table backend
+ * Integrates with WishCart 7-table backend
  */
 export const useWishlist = (wishlistId = null) => {
     const [wishlists, setWishlists] = useState([]);

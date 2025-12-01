@@ -2,13 +2,13 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 /**
- * wishcart Item Removed Trigger
+ * WishCart Item Removed Trigger
  *
  * Triggers when a product is removed from a wishlist
  *
  * @category WordPress
- * @package  wishcart
- * @author   wishcart Team <support@wishcart.chat>
+ * @package  WishCart
+ * @author   WishCart Team <support@wishcart.chat>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://wishcart.chat
  */
@@ -41,9 +41,9 @@ class wishcart_Item_Removed_Trigger extends \FluentCrm\App\Services\Funnel\BaseT
      */
     public function getTrigger() {
         return array(
-            'category'    => __( 'wishcart', 'wish-car' ),
-            'label'       => __( 'Item Removed from Wishlist', 'wish-car' ),
-            'description' => __( 'This funnel will be initiated when a product is removed from a wishlist', 'wish-car' ),
+            'category'    => __( 'wishcart', 'wishcart' ),
+            'label'       => __( 'Item Removed from Wishlist', 'wishcart' ),
+            'description' => __( 'This funnel will be initiated when a product is removed from a wishlist', 'wishcart' ),
             'icon'        => 'fc-icon-heart',
         );
     }

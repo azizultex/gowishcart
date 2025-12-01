@@ -7,12 +7,12 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * Handles campaign rule engine, trigger evaluation, and campaign execution
  *
  * @category WordPress
- * @package  wishcart
- * @author   wishcart Team <support@wishcart.chat>
+ * @package  WishCart
+ * @author   WishCart Team <support@wishcart.chat>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://wishcart.chat
  */
-class wishcart_CRM_Campaign_Handler {
+class WishCart_CRM_Campaign_Handler {
 
     private $wpdb;
     private $campaigns_table;
@@ -27,8 +27,8 @@ class wishcart_CRM_Campaign_Handler {
         $this->campaigns_table = $wpdb->prefix . 'fc_wishlist_crm_campaigns';
         
         // Initialize FluentCRM integration
-        if (class_exists('wishcart_FluentCRM_Integration')) {
-            $this->fluentcrm = new wishcart_FluentCRM_Integration();
+        if (class_exists('WishCart_FluentCRM_Integration')) {
+            $this->fluentcrm = new WishCart_FluentCRM_Integration();
         }
 
         // Hook into wishlist events
@@ -48,7 +48,7 @@ class wishcart_CRM_Campaign_Handler {
         $required_fields = array('wishlist_trigger_type', 'status');
         foreach ($required_fields as $field) {
             if (!isset($data[$field])) {
-                return new WP_Error('missing_field', sprintf(__('Missing required field: %s', 'wish-car'), $field));
+                return new WP_Error('missing_field', sprintf(__('Missing required field: %s', 'wishcart'), $field));
             }
         }
 
@@ -72,7 +72,7 @@ class wishcart_CRM_Campaign_Handler {
         $result = $this->wpdb->insert($this->campaigns_table, $insert_data, $format);
 
         if (false === $result) {
-            return new WP_Error('db_error', __('Failed to create campaign', 'wish-car'));
+            return new WP_Error('db_error', __('Failed to create campaign', 'wishcart'));
         }
 
         return $this->wpdb->insert_id;
@@ -88,7 +88,7 @@ class wishcart_CRM_Campaign_Handler {
     public function update_campaign($campaign_id, $data) {
         $campaign = $this->get_campaign($campaign_id);
         if (!$campaign) {
-            return new WP_Error('not_found', __('Campaign not found', 'wish-car'));
+            return new WP_Error('not_found', __('Campaign not found', 'wishcart'));
         }
 
         $update_data = array();
@@ -278,11 +278,11 @@ class wishcart_CRM_Campaign_Handler {
     public function execute_campaign($campaign_id, $event_data) {
         $campaign = $this->get_campaign($campaign_id);
         if (!$campaign) {
-            return new WP_Error('campaign_not_found', __('Campaign not found', 'wish-car'));
+            return new WP_Error('campaign_not_found', __('Campaign not found', 'wishcart'));
         }
 
         if ($campaign['status'] !== 'active') {
-            return new WP_Error('campaign_inactive', __('Campaign is not active', 'wish-car'));
+            return new WP_Error('campaign_inactive', __('Campaign is not active', 'wishcart'));
         }
 
         // Evaluate conditions
@@ -316,7 +316,7 @@ class wishcart_CRM_Campaign_Handler {
         }
 
         if (!$contact_id) {
-            return new WP_Error('no_contact', __('No contact found for campaign execution', 'wish-car'));
+            return new WP_Error('no_contact', __('No contact found for campaign execution', 'wishcart'));
         }
 
         // Generate discount code if needed
@@ -439,7 +439,7 @@ class wishcart_CRM_Campaign_Handler {
     /**
      * Build product tags from product object (supports both WooCommerce and FluentCart)
      *
-     * @param WC_Product|wishcart_FluentCart_Product $product Product object
+     * @param WC_Product|WishCart_FluentCart_Product $product Product object
      * @return array Array of formatted tag strings
      */
     private function build_product_tags($product) {
@@ -646,7 +646,7 @@ class wishcart_CRM_Campaign_Handler {
                 // Handle guest users with email addresses
                 else if (!empty($item_data['session_id'])) {
                     // Check if guest user has email in guest_users table
-                    $guest_handler = new wishcart_Guest_Handler();
+                    $guest_handler = new WishCart_Guest_Handler();
                     $guest = $guest_handler->get_guest_by_session($item_data['session_id']);
                     
                     if ($guest && !empty($guest['guest_email']) && is_email($guest['guest_email'])) {
@@ -724,13 +724,13 @@ class wishcart_CRM_Campaign_Handler {
                 
                 if ($settings['enabled'] && isset($settings['send_welcome_email']) && $settings['send_welcome_email']) {
                     // Send default welcome email
-                    $product_name = isset($item_data['product_name']) ? $item_data['product_name'] : __('Product', 'wish-car');
+                    $product_name = isset($item_data['product_name']) ? $item_data['product_name'] : __('Product', 'wishcart');
                     $product_url = isset($item_data['product_url']) ? $item_data['product_url'] : '';
                     $site_name = get_bloginfo('name');
                     
-                    $subject = sprintf(__('You added %s to your wishlist!', 'wish-car'), $product_name);
+                    $subject = sprintf(__('You added %s to your wishlist!', 'wishcart'), $product_name);
                     $body = sprintf(
-                        __('Hi there,%s%sGreat news! You just added "%s" to your wishlist.%s%sView Product: %s%s%sThank you for using %s!', 'wish-car'),
+                        __('Hi there,%s%sGreat news! You just added "%s" to your wishlist.%s%sView Product: %s%s%sThank you for using %s!', 'wishcart'),
                         "\n\n",
                         "\n",
                         $product_name,

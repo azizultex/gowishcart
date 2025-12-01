@@ -4,16 +4,16 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 /**
  * FluentCRM SmartCode Integration Class
  *
- * Provides dynamic shortcodes for wishcart triggers in FluentCRM email editor
+ * Provides dynamic shortcodes for WishCart triggers in FluentCRM email editor
  * Similar to FluentBooking's Booking Data shortcodes
  *
  * @category WordPress
- * @package  wishcart
- * @author   wishcart Team <support@wishcart.chat>
+ * @package  WishCart
+ * @author   WishCart Team <support@wishcart.chat>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://wishcart.chat
  */
-class wishcart_FluentCRM_SmartCode {
+class WishCart_FluentCRM_SmartCode {
 
     /**
      * Constructor
@@ -31,22 +31,22 @@ class wishcart_FluentCRM_SmartCode {
         // Register the Wishlist Data tab in FluentCRM email editor for our triggers
         add_filter( 'fluent_crm_funnel_context_smart_codes', array( $this, 'push_context_codes' ), 10, 2 );
         
-        // Register the callback to parse wishcart shortcodes
+        // Register the callback to parse WishCart shortcodes
         add_filter( 'fluent_crm/smartcode_group_callback_wishcart', array( $this, 'parse_wishlist_data' ), 10, 4 );
     }
 
     /**
-     * Add wishcart shortcode group to FluentCRM context
+     * Add WishCart shortcode group to FluentCRM context
      *
      * This adds the "Wishlist Data" tab when editing email actions
-     * in automations triggered by wishcart events
+     * in automations triggered by WishCart events
      *
      * @param array  $codes   Existing shortcode groups
      * @param string $context The trigger context (trigger name)
      * @return array Modified shortcode groups
      */
     public function push_context_codes( $codes, $context ) {
-        // Only add our shortcodes for wishcart triggers
+        // Only add our shortcodes for WishCart triggers
         $wishcart_triggers = array(
             'wishcart_item_added',
             'wishcart_item_removed',
@@ -61,7 +61,7 @@ class wishcart_FluentCRM_SmartCode {
         // Add the Wishlist Data group
         $codes[] = array(
             'key'        => 'wishcart',
-            'title'      => __( 'Wishlist Data', 'wish-car' ),
+            'title'      => __( 'Wishlist Data', 'wishcart' ),
             'shortcodes' => $this->get_smart_codes(),
         );
 
@@ -69,7 +69,7 @@ class wishcart_FluentCRM_SmartCode {
     }
 
     /**
-     * Parse wishcart shortcode values
+     * Parse WishCart shortcode values
      *
      * This callback is triggered when FluentCRM encounters a {{wishcart.*}} shortcode
      *
@@ -118,8 +118,8 @@ class wishcart_FluentCRM_SmartCode {
         $product_id = intval( $funnelSub->source_ref_id );
 
         // Get the product using FluentCart helper or WooCommerce
-        if ( class_exists( 'wishcart_FluentCart_Helper' ) ) {
-            return wishcart_FluentCart_Helper::get_product( $product_id );
+        if ( class_exists( 'WishCart_FluentCart_Helper' ) ) {
+            return WishCart_FluentCart_Helper::get_product( $product_id );
         }
 
         // Fallback to WooCommerce
@@ -278,7 +278,7 @@ class wishcart_FluentCRM_SmartCode {
      * @return string Item count
      */
     private function get_wishlist_item_count( $subscriber ) {
-        if ( ! $subscriber || ! class_exists( 'wishcart_Wishlist_Handler' ) ) {
+        if ( ! $subscriber || ! class_exists( 'WishCart_Wishlist_Handler' ) ) {
             return '0';
         }
 
@@ -310,7 +310,7 @@ class wishcart_FluentCRM_SmartCode {
         }
 
         // Get wishlist handler
-        $handler = new wishcart_Wishlist_Handler();
+        $handler = new WishCart_Wishlist_Handler();
         $wishlists = $handler->get_wishlists( $user_id, $session_id );
 
         if ( empty( $wishlists ) ) {
@@ -367,24 +367,24 @@ class wishcart_FluentCRM_SmartCode {
     private function get_smart_codes() {
         return array(
             // Customer Data
-            '{{wishcart.customer.first_name}}'  => __( 'Customer First Name', 'wish-car' ),
-            '{{wishcart.customer.last_name}}'   => __( 'Customer Last Name', 'wish-car' ),
-            '{{wishcart.customer.full_name}}'   => __( 'Customer Full Name', 'wish-car' ),
-            '{{wishcart.customer.email}}'       => __( 'Customer Email', 'wish-car' ),
+            '{{wishcart.customer.first_name}}'  => __( 'Customer First Name', 'wishcart' ),
+            '{{wishcart.customer.last_name}}'   => __( 'Customer Last Name', 'wishcart' ),
+            '{{wishcart.customer.full_name}}'   => __( 'Customer Full Name', 'wishcart' ),
+            '{{wishcart.customer.email}}'       => __( 'Customer Email', 'wishcart' ),
             
             // Product Data
-            '{{wishcart.product.name}}'           => __( 'Product Name', 'wish-car' ),
-            '{{wishcart.product.price}}'          => __( 'Current Product Price', 'wish-car' ),
-            '{{wishcart.product.regular_price}}'  => __( 'Regular Price', 'wish-car' ),
-            '{{wishcart.product.sale_price}}'     => __( 'Sale Price (if on sale)', 'wish-car' ),
-            '{{wishcart.product.sku}}'            => __( 'Product SKU', 'wish-car' ),
-            '##wishcart.product.url##'            => __( 'Product URL (button/link)', 'wish-car' ),
-            '{{wishcart.product.image_url}}'      => __( 'Product Image URL', 'wish-car' ),
-            '##wishcart.product.add_to_cart_url##' => __( 'Add to Cart URL (button/link)', 'wish-car' ),
+            '{{wishcart.product.name}}'           => __( 'Product Name', 'wishcart' ),
+            '{{wishcart.product.price}}'          => __( 'Current Product Price', 'wishcart' ),
+            '{{wishcart.product.regular_price}}'  => __( 'Regular Price', 'wishcart' ),
+            '{{wishcart.product.sale_price}}'     => __( 'Sale Price (if on sale)', 'wishcart' ),
+            '{{wishcart.product.sku}}'            => __( 'Product SKU', 'wishcart' ),
+            '##wishcart.product.url##'            => __( 'Product URL (button/link)', 'wishcart' ),
+            '{{wishcart.product.image_url}}'      => __( 'Product Image URL', 'wishcart' ),
+            '##wishcart.product.add_to_cart_url##' => __( 'Add to Cart URL (button/link)', 'wishcart' ),
             
             // Wishlist Data
-            '{{wishcart.wishlist.item_count}}'  => __( 'Total Items in Wishlist', 'wish-car' ),
-            '##wishcart.wishlist.url##'         => __( 'Wishlist Page URL (button/link)', 'wish-car' ),
+            '{{wishcart.wishlist.item_count}}'  => __( 'Total Items in Wishlist', 'wishcart' ),
+            '##wishcart.wishlist.url##'         => __( 'Wishlist Page URL (button/link)', 'wishcart' ),
         );
     }
 }

@@ -292,12 +292,12 @@ const WishlistButton = ({ productId, className, customStyles, position = 'bottom
     }
 
     // Get button labels
-    const defaultAddLabel = __('Add to Wishlist', 'wish-car');
-    const defaultSavedLabel = __('Saved to Wishlist', 'wish-car');
+    const defaultAddLabel = __('Add to Wishlist', 'wishcart');
+    const defaultSavedLabel = __('Saved to Wishlist', 'wishcart');
     const buttonLabel = isInWishlist 
         ? (labels.saved || defaultSavedLabel)
         : (labels.add || defaultAddLabel);
-    const srLabel = isInWishlist ? __('Remove from wishlist', 'wish-car') : __('Add to wishlist', 'wish-car');
+    const srLabel = isInWishlist ? __('Remove from wishlist', 'wishcart') : __('Add to wishlist', 'wishcart');
 
     // Get icon component based on wishlist state
     const getIconComponent = () => {

@@ -1,21 +1,27 @@
 import { __ } from '@wordpress/i18n';
-import React, { useState, useEffect } from 'react';
-import { Toaster } from "@/components/ui/toaster"
-import { useToast } from "@/components/hooks/use-toast"
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { Toaster } from "@/components/ui/toaster";
+import { useToast } from "@/components/hooks/use-toast";
 import {
     Heart,
     CheckCircle2,
     XCircle,
     Palette,
     BarChart3,
-    Mail
+    Mail,
+    LifeBuoy,
+    Sparkles
 } from 'lucide-react';
 
 import WishlistSettings from './WishlistSettings';
 import ButtonCustomizationSettings from './ButtonCustomizationSettings';
 import FluentCRMSettings from './FluentCRMSettings';
+import SupportResources from './SupportResources';
+import UpgradePrompt from './UpgradePrompt';
 import { AnalyticsDashboard } from '../AnalyticsDashboard';
 
+
+const localizedTabPageMap = (typeof window !== 'undefined' && window.wishcartSettings && window.wishcartSettings.tabPageMap) || {};
 
 const SettingsApp = () => {
     const { toast } = useToast()
@@ -29,12 +35,27 @@ const SettingsApp = () => {
             wishlist_page_id: 0,
             shared_wishlist_page_id: 0,
             guest_cookie_expiry: 30,
-        },
+        }
     });
 
     const [isSaving, setIsSaving] = useState(false);
-    const [saveMessage, setSaveMessage] = useState('');
-    const [activeTab, setActiveTab] = useState("settings");
+    const [activeTab, setActiveTab] = useState(() => wishcartSettings?.defaultTab || 'settings');
+    const baseMenuSlug = wishcartSettings?.menuSlug || 'wishcart';
+    const fallbackTabPageMap = useMemo(() => ({
+        settings: `${baseMenuSlug}-settings`,
+        customization: `${baseMenuSlug}-customization`,
+        analytics: `${baseMenuSlug}-analytics`,
+        fluentcrm: `${baseMenuSlug}-fluentcrm`,
+        support: `${baseMenuSlug}-support`,
+        'get-pro': `${baseMenuSlug}-get-pro`,
+    }), [baseMenuSlug]);
+
+    const tabPageMap = useMemo(() => {
+        if (localizedTabPageMap && Object.keys(localizedTabPageMap).length > 0) {
+            return localizedTabPageMap;
+        }
+        return fallbackTabPageMap;
+    }, [fallbackTabPageMap]);
 
     useEffect(() => {
         // Load settings from WordPress on mount
@@ -76,13 +97,30 @@ const SettingsApp = () => {
 
                 setSettings(prevSettings => ({
                     ...prevSettings,
-                    ...normalizedData
+                    ...normalizedData,
+                    wishlist: {
+                        ...prevSettings.wishlist,
+                        ...(normalizedData.wishlist || {})
+                    }
                 }));
             }
         } catch (error) {
             console.error('Error loading settings:', error);
         }
     };
+
+    useEffect(() => {
+        const slug = tabPageMap[activeTab] || tabPageMap.settings || fallbackTabPageMap.settings;
+        const url = new URL(window.location.href);
+        url.searchParams.set('page', slug);
+        window.history.replaceState({}, '', url.toString());
+    }, [activeTab, tabPageMap, fallbackTabPageMap]);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined' && typeof window.wishcartSetActiveMenu === 'function') {
+            window.wishcartSetActiveMenu(activeTab);
+        }
+    }, [activeTab]);
 
     // Validate inputs before saving
     const validateBeforeSave = () => {
@@ -108,10 +146,10 @@ const SettingsApp = () => {
                     title: (
                         <div className="flex items-center gap-2">
                             <CheckCircle2 className="h-4 w-4 text-green-500" />
-                            <span>{__('Settings saved successfully!', 'wish-car')}</span>
+                            <span>{__('Settings saved successfully!', 'wishcart')}</span>
                         </div>
                     ),
-                    description: __('Your changes have been applied.', 'wish-car'),
+                    description: __('Your changes have been applied.', 'wishcart'),
                     className: "bg-green-50 border-green-200"
                 });
             } else {
@@ -122,10 +160,10 @@ const SettingsApp = () => {
                 title: (
                     <div className="flex items-center gap-2">
                         <XCircle className="h-4 w-4 text-red-500" />
-                        <span>{__('Failed to save settings', 'wish-car')}</span>
+                        <span>{__('Failed to save settings', 'wishcart')}</span>
                     </div>
                 ),
-                description: __('Please try again or contact support if the problem persists.', 'wish-car'),
+                description: __('Please try again or contact support if the problem persists.', 'wishcart'),
                 className: "bg-red-50 border-red-200"
             });
         } finally {
@@ -143,14 +181,36 @@ const SettingsApp = () => {
         }));
     };
 
-    const tabs = [
-        { id: 'settings', label: __('Settings', 'wish-car'), icon: Heart },
-        { id: 'button-customization', label: __('Button Customization', 'wish-car'), icon: Palette },
-        { id: 'analytics', label: __('Analytics', 'wish-car'), icon: BarChart3 },
-        { id: 'fluentcrm', label: __('FluentCRM', 'wish-car'), icon: Mail },
-    ];
+    const tabs = useMemo(() => ([
+        { id: 'settings', label: __('Settings', 'wishcart'), icon: Heart },
+        { id: 'customization', label: __('Customization', 'wishcart'), icon: Palette },
+        { id: 'analytics', label: __('Analytics', 'wishcart'), icon: BarChart3 },
+        { id: 'fluentcrm', label: __('Integrations', 'wishcart'), icon: Mail },
+        { id: 'support', label: __('Support', 'wishcart'), icon: LifeBuoy },
+        { id: 'get-pro', label: __('Get Pro', 'wishcart'), icon: Sparkles },
+    ]), []);
+
+    const navigateToTab = useCallback((tabId) => {
+        const exists = tabs.some(tab => tab.id === tabId);
+        if (!exists) {
+            return false;
+        }
+        setActiveTab(tabId);
+        return true;
+    }, [tabs]);
+
+    useEffect(() => {
+        window.wishcartNavigateToTab = navigateToTab;
+        return () => {
+            if (window.wishcartNavigateToTab === navigateToTab) {
+                delete window.wishcartNavigateToTab;
+            }
+        };
+    }, [navigateToTab]);
 
     const activeTabData = tabs.find(tab => tab.id === activeTab) || tabs[0];
+    const tabsWithSave = ['settings', 'customization'];
+    const shouldShowSave = tabsWithSave.includes(activeTab);
 
     return (
         <>
@@ -193,7 +253,7 @@ const SettingsApp = () => {
                         )}
 
                         {/* Button Customization Tab */}
-                        {activeTab === 'button-customization' && (
+                        {activeTab === 'customization' && (
                             <ButtonCustomizationSettings
                                 settings={settings}
                                 updateSettings={updateSettings}
@@ -210,15 +270,25 @@ const SettingsApp = () => {
                             <FluentCRMSettings />
                         )}
 
+                        {/* Support Tab */}
+                        {activeTab === 'support' && (
+                            <SupportResources />
+                        )}
+
+                        {/* Get Pro Tab */}
+                        {activeTab === 'get-pro' && (
+                            <UpgradePrompt />
+                        )}
+
                         {/* Save Button - Only show for tabs that need it */}
-                        {activeTab !== 'fluentcrm' && activeTab !== 'analytics' && (
+                        {shouldShowSave && (
                             <div className="fluentcart-card-footer" style={{ marginTop: '24px' }}>
                                 <button
                                     onClick={saveSettings}
                                     disabled={isSaving}
                                     className="fluentcart-button fluentcart-button-primary"
                                 >
-                                    {isSaving ? __('Saving...', 'wish-car') : __('Save Settings', 'wish-car')}
+                                    {isSaving ? __('Saving...', 'wishcart') : __('Save Settings', 'wishcart')}
                                 </button>
                             </div>
                         )}

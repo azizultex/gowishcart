@@ -79,19 +79,19 @@ const IconPicker = ({ selectedIcon, onSelect, label, triggerLabel }) => {
                             {selectedIcon}
                         </>
                     ) : (
-                        triggerLabel || __('Select Icon', 'wish-car')
+                        triggerLabel || __('Select Icon', 'wishcart')
                     )}
                 </Button>
             </DialogTrigger>
             <DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden flex flex-col">
                 <DialogHeader>
-                    <DialogTitle>{label || __('Select Icon', 'wish-car')}</DialogTitle>
+                    <DialogTitle>{label || __('Select Icon', 'wishcart')}</DialogTitle>
                 </DialogHeader>
                 <div className="flex flex-col gap-4 flex-1 overflow-hidden">
                     <div className="relative">
                         <Input
                             type="text"
-                            placeholder={__('Search icons...', 'wish-car')}
+                            placeholder={__('Search icons...', 'wishcart')}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="w-full"
@@ -131,7 +131,7 @@ const IconPicker = ({ selectedIcon, onSelect, label, triggerLabel }) => {
                         </div>
                         {filteredIcons.length === 0 && (
                             <div className="text-center py-8 text-muted-foreground">
-                                {__('No icons found', 'wish-car')}
+                                {__('No icons found', 'wishcart')}
                             </div>
                         )}
                     </div>

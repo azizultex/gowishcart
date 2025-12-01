@@ -4,16 +4,16 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 /**
  * FluentCRM Triggers Registration Class
  *
- * Registers wishcart events as triggers in FluentCRM automation funnel
+ * Registers WishCart events as triggers in FluentCRM automation funnel
  * Uses FluentCRM's BaseTrigger class approach
  *
  * @category WordPress
- * @package  wishcart
- * @author   wishcart Team <support@wishcart.chat>
+ * @package  WishCart
+ * @author   WishCart Team <support@wishcart.chat>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://wishcart.chat
  */
-class wishcart_FluentCRM_Triggers {
+class WishCart_FluentCRM_Triggers {
 
     /**
      * Flag to prevent duplicate trigger registration
@@ -63,7 +63,7 @@ class wishcart_FluentCRM_Triggers {
     }
 
     /**
-     * Register all wishcart triggers with FluentCRM
+     * Register all WishCart triggers with FluentCRM
      *
      * @return void
      */
@@ -125,10 +125,10 @@ class wishcart_FluentCRM_Triggers {
     }
 
     /**
-     * Add wishcart triggers to FluentCRM's available triggers list
+     * Add WishCart triggers to FluentCRM's available triggers list
      *
      * @param array $triggers Existing triggers
-     * @return array Triggers with wishcart triggers added
+     * @return array Triggers with WishCart triggers added
      */
     public function add_triggers_to_fluentcrm( $triggers ) {
         if ( ! is_array( $triggers ) ) {
@@ -217,8 +217,8 @@ class wishcart_FluentCRM_Triggers {
         }
 
         // Ensure contact exists in FluentCRM BEFORE firing trigger
-        if ( ! empty( $user_email ) && class_exists( 'wishcart_FluentCRM_Integration' ) ) {
-            $fluentcrm = new wishcart_FluentCRM_Integration();
+        if ( ! empty( $user_email ) && class_exists( 'WishCart_FluentCRM_Integration' ) ) {
+            $fluentcrm = new WishCart_FluentCRM_Integration();
             if ( $fluentcrm->is_available() ) {
                 $settings = $fluentcrm->get_settings();
                 if ( $settings['enabled'] ) {

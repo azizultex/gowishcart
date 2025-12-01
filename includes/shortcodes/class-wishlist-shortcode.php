@@ -5,18 +5,18 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * Wishlist Shortcode Handler
  *
  * @category WordPress
- * @package  wishcart
- * @author   wishcart Team <support@wishcart.chat>
+ * @package  WishCart
+ * @author   WishCart Team <support@wishcart.chat>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://wishcart.chat
  */
-class wishcart_Wishlist_Shortcode {
+class WishCart_Wishlist_Shortcode {
 
     /**
      * Constructor
      */
     public function __construct() {
-        add_shortcode( 'wishcart_wishlist', array( $this, 'render_wishlist' ) );
+        add_shortcode( 'WishCart_Wishlist', array( $this, 'render_wishlist' ) );
     }
 
     /**
@@ -28,7 +28,7 @@ class wishcart_Wishlist_Shortcode {
     public function render_wishlist( $atts ) {
         $atts = shortcode_atts( array(
             'share_code' => '',
-        ), $atts, 'wishcart_wishlist' );
+        ), $atts, 'WishCart_Wishlist' );
 
         // Get share code from query var if not in shortcode
         if ( empty( $atts['share_code'] ) ) {
@@ -38,27 +38,27 @@ class wishcart_Wishlist_Shortcode {
         // Enqueue scripts and styles
         wp_enqueue_script(
             'wishcart-wishlist-frontend',
-            wishcart_PLUGIN_URL . 'build/wishlist-frontend.js',
+            WishCart_PLUGIN_URL . 'build/wishlist-frontend.js',
             array( 'wp-element', 'wp-api-fetch' ),
-            wishcart_VERSION,
+            WishCart_VERSION,
             true
         );
 
         wp_enqueue_style(
             'wishcart-wishlist-frontend',
-            wishcart_PLUGIN_URL . 'build/wishlist-frontend.css',
+            WishCart_PLUGIN_URL . 'build/wishlist-frontend.css',
             array(),
-            wishcart_VERSION
+            WishCart_VERSION
         );
 
         // Localize script
-        $handler = new wishcart_Wishlist_Handler();
+        $handler = new WishCart_Wishlist_Handler();
         $session_id = $handler->get_or_create_session_id();
         
         // Get settings for enableMultipleWishlists
         $settings = get_option( 'wishcart_settings', array() );
         $wishlist_settings = isset( $settings['wishlist'] ) ? $settings['wishlist'] : array();
-        $default_settings = wishcart_Wishlist_Page::get_default_settings();
+        $default_settings = WishCart_Wishlist_Page::get_default_settings();
         $wishlist_settings = wp_parse_args( $wishlist_settings, $default_settings );
         
         wp_localize_script(
@@ -80,5 +80,5 @@ class wishcart_Wishlist_Shortcode {
     }
 }
 
-new wishcart_Wishlist_Shortcode();
+new WishCart_Wishlist_Shortcode();
 

@@ -7,12 +7,12 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * Handles frontend wishlist button rendering and hooks
  *
  * @category WordPress
- * @package  wishcart
- * @author   wishcart Team <support@wishcart.chat>
+ * @package  WishCart
+ * @author   WishCart Team <support@wishcart.chat>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://wishcart.chat
  */
-class wishcart_Wishlist_Frontend {
+class WishCart_Wishlist_Frontend {
 
     private $handler;
 
@@ -20,7 +20,7 @@ class wishcart_Wishlist_Frontend {
      * Constructor
      */
     public function __construct() {
-        $this->handler = new wishcart_Wishlist_Handler();
+        $this->handler = new WishCart_Wishlist_Handler();
         
         // Enqueue scripts and styles
         add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
@@ -80,17 +80,17 @@ class wishcart_Wishlist_Frontend {
         // Enqueue wishlist frontend script
         wp_enqueue_script(
             'wishcart-wishlist-frontend',
-            wishcart_PLUGIN_URL . 'build/wishlist-frontend.js',
+            WishCart_PLUGIN_URL . 'build/wishlist-frontend.js',
             array( 'wp-element', 'wp-api-fetch' ),
-            wishcart_VERSION,
+            WishCart_VERSION,
             true
         );
 
         wp_enqueue_style(
             'wishcart-wishlist-frontend',
-            wishcart_PLUGIN_URL . 'build/wishlist-frontend.css',
+            WishCart_PLUGIN_URL . 'build/wishlist-frontend.css',
             array(),
-            wishcart_VERSION
+            WishCart_VERSION
         );
 
         // Localize script
@@ -98,7 +98,7 @@ class wishcart_Wishlist_Frontend {
         
         // Get button customization settings
         $button_customization = isset( $wishlist_settings['button_customization'] ) ? $wishlist_settings['button_customization'] : array();
-        $default_customization = wishcart_Wishlist_Page::get_default_settings();
+        $default_customization = WishCart_Wishlist_Page::get_default_settings();
         $button_customization = wp_parse_args( $button_customization, isset( $default_customization['button_customization'] ) ? $default_customization['button_customization'] : array() );
         
         wp_localize_script(
@@ -198,7 +198,7 @@ class wishcart_Wishlist_Frontend {
         }
 
         // Check if it's a FluentCart product
-        $product_type = wishcart_FluentCart_Helper::get_product_post_type();
+        $product_type = WishCart_FluentCart_Helper::get_product_post_type();
         $post_type = get_post_type( $product_id );
         
         if ( $post_type !== $product_type && $post_type !== 'product' ) {
@@ -255,7 +255,7 @@ class wishcart_Wishlist_Frontend {
      * @return bool
      */
     private function is_product_page() {
-        $product_type = wishcart_FluentCart_Helper::get_product_post_type();
+        $product_type = WishCart_FluentCart_Helper::get_product_post_type();
         
         return is_singular( $product_type ) || 
                is_singular( 'product' ) || 

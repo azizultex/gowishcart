@@ -298,7 +298,7 @@ The share link copy feature now works correctly! It:
 ---
 
 **Implementation Date**: November 18, 2025
-**Fixed By**: wishcart Development Team
+**Fixed By**: WishCart Development Team
 **Issue**: Share link copying current URL
 **Solution**: API integration for token generation
 

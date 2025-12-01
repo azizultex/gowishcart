@@ -7,12 +7,12 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * Creates and manages the wishlist page
  *
  * @category WordPress
- * @package  wishcart
- * @author   wishcart Team <support@wishcart.chat>
+ * @package  WishCart
+ * @author   WishCart Team <support@wishcart.chat>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://wishcart.chat
  */
-class wishcart_Wishlist_Page {
+class WishCart_Wishlist_Page {
 
     /**
      * Constructor - Initialize rewrite rules
@@ -81,8 +81,8 @@ class wishcart_Wishlist_Page {
 
         if ( ! $page_id ) {
             $page_data = array(
-                'post_title'   => __( 'Wishlist', 'wish-car' ),
-                'post_content' => '[wishcart_wishlist]',
+                'post_title'   => __( 'Wishlist', 'wishcart' ),
+                'post_content' => '[WishCart_Wishlist]',
                 'post_status'  => 'publish',
                 'post_type'    => 'page',
                 'post_name'    => 'wishlist',
@@ -186,8 +186,8 @@ class wishcart_Wishlist_Page {
         }
 
         $content = $page->post_content ?? '';
-        if ( strpos( $content, '[wishcart_wishlist]' ) === false ) {
-            $content                     = trim( $content . "\n\n[wishcart_wishlist]\n" );
+        if ( strpos( $content, '[WishCart_Wishlist]' ) === false ) {
+            $content                     = trim( $content . "\n\n[WishCart_Wishlist]\n" );
             $updated_data['post_content'] = $content;
             $needs_update                = true;
         }
@@ -257,9 +257,37 @@ class wishcart_Wishlist_Page {
                     'customUrl'  => '',
                 ),
                 'labels' => array(
-                    'add'    => __( 'Add to Wishlist', 'wish-car' ),
-                    'saved'  => __( 'Saved to Wishlist', 'wish-car' ),
+                    'add'    => __( 'Add to Wishlist', 'wishcart' ),
+                    'saved'  => __( 'Saved to Wishlist', 'wishcart' ),
                 ),
+            ),
+        );
+    }
+
+    /**
+     * Default integration settings for admin UI
+     *
+     * @return array
+     */
+    public static function get_default_integrations_settings() {
+        return array(
+            'whatsapp' => array(
+                'enabled' => false,
+                'account_sid' => '',
+                'auth_token' => '',
+                'phone_number' => '',
+                'welcome_message' => '',
+                'enable_template_messages' => false,
+            ),
+            'telegram' => array(
+                'enabled' => false,
+                'bot_token' => '',
+                'bot_username' => '',
+                'welcome_message' => '',
+            ),
+            'contact_form' => array(
+                'enabled' => false,
+                'shortcode' => '',
             ),
         );
     }

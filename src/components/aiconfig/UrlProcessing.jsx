@@ -149,7 +149,7 @@ const UrlProcessing = ({ settings, updateSettings }) => {
                                         errorDetails.toLowerCase().includes('captcha') ||
                                         errorDetails.toLowerCase().includes('automated access'))) {
                                     updateUrlStatus(url, 'blocked');
-                                    setUserNotice(__('Bot protection detected. This website is protected against automated access. Please try accessing the content manually.', 'wish-car'));
+                                    setUserNotice(__('Bot protection detected. This website is protected against automated access. Please try accessing the content manually.', 'wishcart'));
                                     setShowUserNotice(true);
                                     clearMessages();
                                 } else {
@@ -160,7 +160,7 @@ const UrlProcessing = ({ settings, updateSettings }) => {
                                         setShowUserNotice(true);
                                         clearMessages();
                                     } else if (errorDetails) {
-                                        setUserNotice(__('Error processing URL: ', 'wish-car') + errorDetails);
+                                        setUserNotice(__('Error processing URL: ', 'wishcart') + errorDetails);
                                         setShowUserNotice(true);
                                         clearMessages();
                                     }
@@ -313,11 +313,11 @@ const UrlProcessing = ({ settings, updateSettings }) => {
                     }
                 }
             } else {
-                throw new Error(data.message || __('Failed to fetch URLs', 'wish-car'));
+                throw new Error(data.message || __('Failed to fetch URLs', 'wishcart'));
             }
         } catch (error) {
             console.error('Error fetching crawled URLs:', error);
-            setProcessMessage(__(`Error: ${error.message}`, 'wish-car'));
+            setProcessMessage(__(`Error: ${error.message}`, 'wishcart'));
         } finally {
             setViewingUrls(prev => ({ ...prev, [index]: false }));
         }
@@ -330,7 +330,7 @@ const UrlProcessing = ({ settings, updateSettings }) => {
 
         try {
             // Show processing state
-            setProcessMessage(__('Deleting URL...', 'wish-car'));
+            setProcessMessage(__('Deleting URL...', 'wishcart'));
 
             const response = await fetch('/wp-json/wishcart/v1/delete-url', {
                 method: 'POST',
@@ -370,7 +370,7 @@ const UrlProcessing = ({ settings, updateSettings }) => {
                 });
 
                 // Set success message
-                setProcessMessage(__('URL deleted successfully.', 'wish-car'));
+                setProcessMessage(__('URL deleted successfully.', 'wishcart'));
 
                 // If this was the last URL, remove the parent URL from the list and close the modal
                 if (updatedUrls.length === 0) {
@@ -391,7 +391,7 @@ const UrlProcessing = ({ settings, updateSettings }) => {
                         setOpenDialog(false);
 
                         // Show success message in the main UI
-                        setProcessMessage(__('URL and all related items removed successfully.', 'wish-car'));
+                        setProcessMessage(__('URL and all related items removed successfully.', 'wishcart'));
 
                         // Also persist to server
                         fetch('/wp-json/wishcart/v1/settings', {
@@ -418,11 +418,11 @@ const UrlProcessing = ({ settings, updateSettings }) => {
                     setProcessMessage('');
                 }, 3000);
             } else {
-                throw new Error(data.message || __('Failed to delete URL', 'wish-car'));
+                throw new Error(data.message || __('Failed to delete URL', 'wishcart'));
             }
         } catch (error) {
             console.error('Error deleting URL:', error);
-            setProcessMessage(__(`Error: ${error.message}`, 'wish-car'));
+            setProcessMessage(__(`Error: ${error.message}`, 'wishcart'));
         }
     };
 
@@ -432,7 +432,7 @@ const UrlProcessing = ({ settings, updateSettings }) => {
         try {
             const url = new URL(newUrlConfig.url);
             if (!url.protocol.startsWith('http')) {
-                setProcessMessage(__('URL must start with http:// or https://', 'wish-car'));
+                setProcessMessage(__('URL must start with http:// or https://', 'wishcart'));
                 setShowProcessMessage(true);
                 return;
             }
@@ -515,7 +515,7 @@ const UrlProcessing = ({ settings, updateSettings }) => {
                 const processingUrls = (settings.ai_config.website_urls || []).filter(url => url.status === 'processing');
                 const anyBotProtected = (settings.ai_config.website_urls || []).some(url => url.status === 'bot_protected');
                 if (processingUrls.length > 0 && !anyBotProtected) {
-                    setProcessMessage(__('Processing website in background...', 'wish-car'));
+                    setProcessMessage(__('Processing website in background...', 'wishcart'));
                     setShowProcessMessage(true);
                 } else if (anyBotProtected) {
                     setProcessMessage('');
@@ -552,7 +552,7 @@ const UrlProcessing = ({ settings, updateSettings }) => {
             // Handle different response scenarios
             if (!processResponse || processResponse.status === 504) {
                 console.log('Server timeout occurred, but URL already saved. Status will be updated via polling.');
-                setProcessMessage(__('Website is being processed in the background.', 'wish-car'));
+                setProcessMessage(__('Website is being processed in the background.', 'wishcart'));
             }
             else if (!processResponse.ok) {
                 const errorText = await processResponse.text().catch(() => 'Unknown error');
@@ -583,9 +583,9 @@ const UrlProcessing = ({ settings, updateSettings }) => {
                             setUserNotice(data.user_message);
                             setShowUserNotice(true);
                         }
-                        setProcessMessage(__(`Website processed successfully! ${data.processed || 0} pages indexed.`, 'wish-car'));
+                        setProcessMessage(__(`Website processed successfully! ${data.processed || 0} pages indexed.`, 'wishcart'));
                     } else {
-                        throw new Error(data.message || __('Failed to process website', 'wish-car'));
+                        throw new Error(data.message || __('Failed to process website', 'wishcart'));
                     }
                 } catch (parseError) {
                     console.error('Failed to parse response as JSON:', parseError);
@@ -610,7 +610,7 @@ const UrlProcessing = ({ settings, updateSettings }) => {
             setOpenUrlDialog(false);
 
             // Set error message
-            setProcessMessage(__(`Error: ${error.message}`, 'wish-car'));
+            setProcessMessage(__(`Error: ${error.message}`, 'wishcart'));
 
             // Reset states
             setTimeout(() => {
@@ -629,12 +629,12 @@ const UrlProcessing = ({ settings, updateSettings }) => {
         try {
             const url = new URL(urlConfig.url);
             if (!url.protocol.startsWith('http')) {
-                setProcessMessage(__('URL must start with http:// or https://', 'wish-car'));
+                setProcessMessage(__('URL must start with http:// or https://', 'wishcart'));
                 return;
             }
 
             setLoadingUrls(prev => ({ ...prev, [index]: true }));
-            setProcessMessage(__('Processing website...', 'wish-car'));
+            setProcessMessage(__('Processing website...', 'wishcart'));
 
             // First update the status to 'processing'
             const updatedUrls = [...settings.ai_config.website_urls];
@@ -698,13 +698,13 @@ const UrlProcessing = ({ settings, updateSettings }) => {
             if (data.success) {
                 updateUrlStatus(url.toString(), 'processed');
 
-                setProcessMessage(__(`Website processed successfully! ${data.processed || 0} pages indexed.`, 'wish-car'));
+                setProcessMessage(__(`Website processed successfully! ${data.processed || 0} pages indexed.`, 'wishcart'));
             } else {
-                throw new Error(data.message || __('Failed to process website', 'wish-car'));
+                throw new Error(data.message || __('Failed to process website', 'wishcart'));
             }
         } catch (error) {
             console.error('Error processing website:', error);
-            setProcessMessage(__(`Error: ${error.message}`, 'wish-car'));
+            setProcessMessage(__(`Error: ${error.message}`, 'wishcart'));
 
             // Update URL status to error
             const newUrls = [...settings.ai_config.website_urls];
@@ -749,7 +749,7 @@ const UrlProcessing = ({ settings, updateSettings }) => {
     const handleDeleteParentUrl = async () => {
         try {
             // Show processing state
-            setProcessMessage(__('Deleting all related URLs...', 'wish-car'));
+            setProcessMessage(__('Deleting all related URLs...', 'wishcart'));
 
             // Find the index of the parent URL in the website_urls array
             const parentUrlIndex = settings.ai_config.website_urls.findIndex(
@@ -797,7 +797,7 @@ const UrlProcessing = ({ settings, updateSettings }) => {
                 setOpenDialog(false);
 
                 // Show success message
-                setProcessMessage(__(`Successfully removed URL and ${data.count || 0} related items.`, 'wish-car'));
+                setProcessMessage(__(`Successfully removed URL and ${data.count || 0} related items.`, 'wishcart'));
 
                 // Also persist to server
                 fetch('/wp-json/wishcart/v1/settings', {
@@ -822,11 +822,11 @@ const UrlProcessing = ({ settings, updateSettings }) => {
                     setProcessMessage('');
                 }, 3000);
             } else {
-                throw new Error(data.message || __('Failed to delete URLs', 'wish-car'));
+                throw new Error(data.message || __('Failed to delete URLs', 'wishcart'));
             }
         } catch (error) {
             console.error('Error deleting URLs:', error);
-            setProcessMessage(__(`Error: ${error.message}`, 'wish-car'));
+            setProcessMessage(__(`Error: ${error.message}`, 'wishcart'));
         }
     };
 
@@ -834,7 +834,7 @@ const UrlProcessing = ({ settings, updateSettings }) => {
     const handleDeleteAllUrls = async () => {
         try {
             // Show processing state
-            setProcessMessage(__('Deleting all URLs for this source...', 'wish-car'));
+            setProcessMessage(__('Deleting all URLs for this source...', 'wishcart'));
 
             // Find the index of the parent URL in the website_urls array
             const parentUrlIndex = settings.ai_config.website_urls.findIndex(
@@ -883,7 +883,7 @@ const UrlProcessing = ({ settings, updateSettings }) => {
                 setOpenDialog(false);
 
                 // Show success message
-                setProcessMessage(__(`Successfully removed URL and ${data.count || 0} related items.`, 'wish-car'));
+                setProcessMessage(__(`Successfully removed URL and ${data.count || 0} related items.`, 'wishcart'));
 
                 // Also persist to server
                 fetch('/wp-json/wishcart/v1/settings', {
@@ -908,11 +908,11 @@ const UrlProcessing = ({ settings, updateSettings }) => {
                     setProcessMessage('');
                 }, 3000);
             } else {
-                throw new Error(data.message || __('Failed to delete URLs', 'wish-car'));
+                throw new Error(data.message || __('Failed to delete URLs', 'wishcart'));
             }
         } catch (error) {
             console.error('Error deleting URLs:', error);
-            setProcessMessage(__(`Error: ${error.message}`, 'wish-car'));
+            setProcessMessage(__(`Error: ${error.message}`, 'wishcart'));
         }
     };
 
@@ -921,7 +921,7 @@ const UrlProcessing = ({ settings, updateSettings }) => {
             {/* User Notice for backend reasoning (e.g., JS-rendered site) */}
             {showUserNotice && userNotice && (
                 <div className="mb-4 p-4 rounded-md bg-yellow-50 border border-yellow-300 text-yellow-800 relative">
-                    <strong>{__('Notice:', 'wish-car')}</strong> {userNotice}
+                    <strong>{__('Notice:', 'wishcart')}</strong> {userNotice}
                     <button
                         onClick={() => setShowUserNotice(false)}
                         aria-label="Dismiss"
@@ -934,7 +934,7 @@ const UrlProcessing = ({ settings, updateSettings }) => {
             )}
 
             <div className="flex items-center justify-between mb-4">
-                <Label>{__('External Sources', 'wish-car')}</Label>
+                <Label>{__('External Sources', 'wishcart')}</Label>
                 <Button
                     variant="outline"
                     size="sm"
@@ -942,7 +942,7 @@ const UrlProcessing = ({ settings, updateSettings }) => {
                     className="flex items-center gap-2"
                 >
                     <PlusIcon className="h-4 w-4" />
-                    {__('Add URL', 'wish-car')}
+                    {__('Add URL', 'wishcart')}
                 </Button>
             </div>
 
@@ -960,14 +960,14 @@ const UrlProcessing = ({ settings, updateSettings }) => {
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    {__('Checking status of processing URLs...', 'wish-car')}
+                    {__('Checking status of processing URLs...', 'wishcart')}
                 </div>
             )}
 
             {(settings.ai_config.website_urls || []).length === 0 ? (
                 <div className="text-center py-4 border rounded-lg bg-gray-50">
                     <p className="text-sm text-gray-500">
-                        {__('No external sources added yet', 'wish-car')}
+                        {__('No external sources added yet', 'wishcart')}
                     </p>
                 </div>
             ) : (
@@ -981,12 +981,12 @@ const UrlProcessing = ({ settings, updateSettings }) => {
                                 <span className="font-medium truncate max-w-md">
                                     {urlConfig.url ?
                                         urlConfig.url :
-                                        __('Unnamed Source', 'wish-car')
+                                        __('Unnamed Source', 'wishcart')
                                     }
                                 </span>
                                 {urlConfig.status === 'processed' && (
                                     <span className="text-xs text-green-500 bg-green-50 px-2 py-0.5 rounded-full">
-                                        {__('Processed', 'wish-car')}
+                                        {__('Processed', 'wishcart')}
                                     </span>
                                 )}
                                 {urlConfig.status === 'processing' && (
@@ -995,17 +995,17 @@ const UrlProcessing = ({ settings, updateSettings }) => {
                                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                         </svg>
-                                        {__('Processing in background', 'wish-car')}
+                                        {__('Processing in background', 'wishcart')}
                                     </span>
                                 )}
                                 {urlConfig.status === 'error' && (
                                     <span className="text-xs text-red-500 bg-red-50 px-2 py-0.5 rounded-full">
-                                        {__('Error', 'wish-car')}
+                                        {__('Error', 'wishcart')}
                                     </span>
                                 )}
                                 {urlConfig.status === 'bot_protected' && (
                                     <span className="text-xs text-yellow-600 bg-yellow-50 px-2 py-0.5 rounded-full">
-                                        {__('Bot Protected', 'wish-car')}
+                                        {__('Bot Protected', 'wishcart')}
                                     </span>
                                 )}
                             </div>
@@ -1059,23 +1059,23 @@ const UrlProcessing = ({ settings, updateSettings }) => {
                     <DialogHeader>
                         <DialogTitle>
                             {isEditing
-                                ? __('Edit External URL', 'wish-car')
-                                : __('Add External URL', 'wish-car')
+                                ? __('Edit External URL', 'wishcart')
+                                : __('Add External URL', 'wishcart')
                             }
                         </DialogTitle>
                         <DialogDescription>
                             {isEditing
-                                ? __('Edit website URL settings', 'wish-car')
-                                : __('Add a website URL to process and include in the knowledge base', 'wish-car')
+                                ? __('Edit website URL settings', 'wishcart')
+                                : __('Add a website URL to process and include in the knowledge base', 'wishcart')
                             }
                         </DialogDescription>
                     </DialogHeader>
                     <div className="space-y-4 py-2">
                         <div className="space-y-2">
-                            <Label htmlFor="url-input">{__('Website URL', 'wish-car')}</Label>
+                            <Label htmlFor="url-input">{__('Website URL', 'wishcart')}</Label>
                             <Input
                                 id="url-input"
-                                placeholder={__('Enter website URL (e.g., https://example.com)', 'wish-car')}
+                                placeholder={__('Enter website URL (e.g., https://example.com)', 'wishcart')}
                                 value={newUrlConfig.url || ''}
                                 onChange={(e) => {
                                     setNewUrlConfig(prev => ({
@@ -1098,7 +1098,7 @@ const UrlProcessing = ({ settings, updateSettings }) => {
                                 }}
                             />
                             <Label htmlFor="follow_links">
-                                {__('Follow Links', 'wish-car')}
+                                {__('Follow Links', 'wishcart')}
                             </Label>
                         </div>
 
@@ -1107,11 +1107,11 @@ const UrlProcessing = ({ settings, updateSettings }) => {
                             <div className="space-y-4 pl-6">
                                 <div className="space-y-2">
                                     <Label htmlFor="include_paths">
-                                        {__('Include Paths', 'wish-car')}
+                                        {__('Include Paths', 'wishcart')}
                                     </Label>
                                     <Input
                                         id="include_paths"
-                                        placeholder={__('e.g., /blog/*, /docs/*, /products/*', 'wish-car')}
+                                        placeholder={__('e.g., /blog/*, /docs/*, /products/*', 'wishcart')}
                                         value={newUrlConfig.include_paths || ''}
                                         onChange={(e) => {
                                             setNewUrlConfig(prev => ({
@@ -1121,16 +1121,16 @@ const UrlProcessing = ({ settings, updateSettings }) => {
                                         }}
                                     />
                                     <p className="text-xs text-gray-500">
-                                        {__('Comma-separated list of paths to include', 'wish-car')}
+                                        {__('Comma-separated list of paths to include', 'wishcart')}
                                     </p>
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="exclude_paths">
-                                        {__('Exclude Paths', 'wish-car')}
+                                        {__('Exclude Paths', 'wishcart')}
                                     </Label>
                                     <Input
                                         id="exclude_paths"
-                                        placeholder={__('e.g., /wp-*, /cart/*, /checkout/*', 'wish-car')}
+                                        placeholder={__('e.g., /wp-*, /cart/*, /checkout/*', 'wishcart')}
                                         value={newUrlConfig.exclude_paths || ''}
                                         onChange={(e) => {
                                             setNewUrlConfig(prev => ({
@@ -1140,7 +1140,7 @@ const UrlProcessing = ({ settings, updateSettings }) => {
                                         }}
                                     />
                                     <p className="text-xs text-gray-500">
-                                        {__('Comma-separated list of paths to exclude', 'wish-car')}
+                                        {__('Comma-separated list of paths to exclude', 'wishcart')}
                                     </p>
                                 </div>
                             </div>
@@ -1154,7 +1154,7 @@ const UrlProcessing = ({ settings, updateSettings }) => {
                                 onCheckedChange={setShowAdvancedOptions}
                             />
                             <Label htmlFor="show_advanced_options">
-                                {__('Advanced Options', 'wish-car')}
+                                {__('Advanced Options', 'wishcart')}
                             </Label>
                         </div>
 
@@ -1163,11 +1163,11 @@ const UrlProcessing = ({ settings, updateSettings }) => {
                             <div className="space-y-4 pl-6 pt-2">
                                 <div className="space-y-2">
                                     <Label htmlFor="include_selectors">
-                                        {__('Include Elements', 'wish-car')}
+                                        {__('Include Elements', 'wishcart')}
                                     </Label>
                                     <Input
                                         id="include_selectors"
-                                        placeholder={__('e.g., article, .content, #main-content', 'wish-car')}
+                                        placeholder={__('e.g., article, .content, #main-content', 'wishcart')}
                                         value={newUrlConfig.include_selectors || ''}
                                         onChange={(e) => {
                                             setNewUrlConfig(prev => ({
@@ -1177,16 +1177,16 @@ const UrlProcessing = ({ settings, updateSettings }) => {
                                         }}
                                     />
                                     <p className="text-xs text-gray-500">
-                                        {__('Comma-separated list of CSS selectors to include (tags, classes, IDs)', 'wish-car')}
+                                        {__('Comma-separated list of CSS selectors to include (tags, classes, IDs)', 'wishcart')}
                                     </p>
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="exclude_selectors">
-                                        {__('Exclude Elements', 'wish-car')}
+                                        {__('Exclude Elements', 'wishcart')}
                                     </Label>
                                     <Input
                                         id="exclude_selectors"
-                                        placeholder={__('e.g., header, footer, nav, .sidebar, #comments', 'wish-car')}
+                                        placeholder={__('e.g., header, footer, nav, .sidebar, #comments', 'wishcart')}
                                         value={newUrlConfig.exclude_selectors || ''}
                                         onChange={(e) => {
                                             setNewUrlConfig(prev => ({
@@ -1196,7 +1196,7 @@ const UrlProcessing = ({ settings, updateSettings }) => {
                                         }}
                                     />
                                     <p className="text-xs text-gray-500">
-                                        {__('Comma-separated list of CSS selectors to exclude (tags, classes, IDs)', 'wish-car')}
+                                        {__('Comma-separated list of CSS selectors to exclude (tags, classes, IDs)', 'wishcart')}
                                     </p>
                                 </div>
                             </div>
@@ -1206,7 +1206,7 @@ const UrlProcessing = ({ settings, updateSettings }) => {
                             <div className="space-y-2">
                                 <Progress value={urlProgress} className="w-full" />
                                 <p className="text-sm text-center text-gray-500">
-                                    {__('Processing...', 'wish-car')}
+                                    {__('Processing...', 'wishcart')}
                                 </p>
                             </div>
                         )}
@@ -1221,7 +1221,7 @@ const UrlProcessing = ({ settings, updateSettings }) => {
                             }}
                             disabled={urlProcessing}
                         >
-                            {__('Cancel', 'wish-car')}
+                            {__('Cancel', 'wishcart')}
                         </Button>
                         <Button
                             variant="default"
@@ -1229,7 +1229,7 @@ const UrlProcessing = ({ settings, updateSettings }) => {
                             onClick={processUrl}
                             disabled={!newUrlConfig.url || urlProcessing}
                         >
-                            {__('Process Now', 'wish-car')}
+                            {__('Process Now', 'wishcart')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -1239,10 +1239,10 @@ const UrlProcessing = ({ settings, updateSettings }) => {
                 <DialogContent className="sm:max-w-4xl max-h-[80vh] overflow-y-auto">
                     <DialogHeader>
                         <DialogTitle>
-                            {__('Processed URLs for', 'wish-car')} {selectedUrlData.url}
+                            {__('Processed URLs for', 'wishcart')} {selectedUrlData.url}
                         </DialogTitle>
                         <DialogDescription>
-                            {__('List of all URLs crawled from the specified source', 'wish-car')}
+                            {__('List of all URLs crawled from the specified source', 'wishcart')}
                         </DialogDescription>
                     </DialogHeader>
 
@@ -1257,12 +1257,12 @@ const UrlProcessing = ({ settings, updateSettings }) => {
                         {!selectedUrlData.urls || selectedUrlData.urls.length === 0 ? (
                             <div>
                                 <div className="text-center py-4 text-gray-500">
-                                    {__('No crawled URLs found in database. The site may have been processed but URLs not stored correctly.', 'wish-car')}
+                                    {__('No crawled URLs found in database. The site may have been processed but URLs not stored correctly.', 'wishcart')}
                                 </div>
 
                                 {/* Fallback - at least show the main URL */}
                                 <div className="mt-4 p-4 border rounded-lg bg-blue-50">
-                                    <h3 className="font-medium mb-2">{__('Main URL', 'wish-car')}</h3>
+                                    <h3 className="font-medium mb-2">{__('Main URL', 'wishcart')}</h3>
                                     <div className="flex items-center justify-between p-3 border bg-white rounded-lg">
                                         <a
                                             href={selectedUrlData.url}
@@ -1284,11 +1284,11 @@ const UrlProcessing = ({ settings, updateSettings }) => {
                                 </div>
 
                                 <div className="mt-4 text-sm text-gray-600">
-                                    <p>{__('If the site was recently processed, try the following:', 'wish-car')}</p>
+                                    <p>{__('If the site was recently processed, try the following:', 'wishcart')}</p>
                                     <ul className="list-disc ml-5 mt-2">
-                                        <li>{__('Check if "Follow Links" was enabled during processing', 'wish-car')}</li>
-                                        <li>{__('Try reprocessing the URL', 'wish-car')}</li>
-                                        <li>{__('Check server logs for any crawling errors', 'wish-car')}</li>
+                                        <li>{__('Check if "Follow Links" was enabled during processing', 'wishcart')}</li>
+                                        <li>{__('Try reprocessing the URL', 'wishcart')}</li>
+                                        <li>{__('Check server logs for any crawling errors', 'wishcart')}</li>
                                     </ul>
                                 </div>
                             </div>
@@ -1325,11 +1325,11 @@ const UrlProcessing = ({ settings, updateSettings }) => {
                                 onClick={() => handleDeleteAllUrls()}
                                 className="mr-auto"
                             >
-                                {__('Delete All', 'wish-car')}
+                                {__('Delete All', 'wishcart')}
                             </Button>
                         )}
                         <Button onClick={() => setOpenDialog(false)}>
-                            {__('Close', 'wish-car')}
+                            {__('Close', 'wishcart')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
