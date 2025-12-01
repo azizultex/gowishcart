@@ -253,22 +253,6 @@
 
 /* Ensure shadcn/ui components integrate with FluentCart theme */
 .wishcart-admin-shell {
-  /* Override button default styles */
-  button[class*="inline-flex"] {
-    height: 32px;
-    font-size: 13px;
-    font-weight: 400;
-    border-radius: var(--fluentcart-radius-sm);
-  }
-
-  .toggle-control button {
-    max-height: 24px;
-
-    span {
-      width: 14px;
-      height: 14px;
-    }
-  }
 
   /* Override input styles */
   input[class*="flex"] {
