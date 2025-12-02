@@ -11,21 +11,21 @@ const SupportResources = () => {
             title: __('Documentation', 'wishcart'),
             description: __('Step-by-step guides to configure WishCart and FluentCart integrations.', 'wishcart'),
             actionLabel: __('View Docs', 'wishcart'),
-            href: 'https://wishcart.chat/docs',
+            href: 'https://gowishcart.com/docs',
         },
         {
             icon: MessageCircle,
             title: __('Community', 'wishcart'),
             description: __('Join other store owners to share best practices and tips.', 'wishcart'),
             actionLabel: __('Join Community', 'wishcart'),
-            href: 'https://wishcart.chat/community',
+            href: 'https://gowishcart.com/community',
         },
         {
             icon: LifeBuoy,
             title: __('Priority Support', 'wishcart'),
             description: __('Need help? Start a live chat and our team will assist you.', 'wishcart'),
             actionLabel: __('Chat With Us', 'wishcart'),
-            href: 'https://wishcart.chat/support',
+            href: 'https://gowishcart.com/support',
         },
     ];
 
@@ -63,12 +63,12 @@ const SupportResources = () => {
                 <CardContent className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                     <div className="flex items-center gap-2">
                         <Mail className="h-5 w-5 text-blue-500" />
-                        <a className="text-lg font-medium" href="mailto:support@wishcart.chat">
-                            support@wishcart.chat
+                        <a className="text-lg font-medium" href="mailto:support@gowishcart.com">
+                            support@gowishcart.com
                         </a>
                     </div>
                     <Button asChild>
-                        <a href="mailto:support@wishcart.chat">
+                        <a href="mailto:support@gowishcart.com">
                             {__('Send Email', 'wishcart')}
                         </a>
                     </Button>

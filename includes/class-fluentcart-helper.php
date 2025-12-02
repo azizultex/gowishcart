@@ -8,9 +8,9 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  *
  * @category Functionality
  * @package  AISK
- * @author   WishCart Team <support@wishcart.chat>
+ * @author   WishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
- * @link     https://wishcart.chat
+ * @link     https://gowishcart.com
  */
 
 /**
@@ -513,9 +513,9 @@ class WishCart_FluentCart_DateTime {
  *
  * @category Class
  * @package  AISK
- * @author   WishCart Team <support@wishcart.chat>
+ * @author   WishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
- * @link     https://wishcart.chat
+ * @link     https://gowishcart.com
  */
 class WishCart_FluentCart_Helper {
 

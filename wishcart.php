@@ -2,12 +2,12 @@
 
 /**
  * Plugin Name:  WishCart - Wishlist for FluentCart
- * Plugin URI:  https://wishcart.chat
+ * Plugin URI:  https://gowishcart.com
  * Description: Wishlist plugin for FluentCart. Add products to wishlist, manage your favorites, and share your wishlist with others.
  * Version:     1.0.0
  * Requires PHP: 7.4
- * Author:      WishCart Team <support@wishcart.chat>
- * Author URI:  https://wishcart.chat/
+ * Author:      WishCart Team <support@gowishcart.com>
+ * Author URI:  https://gowishcart.com/
  * Contributors: wishcart, zrshishir, sabbirxprt
  * Text Domain:  wish-car
  * Domain Path: /languages/
@@ -16,9 +16,9 @@
  *
  * @category WordPress
  * @package  AISK
- * @author   WishCart Team <support@wishcart.chat>
+ * @author   WishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ http://www.gnu.org/licenses/gpl-2.0.txt
- * @link     https://wishcart.chat
+ * @link     https://gowishcart.com
  *
  * Third-party Libraries:
  * - Smalot/PdfParser: Required for PDF text extraction and processing
@@ -59,9 +59,9 @@ if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
  *
  * @category WordPress
  * @package  WishCart
- * @author   WishCart Team <support@wishcart.chat>
+ * @author   WishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ http://www.gnu.org/licenses/gpl-2.0.txt
- * @link     https://wishcart.chat
+ * @link     https://gowishcart.com
  */
 class WishCart_Wishlist {
 

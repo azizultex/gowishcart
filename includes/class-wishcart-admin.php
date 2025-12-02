@@ -4,7 +4,7 @@
  *
  * @category WordPress
  * @package  AISK
- * @author   WishCart Team <support@wishcart.chat>
+ * @author   WishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ http://www.gnu.org/licenses/gpl-2.0.txt
  * @link     https://wishcart.com
  */
@@ -18,7 +18,7 @@ if ( ! defined('ABSPATH') ) {
  *
  * @category Class
  * @package  AISK
- * @author   WishCart Team <support@wishcart.chat>
+ * @author   WishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ http://www.gnu.org/licenses/gpl-2.0.txt
  * @link     https://wishcart.com
  */

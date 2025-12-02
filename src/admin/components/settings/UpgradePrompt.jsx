@@ -44,12 +44,12 @@ const UpgradePrompt = () => {
                     </div>
                     <div className="flex gap-3">
                         <Button asChild variant="outline">
-                            <a href="https://wishcart.chat/demo" target="_blank" rel="noopener noreferrer">
+                            <a href="https://gowishcart.com/demo" target="_blank" rel="noopener noreferrer">
                                 {__('Book Demo', 'wishcart')}
                             </a>
                         </Button>
                         <Button asChild>
-                            <a href="https://wishcart.chat/pricing" target="_blank" rel="noopener noreferrer">
+                            <a href="https://gowishcart.com/pricing" target="_blank" rel="noopener noreferrer">
                                 {__('Upgrade Now', 'wishcart')}
                             </a>
                         </Button>

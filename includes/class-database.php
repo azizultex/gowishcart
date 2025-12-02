@@ -5,9 +5,9 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  *
  * @category WordPress
  * @package  WishCart
- * @author   WishCart Team <support@wishcart.chat>
+ * @author   WishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
- * @link     https://wishcart.chat
+ * @link     https://gowishcart.com
  */
 
 /**
@@ -15,9 +15,9 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  *
  * @category WordPress
  * @package  WishCart
- * @author   WishCart Team <support@wishcart.chat>
+ * @author   WishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
- * @link     https://wishcart.chat
+ * @link     https://gowishcart.com
  */
 class WishCart_Database {
 

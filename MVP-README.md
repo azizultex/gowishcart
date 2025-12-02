@@ -360,7 +360,7 @@ $results = $wpdb->get_results("
 
 - **Documentation**: See `/docs` folder (to be created)
 - **Issues**: Report via GitHub Issues
-- **Email**: support@wishcart.chat
+- **Email**: support@gowishcart.com
 - **Community**: Join our Discord (link to be added)
 
 ## 📄 License

@@ -43,7 +43,7 @@ Turn **WhatsApp live chat WordPress** and **Telegram** into your 24/7 sales and 
 ### Complete Omnichannel Support
 Unify your website, **WhatsApp**, and **Telegram** conversations in a single dashboard. This ensures consistent responses across channels, eliminates communication silos, and provides your team complete visibility of customer interactions from every source.
 = 📞 Support =
-If you have any questions or need assistance, please visit our [support forum](https://wordpress.org/support/plugin/wishcart/) or [contact us directly](https://wishcart.chat/support/).
+If you have any questions or need assistance, please visit our [support forum](https://wordpress.org/support/plugin/wishcart/) or [contact us directly](https://gowishcart.com/support/).
 = 📝 License =
 This project is licensed under the GPL-2.0+ License - see the LICENSE file for details.
 = 🔌 External Services =
@@ -105,12 +105,12 @@ All data transmission to these services is done securely using HTTPS. The plugin
 2. Managing integration settings in the plugin dashboard
 3. Using the privacy settings to control data collection
 ---
-Developed with ❤️ by [wishcart.chat Team](https://wishcart.chat)
+Developed with ❤️ by [gowishcart.com Team](https://gowishcart.com)
 == Frequently Asked Questions ==
-= How much does wishcart.chat cost? =
-wishcart.chat is completely free of costs. Use WishCart at full fledge without any limitation as there are no Free or Paid plan. All features are open for everyone without any limit. You don't need to have any credit card to start using wishcart.chat. It's because we don't run it on our server. The only thing you will need is the Keys from OpenAI to generate Embedding and answers.
-= Do I need OpenAI keys to use wishcart.chat? =
-Yes, wishcart.chat requires an OpenAI API key to function. This is because we leverage OpenAI's powerful language models to provide intelligent responses to customer inquiries. You'll need to create an OpenAI account and obtain an API key, which you'll enter in the WishCart dashboard during setup. This approach gives you direct ownership of your AI usage and data while allowing us to provide advanced AI capabilities. We provide step-by-step guidance on obtaining and configuring your OpenAI key during the setup process.
+= How much does gowishcart.com cost? =
+gowishcart.com is completely free of costs. Use WishCart at full fledge without any limitation as there are no Free or Paid plan. All features are open for everyone without any limit. You don't need to have any credit card to start using gowishcart.com. It's because we don't run it on our server. The only thing you will need is the Keys from OpenAI to generate Embedding and answers.
+= Do I need OpenAI keys to use gowishcart.com? =
+Yes, gowishcart.com requires an OpenAI API key to function. This is because we leverage OpenAI's powerful language models to provide intelligent responses to customer inquiries. You'll need to create an OpenAI account and obtain an API key, which you'll enter in the WishCart dashboard during setup. This approach gives you direct ownership of your AI usage and data while allowing us to provide advanced AI capabilities. We provide step-by-step guidance on obtaining and configuring your OpenAI key during the setup process.
 = Can I train WishCart from my own knowledge base? =
 Absolutely. WishCart is designed to learn from your specific business content. During setup, the "Generate Embeddings" process analyzes your website pages, product descriptions, FAQs, and other content to create a customized knowledge base. This ensures the chatbot provides accurate, relevant answers based on your unique business information. You can update this knowledge base anytime you add new content to your site by regenerating embeddings.
 = Can I add external sites, PDFs, or content as a knowledge base? =
@@ -161,7 +161,7 @@ This plugin uses modern development tools and follows WordPress coding standards
 
 == Support ==
 
-Visit [wishcart.chat](https://wishcart.chat) for documentation and support.
+Visit [gowishcart.com](https://gowishcart.com) for documentation and support.
 
 ## Privacy Policy 
 WishCart - Wishlist for FluentCart uses [Appsero](https://appsero.com) SDK to collect some telemetry data upon user's confirmation. This helps us to troubleshoot problems faster & make product improvements.
