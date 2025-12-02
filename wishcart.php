@@ -176,6 +176,7 @@ class WishCart_Wishlist {
         include_once WishCart_PLUGIN_DIR . 'includes/class-share-page-handler.php';
         include_once WishCart_PLUGIN_DIR . 'includes/shortcodes/class-wishlist-shortcode.php';
         include_once WishCart_PLUGIN_DIR . 'includes/shortcodes/class-shared-wishlist-shortcode.php';
+        include_once WishCart_PLUGIN_DIR . 'includes/shortcodes/class-wishlist-button-shortcode.php';
         
         // Admin class
         include_once WishCart_PLUGIN_DIR . 'includes/class-wishcart-admin.php';

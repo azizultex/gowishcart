@@ -184,6 +184,26 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                 </div>
             )}
 
+            {/* Shortcode */}
+            <div className="fluentcart-form-group" style={{borderTop: '1px solid var(--fluentcart-gray-25)', paddingTop: '16px'}}>
+                <label className="fluentcart-label">
+                    {__('Shortcode', 'wishcart')}
+                </label>
+                <p className="fluentcart-form-helper" style={{marginTop: '8px'}}>
+                    {__('You can add a button manually by using the shortcode', 'wishcart')}{' '}
+                    <code style={{fontFamily: 'monospace', backgroundColor: '#f5f5f5', padding: '2px 6px', borderRadius: '3px'}}>
+                        [wishcart_sc id="{'{'}product id{'}'}"]
+                    </code>
+                    {', '}
+                    {__('e.g.', 'wishcart')}{' '}
+                    <code style={{fontFamily: 'monospace', backgroundColor: '#f5f5f5', padding: '2px 6px', borderRadius: '3px'}}>
+                        [wishcart_sc id="99"]
+                    </code>
+                    {' '}
+                    {__('for the product whose ID is 99.', 'wishcart')}
+                </p>
+            </div>
+
             {/* Wishlist Page */}
             <div className="fluentcart-form-group" style={{borderTop: '1px solid var(--fluentcart-gray-25)', paddingTop: '16px'}}>
                 <label className="fluentcart-label" htmlFor="wishlist_page">
