@@ -974,7 +974,7 @@ const WishlistPage = () => {
                     {/* Share Section */}
                     {!isViewingShared && (
                         <div className="share-section">
-                            <span className="share-label">Share on</span>
+                            <span className="share-label">Wishlist Share on</span>
                             <div className="share-icons">
                                 <button
                                     onClick={shareOnFacebook}
