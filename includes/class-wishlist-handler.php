@@ -278,6 +278,16 @@ class WishCart_Wishlist_Handler {
     }
 
     /**
+     * Get wishlist by share code
+     *
+     * @param string $share_code Share code (wishlist token)
+     * @return array|null Wishlist data or null
+     */
+    public function get_wishlist_by_share_code($share_code) {
+        return $this->get_wishlist_by_token($share_code);
+    }
+
+    /**
      * Get wishlist by slug
      *
      * @param string $slug Wishlist slug

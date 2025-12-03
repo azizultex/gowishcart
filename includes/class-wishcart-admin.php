@@ -290,6 +290,38 @@ JS;
 				],
             ]
         );
+
+        // Pages endpoint for admin UI (used to detect wishlist page with shortcode)
+        register_rest_route(
+            'wishcart/v1',
+            '/pages',
+            array(
+                'methods'             => 'GET',
+                'callback'            => array( $this, 'get_pages_with_wishlist_shortcode' ),
+                'permission_callback' => function () {
+                    return current_user_can( 'manage_options' );
+                },
+                'args'                => array(
+                    'per_page' => array(
+                        'description'       => __( 'Number of pages to return', 'wishcart' ),
+                        'type'              => 'integer',
+                        'required'          => false,
+                        'sanitize_callback' => 'absint',
+                    ),
+                ),
+            )
+        );
+        register_rest_route(
+            'wishcart/v1',
+            '/pages/create-wishlist',
+            array(
+                'methods'             => 'POST',
+                'callback'            => array( $this, 'create_wishlist_page_endpoint' ),
+                'permission_callback' => function () {
+                    return current_user_can( 'manage_options' );
+                },
+            )
+        );
         register_rest_route('wishcart/v1', '/install-fluentcart', array(
             'methods' => 'POST',
             'callback' => array( $this, 'install_fluentcart' ),
@@ -799,7 +831,15 @@ JS;
      */
     public function wishcart_get_settings() {
         $settings = get_option('wishcart_settings', []);
-        $page_id  = WishCart_Wishlist_Page::create_wishlist_page();
+        
+        // Only create default page if no wishlist_page_id is set
+        $existing_page_id = isset( $settings['wishlist']['wishlist_page_id'] ) 
+            ? intval( $settings['wishlist']['wishlist_page_id'] ) 
+            : 0;
+        
+        $page_id = $existing_page_id > 0 
+            ? $existing_page_id 
+            : WishCart_Wishlist_Page::create_wishlist_page();
 
         $defaults = WishCart_Wishlist_Page::get_default_settings( $page_id );
         $changed  = false;
@@ -811,8 +851,10 @@ JS;
 
         $merged = wp_parse_args( $settings['wishlist'], $defaults );
 
-        if ( intval( $merged['wishlist_page_id'] ) !== intval( $page_id ) ) {
+        // Only set default page_id if no page is currently selected
+        if ( intval( $merged['wishlist_page_id'] ) === 0 ) {
             $merged['wishlist_page_id'] = intval( $page_id );
+            $changed = true;
         }
 
         if ( $settings['wishlist'] !== $merged ) {
@@ -984,6 +1026,127 @@ JS;
         }
 
         return rest_ensure_response( $products );
+    }
+
+    /**
+     * Get WordPress pages and flag if they contain the wishlist shortcode
+     *
+     * Used by the admin settings UI to auto-select the Wishlist page.
+     *
+     * @param WP_REST_Request $request Request object
+     *
+     * @return WP_REST_Response
+     */
+    public function get_pages_with_wishlist_shortcode( $request ) {
+        $per_page = absint( $request->get_param( 'per_page' ) );
+        if ( $per_page <= 0 || $per_page > 200 ) {
+            $per_page = 100;
+        }
+
+        $query = new WP_Query(
+            array(
+                'post_type'      => 'page',
+                'post_status'    => 'publish',
+                'posts_per_page' => $per_page,
+                'orderby'        => 'title',
+                'order'          => 'ASC',
+                'no_found_rows'  => true,
+                'fields'         => 'all',
+            )
+        );
+
+        $pages = array();
+
+        if ( $query->have_posts() ) {
+            foreach ( $query->posts as $page ) {
+                $content        = isset( $page->post_content ) ? $page->post_content : '';
+                $has_shortcode  = false;
+
+                if ( ! empty( $content ) ) {
+                    // Prefer has_shortcode when available
+                    if ( function_exists( 'has_shortcode' ) ) {
+                        $has_shortcode = has_shortcode( $content, 'WishCart_Wishlist' );
+                    } else {
+                        $has_shortcode = ( false !== strpos( $content, '[WishCart_Wishlist' ) );
+                    }
+                }
+
+                $pages[] = array(
+                    'id'            => intval( $page->ID ),
+                    'title'         => array(
+                        'rendered' => get_the_title( $page ),
+                    ),
+                    'slug'          => $page->post_name,
+                    'has_shortcode' => (bool) $has_shortcode,
+                );
+            }
+        }
+
+        wp_reset_postdata();
+
+        return rest_ensure_response( $pages );
+    }
+
+    /**
+     * Create wishlist page endpoint
+     *
+     * Creates a new WordPress page with the [WishCart_Wishlist] shortcode
+     *
+     * @param WP_REST_Request $request Request object
+     *
+     * @return WP_REST_Response|WP_Error
+     */
+    public function create_wishlist_page_endpoint( $request ) {
+        $params    = $request->get_json_params();
+        $page_name = isset( $params['page_name'] ) ? sanitize_text_field( wp_unslash( $params['page_name'] ) ) : '';
+
+        // Validate page name
+        if ( empty( $page_name ) ) {
+            $page_name = __( 'Wishlist', 'wishcart' );
+        }
+
+        // Always create a new page (don't check for existing pages)
+        $page_data = array(
+            'post_title'   => $page_name,
+            'post_content' => '[WishCart_Wishlist]',
+            'post_status'  => 'publish',
+            'post_type'    => 'page',
+            'post_name'    => sanitize_title( $page_name ),
+        );
+
+        $page_id = wp_insert_post( $page_data );
+
+        if ( is_wp_error( $page_id ) || ! $page_id || $page_id <= 0 ) {
+            return new WP_Error(
+                'create_failed',
+                __( 'Failed to create wishlist page', 'wishcart' ),
+                array( 'status' => 500 )
+            );
+        }
+
+        // Get the created page details
+        $page = get_post( $page_id );
+        if ( ! $page ) {
+            return new WP_Error(
+                'page_not_found',
+                __( 'Page was created but could not be retrieved', 'wishcart' ),
+                array( 'status' => 500 )
+            );
+        }
+
+        return rest_ensure_response(
+            array(
+                'success' => true,
+                'page_id' => intval( $page_id ),
+                'page'    => array(
+                    'id'    => intval( $page_id ),
+                    'title' => get_the_title( $page_id ),
+                    'slug'  => $page->post_name,
+                    'url'   => get_permalink( $page_id ),
+                ),
+                'message' => __( 'Wishlist page created successfully', 'wishcart' ),
+            )
+        );
     }
 
     /**

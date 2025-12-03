@@ -76,16 +76,17 @@ class WishCart_Wishlist_Page {
      *
      * @return int Page ID
      */
-    public static function create_wishlist_page() {
-        $page_id = self::locate_existing_page();
+    public static function create_wishlist_page( $page_name = '' ) {
+        $page_id   = self::locate_existing_page();
+        $page_name = $page_name ? $page_name : __( 'Wishlist', 'wishcart' );
 
         if ( ! $page_id ) {
             $page_data = array(
-                'post_title'   => __( 'Wishlist', 'wishcart' ),
+                'post_title'   => $page_name,
                 'post_content' => '[WishCart_Wishlist]',
                 'post_status'  => 'publish',
                 'post_type'    => 'page',
-                'post_name'    => 'wishlist',
+                'post_name'    => sanitize_title( $page_name ),
             );
 
             $page_id = wp_insert_post( $page_data );
@@ -236,7 +237,6 @@ class WishCart_Wishlist_Page {
             'button_position'      => 'bottom',
             'custom_css'           => '',
             'wishlist_page_id'     => intval( $page_id ),
-            'shared_wishlist_page_id' => 0,
             'guest_cookie_expiry'  => 30,
             'enable_multiple_wishlists' => false,
             'button_customization' => array(

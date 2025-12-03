@@ -3,6 +3,16 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
+import { Plus, ExternalLink } from "lucide-react";
 import { __ } from '@wordpress/i18n';
 
 const WishlistSettings = ({ settings, updateSettings }) => {
@@ -13,7 +23,6 @@ const WishlistSettings = ({ settings, updateSettings }) => {
         button_position: 'bottom',
         custom_css: '',
         wishlist_page_id: 0,
-        shared_wishlist_page_id: 0,
         guest_cookie_expiry: 30,
         enable_multiple_wishlists: false,
         button_customization: {
@@ -60,28 +69,137 @@ const WishlistSettings = ({ settings, updateSettings }) => {
 
     const [wishlistPages, setWishlistPages] = useState([]);
     const [loadingPages, setLoadingPages] = useState(false);
+    const [creatingPage, setCreatingPage] = useState(false);
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [pageName, setPageName] = useState('Wishlist');
 
     // Load pages for wishlist page selection
-    useEffect(() => {
-        const loadPages = async () => {
-            setLoadingPages(true);
-            try {
-                const response = await fetch('/wp-json/wp/v2/pages?per_page=100&status=publish');
-                if (response.ok) {
-                    const pages = await response.json();
-                    setWishlistPages(pages);
-                }
-            } catch (error) {
-                console.error('Error loading pages:', error);
-            } finally {
-                setLoadingPages(false);
+    const loadPages = async () => {
+        setLoadingPages(true);
+        try {
+            const apiUrl =
+                (typeof window !== 'undefined' &&
+                    window.wishcartSettings &&
+                    window.wishcartSettings.apiUrl) ||
+                '/wp-json/wishcart/v1/';
+
+            const response = await fetch(`${apiUrl}pages?per_page=100`, {
+                headers: {
+                    'X-WP-Nonce':
+                        (window.wishcartSettings && window.wishcartSettings.nonce) ||
+                        '',
+                },
+            });
+
+            if (response.ok) {
+                const pages = await response.json();
+                setWishlistPages(pages);
             }
-        };
+        } catch (error) {
+            console.error('Error loading pages:', error);
+        } finally {
+            setLoadingPages(false);
+        }
+    };
+
+    useEffect(() => {
         loadPages();
     }, []);
 
     const updateWishlistSetting = (key, value) => {
         updateSettings('wishlist', key, value);
+    };
+
+    // Get selected page details
+    const selectedPageId = parseInt(wishlistSettings.wishlist_page_id || 0, 10);
+    const selectedPage = wishlistPages.find((page) => page && page.id === selectedPageId);
+
+    // Get page display text
+    const getPageDisplayText = () => {
+        if (!selectedPage || !selectedPageId) {
+            return __('-- Select Page --', 'wishcart');
+        }
+        const title =
+            (selectedPage.title && (selectedPage.title.rendered || selectedPage.title)) ||
+            '';
+        return `${title}( ${selectedPageId} )`;
+    };
+
+    // Create wishlist page
+    const createWishlistPage = async () => {
+        if (!pageName.trim()) {
+            alert(__('Page name is required', 'wishcart'));
+            return;
+        }
+
+        setCreatingPage(true);
+        try {
+            const apiUrl =
+                (typeof window !== 'undefined' &&
+                    window.wishcartSettings &&
+                    window.wishcartSettings.apiUrl) ||
+                '/wp-json/wishcart/v1/';
+
+            const response = await fetch(`${apiUrl}pages/create-wishlist`, {
+                method: 'POST',
+                headers: {
+                    'X-WP-Nonce':
+                        (window.wishcartSettings && window.wishcartSettings.nonce) ||
+                        '',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    page_name: pageName.trim(),
+                }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data && data.page_id) {
+                    // Refresh pages list
+                    await loadPages();
+                    // Select the newly created page
+                    updateWishlistSetting('wishlist_page_id', data.page_id);
+                    // Close modal and reset page name
+                    setIsCreateModalOpen(false);
+                    setPageName('Wishlist');
+                    // Show success message
+                    alert(__('Wishlist page created successfully!', 'wishcart'));
+                } else {
+                    alert(__('Failed to create wishlist page.', 'wishcart'));
+                }
+            } else {
+                const error = await response.json();
+                alert(
+                    error.message ||
+                        __('Failed to create wishlist page.', 'wishcart')
+                );
+            }
+        } catch (error) {
+            console.error('Error creating wishlist page:', error);
+            alert(__('An error occurred while creating the wishlist page.', 'wishcart'));
+        } finally {
+            setCreatingPage(false);
+        }
+    };
+
+    // Get edit and preview URLs
+    const getEditUrl = () => {
+        if (!selectedPageId) return '#';
+        // WordPress admin URL is typically available via ajaxurl or we can construct it
+        const adminUrl = (typeof window !== 'undefined' && window.ajaxurl) 
+            ? window.ajaxurl.replace('/admin-ajax.php', '/')
+            : '/wp-admin/';
+        return `${adminUrl}post.php?post=${selectedPageId}&action=edit`;
+    };
+
+    const getPreviewUrl = () => {
+        if (!selectedPageId) return '#';
+        const siteUrl = (typeof window !== 'undefined' && window.location) ? window.location.origin : '';
+        if (selectedPage && selectedPage.slug) {
+            return `${siteUrl}/${selectedPage.slug}/?preview=true`;
+        }
+        return `${siteUrl}/?p=${selectedPageId}&preview=true`;
     };
 
     return (
@@ -206,57 +324,142 @@ const WishlistSettings = ({ settings, updateSettings }) => {
 
             {/* Wishlist Page */}
             <div className="fluentcart-form-group" style={{borderTop: '1px solid var(--fluentcart-gray-25)', paddingTop: '16px'}}>
-                <label className="fluentcart-label" htmlFor="wishlist_page">
-                    {__('Wishlist Page', 'wishcart')}
-                </label>
-                <Select
-                    value={String(wishlistSettings.wishlist_page_id || 0)}
-                    onValueChange={(value) => updateWishlistSetting('wishlist_page_id', parseInt(value, 10))}
-                    disabled={!wishlistSettings.enabled || loadingPages}
-                >
-                    <SelectTrigger id="wishlist_page" className="fluentcart-select">
-                        <SelectValue placeholder={__('Select a page', 'wishcart')} />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="0">{__('-- Select Page --', 'wishcart')}</SelectItem>
-                        {wishlistPages.map((page) => (
-                            <SelectItem key={page.id} value={String(page.id)}>
-                                {page.title.rendered}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-                <p className="fluentcart-form-helper">
-                    {__('Select the page where the wishlist will be displayed. Make sure the page contains the [WishCart_Wishlist] shortcode.', 'wishcart')}
+                <h4 style={{fontSize: '14px', fontWeight: '600', marginBottom: '4px'}}>
+                    {__('Select Wishlist Page', 'wishcart')}
+                </h4>
+                <p style={{fontSize: '13px', color: '#666', marginBottom: '12px'}}>
+                    {__('Select the page where the wishlist will be displayed.', 'wishcart')}
                 </p>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start', marginBottom: '8px' }}>
+                    <div style={{ flex: 1 }}>
+                        <Select
+                            value={String(wishlistSettings.wishlist_page_id || 0)}
+                            onValueChange={(value) => updateWishlistSetting('wishlist_page_id', parseInt(value, 10))}
+                            disabled={!wishlistSettings.enabled || loadingPages}
+                        >
+                            <SelectTrigger id="wishlist_page" className="fluentcart-select">
+                                <SelectValue>
+                                    {getPageDisplayText()}
+                                </SelectValue>
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="0">{__('-- Select Page --', 'wishcart')}</SelectItem>
+                                {wishlistPages.map((page) => {
+                                    const title =
+                                        (page &&
+                                            page.title &&
+                                            (page.title.rendered || page.title)) ||
+                                        '';
+                                    const label = `${title}( ${page.id} )`;
+
+                                    return (
+                                        <SelectItem key={page.id} value={String(page.id)}>
+                                            {label}
+                                        </SelectItem>
+                                    );
+                                })}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <Button
+                        type="button"
+                        onClick={() => setIsCreateModalOpen(true)}
+                        disabled={!wishlistSettings.enabled || loadingPages}
+                        variant="outline"
+                        size="icon"
+                        style={{ 
+                            width: '32px', 
+                            height: '32px',
+                            padding: 0,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                        }}
+                    >
+                        <Plus size={16} />
+                    </Button>
+                </div>
+                {selectedPageId > 0 && (
+                    <div style={{ fontSize: '13px', color: '#666', marginTop: '8px' }}>
+                        {__('Use', 'wishcart')}{' '}
+                        <code style={{fontFamily: 'monospace', backgroundColor: '#f5f5f5', padding: '2px 6px', borderRadius: '3px'}}>
+                            [WishCart_Wishlist]
+                        </code>
+                        {' '}
+                        <a 
+                            href={getEditUrl()} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            style={{ color: '#2271b1', textDecoration: 'none', marginLeft: '8px' }}
+                        >
+                            {__('Edit', 'wishcart')}
+                        </a>
+                        {' | '}
+                        <a 
+                            href={getPreviewUrl()} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            style={{ color: '#2271b1', textDecoration: 'none' }}
+                        >
+                            {__('Preview', 'wishcart')}
+                            <ExternalLink size={12} style={{ display: 'inline-block', marginLeft: '4px', verticalAlign: 'middle' }} />
+                        </a>
+                    </div>
+                )}
             </div>
 
-            {/* Shareable Page */}
-            <div className="fluentcart-form-group">
-                <label className="fluentcart-label" htmlFor="shared_wishlist_page">
-                    {__('Shareable Page', 'wishcart')}
-                </label>
-                <Select
-                    value={String(wishlistSettings.shared_wishlist_page_id || 0)}
-                    onValueChange={(value) => updateWishlistSetting('shared_wishlist_page_id', parseInt(value, 10))}
-                    disabled={!wishlistSettings.enabled || loadingPages}
-                >
-                    <SelectTrigger id="shared_wishlist_page" className="fluentcart-select">
-                        <SelectValue placeholder={__('Select a page', 'wishcart')} />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="0">{__('-- Select Page --', 'wishcart')}</SelectItem>
-                        {wishlistPages.map((page) => (
-                            <SelectItem key={page.id} value={String(page.id)}>
-                                {page.title.rendered}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-                <p className="fluentcart-form-helper">
-                    {__('Select the page where shared wishlists will be displayed. Make sure the page contains the [wishcart_shared_wishlist] shortcode.', 'wishcart')}
-                </p>
-            </div>
+            {/* Create Wishlist Page Modal */}
+            <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>{__('Create Wishlist Page', 'wishcart')}</DialogTitle>
+                    </DialogHeader>
+                    <div style={{ marginTop: '16px' }}>
+                        <label 
+                            htmlFor="page_name" 
+                            style={{ 
+                                display: 'block', 
+                                fontSize: '14px', 
+                                fontWeight: '500', 
+                                marginBottom: '8px' 
+                            }}
+                        >
+                            {__('Page Name', 'wishcart')} <span style={{ color: '#dc3232' }}>*</span>
+                        </label>
+                        <Input
+                            id="page_name"
+                            type="text"
+                            value={pageName}
+                            onChange={(e) => setPageName(e.target.value)}
+                            placeholder={__('Wishlist', 'wishcart')}
+                            disabled={creatingPage}
+                            style={{ width: '100%' }}
+                        />
+                    </div>
+                    <DialogFooter style={{ marginTop: '24px' }}>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => {
+                                setIsCreateModalOpen(false);
+                                setPageName('Wishlist');
+                            }}
+                            disabled={creatingPage}
+                        >
+                            {__('Cancel', 'wishcart')}
+                        </Button>
+                        <Button
+                            type="button"
+                            onClick={createWishlistPage}
+                            disabled={creatingPage || !pageName.trim()}
+                        >
+                            {creatingPage
+                                ? __('Creating...', 'wishcart')
+                                : __('Create Page', 'wishcart')}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
 
             {/* Guest Cookie Expiry */}
             <div className="fluentcart-form-group">
