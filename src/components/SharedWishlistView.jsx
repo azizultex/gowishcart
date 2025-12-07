@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Heart, ShoppingCart, Twitter, Mail, MessageCircle, Link2, Check } from 'lucide-react';
+import { Heart, ShoppingCart, Twitter, Mail, MessageCircle, Link2, Check, X } from 'lucide-react';
 import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
+import { addToCartViaAJAX, openCartSidebar } from '../lib/fluentcartCart';
 import '../styles/SharedWishlistView.scss';
 
 /**
@@ -13,6 +14,8 @@ const SharedWishlistView = ({ shareToken }) => {
     const [products, setProducts] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [addingToCartIds, setAddingToCartIds] = useState(new Set());
+    const [cartMessage, setCartMessage] = useState({ type: null, text: '' });
 
     const apiUrl = window.wishcartShared?.apiUrl || '/wp-json/wishcart/v1/';
     const siteUrl = window.wishcartShared?.siteUrl || '';
@@ -58,33 +61,81 @@ const SharedWishlistView = ({ shareToken }) => {
     };
 
     const handleAddToCart = async (product) => {
-        if (!product) {
-            console.error('Product not found');
+        if (!product || addingToCartIds.has(product.id)) {
             return;
         }
 
-        // Track the add to cart event for analytics
+        setAddingToCartIds(prev => new Set(prev).add(product.id));
+        setCartMessage({ type: null, text: '' });
+
         try {
+            // Track the add to cart event for analytics (non-blocking)
             const trackUrl = `${apiUrl}wishlist/track-cart`;
             const trackBody = {
                 product_id: product.id,
                 variation_id: product.variation_id || 0,
             };
             
-            await fetch(trackUrl, {
+            fetch(trackUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(trackBody),
+            }).catch(trackError => {
+                console.error('Error tracking cart event:', trackError);
             });
-        } catch (trackError) {
-            // Don't block navigation if tracking fails
-            console.error('Error tracking cart event:', trackError);
-        }
 
-        // Navigate to product page - FluentCart will handle adding to cart
-        window.location.href = product.permalink || '#';
+            // Add to cart via AJAX
+            const result = await addToCartViaAJAX({
+                productId: product.id,
+                variationId: product.variation_id || 0,
+                quantity: 1,
+                productUrl: product.permalink,
+            });
+
+            if (result.success) {
+                // Show success message
+                setCartMessage({
+                    type: 'success',
+                    text: `${product.name} added to cart successfully!`,
+                });
+
+                // Clear message after 3 seconds
+                setTimeout(() => {
+                    setCartMessage({ type: null, text: '' });
+                }, 3000);
+            } else {
+                // If AJAX fails, fallback to navigation
+                console.warn('AJAX add to cart failed, redirecting to product page:', result.error);
+                setCartMessage({
+                    type: 'info',
+                    text: 'Redirecting to product page...',
+                });
+                
+                // Small delay before redirect to show message
+                setTimeout(() => {
+                    window.location.href = product.permalink || '#';
+                }, 500);
+            }
+        } catch (error) {
+            console.error('Error adding to cart:', error);
+            setCartMessage({
+                type: 'error',
+                text: 'Failed to add product to cart. Please try again.',
+            });
+
+            // Clear error message after 5 seconds
+            setTimeout(() => {
+                setCartMessage({ type: null, text: '' });
+            }, 5000);
+        } finally {
+            setAddingToCartIds(prev => {
+                const next = new Set(prev);
+                next.delete(product.id);
+                return next;
+            });
+        }
     };
 
     const formatPrice = (price) => {
@@ -226,6 +277,19 @@ const SharedWishlistView = ({ shareToken }) => {
                 </div>
             )}
 
+            {/* Cart Message Feedback */}
+            {cartMessage.type && cartMessage.text && (
+                <div className={`cart-message cart-message-${cartMessage.type}`}>
+                    <div className="cart-message-content">
+                        {cartMessage.type === 'success' && <Check className="w-5 h-5" />}
+                        {cartMessage.type === 'error' && <X className="w-5 h-5" />}
+                        {cartMessage.type === 'warning' && <X className="w-5 h-5" />}
+                        {cartMessage.type === 'info' && <ShoppingCart className="w-5 h-5" />}
+                        <span>{cartMessage.text}</span>
+                    </div>
+                </div>
+            )}
+
             {/* Login Prompt */}
             {!isUserLoggedIn && (
                 <div className="login-prompt">
@@ -292,10 +356,11 @@ const SharedWishlistView = ({ shareToken }) => {
                                 {/* Add to Cart Button */}
                                 <Button
                                     onClick={() => handleAddToCart(product)}
+                                    disabled={addingToCartIds.has(product.id)}
                                     className="item-add-to-cart"
                                     size="sm"
                                 >
-                                    Add To Cart
+                                    {addingToCartIds.has(product.id) ? 'Adding...' : 'Add To Cart'}
                                 </Button>
                             </div>
                         ))}

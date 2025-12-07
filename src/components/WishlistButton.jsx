@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Heart } from 'lucide-react';
 import { __ } from '@wordpress/i18n';
 import { cn } from '../lib/utils';
 import WishlistSelectorModal from './WishlistSelectorModal';
 import GuestEmailModal from './GuestEmailModal';
+import VariantWishlistButtons from './VariantWishlistButtons';
 import * as LucideIcons from 'lucide-react';
 
-const WishlistButton = ({ productId, className, customStyles, position = 'bottom' }) => {
+const WishlistButton = ({ productId, variationId: propVariationId, className, customStyles, position = 'bottom' }) => {
     const [isInWishlist, setIsInWishlist] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [isAdding, setIsAdding] = useState(false);
@@ -14,6 +15,15 @@ const WishlistButton = ({ productId, className, customStyles, position = 'bottom
     const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
     const [guestHasEmail, setGuestHasEmail] = useState(null); // null = not checked, true/false = checked
     const [pendingAddAction, setPendingAddAction] = useState(null); // Store pending add action
+    const [currentVariationId, setCurrentVariationId] = useState(propVariationId || 0);
+    const [variants, setVariants] = useState(null); // null = not checked, [] = no variants, array = has variants
+    const [isCheckingVariants, setIsCheckingVariants] = useState(true);
+    
+    // Cache for variant data per product ID
+    const variantsCacheRef = useRef(new Map()); // productId -> variants array
+    const isFetchingRef = useRef(false); // Flag to prevent multiple simultaneous API calls
+    const variantsFoundRef = useRef(false); // Flag to track if variants have been successfully loaded
+    const abortControllerRef = useRef(null); // AbortController for cancelling requests
 
     // Get session ID from cookie or create one
     const getSessionId = () => {
@@ -77,9 +87,663 @@ const WishlistButton = ({ productId, className, customStyles, position = 'bottom
         return false;
     };
 
-    // Check if product is in wishlist
+    // Fetch variants from API with caching
+    const fetchVariantsFromAPI = useCallback(async () => {
+        if (!productId || !window.wishcartWishlist) {
+            return [];
+        }
+
+        // Check cache first
+        if (variantsCacheRef.current.has(productId)) {
+            const cachedVariants = variantsCacheRef.current.get(productId);
+            if (cachedVariants && Array.isArray(cachedVariants) && cachedVariants.length > 0) {
+                return cachedVariants;
+            }
+        }
+
+        // Prevent multiple simultaneous calls for the same product
+        if (isFetchingRef.current) {
+            // Wait a bit and check cache again
+            await new Promise(resolve => setTimeout(resolve, 100));
+            if (variantsCacheRef.current.has(productId)) {
+                return variantsCacheRef.current.get(productId) || [];
+            }
+            return [];
+        }
+
+        // Cancel any pending request
+        if (abortControllerRef.current) {
+            abortControllerRef.current.abort();
+        }
+
+        // Create new AbortController
+        abortControllerRef.current = new AbortController();
+        isFetchingRef.current = true;
+
+        try {
+            // Fetch variants from API endpoint
+            const url = `${window.wishcartWishlist.apiUrl}product/${productId}/variants`;
+            const response = await fetch(url, {
+                headers: {
+                    'X-WP-Nonce': window.wishcartWishlist.nonce,
+                },
+                signal: abortControllerRef.current.signal,
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success && data.variants && Array.isArray(data.variants) && data.variants.length > 1) {
+                    const formattedVariants = data.variants.map(v => ({
+                        id: v.id || v.variation_id || 0,
+                        variation_id: v.id || v.variation_id || 0,
+                        name: v.name || v.title || `Variant ${v.id || v.variation_id || 0}`,
+                        title: v.title || v.name || `Variant ${v.id || v.variation_id || 0}`,
+                        price: v.price || (v.item_price ? v.item_price / 100 : null),
+                        regular_price: v.regular_price || (v.compare_price ? v.compare_price / 100 : null),
+                    }));
+                    
+                    // Cache the variants
+                    variantsCacheRef.current.set(productId, formattedVariants);
+                    return formattedVariants;
+                }
+            }
+        } catch (error) {
+            // Ignore abort errors
+            if (error.name !== 'AbortError') {
+                console.error('Error fetching variants from API:', error);
+            }
+        } finally {
+            isFetchingRef.current = false;
+            abortControllerRef.current = null;
+        }
+
+        // Cache empty result to prevent repeated calls
+        variantsCacheRef.current.set(productId, []);
+        return [];
+    }, [productId]);
+
+    // Detect if product has variants from DOM
+    const detectProductVariants = useCallback(async () => {
+        if (!productId) {
+            return [];
+        }
+
+        // Try to find variant buttons in the DOM
+        const button = document.querySelector(`[data-product-id="${productId}"]`);
+        if (!button) {
+            // If no button found, try API fetch
+            return await fetchVariantsFromAPI();
+        }
+
+        const modal = button.closest('.fc-product-modal, .fc-product-detail, form');
+        if (!modal) {
+            return await fetchVariantsFromAPI();
+        }
+
+        // Look for variant selection buttons - try multiple selectors
+        const variantSelectors = [
+            '[data-variant-id]',
+            '[data-variation-id]',
+            '.fc-variant-button',
+            '[class*="variant-button"]',
+            '[class*="variant-option"]',
+            'button[class*="variant"]',
+            '[role="button"][class*="variant"]'
+        ];
+        
+        let variantButtons = [];
+        for (const selector of variantSelectors) {
+            const found = modal.querySelectorAll(selector);
+            if (found.length > 1) {
+                variantButtons = Array.from(found);
+                break;
+            }
+        }
+        
+        if (variantButtons.length > 1) {
+            const variants = [];
+            variantButtons.forEach((vb, index) => {
+                // Try multiple ways to get variant ID
+                let variantId = vb.getAttribute('data-variant-id') || 
+                               vb.getAttribute('data-variation-id') || 
+                               vb.getAttribute('data-id') ||
+                               vb.getAttribute('data-item-id') ||
+                               vb.getAttribute('value');
+                
+                // If no direct ID, check for hidden input associated with this button
+                if (!variantId) {
+                    const form = vb.closest('form');
+                    if (form) {
+                        // Look for hidden input that might be updated when this variant is selected
+                        const hiddenInputs = form.querySelectorAll('input[type="hidden"][name*="variant"], input[type="hidden"][name*="variation"]');
+                        hiddenInputs.forEach(input => {
+                            // Check if this button is related to this input (by checking if clicking it would change the input)
+                            const inputValue = input.value;
+                            if (inputValue && inputValue !== '0') {
+                                // This might be the variant ID, but we need to map it to the button
+                                // For now, we'll try to get it from the button's click handler or data
+                            }
+                        });
+                    }
+                }
+                
+                // Check parent element for variant ID
+                if (!variantId) {
+                    const parent = vb.parentElement;
+                    if (parent) {
+                        variantId = parent.getAttribute('data-variant-id') || 
+                                   parent.getAttribute('data-variation-id') ||
+                                   parent.getAttribute('data-id');
+                    }
+                }
+                
+                // Check for variant ID in button's dataset
+                if (!variantId && vb.dataset) {
+                    variantId = vb.dataset.variantId || 
+                               vb.dataset.variationId ||
+                               vb.dataset.id ||
+                               vb.dataset.itemId;
+                }
+                
+                // Get variant name from button text or attributes
+                let variantName = vb.textContent?.trim();
+                // Clean up variant name - remove extra whitespace and newlines
+                if (variantName) {
+                    variantName = variantName.replace(/\s+/g, ' ').trim();
+                }
+                if (!variantName || variantName.length > 50) {
+                    variantName = vb.getAttribute('title') || 
+                                 vb.getAttribute('aria-label') ||
+                                 vb.getAttribute('data-name') ||
+                                 vb.getAttribute('data-title') ||
+                                 vb.querySelector('[class*="name"], [class*="title"], [class*="label"]')?.textContent?.trim();
+                }
+                
+                // If still no variant ID, try to extract from button's onclick or data attributes
+                if (!variantId) {
+                    // Check if button has an onclick handler that might contain variant ID
+                    const onclick = vb.getAttribute('onclick');
+                    if (onclick) {
+                        const idMatch = onclick.match(/variation[_-]?id['"]?\s*[:=]\s*['"]?(\d+)/i) ||
+                                       onclick.match(/variant[_-]?id['"]?\s*[:=]\s*['"]?(\d+)/i) ||
+                                       onclick.match(/(\d+)/);
+                        if (idMatch && idMatch[1]) {
+                            variantId = idMatch[1];
+                        }
+                    }
+                }
+                
+                // If we still don't have a variant ID but we have variant buttons, 
+                // we need to fetch variant data from API (will do this in next step)
+                // For now, use index as fallback but mark it as needing API fetch
+                if (!variantId && variantName) {
+                    // We'll need to fetch from API - for now return empty to trigger API fetch
+                    return;
+                }
+                
+                if (variantId) {
+                    const parsedId = parseInt(variantId, 10);
+                    if (!isNaN(parsedId) && parsedId > 0) {
+                        // Try to get price from variant button or nearby elements
+                        const priceElement = vb.closest('[class*="variant"]')?.querySelector('[class*="price"]');
+                        const price = priceElement?.textContent?.match(/[\d.]+/)?.[0] || null;
+                        
+                        variants.push({
+                            id: parsedId,
+                            variation_id: parsedId,
+                            name: variantName || `Variant ${parsedId}`,
+                            title: variantName || `Variant ${parsedId}`,
+                            price: price ? parseFloat(price) : null,
+                        });
+                    }
+                }
+            });
+            
+            // Remove duplicates
+            const uniqueVariants = variants.filter((v, index, self) => 
+                index === self.findIndex((t) => t.id === v.id)
+            );
+            
+            // If we have variants with valid IDs, return them
+            if (uniqueVariants.length > 1 && uniqueVariants.every(v => v.id > 0)) {
+                return uniqueVariants;
+            }
+            
+            // If we have variant buttons but no IDs, try to map by index/name using API
+            if (variantButtons.length > 1) {
+                // Try to get variant names and map them to IDs from API
+                const variantNames = Array.from(variantButtons).map(vb => {
+                    let name = vb.textContent?.trim()?.replace(/\s+/g, ' ') || 
+                              vb.getAttribute('title') || 
+                              vb.getAttribute('aria-label') ||
+                              vb.getAttribute('data-name');
+                    return name;
+                }).filter(Boolean);
+                
+                if (variantNames.length > 1) {
+                    // Fetch variants from API and try to match by name
+                    const apiVariants = await fetchVariantsFromAPI();
+                    if (apiVariants.length > 1) {
+                        // Map variant names to API variants
+                        const mappedVariants = variantNames.map((name, index) => {
+                            // Try to find matching variant in API data
+                            const matched = apiVariants.find(av => 
+                                av.name?.toLowerCase() === name.toLowerCase() ||
+                                av.title?.toLowerCase() === name.toLowerCase()
+                            );
+                            
+                            if (matched) {
+                                return matched;
+                            }
+                            
+                            // If no match, use API variant at same index if available
+                            if (apiVariants[index]) {
+                                return {
+                                    ...apiVariants[index],
+                                    name: name, // Use the name from DOM
+                                    title: name,
+                                };
+                            }
+                            
+                            return null;
+                        }).filter(Boolean);
+                        
+                        if (mappedVariants.length > 1) {
+                            return mappedVariants;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Also check for variant options in select dropdowns or other structures
+        const variantSelects = modal.querySelectorAll('select[name*="variant"], select[name*="variation"], [data-variants], select[class*="variant"]');
+        if (variantSelects.length > 0) {
+            const variants = [];
+            variantSelects.forEach((select) => {
+                const options = select.querySelectorAll('option[value]');
+                options.forEach((option) => {
+                    const value = option.value;
+                    if (value && value !== '' && value !== '0' && value !== '-1') {
+                        const parsedId = parseInt(value, 10);
+                        if (!isNaN(parsedId) && parsedId > 0) {
+                            const optionText = option.textContent?.trim();
+                            if (optionText && !optionText.toLowerCase().includes('choose') && !optionText.toLowerCase().includes('select')) {
+                                variants.push({
+                                    id: parsedId,
+                                    variation_id: parsedId,
+                                    name: optionText || `Variant ${parsedId}`,
+                                    title: optionText || `Variant ${parsedId}`,
+                                });
+                            }
+                        }
+                    }
+                });
+            });
+            
+            // Remove duplicates
+            const uniqueVariants = variants.filter((v, index, self) => 
+                index === self.findIndex((t) => t.id === v.id)
+            );
+            
+            if (uniqueVariants.length > 1) {
+                return uniqueVariants;
+            }
+        }
+
+        // Try to find variant buttons by looking for buttons with variant-related classes or data attributes
+        // This is a more aggressive search for FluentCart variant buttons
+        const allButtons = modal.querySelectorAll('button, [role="button"], [class*="button"]');
+        const variantButtonsFound = [];
+        
+        allButtons.forEach((btn) => {
+            const hasVariantClass = btn.className && (
+                btn.className.includes('variant') || 
+                btn.className.includes('version') ||
+                btn.className.includes('option')
+            );
+            const hasVariantData = btn.hasAttribute('data-variant-id') || 
+                                  btn.hasAttribute('data-variation-id') ||
+                                  btn.hasAttribute('data-version-id');
+            
+            if (hasVariantClass || hasVariantData) {
+                const variantId = btn.getAttribute('data-variant-id') || 
+                                 btn.getAttribute('data-variation-id') ||
+                                 btn.getAttribute('data-version-id') ||
+                                 btn.getAttribute('data-id');
+                
+                if (variantId) {
+                    const parsedId = parseInt(variantId, 10);
+                    if (!isNaN(parsedId) && parsedId > 0) {
+                        const btnText = btn.textContent?.trim();
+                        if (btnText && btnText.length < 100) { // Reasonable text length
+                            variantButtonsFound.push({
+                                id: parsedId,
+                                variation_id: parsedId,
+                                name: btnText || `Variant ${parsedId}`,
+                                title: btnText || `Variant ${parsedId}`,
+                            });
+                        }
+                    }
+                }
+            }
+        });
+        
+        if (variantButtonsFound.length > 1) {
+            // Remove duplicates
+            const uniqueVariants = variantButtonsFound.filter((v, index, self) => 
+                index === self.findIndex((t) => t.id === v.id)
+            );
+            
+            if (uniqueVariants.length > 1) {
+                return uniqueVariants;
+            }
+        }
+
+        // If we found variant buttons but no IDs, try to get IDs from API by matching names
+        if (variantButtons.length > 1) {
+            const variantNames = Array.from(variantButtons).map(vb => {
+                let name = vb.textContent?.trim()?.replace(/\s+/g, ' ') || 
+                          vb.getAttribute('title') || 
+                          vb.getAttribute('aria-label') ||
+                          vb.getAttribute('data-name');
+                return name;
+            }).filter(Boolean);
+            
+            if (variantNames.length > 1) {
+                const apiVariants = await fetchVariantsFromAPI();
+                if (apiVariants.length > 1) {
+                    // Map variant names to API variants
+                    const mappedVariants = variantNames.map((name, index) => {
+                        // Try to find matching variant in API data
+                        const matched = apiVariants.find(av => 
+                            av.name?.toLowerCase() === name.toLowerCase() ||
+                            av.title?.toLowerCase() === name.toLowerCase()
+                        );
+                        
+                        if (matched) {
+                            return matched;
+                        }
+                        
+                        // If no match, use API variant at same index if available
+                        if (apiVariants[index]) {
+                            return {
+                                ...apiVariants[index],
+                                name: name, // Use the name from DOM
+                                title: name,
+                            };
+                        }
+                        
+                        return null;
+                    }).filter(Boolean);
+                    
+                    if (mappedVariants.length > 1) {
+                        return mappedVariants;
+                    }
+                }
+            }
+        }
+
+        // If DOM detection failed, try API
+        const apiVariants = await fetchVariantsFromAPI();
+        if (apiVariants.length > 1) {
+            return apiVariants;
+        }
+        
+        return [];
+    }, [productId, fetchVariantsFromAPI]);
+
+    // Check for variants on mount and when product changes
     useEffect(() => {
-        const checkWishlist = async () => {
+        if (!productId) {
+            setIsCheckingVariants(false);
+            setVariants([]);
+            variantsFoundRef.current = false;
+            return;
+        }
+
+        // Clear cache for previous product if productId changed
+        // (Cache is per product, so we keep it for the same product)
+        
+        // Reset flags for new product
+        variantsFoundRef.current = false;
+        isFetchingRef.current = false;
+        
+        // Cancel any pending requests
+        if (abortControllerRef.current) {
+            abortControllerRef.current.abort();
+            abortControllerRef.current = null;
+        }
+
+        let checkCount = 0;
+        const maxChecks = 10; // Increased to 10 times for better persistence
+        let isCancelled = false;
+
+        const checkVariants = async () => {
+            if (isCancelled || variantsFoundRef.current) return;
+
+            try {
+                const detectedVariants = await detectProductVariants();
+                if (detectedVariants.length > 1) {
+                    // Verify all variants have unique IDs
+                    const uniqueIds = new Set(detectedVariants.map(v => v.id || v.variation_id));
+                    if (uniqueIds.size === detectedVariants.length && detectedVariants.every(v => (v.id || v.variation_id) > 0)) {
+                        setVariants(detectedVariants);
+                        setIsCheckingVariants(false);
+                        variantsFoundRef.current = true; // Mark as found
+                        return; // Success, stop checking
+                    } else if (checkCount < maxChecks) {
+                        checkCount++;
+                        // Variants detected but IDs might be wrong, try again
+                        setTimeout(checkVariants, 500);
+                        return;
+                    } else {
+                        // Variants found but IDs are not unique/valid - try API as last resort
+                        console.warn('Variants detected but IDs are not unique or valid, trying API fallback');
+                        const apiVariants = await fetchVariantsFromAPI();
+                        if (apiVariants.length > 1) {
+                            setVariants(apiVariants);
+                            setIsCheckingVariants(false);
+                            variantsFoundRef.current = true; // Mark as found
+                            return;
+                        }
+                        setVariants([]);
+                        setIsCheckingVariants(false);
+                    }
+                } else if (checkCount < maxChecks) {
+                    checkCount++;
+                    // Try again after delay (variants might load dynamically)
+                    setTimeout(checkVariants, 500);
+                } else {
+                    // No variants found after multiple attempts - try API as last resort
+                    const apiVariants = await fetchVariantsFromAPI();
+                    if (apiVariants.length > 1) {
+                        setVariants(apiVariants);
+                        setIsCheckingVariants(false);
+                        variantsFoundRef.current = true; // Mark as found
+                    } else {
+                        setVariants([]);
+                        setIsCheckingVariants(false);
+                    }
+                }
+            } catch (error) {
+                console.error('Error detecting variants:', error);
+                // On error, try API fallback
+                if (checkCount < maxChecks) {
+                    checkCount++;
+                    setTimeout(checkVariants, 500);
+                } else {
+                    const apiVariants = await fetchVariantsFromAPI();
+                    if (apiVariants.length > 1) {
+                        setVariants(apiVariants);
+                        variantsFoundRef.current = true; // Mark as found
+                    } else {
+                        setVariants([]);
+                    }
+                    setIsCheckingVariants(false);
+                }
+            }
+        };
+
+        // Initial check
+        checkVariants();
+
+        // Also set up MutationObserver to detect when variants are added to DOM
+        const button = document.querySelector(`[data-product-id="${productId}"]`);
+        let observer = null;
+        let mutationTimeout = null;
+        
+        if (button && !variantsFoundRef.current) {
+            const modal = button.closest('.fc-product-modal, .fc-product-detail, form') || document.body;
+            if (modal) {
+                observer = new MutationObserver(async () => {
+                    // Early exit if variants already found
+                    if (variantsFoundRef.current || isCancelled) {
+                        if (observer) {
+                            observer.disconnect();
+                        }
+                        return;
+                    }
+
+                    // Debounce the check to avoid excessive API calls
+                    if (mutationTimeout) {
+                        clearTimeout(mutationTimeout);
+                    }
+                    
+                    mutationTimeout = setTimeout(async () => {
+                        // Early exit if variants already found or cancelled
+                        if (variantsFoundRef.current || isCancelled) {
+                            if (observer) {
+                                observer.disconnect();
+                            }
+                            return;
+                        }
+                        
+                        try {
+                            const detectedVariants = await detectProductVariants();
+                            if (isCancelled || variantsFoundRef.current) return;
+                            
+                            if (detectedVariants.length > 1) {
+                                // Verify all variants have unique IDs
+                                const uniqueIds = new Set(detectedVariants.map(v => v.id || v.variation_id));
+                                if (uniqueIds.size === detectedVariants.length && detectedVariants.every(v => (v.id || v.variation_id) > 0)) {
+                                    setVariants(detectedVariants);
+                                    setIsCheckingVariants(false);
+                                    variantsFoundRef.current = true; // Mark as found
+                                    // Disconnect observer immediately after finding variants
+                                    if (observer) {
+                                        observer.disconnect();
+                                    }
+                                } else {
+                                    // IDs not valid, try API fallback
+                                    const apiVariants = await fetchVariantsFromAPI();
+                                    if (!isCancelled && apiVariants.length > 1) {
+                                        setVariants(apiVariants);
+                                        setIsCheckingVariants(false);
+                                        variantsFoundRef.current = true; // Mark as found
+                                        // Disconnect observer immediately after finding variants
+                                        if (observer) {
+                                            observer.disconnect();
+                                        }
+                                    }
+                                }
+                            } else {
+                                // No variants from DOM, try API fallback
+                                const apiVariants = await fetchVariantsFromAPI();
+                                if (!isCancelled && apiVariants.length > 1) {
+                                    setVariants(apiVariants);
+                                    setIsCheckingVariants(false);
+                                    variantsFoundRef.current = true; // Mark as found
+                                    // Disconnect observer immediately after finding variants
+                                    if (observer) {
+                                        observer.disconnect();
+                                    }
+                                }
+                            }
+                        } catch (error) {
+                            console.error('Error in MutationObserver variant detection:', error);
+                        }
+                    }, 300); // Debounce for 300ms
+                });
+
+                observer.observe(modal, {
+                    childList: true,
+                    subtree: true,
+                    attributes: true,
+                    attributeFilter: ['data-variant-id', 'data-variation-id', 'class']
+                });
+            }
+        }
+
+        // Cleanup function
+        return () => {
+            isCancelled = true;
+            if (mutationTimeout) {
+                clearTimeout(mutationTimeout);
+            }
+            if (observer) {
+                observer.disconnect();
+            }
+            // Cancel any pending API requests
+            if (abortControllerRef.current) {
+                abortControllerRef.current.abort();
+                abortControllerRef.current = null;
+            }
+        };
+    }, [productId, detectProductVariants, fetchVariantsFromAPI]);
+
+    // Detect currently selected variant from product modal/form
+    const detectCurrentVariant = () => {
+        // If variationId prop is provided, use it
+        if (propVariationId !== undefined && propVariationId !== null) {
+            return propVariationId;
+        }
+
+        // Try to detect from nearby form or modal
+        const button = document.querySelector(`[data-product-id="${productId}"]`);
+        if (!button) {
+            return 0;
+        }
+
+        // Check for data-variation-id attribute
+        const variationIdAttr = button.getAttribute('data-variation-id') || 
+                                 button.closest('[data-variation-id]')?.getAttribute('data-variation-id');
+        if (variationIdAttr) {
+            const parsed = parseInt(variationIdAttr, 10);
+            if (!isNaN(parsed)) {
+                return parsed;
+            }
+        }
+
+        // Check for form input
+        const form = button.closest('form');
+        if (form) {
+            const variationInput = form.querySelector('input[name="variation_id"]');
+            if (variationInput && variationInput.value) {
+                const parsed = parseInt(variationInput.value, 10);
+                if (!isNaN(parsed)) {
+                    return parsed;
+                }
+            }
+        }
+
+        // Check for FluentCart variant selection
+        const variantButton = button.closest('.fc-product-modal, .fc-product-detail')?.querySelector('[data-variant-id].selected, [data-variation-id].selected');
+        if (variantButton) {
+            const variantId = variantButton.getAttribute('data-variant-id') || variantButton.getAttribute('data-variation-id');
+            if (variantId) {
+                const parsed = parseInt(variantId, 10);
+                if (!isNaN(parsed)) {
+                    return parsed;
+                }
+            }
+        }
+
+        return 0; // Default to 0 if no variant detected
+    };
+
+    // Function to check wishlist status
+    const checkWishlistStatus = useCallback(async (variationId) => {
             if (!productId || !window.wishcartWishlist) {
                 setIsLoading(false);
                 return;
@@ -87,7 +751,7 @@ const WishlistButton = ({ productId, className, customStyles, position = 'bottom
 
             try {
                 const sessionId = getSessionId();
-                const url = `${window.wishcartWishlist.apiUrl}wishlist/check/${productId}${sessionId ? `?session_id=${sessionId}` : ''}`;
+            const url = `${window.wishcartWishlist.apiUrl}wishlist/check/${productId}${sessionId ? `?session_id=${sessionId}` : ''}${variationId ? `&variation_id=${variationId}` : ''}`;
                 
                 const response = await fetch(url, {
                     headers: {
@@ -104,10 +768,86 @@ const WishlistButton = ({ productId, className, customStyles, position = 'bottom
             } finally {
                 setIsLoading(false);
             }
+    }, [productId]);
+
+    // Use ref to track previous variant ID to avoid dependency issues
+    const previousVariantIdRef = useRef(propVariationId || 0);
+
+    // Monitor variant changes continuously
+    useEffect(() => {
+        if (!productId) {
+            return;
+        }
+
+        // Initial check
+        const detectedVariant = detectCurrentVariant();
+        if (detectedVariant !== previousVariantIdRef.current) {
+            setCurrentVariationId(detectedVariant);
+            previousVariantIdRef.current = detectedVariant;
+            checkWishlistStatus(detectedVariant);
+        } else {
+            // Same variant, but still check wishlist status on initial load
+            checkWishlistStatus(detectedVariant);
+        }
+
+        // Set up polling to detect variant changes
+        const variantCheckInterval = setInterval(() => {
+            const detectedVariant = detectCurrentVariant();
+            if (detectedVariant !== previousVariantIdRef.current) {
+                // Variant has changed, update state and re-check wishlist
+                setCurrentVariationId(detectedVariant);
+                previousVariantIdRef.current = detectedVariant;
+                checkWishlistStatus(detectedVariant);
+            }
+        }, 500); // Check every 500ms
+
+        // Also listen for DOM changes that might indicate variant selection
+        const observer = new MutationObserver(() => {
+            const detectedVariant = detectCurrentVariant();
+            if (detectedVariant !== previousVariantIdRef.current) {
+                setCurrentVariationId(detectedVariant);
+                previousVariantIdRef.current = detectedVariant;
+                checkWishlistStatus(detectedVariant);
+            }
+        });
+
+        // Observe changes in the document (especially variant selection buttons)
+        const button = document.querySelector(`[data-product-id="${productId}"]`);
+        if (button) {
+            const modal = button.closest('.fc-product-modal, .fc-product-detail, form');
+            if (modal) {
+                observer.observe(modal, {
+                    childList: true,
+                    subtree: true,
+                    attributes: true,
+                    attributeFilter: ['class', 'data-variant-id', 'data-variation-id', 'selected']
+                });
+            }
+        }
+
+        // Listen for custom events that might indicate variant changes
+        const handleVariantChange = (event) => {
+            const eventVariantId = event.detail?.variation_id || event.detail?.variant_id || 0;
+            if (eventVariantId !== previousVariantIdRef.current) {
+                setCurrentVariationId(eventVariantId);
+                previousVariantIdRef.current = eventVariantId;
+                checkWishlistStatus(eventVariantId);
+            }
         };
 
-        checkWishlist();
-    }, [productId]);
+        document.addEventListener('fluentcart:variant_changed', handleVariantChange);
+        document.addEventListener('woocommerce_variation_select_change', handleVariantChange);
+        window.addEventListener('variation_change', handleVariantChange);
+
+        // Cleanup
+        return () => {
+            clearInterval(variantCheckInterval);
+            observer.disconnect();
+            document.removeEventListener('fluentcart:variant_changed', handleVariantChange);
+            document.removeEventListener('woocommerce_variation_select_change', handleVariantChange);
+            window.removeEventListener('variation_change', handleVariantChange);
+        };
+    }, [productId, propVariationId, checkWishlistStatus]);
 
     // Add product directly to default wishlist (when multiple wishlists disabled)
     const addToDefaultWishlist = async (skipEmailCheck = false) => {
@@ -127,6 +867,10 @@ const WishlistButton = ({ productId, className, customStyles, position = 'bottom
             const sessionId = getSessionId();
             const url = `${window.wishcartWishlist.apiUrl}wishlist/add`;
             
+            // Detect current variant before adding
+            const variationId = detectCurrentVariant();
+            setCurrentVariationId(variationId);
+            
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {
@@ -135,6 +879,7 @@ const WishlistButton = ({ productId, className, customStyles, position = 'bottom
                 },
                 body: JSON.stringify({
                     product_id: productId,
+                    variation_id: variationId || 0,
                     session_id: sessionId,
                     // No wishlist_id means it will use default wishlist
                 }),
@@ -168,6 +913,7 @@ const WishlistButton = ({ productId, className, customStyles, position = 'bottom
             setIsAdding(true);
             try {
                 const sessionId = getSessionId();
+                const variationId = currentVariationId || 0;
                 const url = `${window.wishcartWishlist.apiUrl}wishlist/remove`;
                 
                 const response = await fetch(url, {
@@ -178,6 +924,7 @@ const WishlistButton = ({ productId, className, customStyles, position = 'bottom
                     },
                     body: JSON.stringify({
                         product_id: productId,
+                        variation_id: variationId,
                         session_id: sessionId,
                     }),
                 });
@@ -370,6 +1117,46 @@ const WishlistButton = ({ productId, className, customStyles, position = 'bottom
         return { ...baseStyles, ...dynamicStyles };
     };
 
+    // If checking for variants, show loading state
+    if (isCheckingVariants) {
+        const renderLoadingIcon = () => {
+            const currentIcon = addToWishlistIcon;
+            if (currentIcon.type === 'custom' && currentIcon.customUrl) {
+                return (
+                    <img
+                        src={currentIcon.customUrl}
+                        alt=""
+                        className="wishcart-wishlist-button__icon wishcart-wishlist-button__icon--loading"
+                        style={{ width: '1.125rem', height: '1.125rem' }}
+                    />
+                );
+            }
+            const iconValue = currentIcon.value || 'Heart';
+            const IconComponent = LucideIcons[iconValue] || Heart;
+            return <IconComponent className="wishcart-wishlist-button__icon wishcart-wishlist-button__icon--loading" />;
+        };
+
+        return (
+            <div className={cn("wishcart-wishlist-button-loading", className)} style={buildButtonStyles()}>
+                {renderLoadingIcon()}
+            </div>
+        );
+    }
+
+    // If product has variants, render separate buttons for each variant
+    if (variants && variants.length > 1) {
+        return (
+            <VariantWishlistButtons
+                productId={productId}
+                variants={variants}
+                className={className}
+                customStyles={customStyles}
+                position={position}
+            />
+        );
+    }
+
+    // For single products or products without variants, render single button
     if (isLoading) {
         const renderLoadingIcon = () => {
             const currentIcon = addToWishlistIcon; // Use add icon for loading state
@@ -406,6 +1193,7 @@ const WishlistButton = ({ productId, className, customStyles, position = 'bottom
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 productId={productId}
+                variationId={currentVariationId || 0}
                 onSuccess={handleModalSuccess}
             />
             <button

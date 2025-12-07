@@ -80,6 +80,78 @@
         }
     }
 
+    // Cart message feedback
+    .cart-message {
+        padding: 12px 20px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        background: white;
+        animation: slideDown 0.3s ease-out;
+
+        .cart-message-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            font-weight: 500;
+
+            svg {
+                flex-shrink: 0;
+            }
+        }
+
+        &.cart-message-success {
+            background: #f0fdf4;
+            border: 1px solid #86efac;
+            color: #166534;
+
+            svg {
+                color: #22c55e;
+            }
+        }
+
+        &.cart-message-error {
+            background: #fef2f2;
+            border: 1px solid #fca5a5;
+            color: #991b1b;
+
+            svg {
+                color: #ef4444;
+            }
+        }
+
+        &.cart-message-warning {
+            background: #fffbeb;
+            border: 1px solid #fcd34d;
+            color: #92400e;
+
+            svg {
+                color: #f59e0b;
+            }
+        }
+
+        &.cart-message-info {
+            background: #eff6ff;
+            border: 1px solid #93c5fd;
+            color: #1e40af;
+
+            svg {
+                color: #3b82f6;
+            }
+        }
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
     // Loading and error states
     .loading-state,
     .error-state {
@@ -300,6 +372,13 @@
                 font-size: 14px;
                 color: #6b7280;
             }
+        }
+
+        // Variant selector
+        .item-variant-selector {
+            flex-shrink: 0;
+            min-width: 200px;
+            margin-right: 12px;
         }
 
         // Price

@@ -383,6 +383,18 @@ JS;
             ),
         ));
 
+        register_rest_route('wishcart/v1', '/product/(?P<product_id>\d+)/variants', array(
+            'methods' => 'GET',
+            'callback' => array($this, 'get_product_variants'),
+            'permission_callback' => '__return_true', // Public endpoint
+            'args' => array(
+                'product_id' => array(
+                    'required' => true,
+                    'type' => 'integer',
+                ),
+            ),
+        ));
+
         register_rest_route('wishcart/v1', '/wishlist/sync', array(
             'methods' => 'POST',
             'callback' => array($this, 'wishlist_sync'),
@@ -1162,11 +1174,15 @@ JS;
         $session_id = isset( $params['session_id'] ) ? sanitize_text_field( wp_unslash( $params['session_id'] ) ) : null;
         $wishlist_id = isset( $params['wishlist_id'] ) ? intval( $params['wishlist_id'] ) : null;
         $guest_email = isset( $params['guest_email'] ) ? sanitize_email( wp_unslash( $params['guest_email'] ) ) : null;
+        $variation_id = isset( $params['variation_id'] ) ? intval( $params['variation_id'] ) : 0;
         
-        // Prepare options array with guest_email if provided
+        // Prepare options array with guest_email and variation_id if provided
         $options = array();
         if ( ! empty( $guest_email ) && is_email( $guest_email ) ) {
             $options['guest_email'] = $guest_email;
+        }
+        if ( $variation_id > 0 ) {
+            $options['variation_id'] = $variation_id;
         }
         
         // Handler will determine user_id or session_id automatically
@@ -1211,11 +1227,12 @@ JS;
         $handler = new WishCart_Wishlist_Handler();
         $params = $request->get_json_params();
         $product_id = isset( $params['product_id'] ) ? intval( $params['product_id'] ) : 0;
+        $variation_id = isset( $params['variation_id'] ) ? intval( $params['variation_id'] ) : 0;
         $session_id = isset( $params['session_id'] ) ? sanitize_text_field( wp_unslash( $params['session_id'] ) ) : null;
         $wishlist_id = isset( $params['wishlist_id'] ) ? intval( $params['wishlist_id'] ) : null;
         
         // Handler will determine user_id or session_id automatically
-        $result = $handler->remove_from_wishlist( $product_id, null, $session_id, $wishlist_id );
+        $result = $handler->remove_from_wishlist( $product_id, null, $session_id, $wishlist_id, $variation_id );
 
         if ( is_wp_error( $result ) ) {
             return new WP_Error(
@@ -1377,7 +1394,7 @@ JS;
             
             $results = $wpdb->get_results(
                 $wpdb->prepare(
-                    "SELECT product_id, date_added FROM {$items_table} WHERE wishlist_id = %d AND status = 'active' ORDER BY position ASC, date_added DESC",
+                    "SELECT product_id, variation_id, date_added FROM {$items_table} WHERE wishlist_id = %d AND status = 'active' ORDER BY position ASC, date_added DESC",
                     $wishlist_id
                 ),
                 ARRAY_A
@@ -1387,6 +1404,7 @@ JS;
                 foreach ( $results as $row ) {
                     $wishlist_items[] = array(
                         'product_id' => intval( $row['product_id'] ),
+                        'variation_id' => isset( $row['variation_id'] ) ? intval( $row['variation_id'] ) : 0,
                         'created_at' => $row['date_added'],
                     );
                 }
@@ -1404,7 +1422,7 @@ JS;
                 
                 $results = $wpdb->get_results(
                     $wpdb->prepare(
-                        "SELECT product_id, date_added FROM {$items_table} WHERE wishlist_id = %d AND status = 'active' ORDER BY position ASC, date_added DESC",
+                        "SELECT product_id, variation_id, date_added FROM {$items_table} WHERE wishlist_id = %d AND status = 'active' ORDER BY position ASC, date_added DESC",
                         $user_default_wishlist['id']
                     ),
                     ARRAY_A
@@ -1414,6 +1432,7 @@ JS;
                     foreach ( $results as $row ) {
                         $wishlist_items[] = array(
                             'product_id' => intval( $row['product_id'] ),
+                            'variation_id' => isset( $row['variation_id'] ) ? intval( $row['variation_id'] ) : 0,
                             'created_at' => $row['date_added'],
                         );
                     }
@@ -1434,7 +1453,7 @@ JS;
                 $items_table = $wpdb->prefix . 'fc_wishlist_items';
                 $results = $wpdb->get_results(
                     $wpdb->prepare(
-                        "SELECT product_id, date_added FROM {$items_table} WHERE wishlist_id = %d AND status = 'active' ORDER BY position ASC, date_added DESC",
+                        "SELECT product_id, variation_id, date_added FROM {$items_table} WHERE wishlist_id = %d AND status = 'active' ORDER BY position ASC, date_added DESC",
                         $wishlist_id
                     ),
                     ARRAY_A
@@ -1444,6 +1463,7 @@ JS;
                     foreach ( $results as $row ) {
                         $wishlist_items[] = array(
                             'product_id' => intval( $row['product_id'] ),
+                            'variation_id' => isset( $row['variation_id'] ) ? intval( $row['variation_id'] ) : 0,
                             'created_at' => $row['date_added'],
                         );
                     }
@@ -1458,6 +1478,7 @@ JS;
         $products = array();
         foreach ( $wishlist_items as $item ) {
             $product_id = $item['product_id'];
+            $variation_id = isset( $item['variation_id'] ) ? intval( $item['variation_id'] ) : 0;
             $created_at = $item['created_at'];
             
             $product = WishCart_FluentCart_Helper::get_product( $product_id );
@@ -1472,17 +1493,75 @@ JS;
                     $date_added = $date_obj->format( 'F j, Y' ); // Format: "November 16, 2025"
                 }
                 
+                // Get product price (use variation price if variation exists)
+                $price = $product->get_price();
+                $regular_price = $product->get_regular_price();
+                $sale_price = $product->get_sale_price();
+                $is_on_sale = $product->is_on_sale();
+                $variation_name = '';
+                
+                // If variation exists, get variation details
+                if ( $variation_id > 0 ) {
+                    $variation = WishCart_FluentCart_Helper::get_product( $variation_id );
+                    if ( $variation ) {
+                        $price = $variation->get_price();
+                        $regular_price = $variation->get_regular_price();
+                        $sale_price = $variation->get_sale_price();
+                        $is_on_sale = $variation->is_on_sale();
+                        $variation_name = $variation->get_name();
+                    }
+                }
+                
+                // Get available variants for this product
+                $variants = array();
+                if ( method_exists( $product, 'get_variants' ) || class_exists( 'WishCart_FluentCart_Product' ) ) {
+                    // Try to get variants using reflection or helper
+                    global $wpdb;
+                    $variants_table = $wpdb->prefix . 'fct_product_variations';
+                    if ( $wpdb->get_var( "SHOW TABLES LIKE '$variants_table'" ) === $variants_table ) {
+                        $variants_data = $wpdb->get_results(
+                            $wpdb->prepare(
+                                "SELECT id, item_price, compare_price, stock_status FROM {$variants_table} WHERE post_id = %d ORDER BY serial_index ASC",
+                                $product_id
+                            ),
+                            ARRAY_A
+                        );
+                        
+                        foreach ( $variants_data as $variant_data ) {
+                            $variant_price = isset( $variant_data['item_price'] ) ? $variant_data['item_price'] / 100 : 0;
+                            $variant_regular_price = isset( $variant_data['compare_price'] ) && $variant_data['compare_price'] > 0 ? $variant_data['compare_price'] / 100 : $variant_price;
+                            
+                            // Variant name/title is not available in the database table, use empty string
+                            // The variant can be identified by its ID, and the product name is already available
+                            $variants[] = array(
+                                'id' => intval( $variant_data['id'] ),
+                                'variation_id' => intval( $variant_data['id'] ),
+                                'name' => '',
+                                'title' => '',
+                                'price' => $variant_price,
+                                'regular_price' => $variant_regular_price,
+                                'item_price' => $variant_data['item_price'],
+                                'compare_price' => isset( $variant_data['compare_price'] ) ? $variant_data['compare_price'] : 0,
+                                'stock_status' => isset( $variant_data['stock_status'] ) ? $variant_data['stock_status'] : 'in-stock',
+                            );
+                        }
+                    }
+                }
+                
                 $products[] = array(
                     'id' => $product_id,
                     'name' => $product->get_name(),
-                    'price' => $product->get_price(),
-                    'regular_price' => $product->get_regular_price(),
-                    'sale_price' => $product->get_sale_price(),
-                    'is_on_sale' => $product->is_on_sale(),
+                    'price' => $price,
+                    'regular_price' => $regular_price,
+                    'sale_price' => $sale_price,
+                    'is_on_sale' => $is_on_sale,
                     'image_url' => $image_url,
                     'permalink' => get_permalink( $product_id ),
                     'stock_status' => $product->get_stock_status(),
                     'date_added' => $date_added,
+                    'variation_id' => $variation_id,
+                    'variation_name' => $variation_name,
+                    'variants' => $variants,
                 );
             }
         }
@@ -1510,16 +1589,99 @@ JS;
     public function wishlist_check( $request ) {
         $handler = new WishCart_Wishlist_Handler();
         $product_id = intval( $request->get_param( 'product_id' ) );
+        $variation_id = intval( $request->get_param( 'variation_id' ) );
         $session_id = $request->get_param( 'session_id' );
         $session_id = is_string( $session_id ) ? sanitize_text_field( wp_unslash( $session_id ) ) : null;
         
         // Handler will determine user_id or session_id automatically
-        $is_in_wishlist = $handler->is_in_wishlist( $product_id, null, $session_id );
+        $is_in_wishlist = $handler->is_in_wishlist( $product_id, null, $session_id, $variation_id );
 
         return rest_ensure_response( array(
             'success' => true,
             'in_wishlist' => $is_in_wishlist,
         ) );
+    }
+
+    /**
+     * Get product variants
+     *
+     * @param WP_REST_Request $request Request object
+     * @return WP_REST_Response
+     */
+    public function get_product_variants( $request ) {
+        $product_id = intval( $request->get_param( 'product_id' ) );
+        
+        if ( $product_id <= 0 ) {
+            return new WP_Error(
+                'invalid_product_id',
+                __( 'Invalid product ID', 'wishcart' ),
+                array( 'status' => 400 )
+            );
+        }
+
+        // Check cache first
+        $cache_key = 'wishcart_variants_' . $product_id;
+        $cached = get_transient( $cache_key );
+        
+        if ( $cached !== false ) {
+            // Return cached response
+            return rest_ensure_response( $cached );
+        }
+
+        $product = WishCart_FluentCart_Helper::get_product( $product_id );
+        if ( ! $product ) {
+            return new WP_Error(
+                'product_not_found',
+                __( 'Product not found', 'wishcart' ),
+                array( 'status' => 404 )
+            );
+        }
+
+        // Get variants using reflection to access private method
+        $reflection = new ReflectionClass( $product );
+        $get_variants_method = $reflection->getMethod( 'get_variants' );
+        $get_variants_method->setAccessible( true );
+        $variants_data = $get_variants_method->invoke( $product );
+
+        if ( ! $variants_data || ! is_array( $variants_data ) ) {
+            $response_data = array(
+                'success' => true,
+                'variants' => array(),
+            );
+            // Cache empty result for 1 hour
+            set_transient( $cache_key, $response_data, HOUR_IN_SECONDS );
+            return rest_ensure_response( $response_data );
+        }
+
+        // Format variants for response
+        $variants = array();
+        foreach ( $variants_data as $variant ) {
+            $variant_id = isset( $variant['id'] ) ? intval( $variant['id'] ) : ( isset( $variant['ID'] ) ? intval( $variant['ID'] ) : 0 );
+            $item_price = isset( $variant['item_price'] ) ? $variant['item_price'] : 0;
+            $compare_price = isset( $variant['compare_price'] ) ? $variant['compare_price'] : 0;
+            
+            $variants[] = array(
+                'id' => $variant_id,
+                'variation_id' => $variant_id,
+                'name' => isset( $variant['title'] ) ? $variant['title'] : ( isset( $variant['name'] ) ? $variant['name'] : '' ),
+                'title' => isset( $variant['title'] ) ? $variant['title'] : ( isset( $variant['name'] ) ? $variant['name'] : '' ),
+                'price' => $item_price ? $item_price / 100 : 0,
+                'regular_price' => $compare_price && $compare_price > 0 ? $compare_price / 100 : ( $item_price ? $item_price / 100 : 0 ),
+                'item_price' => $item_price,
+                'compare_price' => $compare_price,
+                'stock_status' => isset( $variant['stock_status'] ) ? $variant['stock_status'] : 'in-stock',
+            );
+        }
+
+        $response_data = array(
+            'success' => true,
+            'variants' => $variants,
+        );
+
+        // Cache the response for 1 hour (variants don't change frequently)
+        set_transient( $cache_key, $response_data, HOUR_IN_SECONDS );
+
+        return rest_ensure_response( $response_data );
     }
 
     /**

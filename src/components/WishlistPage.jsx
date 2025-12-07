@@ -4,7 +4,9 @@ import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
 import { Checkbox } from './ui/checkbox';
 import CustomSelect from './ui/CustomSelect';
+import VariantSelector from './VariantSelector';
 import { cn } from '../lib/utils';
+import { addToCartViaAJAX, openCartSidebar } from '../lib/fluentcartCart';
 import '../styles/WishlistPage.scss';
 
 const WishlistPage = () => {
@@ -19,10 +21,16 @@ const WishlistPage = () => {
     const [currentWishlist, setCurrentWishlist] = useState(null);
     const [isLoadingWishlists, setIsLoadingWishlists] = useState(false);
     const [error, setError] = useState(null);
+    const [cartMessage, setCartMessage] = useState({ type: null, text: '' });
+    const [selectedVariants, setSelectedVariants] = useState(new Map()); // Map of productId -> variantId
     
     // Track if wishlist has been loaded to prevent infinite loops
     const hasLoadedRef = useRef(false);
     const loadedWishlistIdRef = useRef(null);
+    const currentWishlistRef = useRef(null);
+    const loadWishlistRef = useRef(null);
+    const productsRef = useRef([]);
+    const isLoadingRef = useRef(false);
 
     // Get session ID from cookie
     const getSessionId = () => {
@@ -186,6 +194,13 @@ const WishlistPage = () => {
                 setIsLoading(true);
                 try {
                     const sessionId = getSessionId();
+                    
+                    // Debug logging
+                    console.log('[WishCart] Loading wishlist (no wishlists exist):', {
+                        sessionId: sessionId ? 'present' : 'none',
+                        isLoggedIn: window.wishcartWishlist?.isLoggedIn || false
+                    });
+                    
                     const url = `${window.wishcartWishlist.apiUrl}wishlist${sessionId ? `?session_id=${sessionId}` : ''}`;
                     
                     const response = await fetch(url, {
@@ -196,7 +211,24 @@ const WishlistPage = () => {
 
                     if (response.ok) {
                         const data = await response.json();
+                        
+                        // Debug logging
+                        console.log('[WishCart] Wishlist loaded (no wishlists exist):', {
+                            productCount: data.products?.length || 0,
+                            wishlistId: data.wishlist?.id || 'default',
+                            wishlistName: data.wishlist?.name || 'default',
+                            products: data.products?.map(p => ({
+                                id: p.id,
+                                variationId: p.variation_id,
+                                name: p.name
+                            })) || []
+                        });
+                        
                         setProducts(data.products || []);
+                        if (data.wishlist) {
+                            setCurrentWishlist(data.wishlist);
+                            loadedWishlistIdRef.current = data.wishlist.id || data.wishlist.share_code;
+                        }
                         hasLoadedRef.current = true;
                     }
                 } catch (error) {
@@ -245,6 +277,22 @@ const WishlistPage = () => {
 
                 if (response.ok) {
                     const data = await response.json();
+                    
+                    // Debug logging
+                    const sessionId = getSessionId();
+                    console.log('[WishCart] Wishlist loaded:', {
+                        wishlistId: data.wishlist?.id || currentWishlistId,
+                        wishlistName: data.wishlist?.name || 'default',
+                        productCount: data.products?.length || 0,
+                        sessionId: sessionId ? 'present' : 'none',
+                        isLoggedIn: window.wishcartWishlist?.isLoggedIn || false,
+                        products: data.products?.map(p => ({
+                            id: p.id,
+                            variationId: p.variation_id,
+                            name: p.name
+                        })) || []
+                    });
+                    
                     setProducts(data.products || []);
                     if (data.wishlist) {
                         // Only update currentWishlist if the wishlist ID actually changed
@@ -276,8 +324,111 @@ const WishlistPage = () => {
         loadWishlist();
     }, [loadWishlist]);
 
+    // Update refs when state changes
+    useEffect(() => {
+        currentWishlistRef.current = currentWishlist;
+    }, [currentWishlist]);
+
+    useEffect(() => {
+        loadWishlistRef.current = loadWishlist;
+    }, [loadWishlist]);
+
+    useEffect(() => {
+        productsRef.current = products;
+    }, [products]);
+
+    useEffect(() => {
+        isLoadingRef.current = isLoading;
+    }, [isLoading]);
+
+    // Listen for wishlist item added/removed events to refresh the page
+    useEffect(() => {
+        const handleItemAdded = (event) => {
+            const { productId, variationId, wishlistId } = event.detail || {};
+            const currentWishlist = currentWishlistRef.current;
+            const loadWishlist = loadWishlistRef.current;
+            
+            // Debug logging
+            console.log('[WishCart] Item added event received:', {
+                productId,
+                variationId,
+                wishlistId,
+                currentWishlistId: currentWishlist?.id,
+                currentWishlistName: currentWishlist?.name,
+                sessionId: getSessionId() ? 'present' : 'none',
+                isLoggedIn: window.wishcartWishlist?.isLoggedIn || false
+            });
+            
+            // Always refresh when item is added (items might be added to default wishlist)
+            // Use a small delay to ensure the database has been updated
+            console.log('[WishCart] Refreshing wishlist after item added');
+            setTimeout(() => {
+                if (loadWishlist) {
+                    loadWishlist(null, { forceReload: true });
+                }
+            }, 300);
+        };
+
+        const handleItemRemoved = (event) => {
+            const { productId, variationId } = event.detail || {};
+            const loadWishlist = loadWishlistRef.current;
+            
+            // Debug logging
+            console.log('[WishCart] Item removed event received:', {
+                productId,
+                variationId,
+                currentWishlistId: currentWishlistRef.current?.id
+            });
+            
+            // Always refresh when item is removed
+            console.log('[WishCart] Refreshing wishlist after item removed');
+            setTimeout(() => {
+                if (loadWishlist) {
+                    loadWishlist(null, { forceReload: true });
+                }
+            }, 300);
+        };
+
+        window.addEventListener('wishcart:item-added', handleItemAdded);
+        window.addEventListener('wishcart:item-removed', handleItemRemoved);
+
+        // Fallback: Refresh when page becomes visible (user might have added items in another tab)
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'visible') {
+                const loadWishlist = loadWishlistRef.current;
+                if (loadWishlist) {
+                    console.log('[WishCart] Page became visible, refreshing wishlist as fallback');
+                    loadWishlist(null, { forceReload: true });
+                }
+            }
+        };
+
+        // Fallback: Periodic refresh check (every 5 seconds) if no items are showing
+        const fallbackInterval = setInterval(() => {
+            const loadWishlist = loadWishlistRef.current;
+            const currentWishlist = currentWishlistRef.current;
+            
+            // Only run fallback if we have a wishlist but no products
+            if (loadWishlist && currentWishlist && products.length === 0 && !isLoading) {
+                console.log('[WishCart] Fallback: No products found, refreshing wishlist');
+                loadWishlist(null, { forceReload: true });
+            }
+        }, 5000); // Check every 5 seconds
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        window.addEventListener('wishcart:item-added', handleItemAdded);
+        window.addEventListener('wishcart:item-removed', handleItemRemoved);
+
+        return () => {
+            clearInterval(fallbackInterval);
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+            window.removeEventListener('wishcart:item-added', handleItemAdded);
+            window.removeEventListener('wishcart:item-removed', handleItemRemoved);
+        };
+    }, []); // Empty dependencies - use refs instead
+
     // Remove product from wishlist
-    const removeProduct = async (productId) => {
+    const removeProduct = async (productId, variationId = null) => {
         // Check if viewing a shared wishlist (not owned by current user)
         const shareCode = window.wishcartWishlist?.shareCode;
         const isViewingShared = shareCode && currentWishlist && 
@@ -299,8 +450,13 @@ const WishlistPage = () => {
             const sessionId = getSessionId();
             const url = `${window.wishcartWishlist.apiUrl}wishlist/remove`;
             
+            // Get variation_id from product if not provided
+            const product = products.find(p => p.id === productId);
+            const finalVariationId = variationId !== null ? variationId : (product?.variation_id || 0);
+            
             const body = {
                 product_id: productId,
+                variation_id: finalVariationId,
                 session_id: sessionId,
             };
             
@@ -318,7 +474,8 @@ const WishlistPage = () => {
             });
 
             if (response.ok) {
-                setProducts(prev => prev.filter(p => p.id !== productId));
+                // Remove the specific product variant from the list
+                setProducts(prev => prev.filter(p => !(p.id === productId && (p.variation_id || 0) === finalVariationId)));
                 setSelectedIds(prev => {
                     const next = new Set(prev);
                     next.delete(productId);
@@ -355,6 +512,15 @@ const WishlistPage = () => {
         setBulkAction('');
     };
 
+    // Handle variant selection change
+    const handleVariantChange = (productId, variantId, variant) => {
+        setSelectedVariants(prev => {
+            const next = new Map(prev);
+            next.set(productId, variantId);
+            return next;
+        });
+    };
+
     // Add product to cart
     const addToCart = async (productId) => {
         if (addingToCartIds.has(productId) || !window.wishcartWishlist) {
@@ -362,44 +528,85 @@ const WishlistPage = () => {
         }
 
         setAddingToCartIds(prev => new Set(prev).add(productId));
+        setCartMessage({ type: null, text: '' });
 
         try {
             // Find the product to get variation_id if available
             const product = products.find(p => p.id === productId);
             if (!product) {
                 console.error('Product not found');
+                setCartMessage({ type: 'error', text: 'Product not found' });
                 return;
             }
 
-            // Track the add to cart event
+            // Get selected variant or use product's variation_id
+            const selectedVariantId = selectedVariants.get(productId) || product.variation_id || 0;
+
+            // Track the add to cart event (non-blocking)
             const sessionId = getSessionId();
             const trackUrl = `${window.wishcartWishlist.apiUrl}wishlist/track-cart`;
             
             const trackBody = {
                 product_id: productId,
-                variation_id: product.variation_id || 0,
+                variation_id: selectedVariantId,
                 session_id: sessionId,
             };
             
-            try {
-                await fetch(trackUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-WP-Nonce': window.wishcartWishlist.nonce,
-                    },
-                    body: JSON.stringify(trackBody),
-                });
-            } catch (trackError) {
-                // Don't block navigation if tracking fails
+            // Track in background (don't wait for it)
+            fetch(trackUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-WP-Nonce': window.wishcartWishlist.nonce,
+                },
+                body: JSON.stringify(trackBody),
+            }).catch(trackError => {
                 console.error('Error tracking cart event:', trackError);
-            }
+            });
 
-            // Navigate to product page - FluentCart will handle adding to cart
-            window.location.href = product.permalink || '#';
+            // Add to cart via AJAX
+            const result = await addToCartViaAJAX({
+                productId: productId,
+                variationId: selectedVariantId,
+                quantity: 1,
+                productUrl: product.permalink,
+            });
+
+            if (result.success) {
+                // Show success message
+                setCartMessage({
+                    type: 'success',
+                    text: `${product.name} added to cart successfully!`,
+                });
+
+                // Clear message after 3 seconds
+                setTimeout(() => {
+                    setCartMessage({ type: null, text: '' });
+                }, 3000);
+            } else {
+                // If AJAX fails, fallback to navigation
+                console.warn('AJAX add to cart failed, redirecting to product page:', result.error);
+                setCartMessage({
+                    type: 'info',
+                    text: 'Redirecting to product page...',
+                });
+                
+                // Small delay before redirect to show message
+                setTimeout(() => {
+                    window.location.href = product.permalink || '#';
+                }, 500);
+            }
         } catch (error) {
             console.error('Error adding to cart:', error);
-            alert('Failed to add product to cart');
+            setCartMessage({
+                type: 'error',
+                text: 'Failed to add product to cart. Please try again.',
+            });
+
+            // Clear error message after 5 seconds
+            setTimeout(() => {
+                setCartMessage({ type: null, text: '' });
+            }, 5000);
         } finally {
             setAddingToCartIds(prev => {
                 const next = new Set(prev);
@@ -416,10 +623,90 @@ const WishlistPage = () => {
         }
 
         const selectedProducts = products.filter(p => selectedIds.has(p.id));
-        if (selectedProducts.length > 0) {
-            // Navigate to first product page
-            window.location.href = selectedProducts[0].permalink;
+        if (selectedProducts.length === 0) {
+            return;
         }
+
+        setCartMessage({ type: null, text: '' });
+
+        // Add products one by one via AJAX
+        let successCount = 0;
+        let failCount = 0;
+
+        for (const product of selectedProducts) {
+            if (addingToCartIds.has(product.id)) {
+                continue; // Skip if already adding
+            }
+
+            setAddingToCartIds(prev => new Set(prev).add(product.id));
+
+            try {
+                // Track the add to cart event (non-blocking)
+                const sessionId = getSessionId();
+                const trackUrl = `${window.wishcartWishlist.apiUrl}wishlist/track-cart`;
+                
+                fetch(trackUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-WP-Nonce': window.wishcartWishlist.nonce,
+                    },
+                    body: JSON.stringify({
+                        product_id: product.id,
+                        variation_id: product.variation_id || 0,
+                        session_id: sessionId,
+                    }),
+                }).catch(() => {});
+
+                const result = await addToCartViaAJAX({
+                    productId: product.id,
+                    variationId: product.variation_id || 0,
+                    quantity: 1,
+                    productUrl: product.permalink,
+                });
+
+                if (result.success) {
+                    successCount++;
+                } else {
+                    failCount++;
+                }
+
+                // Small delay between additions to avoid overwhelming the server
+                await new Promise(resolve => setTimeout(resolve, 300));
+            } catch (error) {
+                console.error(`Error adding ${product.name} to cart:`, error);
+                failCount++;
+            } finally {
+                setAddingToCartIds(prev => {
+                    const next = new Set(prev);
+                    next.delete(product.id);
+                    return next;
+                });
+            }
+        }
+
+        // Show result message
+        if (successCount > 0 && failCount === 0) {
+            setCartMessage({
+                type: 'success',
+                text: `Successfully added ${successCount} ${successCount === 1 ? 'item' : 'items'} to cart!`,
+            });
+        } else if (successCount > 0 && failCount > 0) {
+            setCartMessage({
+                type: 'warning',
+                text: `Added ${successCount} ${successCount === 1 ? 'item' : 'items'} to cart. ${failCount} ${failCount === 1 ? 'item' : 'items'} failed.`,
+            });
+        } else {
+            setCartMessage({
+                type: 'error',
+                text: 'Failed to add items to cart. Please try again.',
+            });
+        }
+
+        // Clear message after 5 seconds
+        setTimeout(() => {
+            setCartMessage({ type: null, text: '' });
+        }, 5000);
     };
 
     // Add all products to cart
@@ -428,8 +715,86 @@ const WishlistPage = () => {
             return;
         }
 
-        // Navigate to first product page
-        window.location.href = products[0].permalink;
+        setCartMessage({ type: null, text: '' });
+
+        // Add all products via AJAX
+        let successCount = 0;
+        let failCount = 0;
+
+        for (const product of products) {
+            if (addingToCartIds.has(product.id)) {
+                continue; // Skip if already adding
+            }
+
+            setAddingToCartIds(prev => new Set(prev).add(product.id));
+
+            try {
+                // Track the add to cart event (non-blocking)
+                const sessionId = getSessionId();
+                const trackUrl = `${window.wishcartWishlist.apiUrl}wishlist/track-cart`;
+                
+                fetch(trackUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-WP-Nonce': window.wishcartWishlist.nonce,
+                    },
+                    body: JSON.stringify({
+                        product_id: product.id,
+                        variation_id: product.variation_id || 0,
+                        session_id: sessionId,
+                    }),
+                }).catch(() => {});
+
+                const result = await addToCartViaAJAX({
+                    productId: product.id,
+                    variationId: product.variation_id || 0,
+                    quantity: 1,
+                    productUrl: product.permalink,
+                });
+
+                if (result.success) {
+                    successCount++;
+                } else {
+                    failCount++;
+                }
+
+                // Small delay between additions
+                await new Promise(resolve => setTimeout(resolve, 300));
+            } catch (error) {
+                console.error(`Error adding ${product.name} to cart:`, error);
+                failCount++;
+            } finally {
+                setAddingToCartIds(prev => {
+                    const next = new Set(prev);
+                    next.delete(product.id);
+                    return next;
+                });
+            }
+        }
+
+        // Show result message
+        if (successCount > 0 && failCount === 0) {
+            setCartMessage({
+                type: 'success',
+                text: `Successfully added all ${successCount} ${successCount === 1 ? 'item' : 'items'} to cart!`,
+            });
+        } else if (successCount > 0 && failCount > 0) {
+            setCartMessage({
+                type: 'warning',
+                text: `Added ${successCount} ${successCount === 1 ? 'item' : 'items'} to cart. ${failCount} ${failCount === 1 ? 'item' : 'items'} failed.`,
+            });
+        } else {
+            setCartMessage({
+                type: 'error',
+                text: 'Failed to add items to cart. Please try again.',
+            });
+        }
+
+        // Clear message after 5 seconds
+        setTimeout(() => {
+            setCartMessage({ type: null, text: '' });
+        }, 5000);
     };
 
     // Handle bulk action
@@ -839,6 +1204,19 @@ const WishlistPage = () => {
                 </div>
             </div>
 
+            {/* Cart Message Feedback */}
+            {cartMessage.type && cartMessage.text && (
+                <div className={`cart-message cart-message-${cartMessage.type}`}>
+                    <div className="cart-message-content">
+                        {cartMessage.type === 'success' && <Check className="w-5 h-5" />}
+                        {cartMessage.type === 'error' && <X className="w-5 h-5" />}
+                        {cartMessage.type === 'warning' && <X className="w-5 h-5" />}
+                        {cartMessage.type === 'info' && <ShoppingCart className="w-5 h-5" />}
+                        <span>{cartMessage.text}</span>
+                    </div>
+                </div>
+            )}
+
             {products.length === 0 ? (
                 <Card>
                     <CardContent className="flex flex-col items-center justify-center min-h-[400px] py-12">
@@ -945,6 +1323,18 @@ const WishlistPage = () => {
                                         <span className="price-current">${product.price}</span>
                                     )}
                                 </div>
+
+                                {/* Variant Selector (if product has variants) */}
+                                {product.variants && product.variants.length > 0 && (
+                                    <div className="item-variant-selector">
+                                        <VariantSelector
+                                            variants={product.variants}
+                                            selectedVariantId={selectedVariants.get(product.id) || product.variation_id || (product.variants[0]?.id || product.variants[0]?.variation_id || 0)}
+                                            onVariantChange={(variantId, variant) => handleVariantChange(product.id, variantId, variant)}
+                                            productId={product.id}
+                                        />
+                                    </div>
+                                )}
 
                                 {/* Add to Cart Button */}
                                 <Button

@@ -4,7 +4,7 @@ import { Button } from './ui/button';
 import GuestEmailModal from './GuestEmailModal';
 import '../styles/WishlistSelectorModal.scss';
 
-const WishlistSelectorModal = ({ isOpen, onClose, productId, onSuccess }) => {
+const WishlistSelectorModal = ({ isOpen, onClose, productId, variationId = 0, onSuccess }) => {
     const [wishlists, setWishlists] = useState([]);
     const [selectedWishlistId, setSelectedWishlistId] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -193,6 +193,7 @@ const WishlistSelectorModal = ({ isOpen, onClose, productId, onSuccess }) => {
             
             const requestBody = {
                 product_id: productId,
+                variation_id: variationId || 0,
                 wishlist_id: wishlistId,
                 session_id: sessionId,
             };

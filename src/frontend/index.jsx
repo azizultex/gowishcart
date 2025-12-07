@@ -1,11 +1,38 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import WishlistButton from '../components/WishlistButton';
+import VariantWishlistButtons from '../components/VariantWishlistButtons';
 import WishlistPage from '../components/WishlistPage';
 import SharedWishlistView from '../components/SharedWishlistView';
 import '../styles/WishlistButton.scss';
+import '../styles/VariantWishlistButtons.scss';
 import '../styles/WishlistPage.scss';
 import '../styles/SharedWishlistView.scss';
+
+// Wrapper component that falls back to single button if variants not detected
+const VariantWishlistButtonsWrapper = ({ productId, fallbackVariantId, fallbackPosition }) => {
+    const [showFallback, setShowFallback] = useState(false);
+    
+    useEffect(() => {
+        // Give VariantWishlistButtons time to detect variants
+        const timer = setTimeout(() => {
+            // Check if variant buttons were rendered
+            const variantButtonsContainer = document.querySelector(`[data-product-id="${productId}"]`)?.closest('.wishcart-wishlist-button-container');
+            const hasVariantButtons = variantButtonsContainer?.querySelector('.variant-wishlist-buttons');
+            if (!hasVariantButtons) {
+                setShowFallback(true);
+            }
+        }, 2000); // Wait 2 seconds for variant detection
+        
+        return () => clearTimeout(timer);
+    }, [productId]);
+    
+    if (showFallback) {
+        return <WishlistButton productId={productId} variationId={fallbackVariantId} position={fallbackPosition} />;
+    }
+    
+    return <VariantWishlistButtons productId={productId} />;
+};
 
 const getSetting = (key, fallback) => {
     if (!window.wishcartWishlist || !(key in window.wishcartWishlist)) {
@@ -87,6 +114,64 @@ const applyPlacementLayout = (container, position) => {
     }
 };
 
+// Detect if product has variants
+const detectProductVariants = (productId) => {
+    if (!productId) {
+        return false;
+    }
+
+    // Find the product modal or detail page
+    const button = document.querySelector(`[data-product-id="${productId}"]`);
+    if (!button) {
+        return false;
+    }
+
+    const modal = button.closest('.fc-product-modal, .fc-product-detail, form');
+    if (!modal) {
+        return false;
+    }
+
+    // Look for variant buttons - common selectors
+    const variantSelectors = [
+        '[data-variant-id]',
+        '[data-variation-id]',
+        '.fc-variant-button',
+        '.variant-button',
+        '.product-variant',
+        'button[class*="variant"]',
+        '[class*="variant-option"]'
+    ];
+
+    let variantElements = [];
+    
+    for (const selector of variantSelectors) {
+        const elements = modal.querySelectorAll(selector);
+        if (elements.length > 1) { // More than one means it's a variable product
+            variantElements = Array.from(elements);
+            break;
+        }
+    }
+
+    // If no variant buttons found, check for variant selection area
+    if (variantElements.length === 0) {
+        const variantContainers = modal.querySelectorAll(
+            '.fc-variants, .product-variants, .variants-container, [class*="variant"]'
+        );
+        
+        if (variantContainers.length > 0) {
+            variantContainers.forEach(container => {
+                const buttons = container.querySelectorAll('button, [role="button"], [data-id]');
+                if (buttons.length > 1) {
+                    variantElements = Array.from(buttons);
+                }
+            });
+        }
+    }
+
+    // Return true if we found multiple variants
+    return variantElements.length > 1;
+};
+
 const mountWishlistButtonAtContainer = (container) => {
     if (!container || container.dataset.mounted === 'true') {
         return;
@@ -100,8 +185,66 @@ const mountWishlistButtonAtContainer = (container) => {
     const position = normalizePosition(container.getAttribute('data-position'));
     applyPlacementLayout(container, position);
 
+    const productIdNum = parseInt(productId, 10);
+    
+    // Check if product has variants
+    const hasVariants = detectProductVariants(productIdNum);
+
     const root = createRoot(container);
-    root.render(<WishlistButton productId={parseInt(productId, 10)} position={position} />);
+    
+    // Detect current variant ID from nearby elements (for single button fallback)
+    const detectVariantId = () => {
+        // Check container for data-variation-id
+        const variationIdAttr = container.getAttribute('data-variation-id');
+        if (variationIdAttr) {
+            const parsed = parseInt(variationIdAttr, 10);
+            if (!isNaN(parsed)) {
+                return parsed;
+            }
+        }
+
+        // Check nearby form for variation_id input
+        const form = container.closest('form');
+        if (form) {
+            const variationInput = form.querySelector('input[name="variation_id"]');
+            if (variationInput && variationInput.value) {
+                const parsed = parseInt(variationInput.value, 10);
+                if (!isNaN(parsed)) {
+                    return parsed;
+                }
+            }
+        }
+
+        // Check for FluentCart variant selection
+        const variantButton = container.closest('.fc-product-modal, .fc-product-detail')?.querySelector('[data-variant-id].selected, [data-variation-id].selected');
+        if (variantButton) {
+            const variantId = variantButton.getAttribute('data-variant-id') || variantButton.getAttribute('data-variation-id');
+            if (variantId) {
+                const parsed = parseInt(variantId, 10);
+                if (!isNaN(parsed)) {
+                    return parsed;
+                }
+            }
+        }
+
+        return 0; // Default to 0 if no variant detected
+    };
+
+    const variantId = detectVariantId();
+    
+    if (hasVariants) {
+        // Render variant wishlist buttons component (will fall back to single button if variants not detected)
+        root.render(
+            <VariantWishlistButtons 
+                productId={productIdNum} 
+                fallbackVariantId={variantId}
+                fallbackPosition={position}
+            />
+        );
+    } else {
+        // Render single wishlist button
+        root.render(<WishlistButton productId={productIdNum} variationId={variantId} position={position} />);
+    }
 
     container.dataset.mounted = 'true';
 };

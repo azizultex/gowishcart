@@ -1,0 +1,92 @@
+.wishcart-variant-wishlist-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 12px;
+    width: 100%;
+
+    .wishcart-variant-wishlist-button {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border: 1px solid #e5e7eb;
+        background: #ffffff;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 14px;
+        width: 100%;
+        justify-content: flex-start;
+
+        &:hover {
+            border-color: #d1d5db;
+            background: #f9fafb;
+        }
+
+        &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        &--active {
+            border-color: #ef4444;
+            background: #fef2f2;
+            color: #dc2626;
+
+            &:hover {
+                border-color: #dc2626;
+                background: #fee2e2;
+            }
+        }
+
+        .wishcart-wishlist-button__icon {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+
+            &--filled {
+                fill: currentColor;
+            }
+
+            &--loading {
+                animation: spin 1s linear infinite;
+            }
+        }
+
+        .wishcart-wishlist-button__label {
+            flex: 1;
+            text-align: left;
+        }
+
+        .wishcart-variant-wishlist-button__variant-name {
+            font-weight: 600;
+            color: #6b7280;
+            margin-left: auto;
+        }
+
+        &--active .wishcart-variant-wishlist-button__variant-name {
+            color: #dc2626;
+        }
+    }
+
+    .wishcart-variant-wishlist-button-loading {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8px 12px;
+        border: 1px solid #e5e7eb;
+        background: #ffffff;
+        border-radius: 6px;
+        min-height: 40px;
+    }
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
