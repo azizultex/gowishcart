@@ -420,7 +420,7 @@ const WishlistPage = () => {
                 const loadWishlist = loadWishlistRef.current;
                 if (loadWishlist) {
                     console.log('[WishCart] Page became visible, refreshing wishlist as fallback');
-                    loadWishlist(null, { forceReload: true });
+                    // loadWishlist(null, { forceReload: true });
                 }
             }
         };
