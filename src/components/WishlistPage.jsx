@@ -341,6 +341,28 @@ const WishlistPage = () => {
         isLoadingRef.current = isLoading;
     }, [isLoading]);
 
+    // Initialize selectedVariants Map when products load
+    useEffect(() => {
+        if (products && products.length > 0) {
+            setSelectedVariants(prev => {
+                const next = new Map(prev);
+                
+                // Loop through products and initialize their saved variant selections
+                products.forEach(product => {
+                    const uniqueKey = getUniqueItemKey(product);
+                    
+                    // Only initialize if product has a variation_id and key doesn't already exist
+                    // This prevents overwriting user selections
+                    if (product.variation_id && !next.has(uniqueKey)) {
+                        next.set(uniqueKey, product.variation_id);
+                    }
+                });
+                
+                return next;
+            });
+        }
+    }, [products]);
+
     // Listen for wishlist item added/removed events to refresh the page
     useEffect(() => {
         const handleItemAdded = (event) => {
@@ -512,13 +534,61 @@ const WishlistPage = () => {
         setBulkAction('');
     };
 
+    // Helper function to get unique key for each wishlist item
+    // Uses combination of product ID and variation ID to ensure independence
+    const getUniqueItemKey = (product) => {
+        return `${product.id}-${product.variation_id || 0}`;
+    };
+
     // Handle variant selection change
-    const handleVariantChange = (productId, variantId, variant) => {
+    const handleVariantChange = (product, variantId, variant) => {
         setSelectedVariants(prev => {
             const next = new Map(prev);
-            next.set(productId, variantId);
+            const uniqueKey = getUniqueItemKey(product);
+            next.set(uniqueKey, variantId);
             return next;
         });
+    };
+
+    // Helper function to get the display price for a product based on selected variant
+    const getDisplayPrice = (product) => {
+        // Check if a variant is selected in the dropdown using unique key
+        const uniqueKey = getUniqueItemKey(product);
+        const selectedVariantId = selectedVariants.get(uniqueKey);
+        
+        // If there's a selected variant and the product has variants array
+        if (selectedVariantId && product.variants && product.variants.length > 0) {
+            // Find the selected variant in the variants array
+            const selectedVariant = product.variants.find(v => 
+                (v.id || v.variation_id || v.ID) == selectedVariantId
+            );
+            
+            if (selectedVariant) {
+                // Extract price from the variant (handle both FluentCart and WooCommerce formats)
+                const price = selectedVariant.price || 
+                    (selectedVariant.item_price ? selectedVariant.item_price / 100 : null) || 
+                    0;
+                const regularPrice = selectedVariant.regular_price || 
+                    (selectedVariant.compare_price ? selectedVariant.compare_price / 100 : null);
+                const salePrice = selectedVariant.sale_price || price;
+                const isOnSale = regularPrice && regularPrice > price;
+                
+                return {
+                    price: price,
+                    regular_price: regularPrice,
+                    sale_price: salePrice,
+                    is_on_sale: isOnSale
+                };
+            }
+        }
+        
+        // Fall back to the product's saved price if no variant is selected or found
+        return {
+            price: product.price,
+            regular_price: product.regular_price,
+            sale_price: product.sale_price,
+            is_on_sale: product.is_on_sale
+        };
     };
 
     // Add product to cart
@@ -539,8 +609,9 @@ const WishlistPage = () => {
                 return;
             }
 
-            // Get selected variant or use product's variation_id
-            const selectedVariantId = selectedVariants.get(productId) || product.variation_id || 0;
+            // Get selected variant or use product's variation_id using unique key
+            const uniqueKey = getUniqueItemKey(product);
+            const selectedVariantId = selectedVariants.get(uniqueKey) || product.variation_id || 0;
 
             // Track the add to cart event (non-blocking)
             const sessionId = getSessionId();
@@ -1315,13 +1386,16 @@ const WishlistPage = () => {
 
                                 {/* Price */}
                                 <div className="item-price">
-                                    {product.is_on_sale && product.regular_price ? (
-                                        <>
-                                            <span className="price-sale">${product.price}</span>
-                                        </>
-                                    ) : (
-                                        <span className="price-current">${product.price}</span>
-                                    )}
+                                    {(() => {
+                                        const displayPrice = getDisplayPrice(product);
+                                        return displayPrice.is_on_sale && displayPrice.regular_price ? (
+                                            <>
+                                                <span className="price-sale">${displayPrice.sale_price || displayPrice.price}</span>
+                                            </>
+                                        ) : (
+                                            <span className="price-current">${displayPrice.price}</span>
+                                        );
+                                    })()}
                                 </div>
 
                                 {/* Variant Selector (if product has variants) */}
@@ -1329,8 +1403,8 @@ const WishlistPage = () => {
                                     <div className="item-variant-selector">
                                         <VariantSelector
                                             variants={product.variants}
-                                            selectedVariantId={selectedVariants.get(product.id) || product.variation_id || (product.variants[0]?.id || product.variants[0]?.variation_id || 0)}
-                                            onVariantChange={(variantId, variant) => handleVariantChange(product.id, variantId, variant)}
+                                            selectedVariantId={selectedVariants.get(getUniqueItemKey(product)) || product.variation_id || (product.variants[0]?.id || product.variants[0]?.variation_id || 0)}
+                                            onVariantChange={(variantId, variant) => handleVariantChange(product, variantId, variant)}
                                             productId={product.id}
                                         />
                                     </div>
