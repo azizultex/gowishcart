@@ -297,7 +297,7 @@ const SharedWishlistView = ({ shareToken }) => {
                                     <a href={product.permalink} className="item-name">
                                         {product.name}
                                     </a>
-                                    {product.variation_id && product.variation_attributes && (
+                                    {product.variation_id && product.variation_attributes && product.variants && product.variants.length > 1 && (
                                         <div className="item-variant">
                                             {Object.entries(product.variation_attributes).map(([key, value]) => (
                                                 <span key={key}>{key}: {value}</span>

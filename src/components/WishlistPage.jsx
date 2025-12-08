@@ -609,7 +609,12 @@ const WishlistPage = () => {
 
         try {
             // Get selected variant or use product's variation_id using unique key
-            const selectedVariantId = selectedVariants.get(uniqueKey) || product.variation_id || 0;
+            let selectedVariantId = selectedVariants.get(uniqueKey) || product.variation_id || 0;
+
+            // For simple products with exactly 1 variant, use that variant's ID
+            if (product.variants && product.variants.length === 1 && !selectedVariantId) {
+                selectedVariantId = product.variants[0].id || product.variants[0].variation_id || 0;
+            }
 
             // Track the add to cart event (non-blocking)
             const sessionId = getSessionId();
@@ -714,7 +719,12 @@ const WishlistPage = () => {
 
             try {
                 // Get selected variant or use product's variation_id using unique key
-                const selectedVariantId = selectedVariants.get(uniqueKey) || product.variation_id || 0;
+                let selectedVariantId = selectedVariants.get(uniqueKey) || product.variation_id || 0;
+
+                // For simple products with exactly 1 variant, use that variant's ID
+                if (product.variants && product.variants.length === 1 && !selectedVariantId) {
+                    selectedVariantId = product.variants[0].id || product.variants[0].variation_id || 0;
+                }
 
                 // Track the add to cart event (non-blocking)
                 const sessionId = getSessionId();
@@ -808,7 +818,12 @@ const WishlistPage = () => {
 
             try {
                 // Get selected variant or use product's variation_id using unique key
-                const selectedVariantId = selectedVariants.get(uniqueKey) || product.variation_id || 0;
+                let selectedVariantId = selectedVariants.get(uniqueKey) || product.variation_id || 0;
+
+                // For simple products with exactly 1 variant, use that variant's ID
+                if (product.variants && product.variants.length === 1 && !selectedVariantId) {
+                    selectedVariantId = product.variants[0].id || product.variants[0].variation_id || 0;
+                }
 
                 // Track the add to cart event (non-blocking)
                 const sessionId = getSessionId();
@@ -1387,7 +1402,7 @@ const WishlistPage = () => {
                                     <a href={product.permalink} className="item-name">
                                         {product.name}
                                     </a>
-                                    {product.variation_id && (
+                                    {product.variation_id && product.variants && product.variants.length > 1 && (
                                         <div className="item-variant">
                                             {product.variation_name || 'Variant'}
                                         </div>
@@ -1408,8 +1423,8 @@ const WishlistPage = () => {
                                     })()}
                                 </div>
 
-                                {/* Variant Selector (if product has variants) */}
-                                {product.variants && product.variants.length > 0 && (
+                                {/* Variant Selector (if product has multiple variants) */}
+                                {product.variants && product.variants.length > 1 && (
                                     <div className="item-variant-selector">
                                         <VariantSelector
                                             variants={product.variants}
