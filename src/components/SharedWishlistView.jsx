@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Heart, ShoppingCart, Twitter, Mail, MessageCircle, Link2, Check } from 'lucide-react';
 import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
+import { addToCartViaAJAX, openCartSidebar } from '../lib/fluentcartCart';
 import '../styles/SharedWishlistView.scss';
 
 /**
@@ -13,6 +14,7 @@ const SharedWishlistView = ({ shareToken }) => {
     const [products, setProducts] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [addingToCartIds, setAddingToCartIds] = useState(new Set());
 
     const apiUrl = window.wishcartShared?.apiUrl || '/wp-json/wishcart/v1/';
     const siteUrl = window.wishcartShared?.siteUrl || '';
@@ -58,33 +60,59 @@ const SharedWishlistView = ({ shareToken }) => {
     };
 
     const handleAddToCart = async (product) => {
-        if (!product) {
-            console.error('Product not found');
+        if (!product || addingToCartIds.has(product.id)) {
             return;
         }
 
-        // Track the add to cart event for analytics
+        setAddingToCartIds(prev => new Set(prev).add(product.id));
+
         try {
+            // Track the add to cart event for analytics (non-blocking)
             const trackUrl = `${apiUrl}wishlist/track-cart`;
             const trackBody = {
                 product_id: product.id,
                 variation_id: product.variation_id || 0,
             };
             
-            await fetch(trackUrl, {
+            fetch(trackUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(trackBody),
+            }).catch(trackError => {
+                console.error('Error tracking cart event:', trackError);
             });
-        } catch (trackError) {
-            // Don't block navigation if tracking fails
-            console.error('Error tracking cart event:', trackError);
-        }
 
-        // Navigate to product page - FluentCart will handle adding to cart
-        window.location.href = product.permalink || '#';
+            // Add to cart via AJAX
+            const result = await addToCartViaAJAX({
+                productId: product.id,
+                variationId: product.variation_id || 0,
+                quantity: 1,
+                productUrl: product.permalink,
+            });
+
+            if (result.success) {
+                // Successfully added to cart
+                console.log(`${product.name} added to cart successfully!`);
+                // Optionally open cart sidebar
+                // openCartSidebar();
+            } else {
+                // If AJAX fails, fallback to navigation
+                console.warn('AJAX add to cart failed, redirecting to product page:', result.error);
+                window.location.href = product.permalink || '#';
+            }
+        } catch (error) {
+            console.error('Error adding to cart:', error);
+            // Fallback to navigation on error
+            window.location.href = product.permalink || '#';
+        } finally {
+            setAddingToCartIds(prev => {
+                const next = new Set(prev);
+                next.delete(product.id);
+                return next;
+            });
+        }
     };
 
     const formatPrice = (price) => {
@@ -292,10 +320,11 @@ const SharedWishlistView = ({ shareToken }) => {
                                 {/* Add to Cart Button */}
                                 <Button
                                     onClick={() => handleAddToCart(product)}
+                                    disabled={addingToCartIds.has(product.id)}
                                     className="item-add-to-cart"
                                     size="sm"
                                 >
-                                    Add To Cart
+                                    {addingToCartIds.has(product.id) ? 'Adding...' : 'Add To Cart'}
                                 </Button>
                             </div>
                         ))}
