@@ -7,7 +7,7 @@ import GuestEmailModal from './GuestEmailModal';
 import * as LucideIcons from 'lucide-react';
 import '../styles/VariantWishlistButtons.scss';
 
-const VariantWishlistButton = ({ productId, variant, className, customStyles }) => {
+const VariantWishlistButton = ({ productId, variant, className, customStyles, isVisible = true }) => {
     const [isInWishlist, setIsInWishlist] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [isAdding, setIsAdding] = useState(false);
@@ -448,10 +448,12 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles }) 
                 className={cn(
                     "wishcart-variant-wishlist-button",
                     isInWishlist && "wishcart-variant-wishlist-button--active",
+                    !isVisible && "wishcart-variant-wishlist-button--hidden",
                     className
                 )}
                 style={buildButtonStyles()}
                 aria-label={`${srLabel} - ${variantName}`}
+                data-variant-id={variantId}
             >
                 {isAdding ? (
                     <Heart className="wishcart-wishlist-button__icon wishcart-wishlist-button__icon--loading" />
@@ -466,14 +468,1108 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles }) 
 };
 
 const VariantWishlistButtons = ({ productId, variants, className, customStyles, position = 'bottom' }) => {
+    const [activeVariantId, setActiveVariantId] = useState(null);
+
+    // Debug logging for visibility calculation
+    useEffect(() => {
+        console.log('[WishCart] VariantWishlistButtons: activeVariantId changed to', activeVariantId);
+        console.log('[WishCart] VariantWishlistButtons: Available variants:', variants);
+    }, [activeVariantId, variants]);
+
     if (!variants || variants.length === 0) {
         return null;
     }
+
+    // Detect the currently selected variation from FluentCart buttons
+    useEffect(() => {
+        let debounceTimer = null;
+        let pollingInterval = null;
+        let modalObserver = null;
+        let modalOpenCheckInterval = null;
+        let isModalOpen = false;
+        
+        // Function to check if modal is open and variations are loaded
+        const checkModalAndVariations = () => {
+            const modal = document.querySelector('.fc-product-modal, .fc-product-detail, [class*="product-modal"], [class*="quick-view"]');
+            if (modal) {
+                // Specifically check for fct-product-variants class (FluentCart's variation container)
+                const fctVariants = modal.querySelector('.fct-product-variants');
+                // Also check for variation elements with data-cart-id (FluentCart uses this)
+                const variantElements = modal.querySelectorAll('.fct-product-variants [data-cart-id], .fct-product-variants [data-variant-id], .fct-product-variants [data-variation-id]');
+                const variationsLoaded = !!fctVariants && variantElements.length > 0;
+                return { modal, variationsLoaded, fctVariants };
+            }
+            return { modal: null, variationsLoaded: false, fctVariants: null };
+        };
+        
+        // Function to wait for fct-product-variants to load in modal
+        const waitForVariationsInModal = (modal, callback, maxWait = 5000) => {
+            const startTime = Date.now();
+            const checkInterval = setInterval(() => {
+                // Specifically wait for .fct-product-variants class
+                const fctVariants = modal.querySelector('.fct-product-variants');
+                if (fctVariants) {
+                    // Also check that it has actual variation elements inside
+                    const variantElements = fctVariants.querySelectorAll('[data-cart-id], [data-variant-id], [data-variation-id]');
+                    if (variantElements.length > 0 || (Date.now() - startTime) > maxWait) {
+                        clearInterval(checkInterval);
+                        callback(variantElements.length > 0);
+                    }
+                } else if ((Date.now() - startTime) > maxWait) {
+                    clearInterval(checkInterval);
+                    callback(false);
+                }
+            }, 100);
+        };
+        
+        // Function to trigger detection when modal is ready
+        const triggerDetectionOnModalReady = () => {
+            const { modal, variationsLoaded, fctVariants } = checkModalAndVariations();
+            if (modal && !isModalOpen) {
+                isModalOpen = true;
+                // Wait a bit for DOM to settle, then wait for fct-product-variants
+                setTimeout(() => {
+                    waitForVariationsInModal(modal, (loaded) => {
+                        if (loaded) {
+                            // fct-product-variants is loaded with variation elements, trigger detection
+                            // Give it a small delay to ensure all attributes are set
+                            setTimeout(() => {
+                                updateActiveVariant();
+                            }, 100);
+                        }
+                    });
+                }, 200);
+            } else if (modal && isModalOpen && fctVariants) {
+                // Modal is already open, but variations might have just loaded
+                // Re-trigger detection
+                setTimeout(() => {
+                    updateActiveVariant();
+                }, 100);
+            } else if (!modal && isModalOpen) {
+                isModalOpen = false;
+            }
+        };
+        
+        // Comprehensive function to detect selected variation using multiple strategies
+        const detectSelectedVariation = () => {
+            // Strategy 1: Look for selected/active variation buttons in fct-product-variants
+            // First, check within .fct-product-variants container (FluentCart specific)
+            const fctVariantsContainer = document.querySelector('.fct-product-variants');
+            if (fctVariantsContainer) {
+                console.log('[WishCart] detectSelectedVariation: Found .fct-product-variants container');
+                // FluentCart uses data-cart-id for variations, and selected class or aria-checked
+                const selectedVariants = fctVariantsContainer.querySelectorAll(
+                    '.selected[data-cart-id], [aria-checked="true"][data-cart-id], ' +
+                    '.selected[data-variant-id], [aria-checked="true"][data-variant-id], ' +
+                    '.selected[data-variation-id], [aria-checked="true"][data-variation-id]'
+                );
+                
+                console.log('[WishCart] detectSelectedVariation: Found', selectedVariants.length, 'selected variants');
+                
+                if (selectedVariants.length > 0) {
+                    const selectedVariant = selectedVariants[0];
+                    // FluentCart uses data-cart-id, but we need to map it to variation_id
+                    const cartId = selectedVariant.getAttribute('data-cart-id');
+                    const variantId = selectedVariant.getAttribute('data-variant-id') || 
+                                     selectedVariant.getAttribute('data-variation-id');
+                    
+                    console.log('[WishCart] detectSelectedVariation: Selected variant has cartId:', cartId, 'variantId:', variantId);
+                    
+                    // If we have cartId, try to find matching variant in our variants array
+                    if (cartId) {
+                        const parsedCartId = parseInt(cartId, 10);
+                        console.log('[WishCart] detectSelectedVariation: Parsed cartId:', parsedCartId, 'Available variants:', variants);
+                        // Try to match cartId with variant IDs in our variants array
+                        const matchedVariant = variants.find(v => {
+                            const vId = v.id || v.variation_id || v.ID;
+                            const match = vId === parsedCartId;
+                            if (match) {
+                                console.log('[WishCart] detectSelectedVariation: Matched variant:', v, 'with ID:', vId);
+                            }
+                            return match;
+                        });
+                        if (matchedVariant) {
+                            const result = matchedVariant.id || matchedVariant.variation_id || matchedVariant.ID;
+                            console.log('[WishCart] detectSelectedVariation: Returning matched variant ID:', result);
+                            return result;
+                        }
+                        // If no match, use cartId as fallback (might be the variation ID)
+                        if (!isNaN(parsedCartId) && parsedCartId > 0) {
+                            console.log('[WishCart] detectSelectedVariation: No match found, using cartId as variant ID:', parsedCartId);
+                            return parsedCartId;
+                        }
+                    }
+                    
+                    // Use variantId if available
+                    if (variantId) {
+                        const parsedId = parseInt(variantId, 10);
+                        if (!isNaN(parsedId) && parsedId > 0) {
+                            console.log('[WishCart] detectSelectedVariation: Using variantId:', parsedId);
+                            return parsedId;
+                        }
+                    }
+                } else {
+                    console.log('[WishCart] detectSelectedVariation: No selected variants found in .fct-product-variants');
+                }
+            }
+            
+            // Strategy 1b: Look for selected/active variation buttons with various class names (fallback)
+            const selectors = [
+                '[data-variant-id].selected',
+                '[data-variation-id].selected',
+                '[data-variant-id].active',
+                '[data-variation-id].active',
+                '[data-variant-id].is-selected',
+                '[data-variation-id].is-selected',
+                '[data-variant-id][aria-selected="true"]',
+                '[data-variation-id][aria-selected="true"]',
+                '[data-variant-id][aria-checked="true"]',
+                '[data-variation-id][aria-checked="true"]',
+                '.selected[data-variant-id]',
+                '.selected[data-variation-id]',
+                '.active[data-variant-id]',
+                '.active[data-variation-id]',
+            ];
+            
+            for (const selector of selectors) {
+                const selectedButton = document.querySelector(selector);
+                if (selectedButton) {
+                    const variantId = selectedButton.getAttribute('data-variant-id') || 
+                                     selectedButton.getAttribute('data-variation-id');
+                    if (variantId) {
+                        const parsedId = parseInt(variantId, 10);
+                        if (!isNaN(parsedId) && parsedId > 0) {
+                            return parsedId;
+                        }
+                    }
+                }
+            }
+            
+            // Strategy 2: Check for selected variation in fct-product-variants using data-cart-id
+            // FluentCart uses data-cart-id to identify variations, and we need to map it
+            if (fctVariantsContainer) {
+                // Look for the selected/checked variation element
+                const checkedVariant = fctVariantsContainer.querySelector('[aria-checked="true"], .selected');
+                if (checkedVariant) {
+                    const cartId = checkedVariant.getAttribute('data-cart-id');
+                    // Try to match cartId with our variants array
+                    if (cartId) {
+                        const parsedCartId = parseInt(cartId, 10);
+                        const matchedVariant = variants.find(v => {
+                            const vId = v.id || v.variation_id || v.ID;
+                            return vId === parsedCartId;
+                        });
+                        if (matchedVariant) {
+                            return matchedVariant.id || matchedVariant.variation_id || matchedVariant.ID;
+                        }
+                        // If cartId doesn't match, it might be the variation ID itself
+                        if (!isNaN(parsedCartId) && parsedCartId > 0) {
+                            return parsedCartId;
+                        }
+                    }
+                }
+            }
+            
+            // Strategy 3: Check for hidden form inputs with variation_id
+            const form = document.querySelector('.fc-product-modal form, .fc-product-detail form, form[data-product-id]');
+            if (form) {
+                const variationInput = form.querySelector('input[name="variation_id"], input[name="variant_id"], input[type="hidden"][name*="variation"], input[type="hidden"][name*="variant"]');
+                if (variationInput && variationInput.value) {
+                    const parsedId = parseInt(variationInput.value, 10);
+                    if (!isNaN(parsedId) && parsedId > 0) {
+                        return parsedId;
+                    }
+                }
+                
+                // Check for radio buttons or selects
+                const variationSelect = form.querySelector('select[name*="variation"], select[name*="variant"]');
+                if (variationSelect && variationSelect.value) {
+                    const parsedId = parseInt(variationSelect.value, 10);
+                    if (!isNaN(parsedId) && parsedId > 0) {
+                        return parsedId;
+                    }
+                }
+                
+                const checkedRadio = form.querySelector('input[type="radio"][name*="variation"]:checked, input[type="radio"][name*="variant"]:checked');
+                if (checkedRadio && checkedRadio.value) {
+                    const parsedId = parseInt(checkedRadio.value, 10);
+                    if (!isNaN(parsedId) && parsedId > 0) {
+                        return parsedId;
+                    }
+                }
+            }
+            
+            // Strategy 4: Look for elements with border/active styling that might indicate selection
+            const modal = document.querySelector('.fc-product-modal, .fc-product-detail');
+            if (modal) {
+                // Look for buttons with specific active classes or styles
+                const allVariantButtons = modal.querySelectorAll('[data-variant-id], [data-variation-id]');
+                for (const btn of allVariantButtons) {
+                    // Check for active/selected classes
+                    if (btn.classList.contains('selected') || 
+                        btn.classList.contains('active') || 
+                        btn.classList.contains('is-selected') ||
+                        btn.getAttribute('aria-selected') === 'true' ||
+                        btn.getAttribute('aria-checked') === 'true') {
+                        const variantId = btn.getAttribute('data-variant-id') || 
+                                         btn.getAttribute('data-variation-id');
+                        if (variantId) {
+                            const parsedId = parseInt(variantId, 10);
+                            if (!isNaN(parsedId) && parsedId > 0) {
+                                return parsedId;
+                            }
+                        }
+                    }
+                    
+                    // Check for border/outline styles that might indicate selection
+                    const computedStyle = window.getComputedStyle(btn);
+                    if (computedStyle.borderWidth && computedStyle.borderWidth !== '0px' && 
+                        computedStyle.borderColor && computedStyle.borderColor !== 'rgba(0, 0, 0, 0)') {
+                        // Check if this looks like a selected button (has prominent border)
+                        const variantId = btn.getAttribute('data-variant-id') || 
+                                         btn.getAttribute('data-variation-id');
+                        if (variantId) {
+                            const parsedId = parseInt(variantId, 10);
+                            if (!isNaN(parsedId) && parsedId > 0) {
+                                return parsedId;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Strategy 5: Check FluentCart's internal state if accessible
+            if (window.FluentCart && window.FluentCart.selectedVariation) {
+                const parsedId = parseInt(window.FluentCart.selectedVariation, 10);
+                if (!isNaN(parsedId) && parsedId > 0) {
+                    return parsedId;
+                }
+            }
+            
+            // Strategy 6: Default to first variant if nothing found, but only if no selection has been made yet
+            // If user has made a selection recently, prioritize that
+            if (userSelectedVariantId !== null) {
+                const timeSinceSelection = Date.now() - lastUserSelectionTime;
+                if (timeSinceSelection < USER_SELECTION_COOLDOWN) {
+                    console.log('[WishCart] detectSelectedVariation: Respecting user selection:', userSelectedVariantId);
+                    return userSelectedVariantId;
+                }
+            }
+            
+            // If currentActiveId is set, maintain it instead of defaulting to first variant
+            if (currentActiveId !== null) {
+                console.log('[WishCart] detectSelectedVariation: No clear selection detected, maintaining current:', currentActiveId);
+                return currentActiveId;
+            }
+            
+            // Only default to first variant if no selection has been made yet
+            if (variants.length > 0) {
+                const firstVariantId = variants[0].id || variants[0].variation_id || variants[0].ID;
+                console.log('[WishCart] detectSelectedVariation: Defaulting to first variant:', firstVariantId);
+                return firstVariantId;
+            }
+            
+            return null;
+        };
+
+        // Use a ref to track current value for comparison
+        let currentActiveId = null;
+        
+        // Track user-initiated selections to prevent automatic detection from overriding
+        let userSelectedVariantId = null;
+        let lastUserSelectionTime = 0;
+        const USER_SELECTION_COOLDOWN = 500; // 500ms cooldown period
+        
+        // Debounced update function
+        const updateActiveVariant = () => {
+            if (debounceTimer) {
+                clearTimeout(debounceTimer);
+            }
+            debounceTimer = setTimeout(() => {
+                // Check if user made a selection recently
+                const timeSinceUserSelection = Date.now() - lastUserSelectionTime;
+                if (userSelectedVariantId !== null && timeSinceUserSelection < USER_SELECTION_COOLDOWN) {
+                    console.log('[WishCart] updateActiveVariant: Skipping - user selection in cooldown period. User selected:', userSelectedVariantId);
+                    // Don't override user selection during cooldown
+                    return;
+                }
+                
+                const detectedId = detectSelectedVariation();
+                if (detectedId !== null && detectedId !== currentActiveId) {
+                    // Only update if detected ID matches user selection or cooldown has expired
+                    if (userSelectedVariantId === null || detectedId === userSelectedVariantId || timeSinceUserSelection >= USER_SELECTION_COOLDOWN) {
+                        console.log('[WishCart] updateActiveVariant: Updating to detected ID:', detectedId);
+                        currentActiveId = detectedId;
+                        setActiveVariantId(detectedId);
+                    } else {
+                        console.log('[WishCart] updateActiveVariant: Skipping - detected ID', detectedId, 'does not match user selection', userSelectedVariantId);
+                    }
+                }
+            }, 30); // Reduced debounce for faster updates
+        };
+        
+        // Immediate update function (no debounce) for click events
+        const updateActiveVariantImmediate = () => {
+            // Check if user made a selection recently
+            const timeSinceUserSelection = Date.now() - lastUserSelectionTime;
+            if (userSelectedVariantId !== null && timeSinceUserSelection < USER_SELECTION_COOLDOWN) {
+                console.log('[WishCart] updateActiveVariantImmediate: Skipping - user selection in cooldown period. User selected:', userSelectedVariantId);
+                // Don't override user selection during cooldown
+                return;
+            }
+            
+            const detectedId = detectSelectedVariation();
+            console.log('[WishCart] updateActiveVariantImmediate: Detected variation ID:', detectedId, 'Current:', currentActiveId, 'User selected:', userSelectedVariantId);
+            if (detectedId !== null) {
+                // Only update if detected ID matches user selection or cooldown has expired
+                if (userSelectedVariantId === null || detectedId === userSelectedVariantId || timeSinceUserSelection >= USER_SELECTION_COOLDOWN) {
+                    if (detectedId !== currentActiveId) {
+                        console.log('[WishCart] updateActiveVariantImmediate: Updating from', currentActiveId, 'to', detectedId);
+                        currentActiveId = detectedId;
+                        setActiveVariantId(detectedId);
+                    } else {
+                        console.log('[WishCart] updateActiveVariantImmediate: No change needed, already', detectedId);
+                    }
+                } else {
+                    console.log('[WishCart] updateActiveVariantImmediate: Skipping - detected ID', detectedId, 'does not match user selection', userSelectedVariantId);
+                }
+            } else {
+                console.log('[WishCart] updateActiveVariantImmediate: No variation detected');
+            }
+        };
+
+        // Check if we're in a modal context
+        const isInModalContext = () => {
+            const button = document.querySelector(`[data-product-id="${productId}"]`);
+            if (!button) return false;
+            
+            const modal = button.closest('.fc-product-modal, .fc-product-detail, [class*="product-modal"], [class*="quick-view"]');
+            return !!modal;
+        };
+        
+        // Initial detection with retry mechanism for dynamically loaded content
+        let retryCount = 0;
+        const maxRetries = isInModalContext() ? 25 : 15; // More retries for modals
+        const retryDelay = isInModalContext() ? 300 : 200; // Longer delay for modals
+        
+        const tryDetect = () => {
+            // Check if we're in a modal and if variations are loaded
+            const inModal = isInModalContext();
+            if (inModal) {
+                const { variationsLoaded } = checkModalAndVariations();
+                if (!variationsLoaded && retryCount < maxRetries) {
+                    // Variations not loaded yet, keep waiting
+                    retryCount++;
+                    setTimeout(tryDetect, retryDelay);
+                    return;
+                }
+            }
+            
+            const detected = detectSelectedVariation();
+            
+            if (detected !== null) {
+                currentActiveId = detected;
+                setActiveVariantId(detected);
+            } else if (retryCount < maxRetries) {
+                retryCount++;
+                setTimeout(tryDetect, retryDelay);
+            } else {
+                // After max retries, default to first variant
+                if (variants.length > 0) {
+                    const firstVariantId = variants[0].id || variants[0].variation_id || variants[0].ID;
+                    currentActiveId = firstVariantId;
+                    setActiveVariantId(firstVariantId);
+                }
+            }
+        };
+        
+        // Wait longer for modals, shorter for regular pages
+        const initialDelay = isInModalContext() ? 300 : 100;
+        setTimeout(tryDetect, initialDelay);
+
+        // Listen for "View Options" button clicks to detect modal opening
+        const handleViewOptionsClick = (event) => {
+            const target = event.target;
+            const button = target.closest('button, a, [role="button"]');
+            
+            // Check if this is a "View Options" button
+            if (button && (
+                button.textContent?.toLowerCase().includes('view options') ||
+                button.textContent?.toLowerCase().includes('view option') ||
+                button.getAttribute('aria-label')?.toLowerCase().includes('view options') ||
+                button.classList.contains('view-options') ||
+                button.classList.contains('fc-view-options')
+            )) {
+                // Modal is about to open, wait a bit then check
+                setTimeout(() => {
+                    triggerDetectionOnModalReady();
+                }, 300);
+            }
+        };
+
+        // Listen for modal open events
+        const handleModalOpen = (event) => {
+            setTimeout(() => {
+                triggerDetectionOnModalReady();
+            }, 300);
+        };
+
+        // Watch for modal elements being added to DOM
+        modalObserver = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'childList') {
+                    mutation.addedNodes.forEach((node) => {
+                        if (node.nodeType === 1) { // Element node
+                            // Check if this is a modal or contains a modal
+                            if (node.matches && (
+                                node.matches('.fc-product-modal, .fc-product-detail, [class*="product-modal"], [class*="quick-view"]') ||
+                                node.querySelector('.fc-product-modal, .fc-product-detail, [class*="product-modal"], [class*="quick-view"]')
+                            )) {
+                                // Modal just appeared
+                                setTimeout(() => {
+                                    triggerDetectionOnModalReady();
+                                }, 200);
+                            }
+                        }
+                    });
+                }
+            });
+        });
+
+        // Observe document body for modal additions
+        modalObserver.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+
+        // Also check periodically for modal opening (fallback)
+        modalOpenCheckInterval = setInterval(() => {
+            const { modal } = checkModalAndVariations();
+            if (modal && !isModalOpen) {
+                triggerDetectionOnModalReady();
+            } else if (!modal && isModalOpen) {
+                isModalOpen = false;
+            }
+        }, 500);
+
+        // Helper function to map data-cart-id to variation ID
+        const mapCartIdToVariantId = (cartId) => {
+            if (!cartId) {
+                console.log('[WishCart] mapCartIdToVariantId: No cartId provided');
+                return null;
+            }
+            const parsedCartId = parseInt(cartId, 10);
+            if (isNaN(parsedCartId) || parsedCartId <= 0) {
+                console.log('[WishCart] mapCartIdToVariantId: Invalid cartId', cartId);
+                return null;
+            }
+            
+            console.log('[WishCart] mapCartIdToVariantId: Mapping cartId', parsedCartId, 'to variant ID. Available variants:', variants);
+            
+            // Try to find matching variant in our variants array
+            const matchedVariant = variants.find(v => {
+                const vId = v.id || v.variation_id || v.ID;
+                const match = vId === parsedCartId;
+                if (match) {
+                    console.log('[WishCart] Found matching variant:', v, 'with ID:', vId);
+                }
+                return match;
+            });
+            
+            if (matchedVariant) {
+                const result = matchedVariant.id || matchedVariant.variation_id || matchedVariant.ID;
+                console.log('[WishCart] mapCartIdToVariantId: Mapped to variant ID', result);
+                return result;
+            }
+            
+            // If no match found, data-cart-id might be the variation ID itself
+            console.log('[WishCart] mapCartIdToVariantId: No match found, using cartId as variant ID:', parsedCartId);
+            return parsedCartId;
+        };
+
+        // Set up comprehensive click event listeners
+        const handleVariationClick = (event) => {
+            console.log('[WishCart] handleVariationClick: Click detected', event.target);
+            
+            // First, check if click is on .fct-product-variants element with data-cart-id (FluentCart specific)
+            const fctVariantsContainer = document.querySelector('.fct-product-variants');
+            if (fctVariantsContainer) {
+                const clickedElement = event.target.closest('.fct-product-variants [data-cart-id]');
+                if (clickedElement) {
+                    const cartId = clickedElement.getAttribute('data-cart-id');
+                    console.log('[WishCart] handleVariationClick: Found fct-product-variants element with cartId:', cartId);
+                    if (cartId) {
+                        const variantId = mapCartIdToVariantId(cartId);
+                        if (variantId) {
+                            console.log('[WishCart] handleVariationClick: Updating activeVariantId to', variantId, 'from', currentActiveId);
+                            // Track user selection
+                            userSelectedVariantId = variantId;
+                            lastUserSelectionTime = Date.now();
+                            // Update immediately
+                            currentActiveId = variantId;
+                            setActiveVariantId(variantId);
+                            // Also trigger immediate re-detection to ensure accuracy
+                            setTimeout(() => {
+                                updateActiveVariantImmediate();
+                            }, 50);
+                            return; // Early return, we found it
+                        }
+                    }
+                }
+            }
+            
+            // Fallback: Check for clicks on any element inside .fct-product-variants (might be clicking on text/image inside button)
+            const fctVariants = document.querySelector('.fct-product-variants');
+            if (fctVariants && fctVariants.contains(event.target)) {
+                // Click is somewhere inside .fct-product-variants, find the closest variation element
+                const variationElement = event.target.closest('[data-cart-id], [data-variant-id], [data-variation-id]');
+                if (variationElement) {
+                    const cartId = variationElement.getAttribute('data-cart-id');
+                    const variantId = variationElement.getAttribute('data-variant-id') || 
+                                     variationElement.getAttribute('data-variation-id');
+                    
+                    console.log('[WishCart] handleVariationClick: Found variation element inside .fct-product-variants, cartId:', cartId, 'variantId:', variantId);
+                    
+                    if (cartId) {
+                        const mappedId = mapCartIdToVariantId(cartId);
+                        if (mappedId) {
+                            console.log('[WishCart] handleVariationClick: Mapped to variant ID:', mappedId);
+                            // Track user selection
+                            userSelectedVariantId = mappedId;
+                            lastUserSelectionTime = Date.now();
+                            currentActiveId = mappedId;
+                            setActiveVariantId(mappedId);
+                            setTimeout(() => {
+                                updateActiveVariantImmediate();
+                            }, 50);
+                            return;
+                        }
+                    }
+                    
+                    if (variantId) {
+                        const parsedId = parseInt(variantId, 10);
+                        if (!isNaN(parsedId) && parsedId > 0) {
+                            console.log('[WishCart] handleVariationClick: Using variantId:', parsedId);
+                            // Track user selection
+                            userSelectedVariantId = parsedId;
+                            lastUserSelectionTime = Date.now();
+                            currentActiveId = parsedId;
+                            setActiveVariantId(parsedId);
+                            setTimeout(() => {
+                                updateActiveVariantImmediate();
+                            }, 50);
+                            return;
+                        }
+                    }
+                }
+            }
+            
+            // Fallback: Check for other variation button patterns
+            const button = event.target.closest('[data-variant-id], [data-variation-id], [class*="variant"], [class*="stripe"]');
+            
+            if (button) {
+                const variantId = button.getAttribute('data-variant-id') || 
+                                 button.getAttribute('data-variation-id') ||
+                                 button.getAttribute('data-id') ||
+                                 button.getAttribute('value');
+                
+                console.log('[WishCart] handleVariationClick: Found button with variantId:', variantId);
+                
+                if (variantId) {
+                    const parsedId = parseInt(variantId, 10);
+                    if (!isNaN(parsedId) && parsedId > 0) {
+                        // Update immediately
+                        console.log('[WishCart] handleVariationClick: Updating to variant ID:', parsedId);
+                        // Track user selection
+                        userSelectedVariantId = parsedId;
+                        lastUserSelectionTime = Date.now();
+                        currentActiveId = parsedId;
+                        setActiveVariantId(parsedId);
+                        // Also trigger immediate re-detection
+                        setTimeout(() => {
+                            updateActiveVariantImmediate();
+                        }, 50);
+                    }
+                } else {
+                    // If no direct ID, try to find it from nearby elements
+                    console.log('[WishCart] handleVariationClick: No variantId found, triggering detection');
+                    setTimeout(() => {
+                        updateActiveVariantImmediate();
+                    }, 50);
+                }
+            } else {
+                // Click might be on a variation option, try to detect
+                console.log('[WishCart] handleVariationClick: No button found, triggering detection');
+                setTimeout(() => {
+                    updateActiveVariantImmediate();
+                }, 50);
+            }
+        };
+
+        // Handle input changes (for selects, radio buttons)
+        const handleInputChange = (event) => {
+            const target = event.target;
+            if (target.name && (target.name.includes('variation') || target.name.includes('variant'))) {
+                if (target.value) {
+                    const parsedId = parseInt(target.value, 10);
+                    if (!isNaN(parsedId) && parsedId > 0) {
+                        currentActiveId = parsedId;
+                        setActiveVariantId(parsedId);
+                    }
+                }
+            } else {
+                updateActiveVariant();
+            }
+        };
+
+        // Listen to FluentCart custom events if they exist
+        const handleFluentCartEvent = (event) => {
+            if (event.detail && event.detail.variation_id) {
+                const parsedId = parseInt(event.detail.variation_id, 10);
+                if (!isNaN(parsedId) && parsedId > 0) {
+                    currentActiveId = parsedId;
+                    setActiveVariantId(parsedId);
+                }
+            } else {
+                updateActiveVariant();
+            }
+        };
+
+        // Specific handler for .fct-product-variants clicks
+        const handleFctVariantsClick = (event) => {
+            console.log('[WishCart] handleFctVariantsClick: Click detected', event.target);
+            const fctVariants = document.querySelector('.fct-product-variants');
+            if (!fctVariants) {
+                console.log('[WishCart] handleFctVariantsClick: No .fct-product-variants container found');
+                return;
+            }
+            
+            const clickedElement = event.target.closest('.fct-product-variants [data-cart-id]');
+            if (clickedElement) {
+                const cartId = clickedElement.getAttribute('data-cart-id');
+                console.log('[WishCart] handleFctVariantsClick: Found clicked element with cartId:', cartId);
+                    if (cartId) {
+                        const variantId = mapCartIdToVariantId(cartId);
+                        if (variantId) {
+                            console.log('[WishCart] handleFctVariantsClick: Updating activeVariantId to', variantId, 'from', currentActiveId);
+                            // Track user selection
+                            userSelectedVariantId = variantId;
+                            lastUserSelectionTime = Date.now();
+                            // Update immediately without any delay
+                            currentActiveId = variantId;
+                            setActiveVariantId(variantId);
+                            // Also trigger a re-detection after a tiny delay to ensure DOM has updated
+                            setTimeout(() => {
+                                updateActiveVariantImmediate();
+                            }, 50);
+                        } else {
+                        console.log('[WishCart] handleFctVariantsClick: Mapping failed, triggering detection');
+                        // If mapping fails, trigger full detection immediately
+                        setTimeout(() => {
+                            updateActiveVariantImmediate();
+                        }, 50);
+                    }
+                } else {
+                    console.log('[WishCart] handleFctVariantsClick: No cartId found, triggering detection');
+                    // No cartId found, trigger detection
+                    setTimeout(() => {
+                        updateActiveVariantImmediate();
+                    }, 50);
+                }
+            } else {
+                console.log('[WishCart] handleFctVariantsClick: Clicked element is not a variation with data-cart-id');
+            }
+        };
+
+        // Listen for focus events on variation elements (some UIs use keyboard navigation)
+        const handleFctVariantsFocus = (event) => {
+            const fctVariants = document.querySelector('.fct-product-variants');
+            if (!fctVariants) return;
+            
+            const focusedElement = event.target.closest('.fct-product-variants [data-cart-id]');
+            if (focusedElement) {
+                // Try to get ID immediately
+                const cartId = focusedElement.getAttribute('data-cart-id');
+                if (cartId) {
+                    const variantId = mapCartIdToVariantId(cartId);
+                    if (variantId) {
+                        currentActiveId = variantId;
+                        setActiveVariantId(variantId);
+                    }
+                }
+                // Small delay to allow aria-checked to update, then verify
+                setTimeout(() => {
+                    updateActiveVariantImmediate();
+                }, 50);
+            }
+        };
+
+        // Add all event listeners
+        document.addEventListener('click', handleVariationClick, true);
+        document.addEventListener('click', handleViewOptionsClick, true);
+        document.addEventListener('change', handleInputChange, true);
+        document.addEventListener('fluentcart:variation_changed', handleFluentCartEvent);
+        document.addEventListener('fluentcart:variant_changed', handleFluentCartEvent);
+        document.addEventListener('woocommerce_variation_select_change', handleFluentCartEvent);
+        window.addEventListener('variation_change', handleFluentCartEvent);
+        
+        // Add specific listeners for .fct-product-variants
+        document.addEventListener('click', handleFctVariantsClick, true);
+        document.addEventListener('focus', handleFctVariantsFocus, true);
+        document.addEventListener('focusin', handleFctVariantsFocus, true);
+        
+        // Listen for modal-specific events
+        document.addEventListener('modal:open', handleModalOpen);
+        document.addEventListener('fc:modal:open', handleModalOpen);
+        document.addEventListener('fluentcart:modal:open', handleModalOpen);
+        window.addEventListener('modalOpen', handleModalOpen);
+        
+        // Watch for body class changes that might indicate modal is open
+        const bodyObserver = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                    const body = document.body;
+                    if (body.classList.contains('modal-open') || 
+                        body.classList.contains('fc-modal-open') ||
+                        body.classList.contains('product-modal-open')) {
+                        triggerDetectionOnModalReady();
+                    }
+                }
+            });
+        });
+        bodyObserver.observe(document.body, {
+            attributes: true,
+            attributeFilter: ['class']
+        });
+
+        // Set up comprehensive MutationObserver
+        const observer = new MutationObserver((mutations) => {
+            let shouldUpdate = false;
+            
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'attributes') {
+                    const target = mutation.target;
+                    const attrName = mutation.attributeName;
+                    
+                    // Specifically watch for changes in .fct-product-variants elements
+                    const isFctVariant = target.closest('.fct-product-variants') && 
+                                       (target.hasAttribute('data-cart-id') || 
+                                        target.hasAttribute('data-variant-id') || 
+                                        target.hasAttribute('data-variation-id'));
+                    
+                    if (isFctVariant) {
+                        // Check for aria-checked changes (FluentCart uses this)
+                        if (attrName === 'aria-checked') {
+                            if (target.getAttribute('aria-checked') === 'true') {
+                                shouldUpdate = true;
+                            }
+                        }
+                        
+                        // Check for selected class changes
+                        if (attrName === 'class') {
+                            if (target.classList.contains('selected') || 
+                                target.classList.contains('active') || 
+                                target.classList.contains('is-selected')) {
+                                shouldUpdate = true;
+                            }
+                        }
+                        
+                        // Check for data-cart-id changes
+                        if (attrName === 'data-cart-id') {
+                            shouldUpdate = true;
+                        }
+                    }
+                    
+                    // Check for class changes on variation elements
+                    if (attrName === 'class' && (target.hasAttribute('data-variant-id') || target.hasAttribute('data-variation-id'))) {
+                        if (target.classList.contains('selected') || 
+                            target.classList.contains('active') || 
+                            target.classList.contains('is-selected')) {
+                            shouldUpdate = true;
+                        }
+                    }
+                    
+                    // Check for aria attributes
+                    if (attrName === 'aria-selected' || attrName === 'aria-checked') {
+                        if (target.getAttribute(attrName) === 'true') {
+                            shouldUpdate = true;
+                        }
+                    }
+                    
+                    // Check for data attributes
+                    if (attrName && attrName.startsWith('data-')) {
+                        shouldUpdate = true;
+                    }
+                } else if (mutation.type === 'childList') {
+                    // New elements added, might be variation buttons
+                    // Check if added nodes are in .fct-product-variants
+                    mutation.addedNodes.forEach((node) => {
+                        if (node.nodeType === 1) { // Element node
+                            if (node.matches && (
+                                node.matches('.fct-product-variants [data-cart-id]') ||
+                                node.closest('.fct-product-variants')
+                            )) {
+                                shouldUpdate = true;
+                            }
+                        }
+                    });
+                }
+            });
+            
+            if (shouldUpdate) {
+                updateActiveVariant();
+            }
+        });
+
+        // Find and observe all relevant containers
+        const containers = [
+            document.querySelector('.fc-product-modal'),
+            document.querySelector('.fc-product-detail'),
+            document.querySelector(`[data-product-id="${productId}"]`)?.closest('form'),
+            document.querySelector('form[data-product-id]'),
+        ].filter(Boolean);
+
+        containers.forEach((container) => {
+            observer.observe(container, {
+                childList: true,
+                subtree: true,
+                attributes: true,
+                attributeFilter: [
+                    'class',
+                    'aria-selected',
+                    'aria-checked',
+                    'data-variant-id',
+                    'data-variation-id',
+                    'data-cart-id',
+                    'data-selected',
+                    'data-active',
+                    'value',
+                ]
+            });
+        });
+
+        // Specifically observe .fct-product-variants container for FluentCart
+        const fctVariantsObserver = new MutationObserver((mutations) => {
+            let shouldUpdate = false;
+            
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'attributes') {
+                    const target = mutation.target;
+                    const attrName = mutation.attributeName;
+                    
+                    // Watch for aria-checked changes (FluentCart uses this for selection)
+                    if (attrName === 'aria-checked') {
+                        const isChecked = target.getAttribute('aria-checked') === 'true';
+                        if (isChecked) {
+                            console.log('[WishCart] fctVariantsObserver: aria-checked changed to true on', target);
+                            shouldUpdate = true;
+                            // If this element is now checked, try to get its ID immediately
+                            const cartId = target.getAttribute('data-cart-id');
+                            if (cartId) {
+                                console.log('[WishCart] fctVariantsObserver: Found cartId:', cartId);
+                                const variantId = mapCartIdToVariantId(cartId);
+                                if (variantId) {
+                                    // Check if user made a selection recently
+                                    const timeSinceUserSelection = Date.now() - lastUserSelectionTime;
+                                    if (userSelectedVariantId !== null && timeSinceUserSelection < USER_SELECTION_COOLDOWN && variantId !== userSelectedVariantId) {
+                                        console.log('[WishCart] fctVariantsObserver: Skipping - user selection in cooldown. User selected:', userSelectedVariantId, 'Detected:', variantId);
+                                        return;
+                                    }
+                                    console.log('[WishCart] fctVariantsObserver: Updating to variant ID:', variantId);
+                                    currentActiveId = variantId;
+                                    setActiveVariantId(variantId);
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Watch for selected class changes
+                    if (attrName === 'class') {
+                        if (target.classList.contains('selected') || 
+                            target.classList.contains('active')) {
+                            console.log('[WishCart] fctVariantsObserver: selected/active class added to', target);
+                            shouldUpdate = true;
+                            // If this element is now selected, try to get its ID immediately
+                            const cartId = target.getAttribute('data-cart-id');
+                            if (cartId) {
+                                console.log('[WishCart] fctVariantsObserver: Found cartId:', cartId);
+                                const variantId = mapCartIdToVariantId(cartId);
+                                if (variantId) {
+                                    // Check if user made a selection recently
+                                    const timeSinceUserSelection = Date.now() - lastUserSelectionTime;
+                                    if (userSelectedVariantId !== null && timeSinceUserSelection < USER_SELECTION_COOLDOWN && variantId !== userSelectedVariantId) {
+                                        console.log('[WishCart] fctVariantsObserver: Skipping - user selection in cooldown. User selected:', userSelectedVariantId, 'Detected:', variantId);
+                                        return;
+                                    }
+                                    console.log('[WishCart] fctVariantsObserver: Updating to variant ID:', variantId);
+                                    currentActiveId = variantId;
+                                    setActiveVariantId(variantId);
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Watch for data-cart-id changes
+                    if (attrName === 'data-cart-id') {
+                        shouldUpdate = true;
+                    }
+                } else if (mutation.type === 'childList') {
+                    // New variation elements added
+                    shouldUpdate = true;
+                }
+            });
+            
+            if (shouldUpdate) {
+                // Use immediate update for faster response
+                setTimeout(() => {
+                    updateActiveVariantImmediate();
+                }, 10);
+            }
+        });
+
+        // Observe .fct-product-variants container specifically
+        const observeFctVariants = () => {
+            const fctVariants = document.querySelector('.fct-product-variants');
+            if (fctVariants) {
+                fctVariantsObserver.observe(fctVariants, {
+                    childList: true,
+                    subtree: true,
+                    attributes: true,
+                    attributeFilter: [
+                        'class',
+                        'aria-checked',
+                        'aria-selected',
+                        'data-cart-id',
+                        'data-variant-id',
+                        'data-variation-id',
+                        'selected',
+                    ]
+                });
+                
+                // Also observe all variation elements inside
+                const variantElements = fctVariants.querySelectorAll('[data-cart-id], [data-variant-id], [data-variation-id]');
+                variantElements.forEach((element) => {
+                    fctVariantsObserver.observe(element, {
+                        attributes: true,
+                        attributeFilter: [
+                            'class',
+                            'aria-checked',
+                            'aria-selected',
+                            'data-cart-id',
+                            'selected',
+                        ]
+                    });
+                });
+            }
+        };
+
+        // Initial observation
+        observeFctVariants();
+
+        // Re-observe when modal opens (fct-product-variants might be added later)
+        const reobserveFctVariants = setInterval(() => {
+            const fctVariants = document.querySelector('.fct-product-variants');
+            if (fctVariants && !fctVariants.dataset.observed) {
+                fctVariants.dataset.observed = 'true';
+                observeFctVariants();
+            }
+        }, 500);
+
+        // Also observe all existing variation buttons (fallback)
+        const variantButtons = document.querySelectorAll('[data-variant-id], [data-variation-id]');
+        variantButtons.forEach((button) => {
+            observer.observe(button, {
+                attributes: true,
+                attributeFilter: [
+                    'class',
+                    'aria-selected',
+                    'aria-checked',
+                    'data-variant-id',
+                    'data-variation-id',
+                    'data-cart-id',
+                    'data-selected',
+                    'data-active',
+                ]
+            });
+        });
+
+        // Fallback: Polling as last resort (with proper cleanup)
+        // More aggressive polling for .fct-product-variants
+        pollingInterval = setInterval(() => {
+            // Skip polling if user just made a selection
+            if (shouldRespectUserSelection()) {
+                console.log('[WishCart] Polling: Skipping - user selection in cooldown period');
+                return;
+            }
+            
+            const detected = detectSelectedVariation();
+            if (detected !== null && detected !== currentActiveId) {
+                // Only update if detected ID matches user selection or cooldown expired
+                if (userSelectedVariantId === null || detected === userSelectedVariantId || !shouldRespectUserSelection()) {
+                    console.log('[WishCart] Polling: Updating to', detected);
+                    currentActiveId = detected;
+                    setActiveVariantId(detected);
+                } else {
+                    console.log('[WishCart] Polling: Skipping - detected', detected, 'but user selected', userSelectedVariantId);
+                }
+            }
+        }, 500); // Check every 500ms for faster updates
+
+        // Cleanup
+        return () => {
+            if (debounceTimer) {
+                clearTimeout(debounceTimer);
+            }
+            if (pollingInterval) {
+                clearInterval(pollingInterval);
+            }
+            if (modalOpenCheckInterval) {
+                clearInterval(modalOpenCheckInterval);
+            }
+            if (reobserveFctVariants) {
+                clearInterval(reobserveFctVariants);
+            }
+            if (modalObserver) {
+                modalObserver.disconnect();
+            }
+            if (bodyObserver) {
+                bodyObserver.disconnect();
+            }
+            if (fctVariantsObserver) {
+                fctVariantsObserver.disconnect();
+            }
+            document.removeEventListener('click', handleVariationClick, true);
+            document.removeEventListener('click', handleViewOptionsClick, true);
+            document.removeEventListener('click', handleFctVariantsClick, true);
+            document.removeEventListener('focus', handleFctVariantsFocus, true);
+            document.removeEventListener('focusin', handleFctVariantsFocus, true);
+            document.removeEventListener('change', handleInputChange, true);
+            document.removeEventListener('fluentcart:variation_changed', handleFluentCartEvent);
+            document.removeEventListener('fluentcart:variant_changed', handleFluentCartEvent);
+            document.removeEventListener('woocommerce_variation_select_change', handleFluentCartEvent);
+            window.removeEventListener('variation_change', handleFluentCartEvent);
+            document.removeEventListener('modal:open', handleModalOpen);
+            document.removeEventListener('fc:modal:open', handleModalOpen);
+            document.removeEventListener('fluentcart:modal:open', handleModalOpen);
+            window.removeEventListener('modalOpen', handleModalOpen);
+            observer.disconnect();
+        };
+    }, [variants, productId]);
 
     return (
         <div className={cn("wishcart-variant-wishlist-buttons", className)} data-position={position}>
             {variants.map((variant) => {
                 const variantId = variant.id || variant.variation_id || variant.ID;
+                // Ensure both IDs are numbers for proper comparison
+                const activeIdNum = activeVariantId !== null ? Number(activeVariantId) : null;
+                const variantIdNum = Number(variantId);
+                // Button is visible if activeVariantId is null (initial state) or matches this variant's ID
+                const isVisible = activeIdNum === null || activeIdNum === variantIdNum;
+                
+                if (activeVariantId !== null) {
+                    console.log('[WishCart] VariantWishlistButtons: Rendering variant', variantId, 'isVisible:', isVisible, 'activeVariantId:', activeVariantId);
+                }
+                
                 return (
                     <VariantWishlistButton
                         key={variantId}
@@ -481,6 +1577,7 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
                         variant={variant}
                         className={className}
                         customStyles={customStyles}
+                        isVisible={isVisible}
                     />
                 );
             })}

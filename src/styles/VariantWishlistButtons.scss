@@ -4,6 +4,7 @@
     gap: 8px;
     margin-top: 12px;
     width: 100%;
+    min-height: 48px; // Prevent layout shift when buttons toggle
 
     .wishcart-variant-wishlist-button {
         display: flex;
@@ -14,7 +15,7 @@
         background: #ffffff;
         border-radius: 6px;
         cursor: pointer;
-        transition: all 0.2s;
+        transition: all 0.2s ease-in-out;
         font-size: 14px;
         width: 100%;
         justify-content: flex-start;
@@ -67,6 +68,10 @@
 
         &--active .wishcart-variant-wishlist-button__variant-name {
             color: #dc2626;
+        }
+
+        &--hidden {
+            display: none !important;
         }
     }
 
