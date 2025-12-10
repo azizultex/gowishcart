@@ -418,11 +418,7 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
     };
 
     if (isLoading) {
-        return (
-            <div className={cn("wishcart-variant-wishlist-button-loading", className)} style={buildButtonStyles()}>
-                <Heart className="wishcart-wishlist-button__icon wishcart-wishlist-button__icon--loading" />
-            </div>
-        );
+        return null;
     }
 
     const variantName = variant.name || variant.title || `Variant ${variantId}`;
