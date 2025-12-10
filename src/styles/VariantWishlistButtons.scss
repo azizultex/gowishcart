@@ -90,3 +90,13 @@
         transform: rotate(360deg);
     }
 }
+
+.fct-product-card, .fc-product-card, [data-fluent-cart-shop-app-single-product], [data-fluent-cart-product-entry], [data-fluent-cart-product-row], .wp-block-post.type-fluent-products {
+    .wishcart-variant-wishlist-button {
+        display: none !important;
+
+        &:first-child {
+            display: block !important;
+        }
+    }
+}
