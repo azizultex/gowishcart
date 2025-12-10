@@ -329,7 +329,7 @@ const injectWishlistIntoProductCards = () => {
     }
 
     const cards = document.querySelectorAll(
-        '.fc-product-card, [data-fluent-cart-shop-app-single-product], [data-fluent-cart-product-entry], [data-fluent-cart-product-row], .wp-block-post.type-fluent-products'
+        '.fct-product-card, .fc-product-card, [data-fluent-cart-shop-app-single-product], [data-fluent-cart-product-entry], [data-fluent-cart-product-row], .wp-block-post.type-fluent-products'
     );
 
     cards.forEach((card) => {
@@ -348,15 +348,54 @@ const injectWishlistIntoProductCards = () => {
         container.setAttribute('data-product-id', String(productId));
         container.setAttribute('data-position', position);
 
-        const content =
-            card.querySelector('.fc-product-card-content') ||
-            card.querySelector('[data-fluent-cart-product-content]') ||
-            card.querySelector('.wp-block-post-content') ||
-            card;
-        if (position === 'top' || position === 'left') {
-            content.prepend(container);
+        // Try to find "View Options" button to insert after it
+        const findViewOptionsButton = (card) => {
+            // Search by text content
+            const allButtons = card.querySelectorAll('button, a[role="button"], [role="button"]');
+            for (const btn of allButtons) {
+                const text = btn.textContent?.toLowerCase().trim() || '';
+                const ariaLabel = btn.getAttribute('aria-label')?.toLowerCase() || '';
+                if (text.includes('view options') || text.includes('view option') || 
+                    ariaLabel.includes('view options') || ariaLabel.includes('view option')) {
+                    return btn;
+                }
+            }
+            
+            // Search by class names
+            const classSelectors = [
+                '.view-options',
+                '.fc-view-options',
+                '.fct-view-options',
+                '[class*="view-options"]',
+                '[class*="view_options"]'
+            ];
+            for (const selector of classSelectors) {
+                const btn = card.querySelector(selector);
+                if (btn) {
+                    return btn;
+                }
+            }
+            
+            return null;
+        };
+
+        const viewOptionsButton = findViewOptionsButton(card);
+        
+        if (viewOptionsButton && viewOptionsButton.parentElement) {
+            // Insert after "View Options" button
+            viewOptionsButton.parentElement.insertBefore(container, viewOptionsButton.nextSibling);
         } else {
-            content.appendChild(container);
+            // Fallback to existing placement logic
+            const content =
+                card.querySelector('.fc-product-card-content') ||
+                card.querySelector('[data-fluent-cart-product-content]') ||
+                card.querySelector('.wp-block-post-content') ||
+                card;
+            if (position === 'top' || position === 'left') {
+                content.prepend(container);
+            } else {
+                content.appendChild(container);
+            }
         }
 
         applyPlacementLayout(container, position);
