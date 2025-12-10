@@ -129,39 +129,53 @@ export const AnalyticsDashboard = () => {
             )}
 
             {/* Conversion Funnel */}
-            {conversionData && (
-                <div className="funnel-card fluentcart-card">
-                    <h3>Conversion Funnel</h3>
+            {conversionData && (() => {
+                // Calculate proportional widths based on maximum value
+                const maxValue = Math.max(
+                    conversionData.added_to_wishlist || 0,
+                    conversionData.clicked || 0,
+                    conversionData.added_to_cart || 0,
+                    conversionData.purchased || 0
+                );
+                
+                const calculateWidth = (value) => {
+                    if (maxValue === 0) return '100%';
+                    const percentage = (value / maxValue) * 100;
+                    return `${Math.min(percentage, 100)}%`;
+                };
+
+                return (
+                    <div className="funnel-card fluentcart-card">
+                        <h3>Conversion Funnel</h3>
                         <div className="funnel-visualization">
                             <div className="funnel-stage">
-                                <div className="funnel-bar" style={{ width: '100%' }}>
+                                <div className="funnel-bar" style={{ width: calculateWidth(conversionData.added_to_wishlist || 0) }}>
                                     <span className="funnel-label">Added to Wishlist</span>
                                     <span className="funnel-value">{conversionData.added_to_wishlist || 0}</span>
                                 </div>
                             </div>
                             <div className="funnel-stage">
-                                <div className="funnel-bar" style={{ width: '85%' }}>
-                                    <span className="funnel-label">Clicked</span>
+                                <div className="funnel-bar" style={{ width: calculateWidth(conversionData.clicked || 0) }}>
+                                    <span className="funnel-label">Wishlist Shared Link Clicked</span>
                                     <span className="funnel-value">{conversionData.clicked || 0}</span>
                                 </div>
                             </div>
                             <div className="funnel-stage">
-                                <div className="funnel-bar" style={{ width: `${conversionData.wishlist_to_cart_rate || 0}%` }}>
+                                <div className="funnel-bar" style={{ width: calculateWidth(conversionData.added_to_cart || 0) }}>
                                     <span className="funnel-label">Added to Cart</span>
                                     <span className="funnel-value">{conversionData.added_to_cart || 0}</span>
-                                    <span className="funnel-rate">{conversionData.wishlist_to_cart_rate || 0}%</span>
                                 </div>
                             </div>
                             <div className="funnel-stage">
-                                <div className="funnel-bar" style={{ width: `${conversionData.overall_conversion_rate || 0}%` }}>
+                                <div className="funnel-bar" style={{ width: calculateWidth(conversionData.purchased || 0) }}>
                                     <span className="funnel-label">Purchased</span>
                                     <span className="funnel-value">{conversionData.purchased || 0}</span>
-                                    <span className="funnel-rate">{conversionData.overall_conversion_rate || 0}%</span>
                                 </div>
                             </div>
                         </div>
-                </div>
-            )}
+                    </div>
+                );
+            })()}
 
             {/* Popular Products */}
             {popularProducts.length > 0 && (

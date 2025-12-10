@@ -262,6 +262,10 @@
     }
 
     .funnel-stage {
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+
         .funnel-bar {
             display: flex;
             align-items: center;
@@ -272,6 +276,8 @@
             color: white;
             transition: all 0.2s ease-in-out;
             min-width: 200px;
+            max-width: 100%;
+            box-sizing: border-box;
 
             &:hover {
                 transform: translateX(4px);
@@ -282,12 +288,16 @@
         .funnel-label {
             font-weight: 500;
             font-size: 13px;
+            flex-shrink: 0;
+            white-space: nowrap;
         }
 
         .funnel-value {
             font-weight: 700;
             font-size: 16px;
             margin-right: var(--fluentcart-space-sm);
+            flex-shrink: 0;
+            white-space: nowrap;
         }
 
         .funnel-rate {
@@ -296,6 +306,8 @@
             border-radius: var(--fluentcart-radius-sm);
             font-size: 12px;
             font-weight: 600;
+            flex-shrink: 0;
+            white-space: nowrap;
         }
     }
 
