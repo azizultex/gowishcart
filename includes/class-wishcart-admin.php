@@ -2229,6 +2229,41 @@ JS;
                 }
             }
             
+            // Get available variants for this product
+            $variants = array();
+            if (method_exists($product, 'get_variants') || class_exists('WishCart_FluentCart_Product')) {
+                // Try to get variants using reflection or helper
+                global $wpdb;
+                $variants_table = $wpdb->prefix . 'fct_product_variations';
+                if ($wpdb->get_var("SHOW TABLES LIKE '$variants_table'") === $variants_table) {
+                    $variants_data = $wpdb->get_results(
+                        $wpdb->prepare(
+                            "SELECT id, item_price, compare_price, stock_status FROM {$variants_table} WHERE post_id = %d ORDER BY serial_index ASC",
+                            $product_id
+                        ),
+                        ARRAY_A
+                    );
+                    
+                    foreach ($variants_data as $variant_data) {
+                        $variant_price = isset($variant_data['item_price']) ? $variant_data['item_price'] / 100 : 0;
+                        $variant_regular_price = isset($variant_data['compare_price']) && $variant_data['compare_price'] > 0 ? $variant_data['compare_price'] / 100 : $variant_price;
+                        
+                        $variants[] = array(
+                            'id' => intval($variant_data['id']),
+                            'variation_id' => intval($variant_data['id']),
+                            'name' => '',
+                            'title' => '',
+                            'price' => $variant_price,
+                            'regular_price' => $variant_regular_price,
+                            'item_price' => $variant_data['item_price'],
+                            'compare_price' => isset($variant_data['compare_price']) ? $variant_data['compare_price'] : 0,
+                            'stock_status' => isset($variant_data['stock_status']) ? $variant_data['stock_status'] : 'in-stock',
+                        );
+                    }
+                }
+            }
+            
+            $product_data['variants'] = $variants;
             $products[] = $product_data;
         }
         

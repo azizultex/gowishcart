@@ -3,6 +3,7 @@ import { Heart, ShoppingCart, Twitter, Mail, MessageCircle, Link2, Check } from 
 import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
 import { addToCartViaAJAX, openCartSidebar } from '../lib/fluentcartCart';
+import VariantSelector from './VariantSelector';
 import '../styles/SharedWishlistView.scss';
 
 /**
@@ -15,6 +16,7 @@ const SharedWishlistView = ({ shareToken }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [addingToCartIds, setAddingToCartIds] = useState(new Set());
+    const [selectedVariants, setSelectedVariants] = useState(new Map()); // Map of productId -> variantId
 
     const apiUrl = window.wishcartShared?.apiUrl || '/wp-json/wishcart/v1/';
     const siteUrl = window.wishcartShared?.siteUrl || '';
@@ -24,6 +26,11 @@ const SharedWishlistView = ({ shareToken }) => {
     useEffect(() => {
         fetchSharedWishlist();
     }, [shareToken]);
+
+    // Helper function to get unique key for product variant tracking
+    const getUniqueItemKey = (product) => {
+        return `${product.id}-${product.variation_id || 0}`;
+    };
 
     const fetchSharedWishlist = async () => {
         if (!shareToken) {
@@ -46,7 +53,22 @@ const SharedWishlistView = ({ shareToken }) => {
             if (response.ok) {
                 const data = await response.json();
                 setWishlist(data.wishlist);
-                setProducts(data.products || []);
+                const fetchedProducts = data.products || [];
+                setProducts(fetchedProducts);
+                
+                // Initialize selectedVariants Map when products load
+                const newVariants = new Map();
+                fetchedProducts.forEach(product => {
+                    const uniqueKey = getUniqueItemKey(product);
+                    if (product.variation_id) {
+                        newVariants.set(uniqueKey, product.variation_id);
+                    } else if (product.variants && product.variants.length > 0) {
+                        // Default to first variant if no variation_id is set
+                        const firstVariantId = product.variants[0].id || product.variants[0].variation_id || product.variants[0].ID || 0;
+                        newVariants.set(uniqueKey, firstVariantId);
+                    }
+                });
+                setSelectedVariants(newVariants);
             } else {
                 const errorData = await response.json();
                 setError(errorData.message || 'Failed to load wishlist');
@@ -59,19 +81,78 @@ const SharedWishlistView = ({ shareToken }) => {
         }
     };
 
+    // Handle variant selection change
+    const handleVariantChange = (product, variantId, variant) => {
+        setSelectedVariants(prev => {
+            const next = new Map(prev);
+            const uniqueKey = getUniqueItemKey(product);
+            next.set(uniqueKey, variantId);
+            return next;
+        });
+    };
+
+    // Helper function to get the display price for a product based on selected variant
+    const getDisplayPrice = (product) => {
+        const uniqueKey = getUniqueItemKey(product);
+        const selectedVariantId = selectedVariants.get(uniqueKey);
+        
+        // If there's a selected variant and the product has variants array
+        if (selectedVariantId && product.variants && product.variants.length > 0) {
+            // Find the selected variant in the variants array
+            const selectedVariant = product.variants.find(v => 
+                (v.id || v.variation_id || v.ID) == selectedVariantId
+            );
+            
+            if (selectedVariant) {
+                // Extract price from the variant (handle both FluentCart and WooCommerce formats)
+                const price = selectedVariant.price || 
+                    (selectedVariant.item_price ? selectedVariant.item_price / 100 : null) || 
+                    0;
+                const regularPrice = selectedVariant.regular_price || 
+                    (selectedVariant.compare_price ? selectedVariant.compare_price / 100 : null);
+                const salePrice = selectedVariant.sale_price || price;
+                const isOnSale = regularPrice && regularPrice > price;
+                
+                return {
+                    price: price,
+                    regular_price: regularPrice,
+                    sale_price: salePrice,
+                    is_on_sale: isOnSale
+                };
+            }
+        }
+        
+        // Fall back to the product's saved price if no variant is selected or found
+        return {
+            price: product.price,
+            regular_price: product.regular_price,
+            sale_price: product.sale_price,
+            is_on_sale: product.is_on_sale
+        };
+    };
+
     const handleAddToCart = async (product) => {
-        if (!product || addingToCartIds.has(product.id)) {
+        const uniqueKey = getUniqueItemKey(product);
+        if (!product || addingToCartIds.has(uniqueKey)) {
             return;
         }
 
-        setAddingToCartIds(prev => new Set(prev).add(product.id));
+        setAddingToCartIds(prev => new Set(prev).add(uniqueKey));
 
         try {
+            // Get selected variant or use product's variation_id using unique key
+            let selectedVariantId = selectedVariants.get(uniqueKey) || product.variation_id || 0;
+
+            // For simple products with exactly 1 variant, use that variant's ID
+            if (product.variants && product.variants.length === 1 && !selectedVariantId) {
+                selectedVariantId = product.variants[0].id || product.variants[0].variation_id || 0;
+            }
+
             // Track the add to cart event for analytics (non-blocking)
             const trackUrl = `${apiUrl}wishlist/track-cart`;
             const trackBody = {
                 product_id: product.id,
-                variation_id: product.variation_id || 0,
+                variation_id: selectedVariantId,
             };
             
             fetch(trackUrl, {
@@ -87,7 +168,7 @@ const SharedWishlistView = ({ shareToken }) => {
             // Add to cart via AJAX
             const result = await addToCartViaAJAX({
                 productId: product.id,
-                variationId: product.variation_id || 0,
+                variationId: selectedVariantId,
                 quantity: 1,
                 productUrl: product.permalink,
             });
@@ -109,7 +190,7 @@ const SharedWishlistView = ({ shareToken }) => {
         } finally {
             setAddingToCartIds(prev => {
                 const next = new Set(prev);
-                next.delete(product.id);
+                next.delete(uniqueKey);
                 return next;
             });
         }
@@ -297,34 +378,42 @@ const SharedWishlistView = ({ shareToken }) => {
                                     <a href={product.permalink} className="item-name">
                                         {product.name}
                                     </a>
-                                    {product.variation_id && product.variation_attributes && product.variants && product.variants.length > 1 && (
-                                        <div className="item-variant">
-                                            {Object.entries(product.variation_attributes).map(([key, value]) => (
-                                                <span key={key}>{key}: {value}</span>
-                                            )).join(', ')}
-                                        </div>
-                                    )}
                                 </div>
 
                                 {/* Price */}
                                 <div className="item-price">
-                                    {product.is_on_sale && product.regular_price ? (
-                                        <>
-                                            <span className="price-sale">{formatPrice(product.sale_price || product.price)}</span>
-                                        </>
-                                    ) : (
-                                        <span className="price-current">{formatPrice(product.price)}</span>
-                                    )}
+                                    {(() => {
+                                        const displayPrice = getDisplayPrice(product);
+                                        return displayPrice.is_on_sale && displayPrice.regular_price ? (
+                                            <>
+                                                <span className="price-sale">{formatPrice(displayPrice.sale_price || displayPrice.price)}</span>
+                                            </>
+                                        ) : (
+                                            <span className="price-current">{formatPrice(displayPrice.price)}</span>
+                                        );
+                                    })()}
                                 </div>
+
+                                {/* Variant Selector (if product has multiple variants) */}
+                                {product.variants && product.variants.length > 1 && (
+                                    <div className="item-variant-selector">
+                                        <VariantSelector
+                                            variants={product.variants}
+                                            selectedVariantId={selectedVariants.get(getUniqueItemKey(product)) || product.variation_id || (product.variants[0]?.id || product.variants[0]?.variation_id || 0)}
+                                            onVariantChange={(variantId, variant) => handleVariantChange(product, variantId, variant)}
+                                            productId={product.id}
+                                        />
+                                    </div>
+                                )}
 
                                 {/* Add to Cart Button */}
                                 <Button
                                     onClick={() => handleAddToCart(product)}
-                                    disabled={addingToCartIds.has(product.id)}
+                                    disabled={addingToCartIds.has(getUniqueItemKey(product))}
                                     className="item-add-to-cart"
                                     size="sm"
                                 >
-                                    {addingToCartIds.has(product.id) ? 'Adding...' : 'Add To Cart'}
+                                    {addingToCartIds.has(getUniqueItemKey(product)) ? 'Adding...' : 'Add To Cart'}
                                 </Button>
                             </div>
                         ))}
