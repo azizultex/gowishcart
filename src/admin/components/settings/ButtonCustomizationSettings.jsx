@@ -9,6 +9,7 @@ import { Heart, ShoppingCart, X } from 'lucide-react';
 import { Sketch } from '@uiw/react-color';
 import IconPicker from './IconPicker';
 import * as LucideIcons from 'lucide-react';
+import ButtonPreview from './ButtonPreview';
 
 const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
     const wishlistSettings = settings.wishlist || {};
@@ -21,8 +22,6 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
         backgroundHoverColor: '#dad8da',
         buttonTextColor: '#515151',
         buttonTextHoverColor: '#686868',
-        textColor: '#007acc',
-        textHoverColor: '#686868',
         font: 'default',
         fontSize: '16px',
         iconSize: '16px',
@@ -33,8 +32,26 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
         backgroundHoverColor: '#dad8da',
         buttonTextColor: '#515151',
         buttonTextHoverColor: '#515151',
-        textColor: '#007acc',
-        textHoverColor: '#686868',
+        font: 'default',
+        fontSize: '16px',
+        iconSize: '16px',
+        borderRadius: '3px'
+    };
+    const savedProductPage = buttonCustomization.saved_product_page || {
+        backgroundColor: '#ebe9eb',
+        backgroundHoverColor: '#dad8da',
+        buttonTextColor: '#515151',
+        buttonTextHoverColor: '#686868',
+        font: 'default',
+        fontSize: '16px',
+        iconSize: '16px',
+        borderRadius: '3px'
+    };
+    const savedProductListing = buttonCustomization.saved_product_listing || {
+        backgroundColor: '#ebe9eb',
+        backgroundHoverColor: '#dad8da',
+        buttonTextColor: '#515151',
+        buttonTextHoverColor: '#515151',
         font: 'default',
         fontSize: '16px',
         iconSize: '16px',
@@ -397,18 +414,6 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
                         onChange={(value) => updateButtonCustomization(sectionKey, 'buttonTextHoverColor', value)}
                         colorPickerId={`${sectionKey}-btn-text-hover`}
                     />
-                    <ColorInput
-                        label={__('Text Color', 'wishcart')}
-                        value={sectionSettings.textColor}
-                        onChange={(value) => updateButtonCustomization(sectionKey, 'textColor', value)}
-                        colorPickerId={`${sectionKey}-text`}
-                    />
-                    <ColorInput
-                        label={__('Text Hover Color', 'wishcart')}
-                        value={sectionSettings.textHoverColor}
-                        onChange={(value) => updateButtonCustomization(sectionKey, 'textHoverColor', value)}
-                        colorPickerId={`${sectionKey}-text-hover`}
-                    />
                     <div className="space-y-2">
                         <Label className="text-sm">{__('Font', 'wishcart')}</Label>
                         <Select
@@ -460,114 +465,136 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
     };
 
     return (
-        <div className="wishcart-settings-section">
-            {/* General Settings Section */}
-                            <div className="space-y-4">
-                        <Label className="text-base font-semibold">{__('General Settings', 'wishcart')}</Label>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <ColorInput
-                                label={__('Text Color', 'wishcart')}
-                                value={general.textColor}
-                                onChange={(value) => updateButtonCustomization('general', 'textColor', value)}
-                                colorPickerId="general-text"
+        <div className="wishcart-button-customization-wrapper" style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: '2rem', alignItems: 'start' }}>
+            {/* Settings Section */}
+            <div className="wishcart-settings-section">
+                {/* General Settings Section */}
+                <div className="space-y-4">
+                    <Label className="text-base font-semibold">{__('General Settings', 'wishcart')}</Label>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <ColorInput
+                            label={__('Text Color', 'wishcart')}
+                            value={general.textColor}
+                            onChange={(value) => updateButtonCustomization('general', 'textColor', value)}
+                            colorPickerId="general-text"
+                        />
+                        <div className="space-y-2">
+                            <Label className="text-sm">{__('Font', 'wishcart')}</Label>
+                            <Select
+                                value={general.font || 'default'}
+                                onValueChange={(value) => updateButtonCustomization('general', 'font', value)}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder={__('Select font', 'wishcart')} />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {fontOptions.map((font) => (
+                                        <SelectItem key={font.value} value={font.value}>
+                                            {font.label}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="space-y-2">
+                            <Label className="text-sm">{__('Select Font Size', 'wishcart')}</Label>
+                            <Input
+                                type="text"
+                                value={general.fontSize || ''}
+                                onChange={(e) => updateButtonCustomization('general', 'fontSize', e.target.value)}
+                                placeholder="12px"
                             />
-                                <div className="space-y-2">
-                                <Label className="text-sm">{__('Font', 'wishcart')}</Label>
-                                <Select
-                                    value={general.font || 'default'}
-                                    onValueChange={(value) => updateButtonCustomization('general', 'font', value)}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder={__('Select font', 'wishcart')} />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {fontOptions.map((font) => (
-                                            <SelectItem key={font.value} value={font.value}>
-                                                {font.label}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                                    </div>
-                            <div className="space-y-2">
-                                <Label className="text-sm">{__('Select Font Size', 'wishcart')}</Label>
-                                                    <Input
-                                                        type="text"
-                                    value={general.fontSize || ''}
-                                    onChange={(e) => updateButtonCustomization('general', 'fontSize', e.target.value)}
-                                    placeholder="12px"
-                                />
-                            </div>
                         </div>
                     </div>
+                </div>
 
-                    {/* Product Page Button Section */}
-                    <ButtonSection
-                        title={__('"Add To Wishlist" Product Page Button', 'wishcart')}
-                        sectionKey="product_page"
-                        settings={productPage}
-                    />
+                {/* Product Page Button Section */}
+                <ButtonSection
+                    title={__('"Add To Wishlist" Product Page Button', 'wishcart')}
+                    sectionKey="product_page"
+                    settings={productPage}
+                />
 
-                    {/* Product Listing Button Section */}
-                    <ButtonSection
-                        title={__('"Add To Wishlist" Product Listing Button', 'wishcart')}
-                        sectionKey="product_listing"
-                        settings={productListing}
-                    />
+                {/* Product Listing Button Section */}
+                <ButtonSection
+                    title={__('"Add To Wishlist" Product Listing Button', 'wishcart')}
+                    sectionKey="product_listing"
+                    settings={productListing}
+                />
 
-                    {/* Icon Section */}
-                    <div className="space-y-4 border-t pt-4">
-                        <Label className="text-base font-semibold">{__('Icons', 'wishcart')}</Label>
+                {/* Saved to Wishlist Product Page Button Section */}
+                <ButtonSection
+                    title={__('"Saved to Wishlist" Product Page Button', 'wishcart')}
+                    sectionKey="saved_product_page"
+                    settings={savedProductPage}
+                />
+
+                {/* Saved to Wishlist Product Listing Button Section */}
+                <ButtonSection
+                    title={__('"Saved to Wishlist" Product Listing Button', 'wishcart')}
+                    sectionKey="saved_product_listing"
+                    settings={savedProductListing}
+                />
+
+                {/* Icon Section */}
+                <div className="space-y-4 border-t pt-4">
+                    <Label className="text-base font-semibold">{__('Icons', 'wishcart')}</Label>
+                    <p className="text-sm text-muted-foreground">
+                        {__('Configure separate icons for "Add to Wishlist" and "Saved to Wishlist" states', 'wishcart')}
+                    </p>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <IconSection
+                            title={__('"Add to Wishlist" Icon', 'wishcart')}
+                            iconType="addToWishlist"
+                            iconConfig={addToWishlistIcon}
+                        />
+                        <IconSection
+                            title={__('"Saved to Wishlist" Icon', 'wishcart')}
+                            iconType="savedWishlist"
+                            iconConfig={savedWishlistIcon}
+                        />
+                    </div>
+                </div>
+
+                {/* Labels Section */}
+                <div className="space-y-4 border-t pt-4">
+                    <Label className="text-base font-semibold">{__('Button Labels', 'wishcart')}</Label>
+                    
+                    <div className="space-y-2">
+                        <Label htmlFor="label_add">{__('"Add to Wishlist" Text', 'wishcart')}</Label>
+                        <Input
+                            id="label_add"
+                            type="text"
+                            value={labels.add || ''}
+                            onChange={(e) => updateButtonCustomization('labels', 'add', e.target.value)}
+                            placeholder={__('Add to Wishlist', 'wishcart')}
+                        />
                         <p className="text-sm text-muted-foreground">
-                            {__('Configure separate icons for "Add to Wishlist" and "Saved to Wishlist" states', 'wishcart')}
+                            {__('Text displayed when product is not in wishlist', 'wishcart')}
                         </p>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <IconSection
-                                title={__('"Add to Wishlist" Icon', 'wishcart')}
-                                iconType="addToWishlist"
-                                iconConfig={addToWishlistIcon}
-                            />
-                            <IconSection
-                                title={__('"Saved to Wishlist" Icon', 'wishcart')}
-                                iconType="savedWishlist"
-                                iconConfig={savedWishlistIcon}
-                            />
-                            </div>
                     </div>
 
-                    {/* Labels Section */}
-                    <div className="space-y-4 border-t pt-4">
-                        <Label className="text-base font-semibold">{__('Button Labels', 'wishcart')}</Label>
-                        
-                        <div className="space-y-2">
-                            <Label htmlFor="label_add">{__('"Add to Wishlist" Text', 'wishcart')}</Label>
-                            <Input
-                                id="label_add"
-                                type="text"
-                                value={labels.add || ''}
-                                onChange={(e) => updateButtonCustomization('labels', 'add', e.target.value)}
-                                placeholder={__('Add to Wishlist', 'wishcart')}
-                            />
-                            <p className="text-sm text-muted-foreground">
-                                {__('Text displayed when product is not in wishlist', 'wishcart')}
-                            </p>
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="label_saved">{__('"Saved to Wishlist" Text', 'wishcart')}</Label>
-                            <Input
-                                id="label_saved"
-                                type="text"
-                                value={labels.saved || ''}
-                                onChange={(e) => updateButtonCustomization('labels', 'saved', e.target.value)}
-                                placeholder={__('Saved to Wishlist', 'wishcart')}
-                            />
-                            <p className="text-sm text-muted-foreground">
-                                {__('Text displayed when product is in wishlist', 'wishcart')}
-                            </p>
-                        </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="label_saved">{__('"Saved to Wishlist" Text', 'wishcart')}</Label>
+                        <Input
+                            id="label_saved"
+                            type="text"
+                            value={labels.saved || ''}
+                            onChange={(e) => updateButtonCustomization('labels', 'saved', e.target.value)}
+                            placeholder={__('Saved to Wishlist', 'wishcart')}
+                        />
+                        <p className="text-sm text-muted-foreground">
+                            {__('Text displayed when product is in wishlist', 'wishcart')}
+                        </p>
                     </div>
+                </div>
+            </div>
+
+            {/* Live Preview Section */}
+            <div className="wishcart-preview-wrapper">
+                <ButtonPreview buttonCustomization={buttonCustomization} />
+            </div>
         </div>
     );
 };

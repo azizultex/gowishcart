@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Heart } from 'lucide-react';
 import { __ } from '@wordpress/i18n';
 import { cn } from '../lib/utils';
@@ -324,9 +324,24 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
 
     // Get customization settings
     const customization = window.wishcartWishlist?.buttonCustomization || {};
-    const colors = customization.colors || {};
+    const colors = customization.colors || {}; // Keep for backwards compatibility
+    const general = customization.general || {};
+    const productPage = customization.product_page || {};
+    const productListing = customization.product_listing || {};
+    const savedProductPage = customization.saved_product_page || {};
+    const savedProductListing = customization.saved_product_listing || {};
     const iconConfig = customization.icon || {};
     const labels = customization.labels || {};
+    
+    // Detect if button is on product listing (shop page) vs product page
+    const isProductListing = useMemo(() => {
+        if (typeof document === 'undefined') return false;
+        const container = document.querySelector(`[data-product-id="${productId}"]`);
+        if (!container) return false;
+        return container.closest('.wishcart-card-container') !== null || 
+               container.closest('.fct-product-card, .fc-product-card') !== null ||
+               container.classList.contains('wishcart-card-container');
+    }, [productId]);
 
     let addToWishlistIcon, savedWishlistIcon;
     
@@ -361,6 +376,18 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
 
     const getIconComponent = () => {
         const currentIcon = isInWishlist ? savedWishlistIcon : addToWishlistIcon;
+        // Use saved settings if in wishlist, otherwise use add settings
+        let settings;
+        if (isInWishlist) {
+            settings = isProductListing ? savedProductListing : savedProductPage;
+            // Fallback to add state settings if saved settings are not available
+            if (!settings || Object.keys(settings).length === 0) {
+                settings = isProductListing ? productListing : productPage;
+            }
+        } else {
+            settings = isProductListing ? productListing : productPage;
+        }
+        const iconSize = settings.iconSize || general.fontSize || '1.125rem';
         
         if (currentIcon.type === 'custom' && currentIcon.customUrl) {
             return (
@@ -368,7 +395,7 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
                     src={currentIcon.customUrl}
                     alt=""
                     className={cn("wishcart-wishlist-button__icon", isInWishlist && "wishcart-wishlist-button__icon--filled")}
-                    style={{ width: '1.125rem', height: '1.125rem' }}
+                    style={{ width: iconSize, height: iconSize }}
                 />
             );
         }
@@ -377,7 +404,10 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
         const IconComponent = LucideIcons[iconValue] || Heart;
         
         return (
-            <IconComponent className={cn("wishcart-wishlist-button__icon", isInWishlist && "wishcart-wishlist-button__icon--filled")} />
+            <IconComponent 
+                className={cn("wishcart-wishlist-button__icon", isInWishlist && "wishcart-wishlist-button__icon--filled")}
+                style={{ width: iconSize, height: iconSize }}
+            />
         );
     };
 
@@ -385,33 +415,82 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
         const baseStyles = customStyles || {};
         const dynamicStyles = {};
 
-        if (colors.background) {
-            dynamicStyles['--wishlist-bg'] = colors.background;
-        }
-        if (colors.text) {
-            dynamicStyles['--wishlist-text'] = colors.text;
-        }
-        if (colors.border) {
-            dynamicStyles['--wishlist-border'] = colors.border;
-        }
-        if (colors.activeBackground) {
-            dynamicStyles['--wishlist-active-bg'] = colors.activeBackground;
-        }
-        if (colors.activeText) {
-            dynamicStyles['--wishlist-active-text'] = colors.activeText;
-        }
-        if (colors.activeBorder) {
-            dynamicStyles['--wishlist-active-border'] = colors.activeBorder;
-        }
-
-        if (!isInWishlist) {
-            if (colors.background) dynamicStyles.backgroundColor = colors.background;
-            if (colors.text) dynamicStyles.color = colors.text;
-            if (colors.border) dynamicStyles.borderColor = colors.border;
+        // Use saved settings if in wishlist, otherwise use add settings
+        // Use product_listing settings if on listing page, otherwise product_page settings
+        let settings;
+        if (isInWishlist) {
+            // Use saved state settings
+            settings = isProductListing ? savedProductListing : savedProductPage;
+            // Fallback to add state settings if saved settings are not available
+            if (!settings || Object.keys(settings).length === 0) {
+                settings = isProductListing ? productListing : productPage;
+            }
         } else {
-            if (colors.activeBackground) dynamicStyles.backgroundColor = colors.activeBackground;
-            if (colors.activeText) dynamicStyles.color = colors.activeText;
-            if (colors.activeBorder) dynamicStyles.borderColor = colors.activeBorder;
+            // Use add state settings
+            settings = isProductListing ? productListing : productPage;
+        }
+        
+        // Apply general settings first (they can be overridden by specific settings)
+        if (general.textColor && !settings.buttonTextColor) {
+            dynamicStyles.color = general.textColor;
+        }
+        if (general.font && general.font !== 'default' && !settings.font) {
+            dynamicStyles.fontFamily = general.font;
+        }
+        if (general.fontSize && !settings.fontSize) {
+            dynamicStyles.fontSize = general.fontSize;
+        }
+        
+        // Apply specific settings (product_page, product_listing, saved_product_page, or saved_product_listing)
+        if (settings.backgroundColor) {
+            dynamicStyles.backgroundColor = settings.backgroundColor;
+        }
+        if (settings.buttonTextColor) {
+            dynamicStyles.color = settings.buttonTextColor;
+        }
+        if (settings.font && settings.font !== 'default') {
+            dynamicStyles.fontFamily = settings.font;
+        }
+        if (settings.fontSize) {
+            dynamicStyles.fontSize = settings.fontSize;
+        }
+        if (settings.borderRadius) {
+            dynamicStyles.borderRadius = settings.borderRadius;
+        }
+        if (settings.iconSize) {
+            dynamicStyles['--icon-size'] = settings.iconSize;
+        }
+        
+        // Fallback to old colors structure for backwards compatibility
+        if (Object.keys(dynamicStyles).length === 0 || (!settings.backgroundColor && colors.background)) {
+            if (colors.background) {
+                dynamicStyles['--wishlist-bg'] = colors.background;
+            }
+            if (colors.text) {
+                dynamicStyles['--wishlist-text'] = colors.text;
+            }
+            if (colors.border) {
+                dynamicStyles['--wishlist-border'] = colors.border;
+            }
+            if (colors.activeBackground) {
+                dynamicStyles['--wishlist-active-bg'] = colors.activeBackground;
+            }
+            if (colors.activeText) {
+                dynamicStyles['--wishlist-active-text'] = colors.activeText;
+            }
+            if (colors.activeBorder) {
+                dynamicStyles['--wishlist-active-border'] = colors.activeBorder;
+            }
+
+            if (!isInWishlist) {
+                if (colors.background) dynamicStyles.backgroundColor = colors.background;
+                if (colors.text) dynamicStyles.color = colors.text;
+                if (colors.border) dynamicStyles.borderColor = colors.border;
+            } else {
+                if (colors.activeBackground) dynamicStyles.backgroundColor = colors.activeBackground;
+                if (colors.activeText) dynamicStyles.color = colors.activeText;
+                if (colors.activeBorder) dynamicStyles.borderColor = colors.activeBorder;
+            }
         }
 
         return { ...baseStyles, ...dynamicStyles };

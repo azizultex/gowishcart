@@ -116,7 +116,12 @@ class WishCart_Wishlist_Frontend {
                 'showOnShop' => ! empty( $wishlist_settings['shop_page_button'] ),
                 'enableMultipleWishlists' => ! empty( $wishlist_settings['enable_multiple_wishlists'] ),
                 'buttonCustomization' => array(
-                    'colors' => isset( $button_customization['colors'] ) ? $button_customization['colors'] : array(),
+                    'general' => isset( $button_customization['general'] ) ? $button_customization['general'] : array(),
+                    'product_page' => isset( $button_customization['product_page'] ) ? $button_customization['product_page'] : array(),
+                    'product_listing' => isset( $button_customization['product_listing'] ) ? $button_customization['product_listing'] : array(),
+                    'saved_product_page' => isset( $button_customization['saved_product_page'] ) ? $button_customization['saved_product_page'] : array(),
+                    'saved_product_listing' => isset( $button_customization['saved_product_listing'] ) ? $button_customization['saved_product_listing'] : array(),
+                    'colors' => isset( $button_customization['colors'] ) ? $button_customization['colors'] : array(), // Keep for backwards compatibility
                     'icon' => isset( $button_customization['icon'] ) ? $button_customization['icon'] : array(),
                     'labels' => isset( $button_customization['labels'] ) ? $button_customization['labels'] : array(),
                 ),
@@ -242,8 +247,139 @@ class WishCart_Wishlist_Frontend {
      */
     public function output_custom_css() {
         $settings = get_option( 'wishcart_settings', array() );
-        $custom_css = isset( $settings['wishlist']['custom_css'] ) ? $settings['wishlist']['custom_css'] : '';
+        $wishlist_settings = isset( $settings['wishlist'] ) ? $settings['wishlist'] : array();
+        $button_customization = isset( $wishlist_settings['button_customization'] ) ? $wishlist_settings['button_customization'] : array();
         
+        $css_parts = array();
+        
+        // Generate CSS from product_page customization settings
+        // Note: Product listing styles come after and have higher specificity (.wishcart-card-container .wishcart-wishlist-button)
+        $product_page = isset( $button_customization['product_page'] ) ? $button_customization['product_page'] : array();
+        if ( ! empty( $product_page ) ) {
+            $css_parts[] = '/* Product Page Button Styles */';
+            // Product page buttons are those NOT inside .wishcart-card-container
+            // Since listing styles come after with higher specificity, they will override when applicable
+            $css_parts[] = '.wishcart-wishlist-button-container:not(.wishcart-card-container) .wishcart-wishlist-button {';
+            
+            if ( ! empty( $product_page['backgroundColor'] ) ) {
+                $css_parts[] = '  background-color: ' . esc_attr( $product_page['backgroundColor'] ) . ';';
+            }
+            if ( ! empty( $product_page['buttonTextColor'] ) ) {
+                $css_parts[] = '  color: ' . esc_attr( $product_page['buttonTextColor'] ) . ';';
+            }
+            if ( ! empty( $product_page['font'] ) && $product_page['font'] !== 'default' ) {
+                $css_parts[] = '  font-family: ' . esc_attr( $product_page['font'] ) . ';';
+            }
+            if ( ! empty( $product_page['fontSize'] ) ) {
+                $css_parts[] = '  font-size: ' . esc_attr( $product_page['fontSize'] ) . ';';
+            }
+            if ( ! empty( $product_page['borderRadius'] ) ) {
+                $css_parts[] = '  border-radius: ' . esc_attr( $product_page['borderRadius'] ) . ';';
+            }
+            
+            $css_parts[] = '}';
+            
+            // Hover state
+            if ( ! empty( $product_page['backgroundHoverColor'] ) || ! empty( $product_page['buttonTextHoverColor'] ) ) {
+                $css_parts[] = '.wishcart-wishlist-button-container:not(.wishcart-card-container) .wishcart-wishlist-button:hover:not(:disabled) {';
+                if ( ! empty( $product_page['backgroundHoverColor'] ) ) {
+                    $css_parts[] = '  background-color: ' . esc_attr( $product_page['backgroundHoverColor'] ) . ';';
+                }
+                if ( ! empty( $product_page['buttonTextHoverColor'] ) ) {
+                    $css_parts[] = '  color: ' . esc_attr( $product_page['buttonTextHoverColor'] ) . ';';
+                }
+                $css_parts[] = '}';
+            }
+            
+            // Icon size for product page
+            if ( ! empty( $product_page['iconSize'] ) ) {
+                $css_parts[] = '.wishcart-wishlist-button-container:not(.wishcart-card-container) .wishcart-wishlist-button .wishcart-wishlist-button__icon {';
+                $css_parts[] = '  width: ' . esc_attr( $product_page['iconSize'] ) . ';';
+                $css_parts[] = '  height: ' . esc_attr( $product_page['iconSize'] ) . ';';
+                $css_parts[] = '}';
+            }
+        }
+        
+        // Generate CSS from product_listing customization settings
+        // This comes after product_page styles and uses more specific selector to override
+        $product_listing = isset( $button_customization['product_listing'] ) ? $button_customization['product_listing'] : array();
+        if ( ! empty( $product_listing ) ) {
+            $css_parts[] = '/* Product Listing Button Styles */';
+            // More specific selector will override product page styles when button is inside .wishcart-card-container
+            $css_parts[] = '.wishcart-card-container .wishcart-wishlist-button {';
+            
+            if ( ! empty( $product_listing['backgroundColor'] ) ) {
+                $css_parts[] = '  background-color: ' . esc_attr( $product_listing['backgroundColor'] ) . ';';
+            }
+            if ( ! empty( $product_listing['buttonTextColor'] ) ) {
+                $css_parts[] = '  color: ' . esc_attr( $product_listing['buttonTextColor'] ) . ';';
+            }
+            if ( ! empty( $product_listing['font'] ) && $product_listing['font'] !== 'default' ) {
+                $css_parts[] = '  font-family: ' . esc_attr( $product_listing['font'] ) . ';';
+            }
+            if ( ! empty( $product_listing['fontSize'] ) ) {
+                $css_parts[] = '  font-size: ' . esc_attr( $product_listing['fontSize'] ) . ';';
+            }
+            if ( ! empty( $product_listing['borderRadius'] ) ) {
+                $css_parts[] = '  border-radius: ' . esc_attr( $product_listing['borderRadius'] ) . ';';
+            }
+            
+            $css_parts[] = '}';
+            
+            // Hover state for product listing
+            if ( ! empty( $product_listing['backgroundHoverColor'] ) || ! empty( $product_listing['buttonTextHoverColor'] ) ) {
+                $css_parts[] = '.wishcart-card-container .wishcart-wishlist-button:hover:not(:disabled) {';
+                if ( ! empty( $product_listing['backgroundHoverColor'] ) ) {
+                    $css_parts[] = '  background-color: ' . esc_attr( $product_listing['backgroundHoverColor'] ) . ';';
+                }
+                if ( ! empty( $product_listing['buttonTextHoverColor'] ) ) {
+                    $css_parts[] = '  color: ' . esc_attr( $product_listing['buttonTextHoverColor'] ) . ';';
+                }
+                $css_parts[] = '}';
+            }
+            
+            // Icon size for product listing
+            if ( ! empty( $product_listing['iconSize'] ) ) {
+                $css_parts[] = '.wishcart-card-container .wishcart-wishlist-button .wishcart-wishlist-button__icon {';
+                $css_parts[] = '  width: ' . esc_attr( $product_listing['iconSize'] ) . ';';
+                $css_parts[] = '  height: ' . esc_attr( $product_listing['iconSize'] ) . ';';
+                $css_parts[] = '}';
+            }
+        }
+        
+        // Generate CSS from general settings (applies to both)
+        $general = isset( $button_customization['general'] ) ? $button_customization['general'] : array();
+        if ( ! empty( $general ) ) {
+            $css_parts[] = '/* General Button Styles */';
+            
+            if ( ! empty( $general['textColor'] ) ) {
+                $css_parts[] = '.wishcart-wishlist-button {';
+                $css_parts[] = '  color: ' . esc_attr( $general['textColor'] ) . ';';
+                $css_parts[] = '}';
+            }
+            
+            if ( ! empty( $general['font'] ) && $general['font'] !== 'default' ) {
+                $css_parts[] = '.wishcart-wishlist-button {';
+                $css_parts[] = '  font-family: ' . esc_attr( $general['font'] ) . ';';
+                $css_parts[] = '}';
+            }
+            
+            if ( ! empty( $general['fontSize'] ) ) {
+                $css_parts[] = '.wishcart-wishlist-button {';
+                $css_parts[] = '  font-size: ' . esc_attr( $general['fontSize'] ) . ';';
+                $css_parts[] = '}';
+            }
+        }
+        
+        // Output generated CSS
+        if ( ! empty( $css_parts ) ) {
+            echo '<style id="wishcart-wishlist-generated-css">' . "\n";
+            echo implode( "\n", $css_parts ) . "\n";
+            echo '</style>' . "\n";
+        }
+        
+        // Output custom CSS from text field
+        $custom_css = isset( $wishlist_settings['custom_css'] ) ? $wishlist_settings['custom_css'] : '';
         if ( ! empty( $custom_css ) ) {
             echo '<style id="wishcart-wishlist-custom-css">' . wp_strip_all_tags( $custom_css ) . '</style>' . "\n";
         }
