@@ -66,6 +66,8 @@
             font-weight: 600;
             color: #6b7280;
             margin-left: auto;
+            
+            display: none; // for variation hide
         }
 
         &--active .wishcart-variant-wishlist-button__variant-name {
