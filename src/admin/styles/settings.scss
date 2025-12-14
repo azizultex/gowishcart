@@ -321,6 +321,60 @@
     background: #fef2f2;
     color: #dc2626;
   }
+
+  // Button variation styles for preview
+  &--text-only {
+    .wishcart-wishlist-button__icon {
+      display: none;
+    }
+  }
+
+  &--text-only-link {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    width: auto !important;
+    gap: 0;
+
+    .wishcart-wishlist-button__icon {
+      display: none;
+    }
+
+    .wishcart-wishlist-button__label {
+      flex-shrink: 0;
+    }
+  }
+
+  &--text-icon-link {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    width: auto !important;
+    gap: 0.375rem;
+
+    .wishcart-wishlist-button__icon {
+      flex-shrink: 0;
+    }
+  }
+
+  &--icon-only {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    width: auto !important;
+    gap: 0;
+
+    .wishcart-wishlist-button__label {
+      display: none;
+    }
+
+    .wishcart-wishlist-button__icon {
+      flex-shrink: 0;
+    }
+  }
 }
 
 /* Button Customization Wrapper */

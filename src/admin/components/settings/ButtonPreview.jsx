@@ -111,6 +111,9 @@ const ButtonPreview = ({ buttonCustomization }) => {
         );
     };
 
+    // Get button style from general settings
+    const buttonStyle = general.buttonStyle || 'button';
+
     // Build button styles for a section
     const buildButtonStyles = (sectionSettings, isActive = false) => {
         const styles = {};
@@ -129,18 +132,6 @@ const ButtonPreview = ({ buttonCustomization }) => {
             styles.fontSize = general.fontSize;
         }
 
-        // Border radius
-        if (sectionSettings.borderRadius) {
-            styles.borderRadius = sectionSettings.borderRadius;
-        }
-
-        // Background color
-        if (sectionSettings.backgroundColor) {
-            styles.backgroundColor = sectionSettings.backgroundColor;
-        } else {
-            styles.backgroundColor = '#ebe9eb'; // Default
-        }
-
         // Text color - use buttonTextColor for the button text
         if (sectionSettings.buttonTextColor) {
             styles.color = sectionSettings.buttonTextColor;
@@ -148,23 +139,53 @@ const ButtonPreview = ({ buttonCustomization }) => {
             styles.color = '#515151'; // Default
         }
 
-        // Border
-        styles.border = '1px solid';
-        if (sectionSettings.backgroundColor) {
-            styles.borderColor = sectionSettings.backgroundColor;
-        } else {
-            styles.borderColor = '#e5e7eb';
+        // Apply general text color if set and no section text color
+        if (general.textColor && !sectionSettings.buttonTextColor) {
+            styles.color = general.textColor;
         }
 
-        // Padding
-        styles.padding = '8px 12px';
+        // Base display properties
         styles.display = 'inline-flex';
         styles.alignItems = 'center';
         styles.gap = '8px';
         styles.cursor = 'default';
         styles.transition = 'all 0.2s ease-in-out';
-        styles.width = '100%';
         styles.justifyContent = 'flex-start';
+
+        // Apply styles based on button variation
+        if (buttonStyle === 'text-icon-link' || buttonStyle === 'icon-only' || buttonStyle === 'text-only-link') {
+            // No button styling - remove background, border, padding, box-shadow
+            styles.background = 'transparent';
+            styles.border = 'none';
+            styles.padding = '0';
+            styles.boxShadow = 'none';
+            styles.width = 'auto';
+        } else {
+            // Default button styling
+            // Border radius
+            if (sectionSettings.borderRadius) {
+                styles.borderRadius = sectionSettings.borderRadius;
+            }
+
+            // Background color
+            if (sectionSettings.backgroundColor) {
+                styles.backgroundColor = sectionSettings.backgroundColor;
+            } else {
+                styles.backgroundColor = '#ebe9eb'; // Default
+            }
+
+            // Border
+            styles.border = '1px solid';
+            if (sectionSettings.backgroundColor) {
+                styles.borderColor = sectionSettings.backgroundColor;
+            } else {
+                styles.borderColor = '#e5e7eb';
+            }
+
+            // Padding
+            styles.padding = '8px 12px';
+            styles.width = '100%';
+        }
 
         // For active state, apply active colors if available
         if (isActive) {
@@ -189,37 +210,55 @@ const ButtonPreview = ({ buttonCustomization }) => {
         const hoverStyles = buildHoverStyles(sectionSettings);
         const iconSize = sectionSettings.iconSize || '16px';
 
-        // Apply general text color if set and no section text color
-        if (general.textColor && !sectionSettings.buttonTextColor) {
-            baseStyles.color = general.textColor;
-        }
+        // Determine what to render based on buttonStyle
+        const showIcon = buttonStyle !== 'text-only' && buttonStyle !== 'text-only-link';
+        const showText = buttonStyle !== 'icon-only';
+
+        // Build className based on button style
+        const buttonClasses = cn(
+            "wishcart-wishlist-button-preview",
+            isActive && "wishcart-wishlist-button-preview--active",
+            buttonStyle === 'text-only' && "wishcart-wishlist-button-preview--text-only",
+            buttonStyle === 'text-only-link' && "wishcart-wishlist-button-preview--text-only-link",
+            buttonStyle === 'text-icon-link' && "wishcart-wishlist-button-preview--text-icon-link",
+            buttonStyle === 'icon-only' && "wishcart-wishlist-button-preview--icon-only"
+        );
 
         return (
             <button
                 type="button"
-                className={cn(
-                    "wishcart-wishlist-button-preview",
-                    isActive && "wishcart-wishlist-button-preview--active"
-                )}
+                className={buttonClasses}
                 style={{
                     ...baseStyles,
                     ...hoverStyles,
                 }}
                 onMouseEnter={(e) => {
-                    if (sectionSettings.backgroundHoverColor) {
-                        e.currentTarget.style.backgroundColor = sectionSettings.backgroundHoverColor;
-                    }
-                    if (sectionSettings.buttonTextHoverColor) {
-                        e.currentTarget.style.color = sectionSettings.buttonTextHoverColor;
+                    // Only apply hover styles if it's a button style
+                    if (buttonStyle === 'button' || buttonStyle === 'text-only') {
+                        if (sectionSettings.backgroundHoverColor) {
+                            e.currentTarget.style.backgroundColor = sectionSettings.backgroundHoverColor;
+                        }
+                        if (sectionSettings.buttonTextHoverColor) {
+                            e.currentTarget.style.color = sectionSettings.buttonTextHoverColor;
+                        }
+                    } else {
+                        // For text-icon-link, text-only-link, and icon-only, just change text/icon color on hover
+                        if (sectionSettings.buttonTextHoverColor) {
+                            e.currentTarget.style.color = sectionSettings.buttonTextHoverColor;
+                        }
                     }
                 }}
                 onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = baseStyles.backgroundColor || '#ebe9eb';
-                    e.currentTarget.style.color = baseStyles.color || '#515151';
+                    if (buttonStyle === 'button' || buttonStyle === 'text-only') {
+                        e.currentTarget.style.backgroundColor = baseStyles.backgroundColor || '#ebe9eb';
+                        e.currentTarget.style.color = baseStyles.color || '#515151';
+                    } else {
+                        e.currentTarget.style.color = baseStyles.color || '#515151';
+                    }
                 }}
             >
-                {getIconComponent(icon, isActive, iconSize)}
-                <span className="wishcart-wishlist-button__label">{label}</span>
+                {showIcon && getIconComponent(icon, isActive, iconSize)}
+                {showText && <span className="wishcart-wishlist-button__label">{label}</span>}
             </button>
         );
     };

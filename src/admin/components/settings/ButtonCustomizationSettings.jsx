@@ -506,6 +506,29 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
                             />
                         </div>
                     </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                        <div className="space-y-2">
+                            <Label className="text-sm">{__('Button Style', 'wishcart')}</Label>
+                            <Select
+                                value={general.buttonStyle || 'button'}
+                                onValueChange={(value) => updateButtonCustomization('general', 'buttonStyle', value)}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder={__('Select button style', 'wishcart')} />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="button">{__('Button (Text + Icon)', 'wishcart')}</SelectItem>
+                                    <SelectItem value="text-only">{__('Text Only', 'wishcart')}</SelectItem>
+                                    <SelectItem value="text-only-link">{__('Text Only (No Button)', 'wishcart')}</SelectItem>
+                                    <SelectItem value="text-icon-link">{__('Text with Icon (No Button)', 'wishcart')}</SelectItem>
+                                    <SelectItem value="icon-only">{__('Icon Only', 'wishcart')}</SelectItem>
+                                </SelectContent>
+                            </Select>
+                            <p className="text-xs text-muted-foreground">
+                                {__('Choose how the wishlist button appears', 'wishcart')}
+                            </p>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Product Page Button Section */}

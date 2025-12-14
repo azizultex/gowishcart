@@ -333,6 +333,9 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
     const iconConfig = customization.icon || {};
     const labels = customization.labels || {};
     
+    // Get button style variation
+    const buttonStyle = general.buttonStyle || 'button';
+    
     // Detect if button is on product listing (shop page) vs product page
     const isProductListing = useMemo(() => {
         if (typeof document === 'undefined') return false;
@@ -428,6 +431,19 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
         } else {
             // Use add state settings
             settings = isProductListing ? productListing : productPage;
+        }
+        
+        // Apply button style variations
+        if (buttonStyle === 'text-icon-link' || buttonStyle === 'icon-only' || buttonStyle === 'text-only-link') {
+            // Remove button styling for link-style variations
+            dynamicStyles.background = 'transparent';
+            dynamicStyles.backgroundColor = 'transparent';
+            dynamicStyles.border = 'none';
+            dynamicStyles.borderColor = 'transparent';
+            dynamicStyles.padding = '0';
+            dynamicStyles.boxShadow = 'none';
+            dynamicStyles.width = 'auto';
+            dynamicStyles.minHeight = 'auto';
         }
         
         // Apply general settings first (they can be overridden by specific settings)
@@ -538,19 +554,31 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
                     "wishcart-variant-wishlist-button",
                     isInWishlist && "wishcart-variant-wishlist-button--active",
                     !isVisible && "wishcart-variant-wishlist-button--hidden",
+                    buttonStyle === 'text-only' && "wishcart-variant-wishlist-button--text-only",
+                    buttonStyle === 'text-only-link' && "wishcart-variant-wishlist-button--text-only-link",
+                    buttonStyle === 'text-icon-link' && "wishcart-variant-wishlist-button--text-icon-link",
+                    buttonStyle === 'icon-only' && "wishcart-variant-wishlist-button--icon-only",
                     className
                 )}
                 style={buildButtonStyles()}
                 aria-label={`${srLabel} - ${variantName}`}
                 data-variant-id={variantId}
             >
-                {isAdding ? (
-                    <Heart className="wishcart-wishlist-button__icon wishcart-wishlist-button__icon--loading" />
-                ) : (
-                    getIconComponent()
+                {/* Conditionally render icon based on buttonStyle */}
+                {(buttonStyle !== 'text-only' && buttonStyle !== 'text-only-link') && (
+                    isAdding ? (
+                        <Heart className="wishcart-wishlist-button__icon wishcart-wishlist-button__icon--loading" />
+                    ) : (
+                        getIconComponent()
+                    )
                 )}
-                <span className="wishcart-wishlist-button__label">{buttonLabel}</span>
-                <span className="wishcart-variant-wishlist-button__variant-name">{variantName}</span>
+                {/* Conditionally render text based on buttonStyle */}
+                {(buttonStyle !== 'icon-only') && (
+                    <>
+                        <span className="wishcart-wishlist-button__label">{buttonLabel}</span>
+                        <span className="wishcart-variant-wishlist-button__variant-name">{variantName}</span>
+                    </>
+                )}
             </button>
         </>
     );

@@ -1015,6 +1015,9 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
     const iconConfig = customization.icon || {};
     const labels = customization.labels || {};
     
+    // Get button style variation
+    const buttonStyle = general.buttonStyle || 'button';
+    
     // Detect if button is on product listing (shop page) vs product page
     const isProductListing = useMemo(() => {
         if (typeof document === 'undefined') return false;
@@ -1108,6 +1111,19 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
         } else {
             // Use add state settings
             settings = isProductListing ? productListing : productPage;
+        }
+        
+        // Apply button style variations
+        if (buttonStyle === 'text-icon-link' || buttonStyle === 'icon-only' || buttonStyle === 'text-only-link') {
+            // Remove button styling for link-style variations
+            dynamicStyles.background = 'transparent';
+            dynamicStyles.backgroundColor = 'transparent';
+            dynamicStyles.border = 'none';
+            dynamicStyles.borderColor = 'transparent';
+            dynamicStyles.padding = '0';
+            dynamicStyles.boxShadow = 'none';
+            dynamicStyles.width = 'auto';
+            dynamicStyles.minHeight = 'auto';
         }
         
         // Apply general settings first (they can be overridden by specific settings)
@@ -1285,74 +1301,104 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
                     "wishcart-wishlist-button",
                     isInWishlist && "wishcart-wishlist-button--active",
                     position && `wishcart-placement-${position}`,
+                    buttonStyle === 'text-only' && "wishcart-wishlist-button--text-only",
+                    buttonStyle === 'text-only-link' && "wishcart-wishlist-button--text-only-link",
+                    buttonStyle === 'text-icon-link' && "wishcart-wishlist-button--text-icon-link",
+                    buttonStyle === 'icon-only' && "wishcart-wishlist-button--icon-only",
                     className
                 )}
                 style={buildButtonStyles()}
                 data-position={position}
                 aria-label={srLabel}
             onMouseEnter={(e) => {
-                if (isInWishlist) {
-                    // Use saved state hover colors
-                    const savedSettings = isProductListing ? savedProductListing : savedProductPage;
-                    // Fallback to add state settings if saved settings are not available
-                    const settings = (savedSettings && Object.keys(savedSettings).length > 0) 
-                        ? savedSettings 
-                        : (isProductListing ? productListing : productPage);
-                    
-                    if (settings.backgroundHoverColor) {
-                        e.currentTarget.style.backgroundColor = settings.backgroundHoverColor;
-                    } else if (colors.activeBackground) {
-                        e.currentTarget.style.backgroundColor = colors.activeBackground;
-                    }
-                    if (settings.buttonTextHoverColor) {
-                        e.currentTarget.style.color = settings.buttonTextHoverColor;
-                    } else if (colors.activeText) {
-                        e.currentTarget.style.color = colors.activeText;
+                // Only apply background hover for button styles
+                if (buttonStyle === 'button' || buttonStyle === 'text-only') {
+                    if (isInWishlist) {
+                        // Use saved state hover colors
+                        const savedSettings = isProductListing ? savedProductListing : savedProductPage;
+                        // Fallback to add state settings if saved settings are not available
+                        const settings = (savedSettings && Object.keys(savedSettings).length > 0) 
+                            ? savedSettings 
+                            : (isProductListing ? productListing : productPage);
+                        
+                        if (settings.backgroundHoverColor) {
+                            e.currentTarget.style.backgroundColor = settings.backgroundHoverColor;
+                        } else if (colors.activeBackground) {
+                            e.currentTarget.style.backgroundColor = colors.activeBackground;
+                        }
+                        if (settings.buttonTextHoverColor) {
+                            e.currentTarget.style.color = settings.buttonTextHoverColor;
+                        } else if (colors.activeText) {
+                            e.currentTarget.style.color = colors.activeText;
+                        }
+                    } else {
+                        // Use add state hover colors
+                        const settings = isProductListing ? productListing : productPage;
+                        if (settings.backgroundHoverColor) {
+                            e.currentTarget.style.backgroundColor = settings.backgroundHoverColor;
+                        } else if (colors.hoverBackground) {
+                            e.currentTarget.style.backgroundColor = colors.hoverBackground;
+                        }
+                        if (settings.buttonTextHoverColor) {
+                            e.currentTarget.style.color = settings.buttonTextHoverColor;
+                        } else if (colors.hoverText) {
+                            e.currentTarget.style.color = colors.hoverText;
+                        }
                     }
                 } else {
-                    // Use add state hover colors
-                    const settings = isProductListing ? productListing : productPage;
-                    if (settings.backgroundHoverColor) {
-                        e.currentTarget.style.backgroundColor = settings.backgroundHoverColor;
-                    } else if (colors.hoverBackground) {
-                        e.currentTarget.style.backgroundColor = colors.hoverBackground;
-                    }
+                    // For text-icon-link and icon-only, only change text/icon color
+                    const settings = isProductListing ? (isInWishlist ? savedProductListing : productListing) : (isInWishlist ? savedProductPage : productPage);
                     if (settings.buttonTextHoverColor) {
                         e.currentTarget.style.color = settings.buttonTextHoverColor;
+                    } else if (isInWishlist && colors.activeText) {
+                        e.currentTarget.style.color = colors.activeText;
                     } else if (colors.hoverText) {
                         e.currentTarget.style.color = colors.hoverText;
                     }
                 }
             }}
             onMouseLeave={(e) => {
-                if (isInWishlist) {
-                    // Use saved state colors
-                    const savedSettings = isProductListing ? savedProductListing : savedProductPage;
-                    // Fallback to add state settings if saved settings are not available
-                    const settings = (savedSettings && Object.keys(savedSettings).length > 0) 
-                        ? savedSettings 
-                        : (isProductListing ? productListing : productPage);
-                    
-                    if (settings.backgroundColor) {
-                        e.currentTarget.style.backgroundColor = settings.backgroundColor;
-                    } else if (colors.activeBackground) {
-                        e.currentTarget.style.backgroundColor = colors.activeBackground;
-                    }
-                    if (settings.buttonTextColor) {
-                        e.currentTarget.style.color = settings.buttonTextColor;
-                    } else if (colors.activeText) {
-                        e.currentTarget.style.color = colors.activeText;
+                // Only apply background for button styles
+                if (buttonStyle === 'button' || buttonStyle === 'text-only') {
+                    if (isInWishlist) {
+                        // Use saved state colors
+                        const savedSettings = isProductListing ? savedProductListing : savedProductPage;
+                        // Fallback to add state settings if saved settings are not available
+                        const settings = (savedSettings && Object.keys(savedSettings).length > 0) 
+                            ? savedSettings 
+                            : (isProductListing ? productListing : productPage);
+                        
+                        if (settings.backgroundColor) {
+                            e.currentTarget.style.backgroundColor = settings.backgroundColor;
+                        } else if (colors.activeBackground) {
+                            e.currentTarget.style.backgroundColor = colors.activeBackground;
+                        }
+                        if (settings.buttonTextColor) {
+                            e.currentTarget.style.color = settings.buttonTextColor;
+                        } else if (colors.activeText) {
+                            e.currentTarget.style.color = colors.activeText;
+                        }
+                    } else {
+                        // Use add state colors
+                        const settings = isProductListing ? productListing : productPage;
+                        if (settings.backgroundColor) {
+                            e.currentTarget.style.backgroundColor = settings.backgroundColor;
+                        } else if (colors.background) {
+                            e.currentTarget.style.backgroundColor = colors.background;
+                        }
+                        if (settings.buttonTextColor) {
+                            e.currentTarget.style.color = settings.buttonTextColor;
+                        } else if (colors.text) {
+                            e.currentTarget.style.color = colors.text;
+                        }
                     }
                 } else {
-                    // Use add state colors
-                    const settings = isProductListing ? productListing : productPage;
-                    if (settings.backgroundColor) {
-                        e.currentTarget.style.backgroundColor = settings.backgroundColor;
-                    } else if (colors.background) {
-                        e.currentTarget.style.backgroundColor = colors.background;
-                    }
+                    // For text-icon-link and icon-only, only reset text/icon color
+                    const settings = isProductListing ? (isInWishlist ? savedProductListing : productListing) : (isInWishlist ? savedProductPage : productPage);
                     if (settings.buttonTextColor) {
                         e.currentTarget.style.color = settings.buttonTextColor;
+                    } else if (isInWishlist && colors.activeText) {
+                        e.currentTarget.style.color = colors.activeText;
                     } else if (colors.text) {
                         e.currentTarget.style.color = colors.text;
                     }
@@ -1373,29 +1419,35 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
                 e.currentTarget.style.boxShadow = '';
             }}
         >
-            {isAdding ? (
-                (() => {
-                    const currentIcon = isInWishlist ? savedWishlistIcon : addToWishlistIcon;
-                    const settings = isProductListing ? productListing : productPage;
-                    const iconSize = settings.iconSize || general.fontSize || '1.125rem';
-                    if (currentIcon.type === 'custom' && currentIcon.customUrl) {
-                        return (
-                            <img
-                                src={currentIcon.customUrl}
-                                alt=""
-                                className="wishcart-wishlist-button__icon wishcart-wishlist-button__icon--loading"
-                                style={{ width: iconSize, height: iconSize }}
-                            />
-                        );
-                    }
-                    const iconValue = currentIcon.value || 'Heart';
-                    const IconComponent = LucideIcons[iconValue] || Heart;
-                    return <IconComponent className="wishcart-wishlist-button__icon wishcart-wishlist-button__icon--loading" style={{ width: iconSize, height: iconSize }} />;
-                })()
-            ) : (
-                getIconComponent()
+            {/* Conditionally render icon based on buttonStyle */}
+            {(buttonStyle !== 'text-only' && buttonStyle !== 'text-only-link') && (
+                isAdding ? (
+                    (() => {
+                        const currentIcon = isInWishlist ? savedWishlistIcon : addToWishlistIcon;
+                        const settings = isProductListing ? productListing : productPage;
+                        const iconSize = settings.iconSize || general.fontSize || '1.125rem';
+                        if (currentIcon.type === 'custom' && currentIcon.customUrl) {
+                            return (
+                                <img
+                                    src={currentIcon.customUrl}
+                                    alt=""
+                                    className="wishcart-wishlist-button__icon wishcart-wishlist-button__icon--loading"
+                                    style={{ width: iconSize, height: iconSize }}
+                                />
+                            );
+                        }
+                        const iconValue = currentIcon.value || 'Heart';
+                        const IconComponent = LucideIcons[iconValue] || Heart;
+                        return <IconComponent className="wishcart-wishlist-button__icon wishcart-wishlist-button__icon--loading" style={{ width: iconSize, height: iconSize }} />;
+                    })()
+                ) : (
+                    getIconComponent()
+                )
             )}
-            <span className="wishcart-wishlist-button__label">{buttonLabel}</span>
+            {/* Conditionally render text based on buttonStyle */}
+            {(buttonStyle !== 'icon-only') && (
+                <span className="wishcart-wishlist-button__label">{buttonLabel}</span>
+            )}
             </button>
         </>
     );
