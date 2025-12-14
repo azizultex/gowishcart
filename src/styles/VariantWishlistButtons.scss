@@ -22,7 +22,8 @@
 
         &:hover {
             border-color: #d1d5db;
-            background: #f9fafb;
+            background: var(--wishlist-hover-bg, #f9fafb) !important;
+            color: var(--wishlist-hover-text, inherit) !important;
         }
 
         &:disabled {
@@ -37,7 +38,8 @@
 
             &:hover {
                 border-color: #dc2626;
-                background: #fee2e2;
+                background: var(--wishlist-hover-bg, #fee2e2) !important;
+                color: var(--wishlist-hover-text, #dc2626) !important;
             }
         }
 

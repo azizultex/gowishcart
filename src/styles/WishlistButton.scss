@@ -148,7 +148,7 @@
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 
     &:active:not(:disabled) {
-        background-color: var(--wishlist-hover-bg, #F3F4F6);
+        background-color: var(--wishlist-hover-bg, #F3F4F6) !important;
         box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     }
 
@@ -159,7 +159,7 @@
     }
 
     &:hover:not(:disabled) {
-        background-color: var(--wishlist-hover-bg, #F9FAFB);
+        background-color: var(--wishlist-hover-bg, #F9FAFB) !important;
         border-color: #9CA3AF;
         color: var(--wishlist-hover-text, var(--wishlist-text, #374151));
     }
@@ -204,9 +204,9 @@
         }
 
         &:hover:not(:disabled) {
-            background-color: #FEE2E2;
+            background-color: var(--wishlist-hover-bg, #FEE2E2) !important;
             border-color: #B91C1C;
-            color: #B91C1C;
+            color: var(--wishlist-hover-text, #B91C1C);
         }
     }
 

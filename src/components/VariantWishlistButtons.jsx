@@ -461,6 +461,14 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
             dynamicStyles['--icon-size'] = settings.iconSize;
         }
         
+        // Apply hover colors as CSS variables
+        if (settings.backgroundHoverColor) {
+            dynamicStyles['--wishlist-hover-bg'] = settings.backgroundHoverColor;
+        }
+        if (settings.buttonTextHoverColor) {
+            dynamicStyles['--wishlist-hover-text'] = settings.buttonTextHoverColor;
+        }
+        
         // Fallback to old colors structure for backwards compatibility
         if (Object.keys(dynamicStyles).length === 0 || (!settings.backgroundColor && colors.background)) {
             if (colors.background) {
@@ -480,6 +488,12 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
             }
             if (colors.activeBorder) {
                 dynamicStyles['--wishlist-active-border'] = colors.activeBorder;
+            }
+            if (colors.hoverBackground) {
+                dynamicStyles['--wishlist-hover-bg'] = colors.hoverBackground;
+            }
+            if (colors.hoverText) {
+                dynamicStyles['--wishlist-hover-text'] = colors.hoverText;
             }
 
             if (!isInWishlist) {
