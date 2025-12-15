@@ -956,6 +956,12 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
         let lastUserSelectionTime = 0;
         const USER_SELECTION_COOLDOWN = 500; // 500ms cooldown period
         
+        // Helper function to check if user selection should be respected (within cooldown period)
+        const shouldRespectUserSelection = () => {
+            const timeSinceUserSelection = Date.now() - lastUserSelectionTime;
+            return userSelectedVariantId !== null && timeSinceUserSelection < USER_SELECTION_COOLDOWN;
+        };
+        
         // Debounced update function
         const updateActiveVariant = () => {
             if (debounceTimer) {
