@@ -79,7 +79,7 @@
         }
 
         .wishcart-wishlist-button__icon {
-            color: #ffffff;
+            // color: #ffffff;
         }
 
         &.wishcart-wishlist-button--active {
@@ -98,7 +98,7 @@
             }
 
             .wishcart-wishlist-button__icon {
-                color: #ffffff;
+                // color: #ffffff;
             }
         }
     }
@@ -177,7 +177,7 @@
         flex-shrink: 0;
 
         &--filled {
-            fill: currentColor;
+            // fill: currentColor;
         }
 
         &--loading {
@@ -191,7 +191,7 @@
         color: var(--wishlist-active-text, #DC2626);
 
         .wishcart-wishlist-button__icon {
-            fill: currentColor;
+            // fill: currentColor;
         }
 
         &:active:not(:disabled) {
