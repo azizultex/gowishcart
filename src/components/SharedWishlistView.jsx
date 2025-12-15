@@ -175,7 +175,6 @@ const SharedWishlistView = ({ shareToken }) => {
 
             if (result.success) {
                 // Successfully added to cart
-                console.log(`${product.name} added to cart successfully!`);
                 // Optionally open cart sidebar
                 // openCartSidebar();
             } else {

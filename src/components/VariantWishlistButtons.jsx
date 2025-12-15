@@ -137,14 +137,6 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
             const sessionId = getSessionId();
             const url = `${window.wishcartWishlist.apiUrl}wishlist/add`;
             
-            // Debug logging for session ID consistency
-            console.log('[WishCart] Adding item to wishlist:', {
-                productId,
-                variationId: variantId || 0,
-                sessionId: sessionId ? 'present' : 'none',
-                isLoggedIn: window.wishcartWishlist?.isLoggedIn || false
-            });
-            
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {
@@ -162,16 +154,6 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
                 const data = await response.json();
                 setIsInWishlist(true);
                 
-                // Debug logging
-                console.log('[WishCart] Item added to wishlist:', {
-                    productId,
-                    variationId: variantId,
-                    sessionId,
-                    wishlistId: data.wishlist?.id || 'default',
-                    wishlistName: data.wishlist?.name || 'default',
-                    response: data
-                });
-                
                 // Dispatch custom event to notify wishlist page to refresh
                 if (typeof window !== 'undefined') {
                     window.dispatchEvent(new CustomEvent('wishcart:item-added', {
@@ -184,7 +166,7 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
                 }
                 
                 if (data && data.message) {
-                    console.log(data.message);
+                    // Message logged by server
                 }
             } else {
                 const error = await response.json();
@@ -224,13 +206,6 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
 
                 if (response.ok) {
                     setIsInWishlist(false);
-                    
-                    // Debug logging
-                    console.log('[WishCart] Item removed from wishlist:', {
-                        productId,
-                        variationId: variantId,
-                        sessionId
-                    });
                     
                     // Dispatch custom event to notify wishlist page to refresh
                     if (typeof window !== 'undefined') {
@@ -297,15 +272,6 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
     const handleModalSuccess = (data) => {
         setIsInWishlist(true);
         
-        // Debug logging
-        console.log('[WishCart] Item added to wishlist via modal:', {
-            productId,
-            variationId: variantId,
-            wishlistId: data.wishlist?.id || null,
-            wishlistName: data.wishlist?.name || null,
-            response: data
-        });
-        
         // Dispatch custom event to notify wishlist page to refresh
         if (typeof window !== 'undefined') {
             window.dispatchEvent(new CustomEvent('wishcart:item-added', {
@@ -318,7 +284,7 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
         }
         
         if (data && data.message) {
-            console.log(data.message);
+            // Message logged by server
         }
     };
 
@@ -587,10 +553,9 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
 const VariantWishlistButtons = ({ productId, variants, className, customStyles, position = 'bottom' }) => {
     const [activeVariantId, setActiveVariantId] = useState(null);
 
-    // Debug logging for visibility calculation
+    // Track active variant changes
     useEffect(() => {
-        console.log('[WishCart] VariantWishlistButtons: activeVariantId changed to', activeVariantId);
-        console.log('[WishCart] VariantWishlistButtons: Available variants:', variants);
+        // Active variant tracking
     }, [activeVariantId, variants]);
 
     if (!variants || variants.length === 0) {
@@ -673,42 +638,30 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
             // First, check within .fct-product-variants container (FluentCart specific)
             const fctVariantsContainer = document.querySelector('.fct-product-variants');
             if (fctVariantsContainer) {
-                console.log('[WishCart] detectSelectedVariation: Found .fct-product-variants container');
-                
                 // PRIORITY 1: Check for .selected class first (highest priority)
                 const selectedByClass = fctVariantsContainer.querySelector(
                     '.selected[data-cart-id], .selected[data-variant-id], .selected[data-variation-id]'
                 );
                 
                 if (selectedByClass) {
-                    console.log('[WishCart] detectSelectedVariation: Found variant with .selected class');
                     const cartId = selectedByClass.getAttribute('data-cart-id');
                     const variantId = selectedByClass.getAttribute('data-variant-id') || 
                                      selectedByClass.getAttribute('data-variation-id');
                     
-                    console.log('[WishCart] detectSelectedVariation: Selected variant has cartId:', cartId, 'variantId:', variantId);
-                    
                     // If we have cartId, try to find matching variant in our variants array
                     if (cartId) {
                         const parsedCartId = parseInt(cartId, 10);
-                        console.log('[WishCart] detectSelectedVariation: Parsed cartId:', parsedCartId, 'Available variants:', variants);
                         // Try to match cartId with variant IDs in our variants array
                         const matchedVariant = variants.find(v => {
                             const vId = v.id || v.variation_id || v.ID;
-                            const match = vId === parsedCartId;
-                            if (match) {
-                                console.log('[WishCart] detectSelectedVariation: Matched variant:', v, 'with ID:', vId);
-                            }
-                            return match;
+                            return vId === parsedCartId;
                         });
                         if (matchedVariant) {
                             const result = matchedVariant.id || matchedVariant.variation_id || matchedVariant.ID;
-                            console.log('[WishCart] detectSelectedVariation: Returning matched variant ID:', result);
                             return result;
                         }
                         // If no match, use cartId as fallback (might be the variation ID)
                         if (!isNaN(parsedCartId) && parsedCartId > 0) {
-                            console.log('[WishCart] detectSelectedVariation: No match found, using cartId as variant ID:', parsedCartId);
                             return parsedCartId;
                         }
                     }
@@ -717,7 +670,6 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
                     if (variantId) {
                         const parsedId = parseInt(variantId, 10);
                         if (!isNaN(parsedId) && parsedId > 0) {
-                            console.log('[WishCart] detectSelectedVariation: Using variantId:', parsedId);
                             return parsedId;
                         }
                     }
@@ -729,34 +681,24 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
                 );
                 
                 if (selectedByAria) {
-                    console.log('[WishCart] detectSelectedVariation: Found variant with aria-checked="true" (fallback)');
                     const cartId = selectedByAria.getAttribute('data-cart-id');
                     const variantId = selectedByAria.getAttribute('data-variant-id') || 
                                      selectedByAria.getAttribute('data-variation-id');
                     
-                    console.log('[WishCart] detectSelectedVariation: Selected variant has cartId:', cartId, 'variantId:', variantId);
-                    
                     // If we have cartId, try to find matching variant in our variants array
                     if (cartId) {
                         const parsedCartId = parseInt(cartId, 10);
-                        console.log('[WishCart] detectSelectedVariation: Parsed cartId:', parsedCartId, 'Available variants:', variants);
                         // Try to match cartId with variant IDs in our variants array
                         const matchedVariant = variants.find(v => {
                             const vId = v.id || v.variation_id || v.ID;
-                            const match = vId === parsedCartId;
-                            if (match) {
-                                console.log('[WishCart] detectSelectedVariation: Matched variant:', v, 'with ID:', vId);
-                            }
-                            return match;
+                            return vId === parsedCartId;
                         });
                         if (matchedVariant) {
                             const result = matchedVariant.id || matchedVariant.variation_id || matchedVariant.ID;
-                            console.log('[WishCart] detectSelectedVariation: Returning matched variant ID:', result);
                             return result;
                         }
                         // If no match, use cartId as fallback (might be the variation ID)
                         if (!isNaN(parsedCartId) && parsedCartId > 0) {
-                            console.log('[WishCart] detectSelectedVariation: No match found, using cartId as variant ID:', parsedCartId);
                             return parsedCartId;
                         }
                     }
@@ -765,14 +707,9 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
                     if (variantId) {
                         const parsedId = parseInt(variantId, 10);
                         if (!isNaN(parsedId) && parsedId > 0) {
-                            console.log('[WishCart] detectSelectedVariation: Using variantId:', parsedId);
                             return parsedId;
                         }
                     }
-                }
-                
-                if (!selectedByClass && !selectedByAria) {
-                    console.log('[WishCart] detectSelectedVariation: No selected variants found in .fct-product-variants');
                 }
             }
             
@@ -927,21 +864,18 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
             if (userSelectedVariantId !== null) {
                 const timeSinceSelection = Date.now() - lastUserSelectionTime;
                 if (timeSinceSelection < USER_SELECTION_COOLDOWN) {
-                    console.log('[WishCart] detectSelectedVariation: Respecting user selection:', userSelectedVariantId);
                     return userSelectedVariantId;
                 }
             }
             
             // If currentActiveId is set, maintain it instead of defaulting to first variant
             if (currentActiveId !== null) {
-                console.log('[WishCart] detectSelectedVariation: No clear selection detected, maintaining current:', currentActiveId);
                 return currentActiveId;
             }
             
             // Only default to first variant if no selection has been made yet
             if (variants.length > 0) {
                 const firstVariantId = variants[0].id || variants[0].variation_id || variants[0].ID;
-                console.log('[WishCart] detectSelectedVariation: Defaulting to first variant:', firstVariantId);
                 return firstVariantId;
             }
             
@@ -971,7 +905,6 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
                 // Check if user made a selection recently
                 const timeSinceUserSelection = Date.now() - lastUserSelectionTime;
                 if (userSelectedVariantId !== null && timeSinceUserSelection < USER_SELECTION_COOLDOWN) {
-                    console.log('[WishCart] updateActiveVariant: Skipping - user selection in cooldown period. User selected:', userSelectedVariantId);
                     // Don't override user selection during cooldown
                     return;
                 }
@@ -980,11 +913,8 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
                 if (detectedId !== null && detectedId !== currentActiveId) {
                     // Only update if detected ID matches user selection or cooldown has expired
                     if (userSelectedVariantId === null || detectedId === userSelectedVariantId || timeSinceUserSelection >= USER_SELECTION_COOLDOWN) {
-                        console.log('[WishCart] updateActiveVariant: Updating to detected ID:', detectedId);
                         currentActiveId = detectedId;
                         setActiveVariantId(detectedId);
-                    } else {
-                        console.log('[WishCart] updateActiveVariant: Skipping - detected ID', detectedId, 'does not match user selection', userSelectedVariantId);
                     }
                 }
             }, 30); // Reduced debounce for faster updates
@@ -995,28 +925,19 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
             // Check if user made a selection recently
             const timeSinceUserSelection = Date.now() - lastUserSelectionTime;
             if (userSelectedVariantId !== null && timeSinceUserSelection < USER_SELECTION_COOLDOWN) {
-                console.log('[WishCart] updateActiveVariantImmediate: Skipping - user selection in cooldown period. User selected:', userSelectedVariantId);
                 // Don't override user selection during cooldown
                 return;
             }
             
             const detectedId = detectSelectedVariation();
-            console.log('[WishCart] updateActiveVariantImmediate: Detected variation ID:', detectedId, 'Current:', currentActiveId, 'User selected:', userSelectedVariantId);
             if (detectedId !== null) {
                 // Only update if detected ID matches user selection or cooldown has expired
                 if (userSelectedVariantId === null || detectedId === userSelectedVariantId || timeSinceUserSelection >= USER_SELECTION_COOLDOWN) {
                     if (detectedId !== currentActiveId) {
-                        console.log('[WishCart] updateActiveVariantImmediate: Updating from', currentActiveId, 'to', detectedId);
                         currentActiveId = detectedId;
                         setActiveVariantId(detectedId);
-                    } else {
-                        console.log('[WishCart] updateActiveVariantImmediate: No change needed, already', detectedId);
                     }
-                } else {
-                    console.log('[WishCart] updateActiveVariantImmediate: Skipping - detected ID', detectedId, 'does not match user selection', userSelectedVariantId);
                 }
-            } else {
-                console.log('[WishCart] updateActiveVariantImmediate: No variation detected');
             }
         };
 
@@ -1137,59 +1058,44 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
         // Helper function to map data-cart-id to variation ID
         const mapCartIdToVariantId = (cartId) => {
             if (!cartId) {
-                console.log('[WishCart] mapCartIdToVariantId: No cartId provided');
                 return null;
             }
             const parsedCartId = parseInt(cartId, 10);
             if (isNaN(parsedCartId) || parsedCartId <= 0) {
-                console.log('[WishCart] mapCartIdToVariantId: Invalid cartId', cartId);
                 return null;
             }
-            
-            console.log('[WishCart] mapCartIdToVariantId: Mapping cartId', parsedCartId, 'to variant ID. Available variants:', variants);
             
             // Try to find matching variant in our variants array
             const matchedVariant = variants.find(v => {
                 const vId = v.id || v.variation_id || v.ID;
-                const match = vId === parsedCartId;
-                if (match) {
-                    console.log('[WishCart] Found matching variant:', v, 'with ID:', vId);
-                }
-                return match;
+                return vId === parsedCartId;
             });
             
             if (matchedVariant) {
                 const result = matchedVariant.id || matchedVariant.variation_id || matchedVariant.ID;
-                console.log('[WishCart] mapCartIdToVariantId: Mapped to variant ID', result);
                 return result;
             }
             
             // If no match found, data-cart-id might be the variation ID itself
-            console.log('[WishCart] mapCartIdToVariantId: No match found, using cartId as variant ID:', parsedCartId);
             return parsedCartId;
         };
 
         // Set up comprehensive click event listeners
         const handleVariationClick = (event) => {
-            console.log('[WishCart] handleVariationClick: Click detected', event.target);
-            
             // First, check if click is on .fct-product-variants element with data-cart-id (FluentCart specific)
             const fctVariantsContainer = document.querySelector('.fct-product-variants');
             if (fctVariantsContainer) {
                 const clickedElement = event.target.closest('.fct-product-variants [data-cart-id]');
                 if (clickedElement) {
                     const cartId = clickedElement.getAttribute('data-cart-id');
-                    console.log('[WishCart] handleVariationClick: Found fct-product-variants element with cartId:', cartId);
                     if (cartId) {
                         // Wait a bit for .selected class to be added by FluentCart
                         setTimeout(() => {
                             // PRIORITY: Check for .selected class first
                             const selectedElement = fctVariantsContainer.querySelector('.selected[data-cart-id="' + cartId + '"]');
                             if (selectedElement) {
-                                console.log('[WishCart] handleVariationClick: Found .selected class on clicked element');
                                 const variantId = mapCartIdToVariantId(cartId);
                                 if (variantId) {
-                                    console.log('[WishCart] handleVariationClick: Updating activeVariantId to', variantId, 'from', currentActiveId);
                                     // Track user selection
                                     userSelectedVariantId = variantId;
                                     lastUserSelectionTime = Date.now();
@@ -1201,7 +1107,6 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
                                 // Fallback: use cartId directly if .selected class not found yet
                                 const variantId = mapCartIdToVariantId(cartId);
                                 if (variantId) {
-                                    console.log('[WishCart] handleVariationClick: .selected class not found yet, using cartId. Updating activeVariantId to', variantId);
                                     userSelectedVariantId = variantId;
                                     lastUserSelectionTime = Date.now();
                                     currentActiveId = variantId;
@@ -1226,12 +1131,9 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
                     const variantId = variationElement.getAttribute('data-variant-id') || 
                                      variationElement.getAttribute('data-variation-id');
                     
-                    console.log('[WishCart] handleVariationClick: Found variation element inside .fct-product-variants, cartId:', cartId, 'variantId:', variantId);
-                    
                     if (cartId) {
                         const mappedId = mapCartIdToVariantId(cartId);
                         if (mappedId) {
-                            console.log('[WishCart] handleVariationClick: Mapped to variant ID:', mappedId);
                             // Track user selection
                             userSelectedVariantId = mappedId;
                             lastUserSelectionTime = Date.now();
@@ -1247,7 +1149,6 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
                     if (variantId) {
                         const parsedId = parseInt(variantId, 10);
                         if (!isNaN(parsedId) && parsedId > 0) {
-                            console.log('[WishCart] handleVariationClick: Using variantId:', parsedId);
                             // Track user selection
                             userSelectedVariantId = parsedId;
                             lastUserSelectionTime = Date.now();
@@ -1271,13 +1172,10 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
                                  button.getAttribute('data-id') ||
                                  button.getAttribute('value');
                 
-                console.log('[WishCart] handleVariationClick: Found button with variantId:', variantId);
-                
                 if (variantId) {
                     const parsedId = parseInt(variantId, 10);
                     if (!isNaN(parsedId) && parsedId > 0) {
                         // Update immediately
-                        console.log('[WishCart] handleVariationClick: Updating to variant ID:', parsedId);
                         // Track user selection
                         userSelectedVariantId = parsedId;
                         lastUserSelectionTime = Date.now();
@@ -1290,14 +1188,12 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
                     }
                 } else {
                     // If no direct ID, try to find it from nearby elements
-                    console.log('[WishCart] handleVariationClick: No variantId found, triggering detection');
                     setTimeout(() => {
                         updateActiveVariantImmediate();
                     }, 50);
                 }
             } else {
                 // Click might be on a variation option, try to detect
-                console.log('[WishCart] handleVariationClick: No button found, triggering detection');
                 setTimeout(() => {
                     updateActiveVariantImmediate();
                 }, 50);
@@ -1335,27 +1231,22 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
 
         // Specific handler for .fct-product-variants clicks
         const handleFctVariantsClick = (event) => {
-            console.log('[WishCart] handleFctVariantsClick: Click detected', event.target);
             const fctVariants = document.querySelector('.fct-product-variants');
             if (!fctVariants) {
-                console.log('[WishCart] handleFctVariantsClick: No .fct-product-variants container found');
                 return;
             }
             
             const clickedElement = event.target.closest('.fct-product-variants [data-cart-id]');
             if (clickedElement) {
                 const cartId = clickedElement.getAttribute('data-cart-id');
-                console.log('[WishCart] handleFctVariantsClick: Found clicked element with cartId:', cartId);
                 if (cartId) {
                     // Wait a bit for .selected class to be added by FluentCart
                     setTimeout(() => {
                         // PRIORITY: Check for .selected class first
                         const selectedElement = fctVariants.querySelector('.selected[data-cart-id="' + cartId + '"]');
                         if (selectedElement) {
-                            console.log('[WishCart] handleFctVariantsClick: Found .selected class on clicked element');
                             const variantId = mapCartIdToVariantId(cartId);
                             if (variantId) {
-                                console.log('[WishCart] handleFctVariantsClick: Updating activeVariantId to', variantId, 'from', currentActiveId);
                                 // Track user selection
                                 userSelectedVariantId = variantId;
                                 lastUserSelectionTime = Date.now();
@@ -1367,27 +1258,21 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
                             // Fallback: use cartId directly if .selected class not found yet
                             const variantId = mapCartIdToVariantId(cartId);
                             if (variantId) {
-                                console.log('[WishCart] handleFctVariantsClick: .selected class not found yet, using cartId. Updating activeVariantId to', variantId);
                                 userSelectedVariantId = variantId;
                                 lastUserSelectionTime = Date.now();
                                 currentActiveId = variantId;
                                 setActiveVariantId(variantId);
-                            } else {
-                                console.log('[WishCart] handleFctVariantsClick: Mapping failed, triggering detection');
                             }
                         }
                         // Also trigger a re-detection to ensure accuracy
                         updateActiveVariantImmediate();
                     }, 10); // Small delay to allow DOM to update
                 } else {
-                    console.log('[WishCart] handleFctVariantsClick: No cartId found, triggering detection');
                     // No cartId found, trigger detection
                     setTimeout(() => {
                         updateActiveVariantImmediate();
                     }, 50);
                 }
-            } else {
-                console.log('[WishCart] handleFctVariantsClick: Clicked element is not a variation with data-cart-id');
             }
         };
 
@@ -1478,7 +1363,6 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
                                 if (cartId) {
                                     const variantId = mapCartIdToVariantId(cartId);
                                     if (variantId) {
-                                        console.log('[WishCart] MutationObserver: .selected class detected, updating to variant ID:', variantId);
                                         currentActiveId = variantId;
                                         setActiveVariantId(variantId);
                                     }
@@ -1516,7 +1400,6 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
                             if (variantId) {
                                 const parsedId = parseInt(variantId, 10);
                                 if (!isNaN(parsedId) && parsedId > 0) {
-                                    console.log('[WishCart] MutationObserver: .selected class detected on variant element, updating to:', parsedId);
                                     currentActiveId = parsedId;
                                     setActiveVariantId(parsedId);
                                 }
@@ -1599,27 +1482,22 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
                     // PRIORITY 1: Watch for .selected class changes (highest priority)
                     if (attrName === 'class') {
                         if (target.classList.contains('selected')) {
-                            console.log('[WishCart] fctVariantsObserver: .selected class added to', target);
                             shouldUpdate = true;
                             // If this element is now selected, try to get its ID immediately
                             const cartId = target.getAttribute('data-cart-id');
                             if (cartId) {
-                                console.log('[WishCart] fctVariantsObserver: Found cartId:', cartId);
                                 const variantId = mapCartIdToVariantId(cartId);
                                 if (variantId) {
                                     // Check if user made a selection recently
                                     const timeSinceUserSelection = Date.now() - lastUserSelectionTime;
                                     if (userSelectedVariantId !== null && timeSinceUserSelection < USER_SELECTION_COOLDOWN && variantId !== userSelectedVariantId) {
-                                        console.log('[WishCart] fctVariantsObserver: Skipping - user selection in cooldown. User selected:', userSelectedVariantId, 'Detected:', variantId);
                                         return;
                                     }
-                                    console.log('[WishCart] fctVariantsObserver: Updating to variant ID:', variantId);
                                     currentActiveId = variantId;
                                     setActiveVariantId(variantId);
                                 }
                             }
                         } else if (target.classList.contains('active')) {
-                            console.log('[WishCart] fctVariantsObserver: active class added to', target);
                             shouldUpdate = true;
                         }
                     }
@@ -1629,21 +1507,17 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
                         const isChecked = target.getAttribute('aria-checked') === 'true';
                         // Only process if .selected class is not present (to avoid conflicts)
                         if (isChecked && !target.classList.contains('selected')) {
-                            console.log('[WishCart] fctVariantsObserver: aria-checked changed to true on', target, '(fallback, no .selected class)');
                             shouldUpdate = true;
                             // If this element is now checked, try to get its ID immediately
                             const cartId = target.getAttribute('data-cart-id');
                             if (cartId) {
-                                console.log('[WishCart] fctVariantsObserver: Found cartId:', cartId);
                                 const variantId = mapCartIdToVariantId(cartId);
                                 if (variantId) {
                                     // Check if user made a selection recently
                                     const timeSinceUserSelection = Date.now() - lastUserSelectionTime;
                                     if (userSelectedVariantId !== null && timeSinceUserSelection < USER_SELECTION_COOLDOWN && variantId !== userSelectedVariantId) {
-                                        console.log('[WishCart] fctVariantsObserver: Skipping - user selection in cooldown. User selected:', userSelectedVariantId, 'Detected:', variantId);
                                         return;
                                     }
-                                    console.log('[WishCart] fctVariantsObserver: Updating to variant ID:', variantId);
                                     currentActiveId = variantId;
                                     setActiveVariantId(variantId);
                                 }
@@ -1740,7 +1614,6 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
         pollingInterval = setInterval(() => {
             // Skip polling if user just made a selection
             if (shouldRespectUserSelection()) {
-                console.log('[WishCart] Polling: Skipping - user selection in cooldown period');
                 return;
             }
             
@@ -1748,11 +1621,8 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
             if (detected !== null && detected !== currentActiveId) {
                 // Only update if detected ID matches user selection or cooldown expired
                 if (userSelectedVariantId === null || detected === userSelectedVariantId || !shouldRespectUserSelection()) {
-                    console.log('[WishCart] Polling: Updating to', detected);
                     currentActiveId = detected;
                     setActiveVariantId(detected);
-                } else {
-                    console.log('[WishCart] Polling: Skipping - detected', detected, 'but user selected', userSelectedVariantId);
                 }
             }
         }, 500); // Check every 500ms for faster updates
@@ -1807,10 +1677,6 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
                 const variantIdNum = Number(variantId);
                 // Button is visible if activeVariantId is null (initial state) or matches this variant's ID
                 const isVisible = activeIdNum === null || activeIdNum === variantIdNum;
-                
-                if (activeVariantId !== null) {
-                    console.log('[WishCart] VariantWishlistButtons: Rendering variant', variantId, 'isVisible:', isVisible, 'activeVariantId:', activeVariantId);
-                }
                 
                 return (
                     <VariantWishlistButton

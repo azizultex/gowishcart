@@ -889,7 +889,7 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
                 const data = await response.json();
                 setIsInWishlist(true);
                 if (data && data.message) {
-                    console.log(data.message);
+                    // Message logged by server
                 }
             } else {
                 const error = await response.json();
@@ -1000,7 +1000,7 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
         setIsInWishlist(true);
         // Optional: Show a success message
         if (data && data.message) {
-            console.log(data.message);
+            // Message logged by server
         }
     };
 

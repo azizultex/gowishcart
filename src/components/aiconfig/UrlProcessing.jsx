@@ -291,7 +291,7 @@ const UrlProcessing = ({ settings, updateSettings }) => {
             if (data.success) {
                 // Store debug info for inspection
                 if (data.debug) {
-                    console.log("Debug info:", data.debug);
+                    // Debug info available
                 }
 
                 // Deduplicate the URLs array before setting it in state
@@ -548,10 +548,8 @@ const UrlProcessing = ({ settings, updateSettings }) => {
 
             // Set progress to 100% regardless of response to finish the animation
             setUrlProgress(100);
-            console.log(processResponse);
             // Handle different response scenarios
             if (!processResponse || processResponse.status === 504) {
-                console.log('Server timeout occurred, but URL already saved. Status will be updated via polling.');
                 setProcessMessage(__('Website is being processed in the background.', 'wishcart'));
             }
             else if (!processResponse.ok) {
@@ -664,7 +662,6 @@ const UrlProcessing = ({ settings, updateSettings }) => {
                     exclude_selectors: urlConfig.exclude_selectors?.split(',').map(s => s.trim()).filter(Boolean) || []
                 })
             });
-            console.log('Response from server:', response);
             // Check if response is OK before trying to parse JSON
             if (!response.ok) {
                 const errorText = await response.text();
