@@ -192,12 +192,12 @@ const FluentCRMSettings = () => {
                 </div>
             </div>
 
-            {/* REST API Credentials Section - Pro/Upcoming Feature */}
+            {/* WebHook Credentials Section - Pro/Upcoming Feature */}
             <div className="fluentcart-notice fluentcart-notice-info" style={{marginTop: '16px'}}>
                 <Lock style={{width: '18px', height: '18px', flexShrink: 0}} />
                 <div style={{flex: 1}}>
                     <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px'}}>
-                        <strong>{__('REST API Credentials', 'wishcart')}</strong>
+                        <strong>{__('WebHook Credentials', 'wishcart')}</strong>
                         <span className="fluentcart-badge fluentcart-badge-warning">{__('PRO', 'wishcart')}</span>
                         <span className="fluentcart-badge fluentcart-badge-info">{__('COMING SOON', 'wishcart')}</span>
                     </div>
