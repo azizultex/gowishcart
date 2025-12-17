@@ -9,7 +9,8 @@ import {
     BarChart3,
     LifeBuoy,
     Sparkles,
-    Settings
+    Settings,
+    Plug
 } from 'lucide-react';
 
 import WishlistSettings from './WishlistSettings';
@@ -18,31 +19,6 @@ import FluentCRMSettings from './FluentCRMSettings';
 import SupportResources from './SupportResources';
 import UpgradePrompt from './UpgradePrompt';
 import { AnalyticsDashboard } from '../AnalyticsDashboard';
-
-const FluentCRMIcon = ({ className, ...props }) => (
-    <svg
-        viewBox="0 0 300 300"
-        xmlns="http://www.w3.org/2000/svg"
-        role="img"
-        aria-hidden="true"
-        focusable="false"
-        className={className}
-        {...props}
-    >
-        <path
-            d="M300 30c0-16.557-13.443-30-30-30H30C13.443 0 0 13.443 0 30v240c0 16.557 13.443 30 30 30h240c16.557 0 30-13.443 30-30V30Z"
-            fill="#121633"
-        />
-        <path
-            d="M250.955 71.122s-129.408 34.674-181.023 48.505C57.612 122.928 49.045 134.092 49.045 146.847v18.989s103.954-27.854 162.681-43.59c23.139-6.2 39.229-27.169 39.229-51.124Z"
-            fill="#fff"
-        />
-        <path
-            d="M173.46 154.928s-68.092 18.246-103.528 27.741c-12.32 3.301-20.887 14.465-20.887 27.22v18.989s48.721-13.054 85.185-22.825c23.14-6.2 39.23-27.169 39.23-51.124Z"
-            fill="#fff"
-        />
-    </svg>
-);
 
 const localizedTabPageMap = (typeof window !== 'undefined' && window.wishcartSettings && window.wishcartSettings.tabPageMap) || {};
 
@@ -207,7 +183,7 @@ const SettingsApp = () => {
         { id: 'settings', label: __('Settings', 'wishcart'), icon: Settings },
         { id: 'customization', label: __('Customization', 'wishcart'), icon: Palette },
         { id: 'analytics', label: __('Analytics', 'wishcart'), icon: BarChart3 },
-        { id: 'fluentcrm', label: __('FluentCRM Integration', 'wishcart'), icon: FluentCRMIcon },
+        { id: 'fluentcrm', label: __('Integrations', 'wishcart'), icon: Plug },
         { id: 'support', label: __('Support', 'wishcart'), icon: LifeBuoy },
         { id: 'get-pro', label: __('Get Pro', 'wishcart'), icon: Sparkles },
     ]), []);

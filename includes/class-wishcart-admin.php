@@ -90,7 +90,7 @@ class wishcart_Admin {
         $subpages = array(
             'settings'       => __( 'Settings', 'wishcart' ),
             'customization'  => __( 'Customization', 'wishcart' ),
-            'integrations'   => __( 'FluentCRM Integration', 'wishcart' ),
+            'integrations'   => __( 'Integrations', 'wishcart' ),
             'analytics'      => __( 'Analytics', 'wishcart' ),
             'support'        => __( 'Support', 'wishcart' ),
             'get-pro'        => __( 'Get Pro', 'wishcart' ),
