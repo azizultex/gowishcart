@@ -240,11 +240,6 @@ class WishCart_Wishlist_Page {
             'guest_cookie_expiry'  => 30,
             'enable_multiple_wishlists' => false,
             'button_customization' => array(
-                'general' => array(
-                    'textColor' => '',
-                    'font'      => 'default',
-                    'fontSize'  => '12px',
-                ),
                 'product_page' => array(
                     'backgroundColor'        => '#ebe9eb',
                     'backgroundHoverColor'   => '#dad8da',

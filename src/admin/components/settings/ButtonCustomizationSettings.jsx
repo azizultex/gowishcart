@@ -22,23 +22,12 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
     // Track which input was focused before re-render
     const focusedInputId = useRef(null);
     
-    // New structure: general, product_page, product_listing
-    const general = buttonCustomization.general || { textColor: '', font: 'default', fontSize: '12px' };
+    // New structure: product_page, product_listing
     const productPage = buttonCustomization.product_page || {
         backgroundColor: '#ebe9eb',
         backgroundHoverColor: '#dad8da',
         buttonTextColor: '#515151',
         buttonTextHoverColor: '#686868',
-        font: 'default',
-        fontSize: '16px',
-        iconSize: '16px',
-        borderRadius: '3px'
-    };
-    const productListing = buttonCustomization.product_listing || {
-        backgroundColor: '#ebe9eb',
-        backgroundHoverColor: '#dad8da',
-        buttonTextColor: '#515151',
-        buttonTextHoverColor: '#515151',
         font: 'default',
         fontSize: '16px',
         iconSize: '16px',
@@ -101,108 +90,6 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
 
     // State for color pickers
     const [selectedColorPicker, setSelectedColorPicker] = useState(null);
-    
-    // General settings section component with local state
-    const GeneralSettingsSection = ({ general }) => {
-        const [fontSize, setFontSize] = useState(general.fontSize || '');
-        const fontSizeRef = useRef(null);
-        const fontSizeId = 'input-general-fontSize';
-
-        // Sync local state when prop value changes
-        useEffect(() => {
-            if (document.activeElement !== fontSizeRef.current) {
-                setFontSize(general.fontSize || '');
-            }
-        }, [general.fontSize]);
-
-        // Store ref for focus restoration
-        useEffect(() => {
-            if (fontSizeRef.current) {
-                inputRefs.current[fontSizeId] = fontSizeRef.current;
-            }
-            return () => {
-                delete inputRefs.current[fontSizeId];
-            };
-        }, [fontSizeId]);
-
-        const handleFontSizeChange = (e) => {
-            const value = e.target.value;
-            setFontSize(value);
-            debouncedUpdate('general', 'fontSize', value, fontSizeId);
-        };
-
-        const handleFontSizeBlur = () => {
-            updateButtonCustomization('general', 'fontSize', fontSize);
-            focusedInputId.current = null;
-        };
-
-        return (
-            <>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <ColorInput
-                        label={__('Text Color', 'wishcart')}
-                        value={general.textColor}
-                        onChange={(value) => updateButtonCustomization('general', 'textColor', value)}
-                        colorPickerId="general-text"
-                        section="general"
-                        settingKey="textColor"
-                    />
-                    <div className="space-y-2">
-                        <Label className="text-sm">{__('Font', 'wishcart')}</Label>
-                        <Select
-                            value={general.font || 'default'}
-                            onValueChange={(value) => updateButtonCustomization('general', 'font', value)}
-                        >
-                            <SelectTrigger>
-                                <SelectValue placeholder={__('Select font', 'wishcart')} />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {fontOptions.map((font) => (
-                                    <SelectItem key={font.value} value={font.value}>
-                                        {font.label}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div className="space-y-2">
-                        <Label className="text-sm">{__('Select Font Size', 'wishcart')}</Label>
-                        <Input
-                            ref={fontSizeRef}
-                            type="text"
-                            value={fontSize}
-                            onChange={handleFontSizeChange}
-                            onBlur={handleFontSizeBlur}
-                            placeholder="12px"
-                        />
-                    </div>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                    <div className="space-y-2">
-                        <Label className="text-sm">{__('Button Style', 'wishcart')}</Label>
-                        <Select
-                            value={general.buttonStyle || 'button'}
-                            onValueChange={(value) => updateButtonCustomization('general', 'buttonStyle', value)}
-                        >
-                            <SelectTrigger>
-                                <SelectValue placeholder={__('Select button style', 'wishcart')} />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="button">{__('Button (Text + Icon)', 'wishcart')}</SelectItem>
-                                <SelectItem value="text-only">{__('Text Only', 'wishcart')}</SelectItem>
-                                <SelectItem value="text-only-link">{__('Text Only (No Button)', 'wishcart')}</SelectItem>
-                                <SelectItem value="text-icon-link">{__('Text with Icon (No Button)', 'wishcart')}</SelectItem>
-                                <SelectItem value="icon-only">{__('Icon Only', 'wishcart')}</SelectItem>
-                            </SelectContent>
-                        </Select>
-                        <p className="text-xs text-muted-foreground">
-                            {__('Choose how the wishlist button appears', 'wishcart')}
-                        </p>
-                    </div>
-                </div>
-            </>
-        );
-    };
     
     // Labels section component with local state
     const LabelsSection = ({ labels }) => {
@@ -648,12 +535,9 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
         const handleInputChange = (e) => {
             const newValue = e.target.value;
             setLocalValue(newValue);
-            // Use debounced update for text input
+            // Use debounced update for text input when section/settingKey are provided
             if (section && settingKey) {
                 debouncedUpdate(section, settingKey, newValue, inputId);
-            } else {
-                // Fallback for direct onChange (backward compatibility)
-                debouncedUpdate('general', 'textColor', newValue, inputId);
             }
         };
 
@@ -717,7 +601,7 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
         );
     };
 
-    // Button section component (reusable for product_page and product_listing)
+    // Button section component (reusable for product_page)
     const ButtonSection = ({ title, sectionKey, settings: sectionSettings }) => {
         // Local state for text inputs
         const [fontSize, setFontSize] = useState(sectionSettings.fontSize || '');
@@ -771,7 +655,7 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
         };
 
         return (
-            <div className="space-y-4 border-t pt-6">
+            <div className="space-y-4 pt-6">
                 <Label className="text-base font-semibold">{title}</Label>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <ColorInput
@@ -864,14 +748,8 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
 
     return (
         <div className="wishcart-button-customization-wrapper" style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: '2rem', alignItems: 'start' }}>
-            {/* Settings Section */}
+                {/* Settings Section */}
             <div className="wishcart-settings-section">
-                {/* General Settings Section */}
-                <div className="space-y-4">
-                    <Label className="text-base font-semibold">{__('General Settings', 'wishcart')}</Label>
-                    <GeneralSettingsSection general={general} />
-                </div>
-
                 {/* Product Page Button Section */}
                 <ButtonSection
                     title={__('"Add To Wishlist" Product Page Button', 'wishcart')}
@@ -879,25 +757,11 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
                     settings={productPage}
                 />
 
-                {/* Product Listing Button Section */}
-                <ButtonSection
-                    title={__('"Add To Wishlist" Product Listing Button', 'wishcart')}
-                    sectionKey="product_listing"
-                    settings={productListing}
-                />
-
                 {/* Saved to Wishlist Product Page Button Section */}
                 <ButtonSection
                     title={__('"Saved to Wishlist" Product Page Button', 'wishcart')}
                     sectionKey="saved_product_page"
                     settings={savedProductPage}
-                />
-
-                {/* Saved to Wishlist Product Listing Button Section */}
-                <ButtonSection
-                    title={__('"Saved to Wishlist" Product Listing Button', 'wishcart')}
-                    sectionKey="saved_product_listing"
-                    settings={savedProductListing}
                 />
 
                 {/* Icon Section */}

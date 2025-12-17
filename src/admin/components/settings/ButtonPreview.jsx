@@ -7,7 +7,6 @@ import '../../styles/settings.scss';
 
 const ButtonPreview = ({ buttonCustomization }) => {
     // Extract settings with defaults
-    const general = buttonCustomization?.general || { textColor: '', font: 'default', fontSize: '12px' };
     const productPage = buttonCustomization?.product_page || {
         backgroundColor: '#ebe9eb',
         backgroundHoverColor: '#dad8da',
@@ -18,31 +17,11 @@ const ButtonPreview = ({ buttonCustomization }) => {
         iconSize: '16px',
         borderRadius: '3px'
     };
-    const productListing = buttonCustomization?.product_listing || {
-        backgroundColor: '#ebe9eb',
-        backgroundHoverColor: '#dad8da',
-        buttonTextColor: '#515151',
-        buttonTextHoverColor: '#515151',
-        font: 'default',
-        fontSize: '16px',
-        iconSize: '16px',
-        borderRadius: '3px'
-    };
     const savedProductPage = buttonCustomization?.saved_product_page || {
         backgroundColor: '#ebe9eb',
         backgroundHoverColor: '#dad8da',
         buttonTextColor: '#515151',
         buttonTextHoverColor: '#686868',
-        font: 'default',
-        fontSize: '16px',
-        iconSize: '16px',
-        borderRadius: '3px'
-    };
-    const savedProductListing = buttonCustomization?.saved_product_listing || {
-        backgroundColor: '#ebe9eb',
-        backgroundHoverColor: '#dad8da',
-        buttonTextColor: '#515151',
-        buttonTextHoverColor: '#515151',
         font: 'default',
         fontSize: '16px',
         iconSize: '16px',
@@ -111,25 +90,21 @@ const ButtonPreview = ({ buttonCustomization }) => {
         );
     };
 
-    // Get button style from general settings
-    const buttonStyle = general.buttonStyle || 'button';
+    // Button style (general settings removed, default to standard button)
+    const buttonStyle = 'button';
 
     // Build button styles for a section
     const buildButtonStyles = (sectionSettings, isActive = false) => {
         const styles = {};
 
-        // Font family - apply general font if section font is default
+        // Font family - apply section font if set
         if (sectionSettings.font && sectionSettings.font !== 'default') {
             styles.fontFamily = sectionSettings.font;
-        } else if (general.font && general.font !== 'default') {
-            styles.fontFamily = general.font;
         }
 
-        // Font size - use section font size or general font size
+        // Font size - use section font size
         if (sectionSettings.fontSize) {
             styles.fontSize = sectionSettings.fontSize;
-        } else if (general.fontSize) {
-            styles.fontSize = general.fontSize;
         }
 
         // Text color - use buttonTextColor for the button text
@@ -137,11 +112,6 @@ const ButtonPreview = ({ buttonCustomization }) => {
             styles.color = sectionSettings.buttonTextColor;
         } else {
             styles.color = '#515151'; // Default
-        }
-
-        // Apply general text color if set and no section text color
-        if (general.textColor && !sectionSettings.buttonTextColor) {
-            styles.color = general.textColor;
         }
 
         // Base display properties
@@ -305,38 +275,6 @@ const ButtonPreview = ({ buttonCustomization }) => {
                 </div>
             </div>
 
-            {/* Product Listing Button Preview */}
-            <div className="wishcart-preview-section">
-                <h4 className="text-base font-medium mb-4">
-                    {__('Product Listing Button', 'wishcart')}
-                </h4>
-                <div className="space-y-3">
-                    <div>
-                        <p className="text-xs text-muted-foreground mb-2">
-                            {__('Add to Wishlist', 'wishcart')}
-                        </p>
-                        <PreviewButton
-                            label={addLabel}
-                            icon={addToWishlistIcon}
-                            isActive={false}
-                            sectionSettings={productListing}
-                            sectionKey="product_listing"
-                        />
-                    </div>
-                    <div>
-                        <p className="text-xs text-muted-foreground mb-2">
-                            {__('Saved to Wishlist', 'wishcart')}
-                        </p>
-                        <PreviewButton
-                            label={savedLabel}
-                            icon={savedWishlistIcon}
-                            isActive={true}
-                            sectionSettings={savedProductListing}
-                            sectionKey="saved_product_listing"
-                        />
-                    </div>
-                </div>
-            </div>
         </div>
     );
 };

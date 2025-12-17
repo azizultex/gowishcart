@@ -116,7 +116,6 @@ class WishCart_Wishlist_Frontend {
                 'showOnShop' => ! empty( $wishlist_settings['shop_page_button'] ),
                 'enableMultipleWishlists' => ! empty( $wishlist_settings['enable_multiple_wishlists'] ),
                 'buttonCustomization' => array(
-                    'general' => isset( $button_customization['general'] ) ? $button_customization['general'] : array(),
                     'product_page' => isset( $button_customization['product_page'] ) ? $button_customization['product_page'] : array(),
                     'product_listing' => isset( $button_customization['product_listing'] ) ? $button_customization['product_listing'] : array(),
                     'saved_product_page' => isset( $button_customization['saved_product_page'] ) ? $button_customization['saved_product_page'] : array(),
@@ -343,30 +342,6 @@ class WishCart_Wishlist_Frontend {
                 $css_parts[] = '.wishcart-card-container .wishcart-wishlist-button .wishcart-wishlist-button__icon {';
                 $css_parts[] = '  width: ' . esc_attr( $product_listing['iconSize'] ) . ';';
                 $css_parts[] = '  height: ' . esc_attr( $product_listing['iconSize'] ) . ';';
-                $css_parts[] = '}';
-            }
-        }
-        
-        // Generate CSS from general settings (applies to both)
-        $general = isset( $button_customization['general'] ) ? $button_customization['general'] : array();
-        if ( ! empty( $general ) ) {
-            $css_parts[] = '/* General Button Styles */';
-            
-            if ( ! empty( $general['textColor'] ) ) {
-                $css_parts[] = '.wishcart-wishlist-button {';
-                $css_parts[] = '  color: ' . esc_attr( $general['textColor'] ) . ';';
-                $css_parts[] = '}';
-            }
-            
-            if ( ! empty( $general['font'] ) && $general['font'] !== 'default' ) {
-                $css_parts[] = '.wishcart-wishlist-button {';
-                $css_parts[] = '  font-family: ' . esc_attr( $general['font'] ) . ';';
-                $css_parts[] = '}';
-            }
-            
-            if ( ! empty( $general['fontSize'] ) ) {
-                $css_parts[] = '.wishcart-wishlist-button {';
-                $css_parts[] = '  font-size: ' . esc_attr( $general['fontSize'] ) . ';';
                 $css_parts[] = '}';
             }
         }

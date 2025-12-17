@@ -1007,7 +1007,6 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
     // Get customization settings
     const customization = window.wishcartWishlist?.buttonCustomization || {};
     const colors = customization.colors || {}; // Keep for backwards compatibility
-    const general = customization.general || {};
     const productPage = customization.product_page || {};
     const productListing = customization.product_listing || {};
     const savedProductPage = customization.saved_product_page || {};
@@ -1015,8 +1014,8 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
     const iconConfig = customization.icon || {};
     const labels = customization.labels || {};
     
-    // Get button style variation
-    const buttonStyle = general.buttonStyle || 'button';
+    // Get button style variation (general settings removed, default to standard button)
+    const buttonStyle = 'button';
     
     // Detect if button is on product listing (shop page) vs product page
     const isProductListing = useMemo(() => {
@@ -1068,7 +1067,7 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
     const getIconComponent = () => {
         const currentIcon = isInWishlist ? savedWishlistIcon : addToWishlistIcon;
         const settings = isProductListing ? productListing : productPage;
-        const iconSize = settings.iconSize || general.fontSize || '1.125rem';
+        const iconSize = settings.iconSize || '1.125rem';
         
         if (currentIcon.type === 'custom' && currentIcon.customUrl) {
             return (
@@ -1124,17 +1123,6 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
             dynamicStyles.boxShadow = 'none';
             dynamicStyles.width = 'auto';
             dynamicStyles.minHeight = 'auto';
-        }
-        
-        // Apply general settings first (they can be overridden by specific settings)
-        if (general.textColor && !settings.buttonTextColor) {
-            dynamicStyles.color = general.textColor;
-        }
-        if (general.font && general.font !== 'default' && !settings.font) {
-            dynamicStyles.fontFamily = general.font;
-        }
-        if (general.fontSize && !settings.fontSize) {
-            dynamicStyles.fontSize = general.fontSize;
         }
         
         // Apply specific settings (product_page, product_listing, saved_product_page, or saved_product_listing)
