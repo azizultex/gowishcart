@@ -1,4 +1,4 @@
-@import '../admin/styles/fluentcart-theme.scss';
+@import '../admin/styles/wishcart-theme.scss';
 
 .analytics-dashboard {
     padding: 0;
@@ -7,21 +7,21 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: var(--fluentcart-space-xl);
-        padding-bottom: var(--fluentcart-space-lg);
-        border-bottom: 1px solid var(--fluentcart-border-light);
+        margin-bottom: var(--wishcart-space-xl);
+        padding-bottom: var(--wishcart-space-lg);
+        border-bottom: 1px solid var(--wishcart-border-light);
 
         h2 {
             margin: 0;
             font-size: 18px;
             font-weight: 600;
-            color: var(--fluentcart-gray-900);
+            color: var(--wishcart-gray-900);
         }
 
         .refresh-button {
-            @extend .fluentcart-button;
-            @extend .fluentcart-button-secondary;
-            @extend .fluentcart-button-sm;
+            @extend .wishcart-button;
+            @extend .wishcart-button-secondary;
+            @extend .wishcart-button-sm;
         }
     }
 
@@ -35,15 +35,15 @@
         .spinner {
             width: 40px;
             height: 40px;
-            border: 4px solid var(--fluentcart-border-light);
+            border: 4px solid var(--wishcart-border-light);
             border-top-color: var(--wp-admin-blue);
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
 
         p {
-            margin-top: var(--fluentcart-space-lg);
-            color: var(--fluentcart-text-secondary);
+            margin-top: var(--wishcart-space-lg);
+            color: var(--wishcart-text-secondary);
             font-size: 13px;
         }
     }
@@ -55,13 +55,13 @@
     .overview-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-        gap: var(--fluentcart-space-xl);
-        margin-bottom: var(--fluentcart-space-2xl);
+        gap: var(--wishcart-space-xl);
+        margin-bottom: var(--wishcart-space-2xl);
     }
 
     .stat-card {
-        @extend .fluentcart-card;
-        padding: var(--fluentcart-space-lg);
+        @extend .wishcart-card;
+        padding: var(--wishcart-space-lg);
 
         .stat-content {
             display: flex;
@@ -74,22 +74,22 @@
             justify-content: center;
             width: 48px;
             height: 48px;
-            border-radius: var(--fluentcart-radius-md);
-            margin-bottom: var(--fluentcart-space-md);
+            border-radius: var(--wishcart-radius-md);
+            margin-bottom: var(--wishcart-space-md);
 
             &.wishlist {
                 background: rgba(30, 115, 190, 0.1);
-                color: var(--fluentcart-primary);
+                color: var(--wishcart-primary);
             }
 
             &.items {
                 background: rgba(0, 163, 42, 0.1);
-                color: var(--fluentcart-success);
+                color: var(--wishcart-success);
             }
 
             &.conversion {
                 background: rgba(219, 166, 23, 0.1);
-                color: var(--fluentcart-warning);
+                color: var(--wishcart-warning);
             }
 
             &.shares {
@@ -100,20 +100,20 @@
 
         .stat-label {
             font-size: 13px;
-            color: var(--fluentcart-text-secondary);
+            color: var(--wishcart-text-secondary);
             margin: 0 0 4px 0;
         }
 
         .stat-value {
             font-size: 28px;
             font-weight: 700;
-            color: var(--fluentcart-gray-900);
+            color: var(--wishcart-gray-900);
             margin: 0;
         }
 
         .stat-meta {
             font-size: 12px;
-            color: var(--fluentcart-text-muted);
+            color: var(--wishcart-text-muted);
             margin: 4px 0 0 0;
         }
     }
@@ -121,14 +121,14 @@
     .funnel-card,
     .popular-products-card,
     .links-card {
-        @extend .fluentcart-card;
-        margin-bottom: var(--fluentcart-space-xl);
+        @extend .wishcart-card;
+        margin-bottom: var(--wishcart-space-xl);
 
         h3 {
-            margin: 0 0 var(--fluentcart-space-lg) 0;
+            margin: 0 0 var(--wishcart-space-lg) 0;
             font-size: 16px;
             font-weight: 600;
-            color: var(--fluentcart-gray-900);
+            color: var(--wishcart-gray-900);
         }
     }
 
@@ -137,7 +137,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: var(--fluentcart-space-lg);
+            margin-bottom: var(--wishcart-space-lg);
 
             h3 {
                 margin: 0;
@@ -146,8 +146,8 @@
             }
 
             .total-links-badge {
-                @extend .fluentcart-badge;
-                @extend .fluentcart-badge-info;
+                @extend .wishcart-badge;
+                @extend .wishcart-badge-info;
             }
         }
 
@@ -159,36 +159,36 @@
                 border-collapse: collapse;
 
                 thead {
-                    background: var(--fluentcart-bg-light);
+                    background: var(--wishcart-bg-light);
 
                     th {
-                        padding: var(--fluentcart-space-md) var(--fluentcart-space-lg);
+                        padding: var(--wishcart-space-md) var(--wishcart-space-lg);
                         text-align: left;
                         font-size: 13px;
                         font-weight: 600;
-                        color: var(--fluentcart-text-secondary);
-                        border-bottom: 2px solid var(--fluentcart-border-light);
+                        color: var(--wishcart-text-secondary);
+                        border-bottom: 2px solid var(--wishcart-border-light);
                     }
                 }
 
                 tbody {
                     tr {
-                        border-bottom: 1px solid var(--fluentcart-border-light);
+                        border-bottom: 1px solid var(--wishcart-border-light);
                         transition: background 0.15s;
 
                         &:hover {
-                            background: var(--fluentcart-bg-light);
+                            background: var(--wishcart-bg-light);
                         }
                     }
 
                     td {
-                        padding: var(--fluentcart-space-md) var(--fluentcart-space-lg);
+                        padding: var(--wishcart-space-md) var(--wishcart-space-lg);
                         font-size: 13px;
-                        color: var(--fluentcart-text-primary);
+                        color: var(--wishcart-text-primary);
                         vertical-align: top;
 
                         .share-link {
-                            color: var(--fluentcart-primary);
+                            color: var(--wishcart-primary);
                             text-decoration: none;
                             font-weight: 500;
                             font-family: monospace;
@@ -202,45 +202,45 @@
                         .products-list {
                             display: flex;
                             flex-wrap: wrap;
-                            gap: var(--fluentcart-space-xs);
+                            gap: var(--wishcart-space-xs);
                             max-width: 300px;
 
                             .product-tag {
-                                @extend .fluentcart-badge;
-                                @extend .fluentcart-badge-info;
+                                @extend .wishcart-badge;
+                                @extend .wishcart-badge-info;
                             }
 
                             .more-items {
-                                @extend .fluentcart-badge;
-                                @extend .fluentcart-badge-neutral;
+                                @extend .wishcart-badge;
+                                @extend .wishcart-badge-neutral;
                                 font-style: italic;
                             }
 
                             .no-items {
-                                color: var(--fluentcart-text-muted);
+                                color: var(--wishcart-text-muted);
                                 font-style: italic;
                                 font-size: 13px;
                             }
                         }
 
                         .click-count {
-                            @extend .fluentcart-badge;
-                            @extend .fluentcart-badge-neutral;
+                            @extend .wishcart-badge;
+                            @extend .wishcart-badge-neutral;
 
                             &.has-clicks {
-                                @extend .fluentcart-badge-info;
+                                @extend .wishcart-badge-info;
                             }
                         }
 
                         .share-type-badge {
-                            @extend .fluentcart-badge;
-                            @extend .fluentcart-badge-warning;
+                            @extend .wishcart-badge;
+                            @extend .wishcart-badge-warning;
                             text-transform: capitalize;
                         }
 
                         .badge {
-                            @extend .fluentcart-badge;
-                            @extend .fluentcart-badge-info;
+                            @extend .wishcart-badge;
+                            @extend .wishcart-badge-info;
                         }
                     }
                 }
@@ -250,7 +250,7 @@
         .empty-state {
             padding: 40px 20px;
             text-align: center;
-            color: var(--fluentcart-text-muted);
+            color: var(--wishcart-text-muted);
             font-size: 13px;
         }
     }
@@ -258,7 +258,7 @@
     .funnel-visualization {
         display: flex;
         flex-direction: column;
-        gap: var(--fluentcart-space-md);
+        gap: var(--wishcart-space-md);
     }
 
     .funnel-stage {
@@ -270,9 +270,9 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: var(--fluentcart-space-lg) var(--fluentcart-space-xl);
-            background: linear-gradient(135deg, var(--fluentcart-primary) 0%, var(--wp-admin-blue) 100%);
-            border-radius: var(--fluentcart-radius);
+            padding: var(--wishcart-space-lg) var(--wishcart-space-xl);
+            background: linear-gradient(135deg, var(--wishcart-primary) 0%, var(--wp-admin-blue) 100%);
+            border-radius: var(--wishcart-radius);
             color: white;
             transition: all 0.2s ease-in-out;
             min-width: 200px;
@@ -281,7 +281,7 @@
 
             &:hover {
                 transform: translateX(4px);
-                box-shadow: var(--fluentcart-shadow-md);
+                box-shadow: var(--wishcart-shadow-md);
             }
         }
 
@@ -295,15 +295,15 @@
         .funnel-value {
             font-weight: 700;
             font-size: 16px;
-            margin-right: var(--fluentcart-space-sm);
+            margin-right: var(--wishcart-space-sm);
             flex-shrink: 0;
             white-space: nowrap;
         }
 
         .funnel-rate {
-            padding: 2px var(--fluentcart-space-sm);
+            padding: 2px var(--wishcart-space-sm);
             background: rgba(255, 255, 255, 0.2);
-            border-radius: var(--fluentcart-radius-sm);
+            border-radius: var(--wishcart-radius-sm);
             font-size: 12px;
             font-weight: 600;
             flex-shrink: 0;
@@ -319,35 +319,35 @@
             border-collapse: collapse;
 
             thead {
-                background: var(--fluentcart-bg-light);
+                background: var(--wishcart-bg-light);
 
                 th {
-                    padding: var(--fluentcart-space-md) var(--fluentcart-space-lg);
+                    padding: var(--wishcart-space-md) var(--wishcart-space-lg);
                     text-align: left;
                     font-size: 13px;
                     font-weight: 600;
-                    color: var(--fluentcart-text-secondary);
-                    border-bottom: 2px solid var(--fluentcart-border-light);
+                    color: var(--wishcart-text-secondary);
+                    border-bottom: 2px solid var(--wishcart-border-light);
                 }
             }
 
             tbody {
                 tr {
-                    border-bottom: 1px solid var(--fluentcart-border-light);
+                    border-bottom: 1px solid var(--wishcart-border-light);
                     transition: background 0.15s;
 
                     &:hover {
-                        background: var(--fluentcart-bg-light);
+                        background: var(--wishcart-bg-light);
                     }
                 }
 
                 td {
-                    padding: var(--fluentcart-space-md) var(--fluentcart-space-lg);
+                    padding: var(--wishcart-space-md) var(--wishcart-space-lg);
                     font-size: 13px;
-                    color: var(--fluentcart-text-primary);
+                    color: var(--wishcart-text-primary);
 
                     a {
-                        color: var(--fluentcart-primary);
+                        color: var(--wishcart-primary);
                         text-decoration: none;
                         font-weight: 500;
 
@@ -357,16 +357,16 @@
                     }
 
                     .badge {
-                        @extend .fluentcart-badge;
-                        @extend .fluentcart-badge-info;
+                        @extend .wishcart-badge;
+                        @extend .wishcart-badge-info;
                     }
 
                     .conversion-badge {
-                        @extend .fluentcart-badge;
-                        @extend .fluentcart-badge-warning;
+                        @extend .wishcart-badge;
+                        @extend .wishcart-badge-warning;
 
                         &.high {
-                            @extend .fluentcart-badge-success;
+                            @extend .wishcart-badge-success;
                         }
                     }
                 }

@@ -140,7 +140,7 @@ const FluentCRMSettings = () => {
     if (loading) {
         return (
             <div className="wishcart-settings-section">
-                <div className="fluentcart-flex-center" style={{padding: '40px'}}>
+                <div className="wishcart-flex-center" style={{padding: '40px'}}>
                     <Loader2 style={{width: '24px', height: '24px'}} className="animate-spin" />
                 </div>
             </div>
@@ -150,7 +150,7 @@ const FluentCRMSettings = () => {
     if (!isAvailable) {
         return (
             <div className="wishcart-settings-section">
-                <div className="fluentcart-notice fluentcart-notice-warning">
+                <div className="wishcart-notice wishcart-notice-warning">
                     <AlertCircle style={{width: '18px', height: '18px', flexShrink: 0}} />
                     <div>
                         <strong>{__('FluentCRM Not Available', 'wishcart')}</strong>
@@ -166,14 +166,14 @@ const FluentCRMSettings = () => {
     return (
         <div className="wishcart-settings-section">
             {saveMessage === 'success' && (
-                <div className="fluentcart-notice fluentcart-notice-success">
+                <div className="wishcart-notice wishcart-notice-success">
                     <CheckCircle2 style={{width: '18px', height: '18px', flexShrink: 0}} />
                     <span>{__('Settings saved successfully!', 'wishcart')}</span>
                 </div>
             )}
 
             {saveMessage === 'error' && (
-                <div className="fluentcart-notice fluentcart-notice-error">
+                <div className="wishcart-notice wishcart-notice-error">
                     <XCircle style={{width: '18px', height: '18px', flexShrink: 0}} />
                     <span>{__('Failed to save settings. Please try again.', 'wishcart')}</span>
                 </div>
@@ -193,33 +193,33 @@ const FluentCRMSettings = () => {
             </div>
 
             {/* WebHook Credentials Section - Pro/Upcoming Feature */}
-            <div className="fluentcart-notice fluentcart-notice-info" style={{marginTop: '16px'}}>
+            <div className="wishcart-notice wishcart-notice-info" style={{marginTop: '16px'}}>
                 <Lock style={{width: '18px', height: '18px', flexShrink: 0}} />
                 <div style={{flex: 1}}>
                     <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px'}}>
                         <strong>{__('WebHook Credentials', 'wishcart')}</strong>
-                        <span className="fluentcart-badge fluentcart-badge-warning">{__('PRO', 'wishcart')}</span>
-                        <span className="fluentcart-badge fluentcart-badge-info">{__('COMING SOON', 'wishcart')}</span>
+                        <span className="wishcart-badge wishcart-badge-warning">{__('PRO', 'wishcart')}</span>
+                        <span className="wishcart-badge wishcart-badge-info">{__('COMING SOON', 'wishcart')}</span>
                     </div>
                     <p style={{fontSize: '13px', margin: '0'}}>{__('This feature is available in WishCart Pro', 'wishcart')}</p>
-                    <p style={{fontSize: '13px', margin: '4px 0 0', color: 'var(--fluentcart-text-muted)'}}>{__('Please upgrade to get all the advanced features.', 'wishcart')}</p>
+                    <p style={{fontSize: '13px', margin: '4px 0 0', color: 'var(--wishcart-text-muted)'}}>{__('Please upgrade to get all the advanced features.', 'wishcart')}</p>
                 </div>
             </div>
 
             {/* List & auto-tag configuration */}
             <div style={{ marginTop: '24px' }}>
-                <div className={`fluentcart-form-group wishcart-pro-field ${!isProActive ? 'is-locked' : ''}`}>
+                <div className={`wishcart-form-group wishcart-pro-field ${!isProActive ? 'is-locked' : ''}`}>
                     <div className="wishcart-pro-field__header">
                         <div>
-                            <label className="fluentcart-label" htmlFor="fluentcrm_list_id">
+                            <label className="wishcart-label" htmlFor="fluentcrm_list_id">
                                 {__('List select', 'wishcart')}
                             </label>
-                            <p className="fluentcart-form-helper">
+                            <p className="wishcart-form-helper">
                                 {__('Choose which FluentCRM list wishlist contacts will be added to.', 'wishcart')}
                             </p>
                         </div>
                         <div className="wishcart-pro-field__badges">
-                            <span className="fluentcart-badge fluentcart-badge-warning">{__('PRO', 'wishcart')}</span>
+                            <span className="wishcart-badge wishcart-badge-warning">{__('PRO', 'wishcart')}</span>
                             {!isProActive && <Lock style={{width: '16px', height: '16px'}} />}
                         </div>
                     </div>
@@ -228,7 +228,7 @@ const FluentCRMSettings = () => {
                         onValueChange={(value) => updateSetting('fluentcrm_list_id', parseInt(value, 10))}
                         disabled={!isProActive || listsLoading || !lists.length}
                     >
-                        <SelectTrigger id="fluentcrm_list_id" className="fluentcart-select">
+                        <SelectTrigger id="fluentcrm_list_id" className="wishcart-select">
                             <SelectValue placeholder={listsLoading ? __('Loading lists...', 'wishcart') : __('Select a list', 'wishcart')} />
                         </SelectTrigger>
                         <SelectContent>
@@ -247,18 +247,18 @@ const FluentCRMSettings = () => {
                     )}
                 </div>
 
-                <div className={`fluentcart-form-group wishcart-pro-field ${!isProActive ? 'is-locked' : ''}`}>
+                <div className={`wishcart-form-group wishcart-pro-field ${!isProActive ? 'is-locked' : ''}`}>
                     <div className="wishcart-pro-field__header">
                         <div>
-                            <label className="fluentcart-label" htmlFor="fluentcrm_auto_tag_by_product_name">
+                            <label className="wishcart-label" htmlFor="fluentcrm_auto_tag_by_product_name">
                                 {__('Auto tags by product name', 'wishcart')}
                             </label>
-                            <p className="fluentcart-form-helper">
+                            <p className="wishcart-form-helper">
                                 {__('Automatically tag contacts using the exact product names from their wishlists.', 'wishcart')}
                             </p>
                         </div>
                         <div className="wishcart-pro-field__badges">
-                            <span className="fluentcart-badge fluentcart-badge-warning">{__('PRO', 'wishcart')}</span>
+                            <span className="wishcart-badge wishcart-badge-warning">{__('PRO', 'wishcart')}</span>
                             {!isProActive && <Lock style={{width: '16px', height: '16px'}} />}
                         </div>
                     </div>
@@ -267,7 +267,7 @@ const FluentCRMSettings = () => {
                         onValueChange={(value) => updateSetting('fluentcrm_auto_tag_by_product_name', value === '1')}
                         disabled={!isProActive}
                     >
-                        <SelectTrigger id="fluentcrm_auto_tag_by_product_name" className="fluentcart-select">
+                        <SelectTrigger id="fluentcrm_auto_tag_by_product_name" className="wishcart-select">
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -282,18 +282,18 @@ const FluentCRMSettings = () => {
                     )}
                 </div>
 
-                <div className={`fluentcart-form-group wishcart-pro-field ${!isProActive ? 'is-locked' : ''}`}>
+                <div className={`wishcart-form-group wishcart-pro-field ${!isProActive ? 'is-locked' : ''}`}>
                     <div className="wishcart-pro-field__header">
                         <div>
-                            <label className="fluentcart-label" htmlFor="fluentcrm_auto_tag_by_product_tags">
+                            <label className="wishcart-label" htmlFor="fluentcrm_auto_tag_by_product_tags">
                                 {__('Auto tag by product tags', 'wishcart')}
                             </label>
-                            <p className="fluentcart-form-helper">
+                            <p className="wishcart-form-helper">
                                 {__('Sync WooCommerce product tags as FluentCRM contact tags.', 'wishcart')}
                             </p>
                         </div>
                         <div className="wishcart-pro-field__badges">
-                            <span className="fluentcart-badge fluentcart-badge-warning">{__('PRO', 'wishcart')}</span>
+                            <span className="wishcart-badge wishcart-badge-warning">{__('PRO', 'wishcart')}</span>
                             {!isProActive && <Lock style={{width: '16px', height: '16px'}} />}
                         </div>
                     </div>
@@ -302,7 +302,7 @@ const FluentCRMSettings = () => {
                         onValueChange={(value) => updateSetting('fluentcrm_auto_tag_by_product_tags', value === '1')}
                         disabled={!isProActive}
                     >
-                        <SelectTrigger id="fluentcrm_auto_tag_by_product_tags" className="fluentcart-select">
+                        <SelectTrigger id="fluentcrm_auto_tag_by_product_tags" className="wishcart-select">
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -317,18 +317,18 @@ const FluentCRMSettings = () => {
                     )}
                 </div>
 
-                <div className={`fluentcart-form-group wishcart-pro-field ${!isProActive ? 'is-locked' : ''}`}>
+                <div className={`wishcart-form-group wishcart-pro-field ${!isProActive ? 'is-locked' : ''}`}>
                     <div className="wishcart-pro-field__header">
                         <div>
-                            <label className="fluentcart-label" htmlFor="fluentcrm_auto_tag_by_product_categories">
+                            <label className="wishcart-label" htmlFor="fluentcrm_auto_tag_by_product_categories">
                                 {__('Auto tag by products category', 'wishcart')}
                             </label>
-                            <p className="fluentcart-form-helper">
+                            <p className="wishcart-form-helper">
                                 {__('Apply FluentCRM tags that mirror the product categories users save.', 'wishcart')}
                             </p>
                         </div>
                         <div className="wishcart-pro-field__badges">
-                            <span className="fluentcart-badge fluentcart-badge-warning">{__('PRO', 'wishcart')}</span>
+                            <span className="wishcart-badge wishcart-badge-warning">{__('PRO', 'wishcart')}</span>
                             {!isProActive && <Lock style={{width: '16px', height: '16px'}} />}
                         </div>
                     </div>
@@ -337,7 +337,7 @@ const FluentCRMSettings = () => {
                         onValueChange={(value) => updateSetting('fluentcrm_auto_tag_by_product_categories', value === '1')}
                         disabled={!isProActive}
                     >
-                        <SelectTrigger id="fluentcrm_auto_tag_by_product_categories" className="fluentcart-select">
+                        <SelectTrigger id="fluentcrm_auto_tag_by_product_categories" className="wishcart-select">
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -353,11 +353,11 @@ const FluentCRMSettings = () => {
                 </div>
             </div>
 
-            <div className="fluentcart-card-footer">
+            <div className="wishcart-card-footer">
                 <button
                     onClick={saveSettings}
                     disabled={saving}
-                    className="fluentcart-button fluentcart-button-primary"
+                    className="wishcart-button wishcart-button-primary"
                 >
                     {saving ? __('Saving...', 'wishcart') : __('Save Settings', 'wishcart')}
                 </button>

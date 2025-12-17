@@ -11,9 +11,9 @@
 
 :root {
   /* Primary Colors - FluentCart Brand */
-  --fluentcart-primary: #1e73be;
-  --fluentcart-primary-hover: #1a5fa0;
-  --fluentcart-primary-active: #165082;
+  --wishcart-primary: #1e73be;
+  --wishcart-primary-hover: #1a5fa0;
+  --wishcart-primary-active: #165082;
   
   /* WordPress Admin Blues */
   --wp-admin-blue: #2271b1;
@@ -21,128 +21,128 @@
   --wp-admin-blue-active: #0a4b78;
   
   /* Status Colors */
-  --fluentcart-success: #00a32a;
-  --fluentcart-success-bg: #e7f7ed;
-  --fluentcart-warning: #dba617;
-  --fluentcart-warning-bg: #fcf9e8;
-  --fluentcart-danger: #d63638;
-  --fluentcart-danger-bg: #fcf0f1;
-  --fluentcart-info: #2271b1;
-  --fluentcart-info-bg: #e5f5fa;
+  --wishcart-success: #00a32a;
+  --wishcart-success-bg: #e7f7ed;
+  --wishcart-warning: #dba617;
+  --wishcart-warning-bg: #fcf9e8;
+  --wishcart-danger: #d63638;
+  --wishcart-danger-bg: #fcf0f1;
+  --wishcart-info: #2271b1;
+  --wishcart-info-bg: #e5f5fa;
   
   /* Gray Scale - WordPress Admin */
-  --fluentcart-gray-900: #1d2327;
-  --fluentcart-gray-800: #2c3338;
-  --fluentcart-gray-700: #3c434a;
-  --fluentcart-gray-600: #50575e;
-  --fluentcart-gray-500: #646970;
-  --fluentcart-gray-400: #787c82;
-  --fluentcart-gray-300: #8c8f94;
-  --fluentcart-gray-200: #a7aaad;
-  --fluentcart-gray-100: #c3c4c7;
-  --fluentcart-gray-50: #dcdcde;
-  --fluentcart-gray-25: #f0f0f1;
-  --fluentcart-gray-10: #f6f7f7;
+  --wishcart-gray-900: #1d2327;
+  --wishcart-gray-800: #2c3338;
+  --wishcart-gray-700: #3c434a;
+  --wishcart-gray-600: #50575e;
+  --wishcart-gray-500: #646970;
+  --wishcart-gray-400: #787c82;
+  --wishcart-gray-300: #8c8f94;
+  --wishcart-gray-200: #a7aaad;
+  --wishcart-gray-100: #c3c4c7;
+  --wishcart-gray-50: #dcdcde;
+  --wishcart-gray-25: #f0f0f1;
+  --wishcart-gray-10: #f6f7f7;
   
   /* Background Colors */
-  --fluentcart-bg-body: #f0f0f1;
-  --fluentcart-bg-white: #ffffff;
-  --fluentcart-bg-light: #f6f7f7;
+  --wishcart-bg-body: #f0f0f1;
+  --wishcart-bg-white: #ffffff;
+  --wishcart-bg-light: #f6f7f7;
   
   /* Border Colors */
-  --fluentcart-border: #c3c4c7;
-  --fluentcart-border-light: #dcdcde;
-  --fluentcart-border-dark: #8c8f94;
+  --wishcart-border: #c3c4c7;
+  --wishcart-border-light: #dcdcde;
+  --wishcart-border-dark: #8c8f94;
   
   /* Text Colors */
-  --fluentcart-text-primary: #1d2327;
-  --fluentcart-text-secondary: #50575e;
-  --fluentcart-text-muted: #646970;
-  --fluentcart-text-light: #787c82;
+  --wishcart-text-primary: #1d2327;
+  --wishcart-text-secondary: #50575e;
+  --wishcart-text-muted: #646970;
+  --wishcart-text-light: #787c82;
   
   /* Shadows */
-  --fluentcart-shadow-sm: 0 1px 1px rgba(0, 0, 0, 0.04);
-  --fluentcart-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  --fluentcart-shadow-md: 0 2px 4px rgba(0, 0, 0, 0.08);
+  --wishcart-shadow-sm: 0 1px 1px rgba(0, 0, 0, 0.04);
+  --wishcart-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --wishcart-shadow-md: 0 2px 4px rgba(0, 0, 0, 0.08);
   
   /* Border Radius */
-  --fluentcart-radius-sm: 3px;
-  --fluentcart-radius: 4px;
-  --fluentcart-radius-md: 6px;
+  --wishcart-radius-sm: 3px;
+  --wishcart-radius: 4px;
+  --wishcart-radius-md: 6px;
   
   /* Spacing (WordPress Admin Standard) */
-  --fluentcart-space-xs: 4px;
-  --fluentcart-space-sm: 8px;
-  --fluentcart-space-md: 12px;
-  --fluentcart-space-lg: 16px;
-  --fluentcart-space-xl: 20px;
-  --fluentcart-space-2xl: 24px;
-  --fluentcart-space-3xl: 32px;
+  --wishcart-space-xs: 4px;
+  --wishcart-space-sm: 8px;
+  --wishcart-space-md: 12px;
+  --wishcart-space-lg: 16px;
+  --wishcart-space-xl: 20px;
+  --wishcart-space-2xl: 24px;
+  --wishcart-space-3xl: 32px;
 }
 
 /* ==========================================
    Typography System
    ========================================== */
 
-.fluentcart-typography {
+.wishcart-typography {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
   font-size: 13px;
   line-height: 1.4em;
-  color: var(--fluentcart-text-primary);
+  color: var(--wishcart-text-primary);
 }
 
-.fluentcart-h1 {
+.wishcart-h1 {
   font-size: 23px;
   font-weight: 400;
   line-height: 1.3;
-  color: var(--fluentcart-gray-900);
+  color: var(--wishcart-gray-900);
   margin: 0 0 20px;
   padding: 9px 0 4px;
 }
 
-.fluentcart-h2 {
+.wishcart-h2 {
   font-size: 18px;
   font-weight: 600;
   line-height: 1.4;
-  color: var(--fluentcart-gray-900);
+  color: var(--wishcart-gray-900);
   margin: 0 0 16px;
 }
 
-.fluentcart-h3 {
+.wishcart-h3 {
   font-size: 16px;
   font-weight: 600;
   line-height: 1.4;
-  color: var(--fluentcart-gray-900);
+  color: var(--wishcart-gray-900);
   margin: 0 0 12px;
 }
 
-.fluentcart-h4 {
+.wishcart-h4 {
   font-size: 14px;
   font-weight: 600;
   line-height: 1.4;
-  color: var(--fluentcart-gray-800);
+  color: var(--wishcart-gray-800);
   margin: 0 0 8px;
 }
 
-.fluentcart-body {
+.wishcart-body {
   font-size: 13px;
   font-weight: 400;
   line-height: 1.4em;
-  color: var(--fluentcart-text-primary);
+  color: var(--wishcart-text-primary);
 }
 
-.fluentcart-body-sm {
+.wishcart-body-sm {
   font-size: 12px;
   font-weight: 400;
   line-height: 1.4em;
-  color: var(--fluentcart-text-secondary);
+  color: var(--wishcart-text-secondary);
 }
 
-.fluentcart-label {
+.wishcart-label {
   font-size: 13px;
   font-weight: 600;
   line-height: 1.4em;
-  color: var(--fluentcart-gray-800);
+  color: var(--wishcart-gray-800);
   display: block;
   margin-bottom: 6px;
 }
@@ -151,7 +151,7 @@
    Button Styles - WordPress Admin
    ========================================== */
 
-.fluentcart-button {
+.wishcart-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -161,7 +161,7 @@
   font-size: 13px;
   font-weight: 400;
   line-height: 1;
-  border-radius: var(--fluentcart-radius-sm);
+  border-radius: var(--wishcart-radius-sm);
   border: 1px solid transparent;
   cursor: pointer;
   text-decoration: none;
@@ -179,7 +179,7 @@
   }
 }
 
-.fluentcart-button-primary {
+.wishcart-button-primary {
   background: var(--wp-admin-blue);
   color: #ffffff;
   border-color: var(--wp-admin-blue);
@@ -195,54 +195,54 @@
   }
 }
 
-.fluentcart-button-secondary {
+.wishcart-button-secondary {
   background: #f6f7f7;
-  color: var(--fluentcart-gray-700);
-  border-color: var(--fluentcart-border);
+  color: var(--wishcart-gray-700);
+  border-color: var(--wishcart-border);
   
   &:hover:not(:disabled) {
     background: #ffffff;
-    border-color: var(--fluentcart-border-dark);
+    border-color: var(--wishcart-border-dark);
   }
 }
 
-.fluentcart-button-outline {
+.wishcart-button-outline {
   background: #ffffff;
   color: var(--wp-admin-blue);
   border-color: var(--wp-admin-blue);
   
   &:hover:not(:disabled) {
-    background: var(--fluentcart-info-bg);
+    background: var(--wishcart-info-bg);
   }
 }
 
-.fluentcart-button-ghost {
+.wishcart-button-ghost {
   background: transparent;
-  color: var(--fluentcart-gray-700);
+  color: var(--wishcart-gray-700);
   border-color: transparent;
   
   &:hover:not(:disabled) {
-    background: var(--fluentcart-gray-25);
+    background: var(--wishcart-gray-25);
   }
 }
 
-.fluentcart-button-danger {
-  background: var(--fluentcart-danger);
+.wishcart-button-danger {
+  background: var(--wishcart-danger);
   color: #ffffff;
-  border-color: var(--fluentcart-danger);
+  border-color: var(--wishcart-danger);
   
   &:hover:not(:disabled) {
     background: #b32d2e;
   }
 }
 
-.fluentcart-button-sm {
+.wishcart-button-sm {
   height: 28px;
   padding: 0 10px;
   font-size: 12px;
 }
 
-.fluentcart-button-lg {
+.wishcart-button-lg {
   height: 36px;
   padding: 0 16px;
   font-size: 14px;
@@ -252,16 +252,16 @@
    Form Controls - WordPress Admin
    ========================================== */
 
-.fluentcart-input {
+.wishcart-input {
   width: 100%;
   height: 32px;
   padding: 0 8px;
   font-size: 13px;
   line-height: 1.4em;
-  color: var(--fluentcart-text-primary);
+  color: var(--wishcart-text-primary);
   background: #ffffff;
-  border: 1px solid var(--fluentcart-border-dark);
-  border-radius: var(--fluentcart-radius);
+  border: 1px solid var(--wishcart-border-dark);
+  border-radius: var(--wishcart-radius);
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.07);
   transition: border-color 0.15s ease-in-out;
   
@@ -272,26 +272,26 @@
   }
   
   &::placeholder {
-    color: var(--fluentcart-gray-200);
+    color: var(--wishcart-gray-200);
   }
   
   &:disabled {
-    background: var(--fluentcart-gray-25);
-    color: var(--fluentcart-text-muted);
+    background: var(--wishcart-gray-25);
+    color: var(--wishcart-text-muted);
     cursor: not-allowed;
   }
 }
 
-.fluentcart-textarea {
-  @extend .fluentcart-input;
+.wishcart-textarea {
+  @extend .wishcart-input;
   height: auto;
   min-height: 80px;
   padding: 6px 8px;
   resize: vertical;
 }
 
-.fluentcart-select {
-  @extend .fluentcart-input;
+.wishcart-select {
+  @extend .wishcart-input;
   cursor: pointer;
   padding-right: 24px;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23646970' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
@@ -300,8 +300,8 @@
   background-size: 12px;
 }
 
-.fluentcart-checkbox,
-.fluentcart-radio {
+.wishcart-checkbox,
+.wishcart-radio {
   width: 16px;
   height: 16px;
   margin: 0;
@@ -313,7 +313,7 @@
   }
 }
 
-.fluentcart-toggle {
+.wishcart-toggle {
   position: relative;
   display: inline-block;
   width: 36px;
@@ -324,7 +324,7 @@
     width: 0;
     height: 0;
     
-    &:checked + .fluentcart-toggle-slider {
+    &:checked + .wishcart-toggle-slider {
       background: var(--wp-admin-blue);
       
       &:before {
@@ -332,20 +332,20 @@
       }
     }
     
-    &:focus + .fluentcart-toggle-slider {
+    &:focus + .wishcart-toggle-slider {
       box-shadow: 0 0 0 2px rgba(34, 113, 177, 0.2);
     }
   }
 }
 
-.fluentcart-toggle-slider {
+.wishcart-toggle-slider {
   position: absolute;
   cursor: pointer;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: var(--fluentcart-gray-100);
+  background: var(--wishcart-gray-100);
   border-radius: 20px;
   transition: 0.2s;
   
@@ -366,56 +366,56 @@
    Card/Panel Styles - WordPress Admin
    ========================================== */
 
-.fluentcart-card {
-  background: var(--fluentcart-bg-white);
-  border: 1px solid var(--fluentcart-border);
-  border-radius: var(--fluentcart-radius);
-  box-shadow: var(--fluentcart-shadow-sm);
-  padding: var(--fluentcart-space-xl);
-  margin-bottom: var(--fluentcart-space-xl);
+.wishcart-card {
+  background: var(--wishcart-bg-white);
+  border: 1px solid var(--wishcart-border);
+  border-radius: var(--wishcart-radius);
+  box-shadow: var(--wishcart-shadow-sm);
+  padding: var(--wishcart-space-xl);
+  margin-bottom: var(--wishcart-space-xl);
 }
 
-.fluentcart-card-header {
-  margin-bottom: var(--fluentcart-space-lg);
-  padding-bottom: var(--fluentcart-space-md);
-  border-bottom: 1px solid var(--fluentcart-border-light);
+.wishcart-card-header {
+  margin-bottom: var(--wishcart-space-lg);
+  padding-bottom: var(--wishcart-space-md);
+  border-bottom: 1px solid var(--wishcart-border-light);
 }
 
-.fluentcart-card-title {
+.wishcart-card-title {
   font-size: 14px;
   font-weight: 600;
-  color: var(--fluentcart-gray-900);
+  color: var(--wishcart-gray-900);
   margin: 0;
 }
 
-.fluentcart-card-description {
+.wishcart-card-description {
   font-size: 13px;
-  color: var(--fluentcart-text-secondary);
+  color: var(--wishcart-text-secondary);
   margin: 4px 0 0;
 }
 
-.fluentcart-card-content {
+.wishcart-card-content {
   /* Content area - no default styles */
 }
 
-.fluentcart-card-footer {
-  margin-top: var(--fluentcart-space-lg);
-  padding-top: var(--fluentcart-space-lg);
-  border-top: 1px solid var(--fluentcart-border-light);
+.wishcart-card-footer {
+  margin-top: var(--wishcart-space-lg);
+  padding-top: var(--wishcart-space-lg);
+  border-top: 1px solid var(--wishcart-border-light);
   display: flex;
   justify-content: flex-end;
-  gap: var(--fluentcart-space-sm);
+  gap: var(--wishcart-space-sm);
 }
 
 /* ==========================================
    Navigation Tabs - WordPress Admin Style
    ========================================== */
 
-.fluentcart-nav-tabs {
+.wishcart-nav-tabs {
   display: flex;
   gap: 0;
-  border-bottom: 1px solid var(--fluentcart-border);
-  background: var(--fluentcart-bg-white);
+  border-bottom: 1px solid var(--wishcart-border);
+  background: var(--wishcart-bg-white);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -424,14 +424,14 @@
   margin-bottom: 0;
 }
 
-.fluentcart-nav-tab {
+.wishcart-nav-tab {
   display: flex;
   align-items: center;
   gap: 6px;
   padding: 14px 20px;
   font-size: 13px;
   font-weight: 400;
-  color: var(--fluentcart-text-secondary);
+  color: var(--wishcart-text-secondary);
   text-decoration: none;
   border-bottom: 3px solid transparent;
   cursor: pointer;
@@ -443,14 +443,14 @@
   position: relative;
   
   &:hover {
-    color: var(--fluentcart-primary);
+    color: var(--wishcart-primary);
     background: rgba(30, 115, 190, 0.05);
   }
   
   &.active {
-    color: var(--fluentcart-primary);
+    color: var(--wishcart-primary);
     background: rgba(30, 115, 190, 0.1);
-    border-bottom-color: var(--fluentcart-primary);
+    border-bottom-color: var(--wishcart-primary);
     font-weight: 600;
   }
   
@@ -464,39 +464,47 @@
    WordPress Admin Layout
    ========================================== */
 
-.fluentcart-admin-page {
-  background: var(--fluentcart-bg-body);
+.wishcart-admin-page {
+  background: var(--wishcart-bg-body);
   min-height: 100vh;
   padding: 0;
   margin: 0 0 0 -20px;
 }
 
-.fluentcart-admin-page-header {  
+.wishcart-admin-page-header {  
   padding: 25px 24px; 
 }
 
-.fluentcart-admin-page-header-content {
-  max-width: 1400px;
+.wishcart-admin-page-header-content {
+  padding-left: 50px;
+  padding-right: 50px;
+  max-width: calc(1400px + 100px); 
   margin: 0 auto;
+  
+    @media (max-width: 565px) {
+      padding-left: 25px;
+      padding-right: 25px;
+      max-width: calc(100vw + 50px);
+    } 
 }
 
-.fluentcart-admin-page-title {
+.wishcart-admin-page-title {
   font-size: 23px;
   font-weight: 400;
   line-height: 1.3;
-  color: var(--fluentcart-gray-900);
+  color: var(--wishcart-gray-900);
   margin: 0;
   padding: 0;
 }
 
-.fluentcart-admin-header {
-  background: var(--fluentcart-bg-white);
-  border-bottom: 1px solid var(--fluentcart-border);
+.wishcart-admin-header {
+  background: var(--wishcart-bg-white);
+  border-bottom: 1px solid var(--wishcart-border);
   padding: 20px 24px;
   margin-bottom: 0;
 }
 
-.fluentcart-admin-header-content {
+.wishcart-admin-header-content {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -504,20 +512,20 @@
   margin: 0 auto;
 }
 
-.fluentcart-admin-header-left {
+.wishcart-admin-header-left {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.fluentcart-admin-logo {
+.wishcart-admin-logo {
   width: 40px;
   height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: rgba(30, 115, 190, 0.08);
-  border-radius: var(--fluentcart-radius);
+  border-radius: var(--wishcart-radius);
   
   img {
     width: 24px;
@@ -525,38 +533,46 @@
   }
 }
 
-.fluentcart-admin-title-wrapper {
+.wishcart-admin-title-wrapper {
   h1 {
     font-size: 23px;
     font-weight: 400;
     margin: 0;
     padding: 0;
     line-height: 1.3;
-    color: var(--fluentcart-gray-900);
+    color: var(--wishcart-gray-900);
   }
   
   p {
     font-size: 13px;
-    color: var(--fluentcart-text-secondary);
+    color: var(--wishcart-text-secondary);
     margin: 2px 0 0;
     line-height: 1.4;
   }
 }
 
-.fluentcart-admin-header-right {
+.wishcart-admin-header-right {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.fluentcart-admin-body {
-  max-width: 1400px;
-  margin: 0 auto;
+.wishcart-admin-body {
   padding: 0;
+  padding-left: 50px;
+  padding-right: 50px;
+  max-width: calc(1400px + 100px);
+  margin: 0 auto;
+
+  @media (max-width: 565px) {
+    padding-left: 25px;
+    padding-right: 25px;
+    max-width: calc(100vw + 50px);
+  }
 }
 
-.fluentcart-admin-content {
-  background: var(--fluentcart-bg-white);
+.wishcart-admin-content {
+  background: var(--wishcart-bg-white);
   padding: 24px;
 }
 
@@ -564,43 +580,43 @@
    Notices - WordPress Admin Style
    ========================================== */
 
-.fluentcart-notice {
+.wishcart-notice {
   padding: 12px 16px;
-  border-left: 4px solid var(--fluentcart-border);
-  background: var(--fluentcart-bg-white);
+  border-left: 4px solid var(--wishcart-border);
+  background: var(--wishcart-bg-white);
   margin: 16px 0;
   display: flex;
   align-items: flex-start;
   gap: 12px;
   font-size: 13px;
-  box-shadow: var(--fluentcart-shadow-sm);
+  box-shadow: var(--wishcart-shadow-sm);
 }
 
-.fluentcart-notice-success {
-  border-left-color: var(--fluentcart-success);
-  background: var(--fluentcart-success-bg);
+.wishcart-notice-success {
+  border-left-color: var(--wishcart-success);
+  background: var(--wishcart-success-bg);
 }
 
-.fluentcart-notice-warning {
-  border-left-color: var(--fluentcart-warning);
-  background: var(--fluentcart-warning-bg);
+.wishcart-notice-warning {
+  border-left-color: var(--wishcart-warning);
+  background: var(--wishcart-warning-bg);
 }
 
-.fluentcart-notice-error {
-  border-left-color: var(--fluentcart-danger);
-  background: var(--fluentcart-danger-bg);
+.wishcart-notice-error {
+  border-left-color: var(--wishcart-danger);
+  background: var(--wishcart-danger-bg);
 }
 
-.fluentcart-notice-info {
-  border-left-color: var(--fluentcart-info);
-  background: var(--fluentcart-info-bg);
+.wishcart-notice-info {
+  border-left-color: var(--wishcart-info);
+  background: var(--wishcart-info-bg);
 }
 
 /* ==========================================
    Status Badge
    ========================================== */
 
-.fluentcart-badge {
+.wishcart-badge {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -613,42 +629,42 @@
   letter-spacing: 0.3px;
 }
 
-.fluentcart-badge-success {
-  background: var(--fluentcart-success-bg);
-  color: var(--fluentcart-success);
+.wishcart-badge-success {
+  background: var(--wishcart-success-bg);
+  color: var(--wishcart-success);
 }
 
-.fluentcart-badge-warning {
-  background: var(--fluentcart-warning-bg);
-  color: var(--fluentcart-warning);
+.wishcart-badge-warning {
+  background: var(--wishcart-warning-bg);
+  color: var(--wishcart-warning);
 }
 
-.fluentcart-badge-danger {
-  background: var(--fluentcart-danger-bg);
-  color: var(--fluentcart-danger);
+.wishcart-badge-danger {
+  background: var(--wishcart-danger-bg);
+  color: var(--wishcart-danger);
 }
 
-.fluentcart-badge-info {
-  background: var(--fluentcart-info-bg);
-  color: var(--fluentcart-info);
+.wishcart-badge-info {
+  background: var(--wishcart-info-bg);
+  color: var(--wishcart-info);
 }
 
-.fluentcart-badge-neutral {
-  background: var(--fluentcart-gray-25);
-  color: var(--fluentcart-text-secondary);
+.wishcart-badge-neutral {
+  background: var(--wishcart-gray-25);
+  color: var(--wishcart-text-secondary);
 }
 
 /* ==========================================
    Connection Status Badge
    ========================================== */
 
-.fluentcart-connection-status {
+.wishcart-connection-status {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   padding: 4px 12px;
-  background: var(--fluentcart-success-bg);
-  color: var(--fluentcart-success);
+  background: var(--wishcart-success-bg);
+  color: var(--wishcart-success);
   border-radius: 16px;
   font-size: 12px;
   font-weight: 500;
@@ -657,7 +673,7 @@
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: var(--fluentcart-success);
+    background: var(--wishcart-success);
   }
 }
 
@@ -665,31 +681,31 @@
    Form Group
    ========================================== */
 
-.fluentcart-form-group {
-  margin-bottom: var(--fluentcart-space-lg);
+.wishcart-form-group {
+  margin-bottom: var(--wishcart-space-lg);
 }
 
-.fluentcart-form-row {
+.wishcart-form-row {
   display: flex;
-  gap: var(--fluentcart-space-lg);
-  margin-bottom: var(--fluentcart-space-lg);
+  gap: var(--wishcart-space-lg);
+  margin-bottom: var(--wishcart-space-lg);
   
-  .fluentcart-form-group {
+  .wishcart-form-group {
     flex: 1;
     margin-bottom: 0;
   }
 }
 
-.fluentcart-form-helper {
+.wishcart-form-helper {
   font-size: 12px;
-  color: var(--fluentcart-text-muted);
+  color: var(--wishcart-text-muted);
   margin-top: 4px;
   line-height: 1.4;
 }
 
-.fluentcart-form-error {
+.wishcart-form-error {
   font-size: 12px;
-  color: var(--fluentcart-danger);
+  color: var(--wishcart-danger);
   margin-top: 4px;
   line-height: 1.4;
 }
@@ -698,53 +714,53 @@
    Utility Classes
    ========================================== */
 
-.fluentcart-text-center {
+.wishcart-text-center {
   text-align: center;
 }
 
-.fluentcart-text-right {
+.wishcart-text-right {
   text-align: right;
 }
 
-.fluentcart-flex {
+.wishcart-flex {
   display: flex;
 }
 
-.fluentcart-flex-center {
+.wishcart-flex-center {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.fluentcart-flex-between {
+.wishcart-flex-between {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.fluentcart-gap-sm {
-  gap: var(--fluentcart-space-sm);
+.wishcart-gap-sm {
+  gap: var(--wishcart-space-sm);
 }
 
-.fluentcart-gap-md {
-  gap: var(--fluentcart-space-md);
+.wishcart-gap-md {
+  gap: var(--wishcart-space-md);
 }
 
-.fluentcart-gap-lg {
-  gap: var(--fluentcart-space-lg);
+.wishcart-gap-lg {
+  gap: var(--wishcart-space-lg);
 }
 
-.fluentcart-mt-0 { margin-top: 0; }
-.fluentcart-mt-xs { margin-top: var(--fluentcart-space-xs); }
-.fluentcart-mt-sm { margin-top: var(--fluentcart-space-sm); }
-.fluentcart-mt-md { margin-top: var(--fluentcart-space-md); }
-.fluentcart-mt-lg { margin-top: var(--fluentcart-space-lg); }
-.fluentcart-mt-xl { margin-top: var(--fluentcart-space-xl); }
+.wishcart-mt-0 { margin-top: 0; }
+.wishcart-mt-xs { margin-top: var(--wishcart-space-xs); }
+.wishcart-mt-sm { margin-top: var(--wishcart-space-sm); }
+.wishcart-mt-md { margin-top: var(--wishcart-space-md); }
+.wishcart-mt-lg { margin-top: var(--wishcart-space-lg); }
+.wishcart-mt-xl { margin-top: var(--wishcart-space-xl); }
 
-.fluentcart-mb-0 { margin-bottom: 0; }
-.fluentcart-mb-xs { margin-bottom: var(--fluentcart-space-xs); }
-.fluentcart-mb-sm { margin-bottom: var(--fluentcart-space-sm); }
-.fluentcart-mb-md { margin-bottom: var(--fluentcart-space-md); }
-.fluentcart-mb-lg { margin-bottom: var(--fluentcart-space-lg); }
-.fluentcart-mb-xl { margin-bottom: var(--fluentcart-space-xl); }
+.wishcart-mb-0 { margin-bottom: 0; }
+.wishcart-mb-xs { margin-bottom: var(--wishcart-space-xs); }
+.wishcart-mb-sm { margin-bottom: var(--wishcart-space-sm); }
+.wishcart-mb-md { margin-bottom: var(--wishcart-space-md); }
+.wishcart-mb-lg { margin-bottom: var(--wishcart-space-lg); }
+.wishcart-mb-xl { margin-bottom: var(--wishcart-space-xl); }
 

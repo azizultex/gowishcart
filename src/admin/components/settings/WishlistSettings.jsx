@@ -269,8 +269,8 @@ const WishlistSettings = ({ settings, updateSettings }) => {
 
             {/* Button Position */}
             {wishlistSettings.product_page_button && (
-                <div className="fluentcart-form-group" style={{borderTop: '1px solid var(--fluentcart-gray-25)', paddingTop: '16px'}}>
-                    <label className="fluentcart-label" htmlFor="button_position">
+                <div className="wishcart-form-group" style={{borderTop: '1px solid var(--wishcart-gray-25)', paddingTop: '16px'}}>
+                    <label className="wishcart-label" htmlFor="button_position">
                         {__('Button Position', 'wishcart')}
                     </label>
                     <Select
@@ -278,7 +278,7 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                         onValueChange={(value) => updateWishlistSetting('button_position', value)}
                         disabled={!wishlistSettings.enabled}
                     >
-                        <SelectTrigger id="button_position" className="fluentcart-select">
+                        <SelectTrigger id="button_position" className="wishcart-select">
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -296,18 +296,18 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                             </SelectItem>
                         </SelectContent>
                     </Select>
-                    <p className="fluentcart-form-helper">
+                    <p className="wishcart-form-helper">
                         {__('Choose where to display the wishlist button relative to the purchase actions.', 'wishcart')}
                     </p>
                 </div>
             )}
 
             {/* Shortcode */}
-            <div className="fluentcart-form-group" style={{borderTop: '1px solid var(--fluentcart-gray-25)', paddingTop: '16px'}}>
-                <label className="fluentcart-label">
+            <div className="wishcart-form-group" style={{borderTop: '1px solid var(--wishcart-gray-25)', paddingTop: '16px'}}>
+                <label className="wishcart-label">
                     {__('Shortcode', 'wishcart')}
                 </label>
-                <p className="fluentcart-form-helper" style={{marginTop: '8px'}}>
+                <p className="wishcart-form-helper" style={{marginTop: '8px'}}>
                     {__('You can add a button manually by using the shortcode', 'wishcart')}{' '}
                     <code style={{fontFamily: 'monospace', backgroundColor: '#f5f5f5', padding: '2px 6px', borderRadius: '3px'}}>
                         [wishcart_sc id="{'{'}product id{'}'}"]
@@ -323,7 +323,7 @@ const WishlistSettings = ({ settings, updateSettings }) => {
             </div>
 
             {/* Wishlist Page */}
-            <div className="fluentcart-form-group" style={{borderTop: '1px solid var(--fluentcart-gray-25)', paddingTop: '16px'}}>
+            <div className="wishcart-form-group" style={{borderTop: '1px solid var(--wishcart-gray-25)', paddingTop: '16px'}}>
                 <h4 style={{fontSize: '14px', fontWeight: '600', marginBottom: '4px'}}>
                     {__('Select Wishlist Page', 'wishcart')}
                 </h4>
@@ -337,7 +337,7 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                             onValueChange={(value) => updateWishlistSetting('wishlist_page_id', parseInt(value, 10))}
                             disabled={!wishlistSettings.enabled || loadingPages}
                         >
-                            <SelectTrigger id="wishlist_page" className="fluentcart-select">
+                            <SelectTrigger id="wishlist_page" className="wishcart-select">
                                 <SelectValue>
                                     {getPageDisplayText()}
                                 </SelectValue>
@@ -462,8 +462,8 @@ const WishlistSettings = ({ settings, updateSettings }) => {
             </Dialog>
 
             {/* Guest Cookie Expiry */}
-            <div className="fluentcart-form-group">
-                <label className="fluentcart-label" htmlFor="guest_cookie_expiry">
+            <div className="wishcart-form-group">
+                <label className="wishcart-label" htmlFor="guest_cookie_expiry">
                     {__('Guest Wishlist Expiry (Days)', 'wishcart')}
                 </label>
                 <Input
@@ -474,17 +474,17 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                     value={wishlistSettings.guest_cookie_expiry || 30}
                     onChange={(e) => updateWishlistSetting('guest_cookie_expiry', parseInt(e.target.value, 10))}
                     disabled={!wishlistSettings.enabled}
-                    className="fluentcart-input"
+                    className="wishcart-input"
                     style={{maxWidth: '200px'}}
                 />
-                <p className="fluentcart-form-helper">
+                <p className="wishcart-form-helper">
                     {__('Number of days guest wishlists are stored in cookies', 'wishcart')}
                 </p>
             </div>
 
             {/* Custom CSS */}
-            <div className="fluentcart-form-group wishcart-code-editor">
-                <label className="fluentcart-label" htmlFor="custom_css">
+            <div className="wishcart-form-group wishcart-code-editor">
+                <label className="wishcart-label" htmlFor="custom_css">
                     {__('Custom CSS', 'wishcart')}
                 </label>
                 <Textarea
@@ -494,9 +494,9 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                     onChange={(e) => updateWishlistSetting('custom_css', e.target.value)}
                     placeholder={__('Add custom CSS for wishlist button styling...', 'wishcart')}
                     disabled={!wishlistSettings.enabled}
-                    className="fluentcart-textarea"
+                    className="wishcart-textarea"
                 />
-                <p className="fluentcart-form-helper">
+                <p className="wishcart-form-helper">
                     {__('Add custom CSS to style the wishlist button. Use selector: .wishcart-wishlist-button', 'wishcart')}
                 </p>
             </div>

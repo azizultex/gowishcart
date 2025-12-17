@@ -212,16 +212,16 @@ const SettingsApp = () => {
 
     return (
         <>
-            <div className="wishcart-admin-shell fluentcart-admin-page">
+            <div className="wishcart-admin-shell wishcart-admin-page">
                 {/* Navigation Tabs - WordPress/FluentCart Style */}
-                <nav className="fluentcart-nav-tabs">
+                <nav className="wishcart-nav-tabs">
                     {tabs.map((tab) => {
                         const Icon = tab.icon;
                         return (
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
-                                className={`fluentcart-nav-tab ${activeTab === tab.id ? 'active' : ''}`}
+                                className={`wishcart-nav-tab ${activeTab === tab.id ? 'active' : ''}`}
                             >
                                 <Icon />
                                 {tab.label}
@@ -231,17 +231,17 @@ const SettingsApp = () => {
                 </nav>
 
                 {/* Active Tab Header */}
-                <div className="fluentcart-admin-page-header">
-                    <div className="fluentcart-admin-page-header-content">
-                        <h1 className="fluentcart-admin-page-title">
+                <div className="wishcart-admin-page-header">
+                    <div className="wishcart-admin-page-header-content">
+                        <h1 className="wishcart-admin-page-title">
                             {activeTabData.label}
                         </h1>
                     </div>
                 </div>
 
                 {/* Main Content Area */}
-                <div className="fluentcart-admin-body">
-                    <div className="fluentcart-admin-content">
+                <div className="wishcart-admin-body">
+                    <div className="wishcart-admin-content">
                         {/* Settings Tab */}
                         {activeTab === 'settings' && (
                             <WishlistSettings
@@ -280,11 +280,11 @@ const SettingsApp = () => {
 
                         {/* Save Button - Only show for tabs that need it */}
                         {shouldShowSave && (
-                            <div className="fluentcart-card-footer" style={{ marginTop: '24px' }}>
+                            <div className="wishcart-card-footer" style={{ marginTop: '24px' }}>
                                 <button
                                     onClick={saveSettings}
                                     disabled={isSaving}
-                                    className="fluentcart-button fluentcart-button-primary"
+                                    className="wishcart-button wishcart-button-primary"
                                 >
                                     {isSaving ? __('Saving...', 'wishcart') : __('Save Settings', 'wishcart')}
                                 </button>

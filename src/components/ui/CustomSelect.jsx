@@ -17,7 +17,7 @@ const CustomSelect = ({
     isClearable = false,
     ...props 
 }) => {
-    // FluentCart-inspired custom styles
+    // wishcart-inspired custom styles
     const customStyles = {
         control: (base, state) => ({
             ...base,

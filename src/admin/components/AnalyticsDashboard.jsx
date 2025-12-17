@@ -84,7 +84,7 @@ export const AnalyticsDashboard = () => {
             {/* Overview Cards */}
             {overview && (
                 <div className="overview-grid">
-                    <div className="stat-card fluentcart-card">
+                    <div className="stat-card wishcart-card">
                         <div className="stat-icon wishlist">
                             <Heart size={24} />
                         </div>
@@ -94,7 +94,7 @@ export const AnalyticsDashboard = () => {
                         </div>
                     </div>
 
-                    <div className="stat-card fluentcart-card">
+                    <div className="stat-card wishcart-card">
                         <div className="stat-icon items">
                             <BarChart size={24} />
                         </div>
@@ -105,7 +105,7 @@ export const AnalyticsDashboard = () => {
                         </div>
                     </div>
 
-                    <div className="stat-card fluentcart-card">
+                    <div className="stat-card wishcart-card">
                         <div className="stat-icon conversion">
                             <ShoppingCart size={24} />
                         </div>
@@ -116,7 +116,7 @@ export const AnalyticsDashboard = () => {
                         </div>
                     </div>
 
-                    <div className="stat-card fluentcart-card">
+                    <div className="stat-card wishcart-card">
                         <div className="stat-icon shares">
                             <Share2 size={24} />
                         </div>
@@ -145,7 +145,7 @@ export const AnalyticsDashboard = () => {
                 };
 
                 return (
-                    <div className="funnel-card fluentcart-card">
+                    <div className="funnel-card wishcart-card">
                         <h3>Conversion Funnel</h3>
                         <div className="funnel-visualization">
                             <div className="funnel-stage">
@@ -179,7 +179,7 @@ export const AnalyticsDashboard = () => {
 
             {/* Popular Products */}
             {popularProducts.length > 0 && (
-                <div className="popular-products-card fluentcart-card">
+                <div className="popular-products-card wishcart-card">
                     <h3>Most Wishlisted Products</h3>
                         <div className="products-table">
                             <table>
@@ -220,7 +220,7 @@ export const AnalyticsDashboard = () => {
 
             {/* Link Details */}
             {linkDetails && (
-                <div className="links-card fluentcart-card">
+                <div className="links-card wishcart-card">
                     <div className="links-header">
                             <h3>
                                 <LinkIcon size={20} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
