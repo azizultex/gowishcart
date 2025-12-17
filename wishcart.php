@@ -90,6 +90,12 @@ class WishCart_Wishlist {
         define('WishCart_PLUGIN_URL', plugin_dir_url(__FILE__));
         define('WishCart_TEXT_DOMAIN', 'wishcart');
 
+        // Check for FluentCart dependency first (before loading other dependencies)
+        if ( ! $this->check_fluentcart_dependency() ) {
+            // Add admin notice and prevent main functionality from loading
+            add_action('admin_notices', [ $this, 'fluentcart_missing_notice' ]);
+            return;
+        }
 
         // Initialize components
         add_action('init', [ $this, 'init' ]);
@@ -115,6 +121,83 @@ class WishCart_Wishlist {
         
         // Initialize cron handler
         new WishCart_Cron_Handler();
+    }
+
+    /**
+     * Check if FluentCart plugin is active
+     *
+     * @return bool True if FluentCart is active, false otherwise
+     */
+    private function check_fluentcart_dependency() {
+        // Include plugin.php if needed
+        if ( ! function_exists( 'is_plugin_active' ) ) {
+            require_once ABSPATH . 'wp-admin/includes/plugin.php';
+        }
+
+        // Check for all possible FluentCart plugin paths
+        $possible_paths = [
+            'fluent-cart/fluent-cart.php',      // WordPress.org version
+            'fluentcart/fluentcart.php',        // Alternative version
+            'fluentcart-pro/fluentcart-pro.php', // Pro version
+        ];
+
+        foreach ( $possible_paths as $path ) {
+            if ( is_plugin_active( $path ) ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Display admin notice when FluentCart is missing
+     *
+     * @return void
+     */
+    public function fluentcart_missing_notice() {
+        // Only show to administrators
+        if ( ! current_user_can( 'manage_options' ) ) {
+            return;
+        }
+
+        $plugin_file = 'fluent-cart/fluent-cart.php';
+        $install_url = wp_nonce_url(
+            self_admin_url( 'update.php?action=install-plugin&plugin=fluent-cart' ),
+            'install-plugin_fluent-cart'
+        );
+        $activate_url = wp_nonce_url(
+            self_admin_url( 'plugins.php?action=activate&plugin=' . $plugin_file ),
+            'activate-plugin_' . $plugin_file
+        );
+
+        // Check if plugin is installed but not active
+        $is_installed = file_exists( WP_PLUGIN_DIR . '/' . $plugin_file );
+        
+        ?>
+        <div class="notice notice-error">
+            <p>
+                <strong><?php esc_html_e( 'WishCart requires FluentCart', 'wishcart' ); ?></strong>
+            </p>
+            <p>
+                <?php esc_html_e( 'WishCart plugin requires FluentCart to be installed and activated. Please install and activate FluentCart to use WishCart features.', 'wishcart' ); ?>
+            </p>
+            <p>
+                <?php if ( $is_installed ) : ?>
+                    <a href="<?php echo esc_url( $activate_url ); ?>" class="button button-primary">
+                        <?php esc_html_e( 'Activate FluentCart', 'wishcart' ); ?>
+                    </a>
+                <?php else : ?>
+                    <a href="<?php echo esc_url( $install_url ); ?>" class="button button-primary">
+                        <?php esc_html_e( 'Install FluentCart', 'wishcart' ); ?>
+                    </a>
+                <?php endif; ?>
+                <a href="<?php echo esc_url( admin_url( 'plugins.php' ) ); ?>" class="button">
+                    <?php esc_html_e( 'Go to Plugins', 'wishcart' ); ?>
+                </a>
+            </p>
+        </div>
+        <?php
     }
 
     /**
@@ -226,6 +309,25 @@ class WishCart_Wishlist {
      * @return void
      */
     public function activate() {
+        // Check for FluentCart dependency before activation
+        if ( ! $this->check_fluentcart_dependency() ) {
+            // Deactivate this plugin
+            deactivate_plugins( plugin_basename( __FILE__ ) );
+            
+            // Display error message
+            wp_die(
+                sprintf(
+                    '<h1>%s</h1><p>%s</p><p><a href="%s">%s</a></p>',
+                    esc_html__( 'WishCart Activation Failed', 'wishcart' ),
+                    esc_html__( 'WishCart requires FluentCart plugin to be installed and activated. Please install and activate FluentCart first, then try activating WishCart again.', 'wishcart' ),
+                    esc_url( admin_url( 'plugins.php' ) ),
+                    esc_html__( 'Return to Plugins', 'wishcart' )
+                ),
+                esc_html__( 'Plugin Activation Error', 'wishcart' ),
+                [ 'back_link' => true ]
+            );
+        }
+
         // Ensure database tables exist
         new WishCart_Database();
         

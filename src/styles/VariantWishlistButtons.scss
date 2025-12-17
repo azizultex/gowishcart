@@ -2,9 +2,9 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
-    margin-top: 12px;
+    // margin-top: 12px;
     width: 100%;
-    min-height: 48px; // Prevent layout shift when buttons toggle
+    // min-height: 48px; // Prevent layout shift when buttons toggle
 
     .wishcart-variant-wishlist-button {
         display: flex;
