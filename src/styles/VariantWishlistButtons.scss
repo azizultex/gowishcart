@@ -19,6 +19,7 @@
         font-size: 14px;
         width: 100%;
         justify-content: flex-start;
+        flex-wrap: wrap;
 
         &:hover {
             border-color: #d1d5db;
@@ -177,7 +178,7 @@
         display: none !important;
 
         &:first-child {
-            display: block !important;
+            display: flex !important;
         }
     }
 }
