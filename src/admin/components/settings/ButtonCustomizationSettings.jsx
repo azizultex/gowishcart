@@ -24,24 +24,24 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
     
     // New structure: product_page, product_listing
     const productPage = buttonCustomization.product_page || {
-        backgroundColor: '#ebe9eb',
-        backgroundHoverColor: '#dad8da',
-        buttonTextColor: '#515151',
-        buttonTextHoverColor: '#686868',
+        backgroundColor: '#253241',
+        backgroundHoverColor: '#253241',
+        buttonTextColor: '#ffffff',
+        buttonTextHoverColor: '#ffffff',
         font: 'default',
         fontSize: '16px',
         iconSize: '16px',
-        borderRadius: '3px'
+        borderRadius: '8px'
     };
     const savedProductPage = buttonCustomization.saved_product_page || {
-        backgroundColor: '#ebe9eb',
-        backgroundHoverColor: '#dad8da',
-        buttonTextColor: '#515151',
-        buttonTextHoverColor: '#686868',
+        backgroundColor: '#253241',
+        backgroundHoverColor: '#253241',
+        buttonTextColor: '#ffffff',
+        buttonTextHoverColor: '#ffffff',
         font: 'default',
         fontSize: '16px',
         iconSize: '16px',
-        borderRadius: '3px'
+        borderRadius: '8px'
     };
     const savedProductListing = buttonCustomization.saved_product_listing || {
         backgroundColor: '#ebe9eb',
