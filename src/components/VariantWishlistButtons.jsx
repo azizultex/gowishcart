@@ -345,15 +345,16 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
     const getIconComponent = () => {
         const currentIcon = isInWishlist ? savedWishlistIcon : addToWishlistIcon;
         // Use saved settings if in wishlist, otherwise use add settings
+        // Always use product_page settings for consistent styling everywhere
         let settings;
         if (isInWishlist) {
-            settings = isProductListing ? savedProductListing : savedProductPage;
+            settings = savedProductPage;
             // Fallback to add state settings if saved settings are not available
             if (!settings || Object.keys(settings).length === 0) {
-                settings = isProductListing ? productListing : productPage;
+                settings = productPage;
             }
         } else {
-            settings = isProductListing ? productListing : productPage;
+            settings = productPage;
         }
         const iconSize = settings.iconSize || '1.125rem';
         
@@ -384,18 +385,18 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
         const dynamicStyles = {};
 
         // Use saved settings if in wishlist, otherwise use add settings
-        // Use product_listing settings if on listing page, otherwise product_page settings
+        // Always use product_page settings for consistent styling everywhere
         let settings;
         if (isInWishlist) {
             // Use saved state settings
-            settings = isProductListing ? savedProductListing : savedProductPage;
+            settings = savedProductPage;
             // Fallback to add state settings if saved settings are not available
             if (!settings || Object.keys(settings).length === 0) {
-                settings = isProductListing ? productListing : productPage;
+                settings = productPage;
             }
         } else {
             // Use add state settings
-            settings = isProductListing ? productListing : productPage;
+            settings = productPage;
         }
         
         // Apply button style variations

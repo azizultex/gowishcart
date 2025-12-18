@@ -24,8 +24,8 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
     
     // New structure: product_page, product_listing
     const productPage = buttonCustomization.product_page || {
-        backgroundColor: '#253241',
-        backgroundHoverColor: '#253241',
+        backgroundColor: 'linear-gradient(180deg, #ffffff29, #fff0), #253241;',
+        backgroundHoverColor: 'linear-gradient(180deg, #ffffff29, #fff0), #253241;',
         buttonTextColor: '#ffffff',
         buttonTextHoverColor: '#ffffff',
         font: 'default',
@@ -34,8 +34,8 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
         borderRadius: '8px'
     };
     const savedProductPage = buttonCustomization.saved_product_page || {
-        backgroundColor: '#253241',
-        backgroundHoverColor: '#253241',
+        backgroundColor: 'linear-gradient(180deg, #ffffff29, #fff0), #253241;',
+        backgroundHoverColor: 'linear-gradient(180deg, #ffffff29, #fff0), #253241;',
         buttonTextColor: '#ffffff',
         buttonTextHoverColor: '#ffffff',
         font: 'default',

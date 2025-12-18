@@ -241,8 +241,8 @@ class WishCart_Wishlist_Page {
             'enable_multiple_wishlists' => false,
             'button_customization' => array(
                 'product_page' => array(
-                    'backgroundColor'        => '#253241',
-                    'backgroundHoverColor'   => '#253241',
+                    'backgroundColor'        => 'linear-gradient(180deg, #ffffff29, #fff0), #253241;',
+                    'backgroundHoverColor'   => 'linear-gradient(180deg, #ffffff29, #fff0), #253241;',
                     'buttonTextColor'        => '#ffffff',
                     'buttonTextHoverColor'   => '#ffffff',
                     'font'                   => 'default',
@@ -261,8 +261,8 @@ class WishCart_Wishlist_Page {
                     'borderRadius'          => '3px',
                 ),
                 'saved_product_page' => array(
-                    'backgroundColor'        => '#253241',
-                    'backgroundHoverColor'   => '#253241',
+                    'backgroundColor'        => 'linear-gradient(180deg, #ffffff29, #fff0), #253241;',
+                    'backgroundHoverColor'   => 'linear-gradient(180deg, #ffffff29, #fff0), #253241;',
                     'buttonTextColor'        => '#ffffff',
                     'buttonTextHoverColor'   => '#ffffff',
                     'font'                   => 'default',

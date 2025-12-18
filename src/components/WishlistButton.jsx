@@ -1066,7 +1066,7 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
     // Get icon component based on wishlist state
     const getIconComponent = () => {
         const currentIcon = isInWishlist ? savedWishlistIcon : addToWishlistIcon;
-        const settings = isProductListing ? productListing : productPage;
+        const settings = productPage;
         const iconSize = settings.iconSize || '1.125rem';
         
         if (currentIcon.type === 'custom' && currentIcon.customUrl) {
@@ -1098,18 +1098,18 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
         const dynamicStyles = {};
 
         // Use saved settings if in wishlist, otherwise use add settings
-        // Use product_listing settings if on listing page, otherwise product_page settings
+        // Always use product_page settings for consistent styling everywhere
         let settings;
         if (isInWishlist) {
             // Use saved state settings
-            settings = isProductListing ? savedProductListing : savedProductPage;
+            settings = savedProductPage;
             // Fallback to add state settings if saved settings are not available
             if (!settings || Object.keys(settings).length === 0) {
-                settings = isProductListing ? productListing : productPage;
+                settings = productPage;
             }
         } else {
             // Use add state settings
-            settings = isProductListing ? productListing : productPage;
+            settings = productPage;
         }
         
         // Apply button style variations
@@ -1202,8 +1202,8 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
     if (isCheckingVariants) {
         const renderLoadingIcon = () => {
             const currentIcon = addToWishlistIcon;
-            const settings = isProductListing ? productListing : productPage;
-            const iconSize = settings.iconSize || general.fontSize || '1.125rem';
+            const settings = productPage;
+            const iconSize = settings.iconSize || '1.125rem';
             if (currentIcon.type === 'custom' && currentIcon.customUrl) {
                 return (
                     <img
@@ -1243,8 +1243,8 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
     if (isLoading) {
         const renderLoadingIcon = () => {
             const currentIcon = addToWishlistIcon; // Use add icon for loading state
-            const settings = isProductListing ? productListing : productPage;
-            const iconSize = settings.iconSize || general.fontSize || '1.125rem';
+            const settings = productPage;
+            const iconSize = settings.iconSize || '1.125rem';
             if (currentIcon.type === 'custom' && currentIcon.customUrl) {
                 return (
                     <img
@@ -1303,11 +1303,11 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
                 if (buttonStyle === 'button' || buttonStyle === 'text-only') {
                     if (isInWishlist) {
                         // Use saved state hover colors
-                        const savedSettings = isProductListing ? savedProductListing : savedProductPage;
+                        const savedSettings = savedProductPage;
                         // Fallback to add state settings if saved settings are not available
                         const settings = (savedSettings && Object.keys(savedSettings).length > 0) 
                             ? savedSettings 
-                            : (isProductListing ? productListing : productPage);
+                            : productPage;
                         
                         if (settings.backgroundHoverColor) {
                             e.currentTarget.style.backgroundColor = settings.backgroundHoverColor;
@@ -1321,7 +1321,7 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
                         }
                     } else {
                         // Use add state hover colors
-                        const settings = isProductListing ? productListing : productPage;
+                        const settings = productPage;
                         if (settings.backgroundHoverColor) {
                             e.currentTarget.style.backgroundColor = settings.backgroundHoverColor;
                         } else if (colors.hoverBackground) {
@@ -1335,7 +1335,7 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
                     }
                 } else {
                     // For text-icon-link and icon-only, only change text/icon color
-                    const settings = isProductListing ? (isInWishlist ? savedProductListing : productListing) : (isInWishlist ? savedProductPage : productPage);
+                    const settings = isInWishlist ? savedProductPage : productPage;
                     if (settings.buttonTextHoverColor) {
                         e.currentTarget.style.color = settings.buttonTextHoverColor;
                     } else if (isInWishlist && colors.activeText) {
@@ -1350,11 +1350,11 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
                 if (buttonStyle === 'button' || buttonStyle === 'text-only') {
                     if (isInWishlist) {
                         // Use saved state colors
-                        const savedSettings = isProductListing ? savedProductListing : savedProductPage;
+                        const savedSettings = savedProductPage;
                         // Fallback to add state settings if saved settings are not available
                         const settings = (savedSettings && Object.keys(savedSettings).length > 0) 
                             ? savedSettings 
-                            : (isProductListing ? productListing : productPage);
+                            : productPage;
                         
                         if (settings.backgroundColor) {
                             e.currentTarget.style.backgroundColor = settings.backgroundColor;
@@ -1368,7 +1368,7 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
                         }
                     } else {
                         // Use add state colors
-                        const settings = isProductListing ? productListing : productPage;
+                        const settings = productPage;
                         if (settings.backgroundColor) {
                             e.currentTarget.style.backgroundColor = settings.backgroundColor;
                         } else if (colors.background) {
@@ -1382,7 +1382,7 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
                     }
                 } else {
                     // For text-icon-link and icon-only, only reset text/icon color
-                    const settings = isProductListing ? (isInWishlist ? savedProductListing : productListing) : (isInWishlist ? savedProductPage : productPage);
+                    const settings = isInWishlist ? savedProductPage : productPage;
                     if (settings.buttonTextColor) {
                         e.currentTarget.style.color = settings.buttonTextColor;
                     } else if (isInWishlist && colors.activeText) {
@@ -1412,8 +1412,8 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
                 isAdding ? (
                     (() => {
                         const currentIcon = isInWishlist ? savedWishlistIcon : addToWishlistIcon;
-                        const settings = isProductListing ? productListing : productPage;
-                        const iconSize = settings.iconSize || general.fontSize || '1.125rem';
+                        const settings = productPage;
+                        const iconSize = settings.iconSize || '1.125rem';
                         if (currentIcon.type === 'custom' && currentIcon.customUrl) {
                             return (
                                 <img

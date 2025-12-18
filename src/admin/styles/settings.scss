@@ -284,17 +284,17 @@
 
 /* Preview Button Styles */
 .wishcart-wishlist-button-preview {
-  display: inline-flex;
+  display: flex !important;
   align-items: center;
   gap: 8px;
-  padding: 8px 12px;
+  padding: 10px 12px;
   border: 1px solid;
   border-radius: 6px;
   cursor: default;
   transition: all 0.2s ease-in-out;
   font-size: 14px;
   width: 100%;
-  justify-content: flex-start;
+  justify-content: center !important;
   background: #ebe9eb;
   color: #515151;
   border-color: #ebe9eb;
@@ -310,8 +310,6 @@
   }
 
   .wishcart-wishlist-button__label {
-    flex: 1;
-    text-align: left;
     font-weight: 500;
     color: inherit;
   }

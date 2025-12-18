@@ -8,8 +8,8 @@ import '../../styles/settings.scss';
 const ButtonPreview = ({ buttonCustomization }) => {
     // Extract settings with defaults
     const productPage = buttonCustomization?.product_page || {
-        backgroundColor: '#253241',
-        backgroundHoverColor: '#253241',
+        backgroundColor: 'linear-gradient(180deg, #ffffff29, #fff0), #253241;',
+        backgroundHoverColor: 'linear-gradient(180deg, #ffffff29, #fff0), #253241;',
         buttonTextColor: '#ffffff',
         buttonTextHoverColor: '#ffffff',
         font: 'default',
@@ -18,8 +18,8 @@ const ButtonPreview = ({ buttonCustomization }) => {
         borderRadius: '8px'
     };
     const savedProductPage = buttonCustomization?.saved_product_page || {
-        backgroundColor: '#253241',
-        backgroundHoverColor: '#253241',
+        backgroundColor: 'linear-gradient(180deg, #ffffff29, #fff0), #253241;',
+        backgroundHoverColor: 'linear-gradient(180deg, #ffffff29, #fff0), #253241;',
         buttonTextColor: '#ffffff',
         buttonTextHoverColor: '#ffffff',
         font: 'default',
@@ -141,7 +141,7 @@ const ButtonPreview = ({ buttonCustomization }) => {
             if (sectionSettings.backgroundColor) {
                 styles.backgroundColor = sectionSettings.backgroundColor;
             } else {
-                styles.backgroundColor = '#253241'; // Default
+                styles.backgroundColor = 'linear-gradient(180deg, #ffffff29, #fff0), #253241;'; // Default
             }
 
             // Border
@@ -220,7 +220,7 @@ const ButtonPreview = ({ buttonCustomization }) => {
                 }}
                 onMouseLeave={(e) => {
                     if (buttonStyle === 'button' || buttonStyle === 'text-only') {
-                        e.currentTarget.style.backgroundColor = baseStyles.backgroundColor || '#253241';
+                        e.currentTarget.style.backgroundColor = baseStyles.backgroundColor || 'linear-gradient(180deg, #ffffff29, #fff0), #253241;';
                         e.currentTarget.style.color = baseStyles.color || '#ffffff';
                     } else {
                         e.currentTarget.style.color = baseStyles.color || '#ffffff';
