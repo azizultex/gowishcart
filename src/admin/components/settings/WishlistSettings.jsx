@@ -383,7 +383,7 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                     <div style={{ fontSize: '13px', color: '#666', marginTop: '8px' }}>
                         {__('Use', 'wishcart')}{' '}
                         <code style={{fontFamily: 'monospace', backgroundColor: '#f5f5f5', padding: '2px 6px', borderRadius: '3px'}}>
-                            [WishCart_Wishlist]
+                            [wishcart_wishlist]
                         </code>
                         {' '}
                         <a 

@@ -83,7 +83,7 @@ class WishCart_Wishlist_Page {
         if ( ! $page_id ) {
             $page_data = array(
                 'post_title'   => $page_name,
-                'post_content' => '[WishCart_Wishlist]',
+                'post_content' => '[wishcart_wishlist]',
                 'post_status'  => 'publish',
                 'post_type'    => 'page',
                 'post_name'    => sanitize_title( $page_name ),
@@ -187,8 +187,8 @@ class WishCart_Wishlist_Page {
         }
 
         $content = $page->post_content ?? '';
-        if ( strpos( $content, '[WishCart_Wishlist]' ) === false ) {
-            $content                     = trim( $content . "\n\n[WishCart_Wishlist]\n" );
+        if ( strpos( $content, '[wishcart_wishlist]' ) === false ) {
+            $content                     = trim( $content . "\n\n[wishcart_wishlist]\n" );
             $updated_data['post_content'] = $content;
             $needs_update                = true;
         }

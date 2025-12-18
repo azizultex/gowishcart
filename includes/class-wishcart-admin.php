@@ -1077,9 +1077,9 @@ JS;
                 if ( ! empty( $content ) ) {
                     // Prefer has_shortcode when available
                     if ( function_exists( 'has_shortcode' ) ) {
-                        $has_shortcode = has_shortcode( $content, 'WishCart_Wishlist' );
+                        $has_shortcode = has_shortcode( $content, 'wishcart_wishlist' );
                     } else {
-                        $has_shortcode = ( false !== strpos( $content, '[WishCart_Wishlist' ) );
+                        $has_shortcode = ( false !== strpos( $content, '[wishcart_wishlist' ) );
                     }
                 }
 
@@ -1102,7 +1102,7 @@ JS;
     /**
      * Create wishlist page endpoint
      *
-     * Creates a new WordPress page with the [WishCart_Wishlist] shortcode
+     * Creates a new WordPress page with the [wishcart_wishlist] shortcode
      *
      * @param WP_REST_Request $request Request object
      *
@@ -1120,7 +1120,7 @@ JS;
         // Always create a new page (don't check for existing pages)
         $page_data = array(
             'post_title'   => $page_name,
-            'post_content' => '[WishCart_Wishlist]',
+            'post_content' => '[wishcart_wishlist]',
             'post_status'  => 'publish',
             'post_type'    => 'page',
             'post_name'    => sanitize_title( $page_name ),

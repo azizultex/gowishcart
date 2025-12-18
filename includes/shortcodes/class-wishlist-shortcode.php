@@ -16,7 +16,7 @@ class WishCart_Wishlist_Shortcode {
      * Constructor
      */
     public function __construct() {
-        add_shortcode( 'WishCart_Wishlist', array( $this, 'render_wishlist' ) );
+        add_shortcode( 'wishcart_wishlist', array( $this, 'render_wishlist' ) );
     }
 
     /**
@@ -28,7 +28,7 @@ class WishCart_Wishlist_Shortcode {
     public function render_wishlist( $atts ) {
         $atts = shortcode_atts( array(
             'share_code' => '',
-        ), $atts, 'WishCart_Wishlist' );
+        ), $atts, 'wishcart_wishlist' );
 
         // Check for token query parameter first (shareable link)
         if ( isset( $_GET['token'] ) ) {

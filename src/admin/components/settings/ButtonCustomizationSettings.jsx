@@ -518,7 +518,7 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
             const handleClickOutside = (event) => {
                 if (pickerContainerRef.current && !pickerContainerRef.current.contains(event.target)) {
                     if (isPickerOpen) {
-                        setSelectedColorPicker(null);
+                        // setSelectedColorPicker(null);
                     }
                 }
             };
