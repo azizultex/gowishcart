@@ -298,6 +298,20 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
     const iconConfig = customization.icon || {};
     const labels = customization.labels || {};
     
+    const isGradientValue = (value) => {
+        if (!value || typeof value !== 'string') return false;
+        return value.toLowerCase().includes('gradient(');
+    };
+
+    const applyBackgroundToStyles = (styles, background) => {
+        if (!background) return;
+        if (isGradientValue(background)) {
+            styles.background = background;
+        } else {
+            styles.backgroundColor = background;
+        }
+    };
+    
     // Get button style variation (general settings removed, default to standard button)
     const buttonStyle = 'button';
     
@@ -414,7 +428,7 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
         
         // Apply specific settings (product_page, product_listing, saved_product_page, or saved_product_listing)
         if (settings.backgroundColor) {
-            dynamicStyles.backgroundColor = settings.backgroundColor;
+            applyBackgroundToStyles(dynamicStyles, settings.backgroundColor);
         }
         if (settings.buttonTextColor) {
             dynamicStyles.color = settings.buttonTextColor;
@@ -468,11 +482,11 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
             }
 
             if (!isInWishlist) {
-                if (colors.background) dynamicStyles.backgroundColor = colors.background;
+                if (colors.background) applyBackgroundToStyles(dynamicStyles, colors.background);
                 if (colors.text) dynamicStyles.color = colors.text;
                 if (colors.border) dynamicStyles.borderColor = colors.border;
             } else {
-                if (colors.activeBackground) dynamicStyles.backgroundColor = colors.activeBackground;
+                if (colors.activeBackground) applyBackgroundToStyles(dynamicStyles, colors.activeBackground);
                 if (colors.activeText) dynamicStyles.color = colors.activeText;
                 if (colors.activeBorder) dynamicStyles.borderColor = colors.activeBorder;
             }

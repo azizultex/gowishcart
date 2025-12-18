@@ -1143,6 +1143,8 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
         if (settings.backgroundColor) {
             applyBackgroundToStyles(dynamicStyles, settings.backgroundColor);
         }
+        console.log('settings.backgroundColor______xxxxxxx', settings);
+        console.log('dynamicStyles______xxxxxxx', dynamicStyles);
         if (settings.buttonTextColor) {
             dynamicStyles.color = settings.buttonTextColor;
         }
@@ -1199,11 +1201,11 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
 
             // Apply inline styles for immediate effect
             if (!isInWishlist) {
-                if (colors.background) dynamicStyles.backgroundColor = colors.background;
+                if (colors.background) applyBackgroundToStyles(dynamicStyles, colors.background);
                 if (colors.text) dynamicStyles.color = colors.text;
                 if (colors.border) dynamicStyles.borderColor = colors.border;
             } else {
-                if (colors.activeBackground) dynamicStyles.backgroundColor = colors.activeBackground;
+                if (colors.activeBackground) applyBackgroundToStyles(dynamicStyles, colors.activeBackground);
                 if (colors.activeText) dynamicStyles.color = colors.activeText;
                 if (colors.activeBorder) dynamicStyles.borderColor = colors.activeBorder;
             }
