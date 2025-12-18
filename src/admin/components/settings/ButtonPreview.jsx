@@ -244,9 +244,6 @@ const ButtonPreview = ({ buttonCustomization }) => {
 
             {/* Product Page Button Preview */}
             <div className="wishcart-preview-section mb-8">
-                <h4 className="text-base font-medium mb-4">
-                    {__('Product Page Button', 'wishcart')}
-                </h4>
                 <div className="space-y-3">
                     <div>
                         <p className="text-xs text-muted-foreground mb-2">

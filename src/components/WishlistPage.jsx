@@ -1080,20 +1080,25 @@ const WishlistPage = () => {
         } catch (error) {
             console.error('Failed to copy link:', error);
             // Fallback for older browsers
-            const textArea = document.createElement('textarea');
-            textArea.value = getWishlistShareUrl();
-            document.body.appendChild(textArea);
-            textArea.select();
             try {
-                document.execCommand('copy');
-                setLinkCopied(true);
-                setTimeout(() => {
-                    setLinkCopied(false);
-                }, 2000);
-            } catch (err) {
-                console.error('Fallback copy failed:', err);
+                const url = await getWishlistShareUrl();
+                const textArea = document.createElement('textarea');
+                textArea.value = url;
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    setLinkCopied(true);
+                    setTimeout(() => {
+                        setLinkCopied(false);
+                    }, 2000);
+                } catch (err) {
+                    console.error('Fallback copy failed:', err);
+                }
+                document.body.removeChild(textArea);
+            } catch (fallbackError) {
+                console.error('Failed to get share URL in fallback:', fallbackError);
             }
-            document.body.removeChild(textArea);
         }
     };
 
