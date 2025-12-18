@@ -259,9 +259,15 @@ class WishCart_Wishlist_Frontend {
             // Product page buttons are those NOT inside .wishcart-card-container
             // Since listing styles come after with higher specificity, they will override when applicable
             $css_parts[] = '.wishcart-wishlist-button-container:not(.wishcart-card-container) .wishcart-wishlist-button {';
-            
+
             if ( ! empty( $product_page['backgroundColor'] ) ) {
-                $css_parts[] = '  background-color: ' . esc_attr( $product_page['backgroundColor'] ) . ';';
+                $background = $product_page['backgroundColor'];
+                // Use background for gradients, background-color for solid colors
+                if ( false !== stripos( $background, 'gradient(' ) ) {
+                    $css_parts[] = '  background: ' . esc_attr( $background ) . ';';
+                } else {
+                    $css_parts[] = '  background-color: ' . esc_attr( $background ) . ';';
+                }
             }
             if ( ! empty( $product_page['buttonTextColor'] ) ) {
                 $css_parts[] = '  color: ' . esc_attr( $product_page['buttonTextColor'] ) . ';';
@@ -282,7 +288,13 @@ class WishCart_Wishlist_Frontend {
             if ( ! empty( $product_page['backgroundHoverColor'] ) || ! empty( $product_page['buttonTextHoverColor'] ) ) {
                 $css_parts[] = '.wishcart-wishlist-button-container:not(.wishcart-card-container) .wishcart-wishlist-button:hover:not(:disabled) {';
                 if ( ! empty( $product_page['backgroundHoverColor'] ) ) {
-                    $css_parts[] = '  background-color: ' . esc_attr( $product_page['backgroundHoverColor'] ) . ';';
+                    $background_hover = $product_page['backgroundHoverColor'];
+                    // Use background for gradients, background-color for solid colors
+                    if ( false !== stripos( $background_hover, 'gradient(' ) ) {
+                        $css_parts[] = '  background: ' . esc_attr( $background_hover ) . ';';
+                    } else {
+                        $css_parts[] = '  background-color: ' . esc_attr( $background_hover ) . ';';
+                    }
                 }
                 if ( ! empty( $product_page['buttonTextHoverColor'] ) ) {
                     $css_parts[] = '  color: ' . esc_attr( $product_page['buttonTextHoverColor'] ) . ';';
@@ -306,9 +318,15 @@ class WishCart_Wishlist_Frontend {
             $css_parts[] = '/* Product Listing Button Styles */';
             // More specific selector will override product page styles when button is inside .wishcart-card-container
             $css_parts[] = '.wishcart-card-container .wishcart-wishlist-button {';
-            
+
             if ( ! empty( $product_listing['backgroundColor'] ) ) {
-                $css_parts[] = '  background-color: ' . esc_attr( $product_listing['backgroundColor'] ) . ';';
+                $background = $product_listing['backgroundColor'];
+                // Use background for gradients, background-color for solid colors
+                if ( false !== stripos( $background, 'gradient(' ) ) {
+                    $css_parts[] = '  background: ' . esc_attr( $background ) . ';';
+                } else {
+                    $css_parts[] = '  background-color: ' . esc_attr( $background ) . ';';
+                }
             }
             if ( ! empty( $product_listing['buttonTextColor'] ) ) {
                 $css_parts[] = '  color: ' . esc_attr( $product_listing['buttonTextColor'] ) . ';';
@@ -329,7 +347,13 @@ class WishCart_Wishlist_Frontend {
             if ( ! empty( $product_listing['backgroundHoverColor'] ) || ! empty( $product_listing['buttonTextHoverColor'] ) ) {
                 $css_parts[] = '.wishcart-card-container .wishcart-wishlist-button:hover:not(:disabled) {';
                 if ( ! empty( $product_listing['backgroundHoverColor'] ) ) {
-                    $css_parts[] = '  background-color: ' . esc_attr( $product_listing['backgroundHoverColor'] ) . ';';
+                    $background_hover = $product_listing['backgroundHoverColor'];
+                    // Use background for gradients, background-color for solid colors
+                    if ( false !== stripos( $background_hover, 'gradient(' ) ) {
+                        $css_parts[] = '  background: ' . esc_attr( $background_hover ) . ';';
+                    } else {
+                        $css_parts[] = '  background-color: ' . esc_attr( $background_hover ) . ';';
+                    }
                 }
                 if ( ! empty( $product_listing['buttonTextHoverColor'] ) ) {
                     $css_parts[] = '  color: ' . esc_attr( $product_listing['buttonTextHoverColor'] ) . ';';

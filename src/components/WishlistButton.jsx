@@ -1014,6 +1014,20 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
     const iconConfig = customization.icon || {};
     const labels = customization.labels || {};
     
+    const isGradientValue = (value) => {
+        if (!value || typeof value !== 'string') return false;
+        return value.toLowerCase().includes('gradient(');
+    };
+
+    const applyBackgroundToStyles = (styles, background) => {
+        if (!background) return;
+        if (isGradientValue(background)) {
+            styles.background = background;
+        } else {
+            styles.backgroundColor = background;
+        }
+    };
+
     // Get button style variation (general settings removed, default to standard button)
     const buttonStyle = 'button';
     
@@ -1127,7 +1141,7 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
         
         // Apply specific settings (product_page, product_listing, saved_product_page, or saved_product_listing)
         if (settings.backgroundColor) {
-            dynamicStyles.backgroundColor = settings.backgroundColor;
+            applyBackgroundToStyles(dynamicStyles, settings.backgroundColor);
         }
         if (settings.buttonTextColor) {
             dynamicStyles.color = settings.buttonTextColor;
@@ -1310,9 +1324,9 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
                             : productPage;
                         
                         if (settings.backgroundHoverColor) {
-                            e.currentTarget.style.backgroundColor = settings.backgroundHoverColor;
+                            applyBackgroundToStyles(e.currentTarget.style, settings.backgroundHoverColor);
                         } else if (colors.activeBackground) {
-                            e.currentTarget.style.backgroundColor = colors.activeBackground;
+                            applyBackgroundToStyles(e.currentTarget.style, colors.activeBackground);
                         }
                         if (settings.buttonTextHoverColor) {
                             e.currentTarget.style.color = settings.buttonTextHoverColor;
@@ -1323,9 +1337,9 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
                         // Use add state hover colors
                         const settings = productPage;
                         if (settings.backgroundHoverColor) {
-                            e.currentTarget.style.backgroundColor = settings.backgroundHoverColor;
+                            applyBackgroundToStyles(e.currentTarget.style, settings.backgroundHoverColor);
                         } else if (colors.hoverBackground) {
-                            e.currentTarget.style.backgroundColor = colors.hoverBackground;
+                            applyBackgroundToStyles(e.currentTarget.style, colors.hoverBackground);
                         }
                         if (settings.buttonTextHoverColor) {
                             e.currentTarget.style.color = settings.buttonTextHoverColor;
@@ -1357,9 +1371,9 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
                             : productPage;
                         
                         if (settings.backgroundColor) {
-                            e.currentTarget.style.backgroundColor = settings.backgroundColor;
+                            applyBackgroundToStyles(e.currentTarget.style, settings.backgroundColor);
                         } else if (colors.activeBackground) {
-                            e.currentTarget.style.backgroundColor = colors.activeBackground;
+                            applyBackgroundToStyles(e.currentTarget.style, colors.activeBackground);
                         }
                         if (settings.buttonTextColor) {
                             e.currentTarget.style.color = settings.buttonTextColor;
@@ -1370,9 +1384,9 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
                         // Use add state colors
                         const settings = productPage;
                         if (settings.backgroundColor) {
-                            e.currentTarget.style.backgroundColor = settings.backgroundColor;
+                            applyBackgroundToStyles(e.currentTarget.style, settings.backgroundColor);
                         } else if (colors.background) {
-                            e.currentTarget.style.backgroundColor = colors.background;
+                            applyBackgroundToStyles(e.currentTarget.style, colors.background);
                         }
                         if (settings.buttonTextColor) {
                             e.currentTarget.style.color = settings.buttonTextColor;

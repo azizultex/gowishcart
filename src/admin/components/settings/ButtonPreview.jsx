@@ -93,6 +93,20 @@ const ButtonPreview = ({ buttonCustomization }) => {
     // Button style (general settings removed, default to standard button)
     const buttonStyle = 'button';
 
+    const isGradientValue = (value) => {
+        if (!value || typeof value !== 'string') return false;
+        return value.toLowerCase().includes('gradient(');
+    };
+
+    const applyBackgroundToStyles = (styles, background) => {
+        if (!background) return;
+        if (isGradientValue(background)) {
+            styles.background = background;
+        } else {
+            styles.backgroundColor = background;
+        }
+    };
+
     // Build button styles for a section
     const buildButtonStyles = (sectionSettings, isActive = false) => {
         const styles = {};
@@ -137,11 +151,11 @@ const ButtonPreview = ({ buttonCustomization }) => {
                 styles.borderRadius = sectionSettings.borderRadius;
             }
 
-            // Background color
+            // Background color or gradient
             if (sectionSettings.backgroundColor) {
-                styles.backgroundColor = sectionSettings.backgroundColor;
+                applyBackgroundToStyles(styles, sectionSettings.backgroundColor);
             } else {
-                styles.backgroundColor = 'linear-gradient(180deg, #ffffff29, #fff0), #253241;'; // Default
+                applyBackgroundToStyles(styles, 'linear-gradient(180deg, #ffffff29, #fff0), #253241;'); // Default
             }
 
             // Border
@@ -206,7 +220,7 @@ const ButtonPreview = ({ buttonCustomization }) => {
                     // Only apply hover styles if it's a button style
                     if (buttonStyle === 'button' || buttonStyle === 'text-only') {
                         if (sectionSettings.backgroundHoverColor) {
-                            e.currentTarget.style.backgroundColor = sectionSettings.backgroundHoverColor;
+                            applyBackgroundToStyles(e.currentTarget.style, sectionSettings.backgroundHoverColor);
                         }
                         if (sectionSettings.buttonTextHoverColor) {
                             e.currentTarget.style.color = sectionSettings.buttonTextHoverColor;
@@ -220,7 +234,10 @@ const ButtonPreview = ({ buttonCustomization }) => {
                 }}
                 onMouseLeave={(e) => {
                     if (buttonStyle === 'button' || buttonStyle === 'text-only') {
-                        e.currentTarget.style.backgroundColor = baseStyles.backgroundColor || 'linear-gradient(180deg, #ffffff29, #fff0), #253241;';
+                        applyBackgroundToStyles(
+                            e.currentTarget.style,
+                            sectionSettings.backgroundColor || 'linear-gradient(180deg, #ffffff29, #fff0), #253241;'
+                        );
                         e.currentTarget.style.color = baseStyles.color || '#ffffff';
                     } else {
                         e.currentTarget.style.color = baseStyles.color || '#ffffff';
