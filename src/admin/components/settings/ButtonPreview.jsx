@@ -8,8 +8,8 @@ import '../../styles/settings.scss';
 const ButtonPreview = ({ buttonCustomization }) => {
     // Extract settings with defaults
     const productPage = buttonCustomization?.product_page || {
-        backgroundColor: 'linear-gradient(180deg, #ffffff29, #fff0), #253241;',
-        backgroundHoverColor: 'linear-gradient(180deg, #ffffff29, #fff0), #253241;',
+        backgroundColor: 'linear-gradient(180deg, #ffffff29, #fff0), #253241',
+        backgroundHoverColor: 'linear-gradient(180deg, #ffffff29, #fff0), #253241',
         buttonTextColor: '#ffffff',
         buttonTextHoverColor: '#ffffff',
         font: 'default',
@@ -18,8 +18,8 @@ const ButtonPreview = ({ buttonCustomization }) => {
         borderRadius: '8px'
     };
     const savedProductPage = buttonCustomization?.saved_product_page || {
-        backgroundColor: 'linear-gradient(180deg, #ffffff29, #fff0), #253241;',
-        backgroundHoverColor: 'linear-gradient(180deg, #ffffff29, #fff0), #253241;',
+        backgroundColor: 'linear-gradient(180deg, #ffffff29, #fff0), #253241',
+        backgroundHoverColor: 'linear-gradient(180deg, #ffffff29, #fff0), #253241',
         buttonTextColor: '#ffffff',
         buttonTextHoverColor: '#ffffff',
         font: 'default',
@@ -155,7 +155,7 @@ const ButtonPreview = ({ buttonCustomization }) => {
             if (sectionSettings.backgroundColor) {
                 applyBackgroundToStyles(styles, sectionSettings.backgroundColor);
             } else {
-                applyBackgroundToStyles(styles, 'linear-gradient(180deg, #ffffff29, #fff0), #253241;'); // Default
+                applyBackgroundToStyles(styles, 'linear-gradient(180deg, #ffffff29, #fff0), #253241'); // Default
             }
 
             // Border
@@ -236,7 +236,7 @@ const ButtonPreview = ({ buttonCustomization }) => {
                     if (buttonStyle === 'button' || buttonStyle === 'text-only') {
                         applyBackgroundToStyles(
                             e.currentTarget.style,
-                            sectionSettings.backgroundColor || 'linear-gradient(180deg, #ffffff29, #fff0), #253241;'
+                            sectionSettings.backgroundColor || 'linear-gradient(180deg, #ffffff29, #fff0), #253241'
                         );
                         e.currentTarget.style.color = baseStyles.color || '#ffffff';
                     } else {
