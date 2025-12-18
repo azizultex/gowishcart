@@ -11,18 +11,21 @@
         align-items: center;
         gap: 8px;
         padding: 8px 12px;
-        border: 1px solid #e5e7eb;
         background: #ffffff;
         border-radius: 6px;
         cursor: pointer;
         transition: all 0.2s ease-in-out;
+        border: none;
         font-size: 14px;
         width: 100%;
         justify-content: flex-start;
         flex-wrap: wrap;
 
+        &:focus {
+            outline: none;
+        }
+
         &:hover {
-            border-color: #d1d5db;
             background: var(--wishlist-hover-bg, #f9fafb) !important;
             color: var(--wishlist-hover-text, inherit) !important;
         }
@@ -33,12 +36,10 @@
         }
 
         &--active {
-            border-color: #ef4444;
             background: #fef2f2;
             color: #dc2626;
 
             &:hover {
-                border-color: #dc2626;
                 background: var(--wishlist-hover-bg, #fee2e2) !important;
                 color: var(--wishlist-hover-text, #dc2626) !important;
             }
