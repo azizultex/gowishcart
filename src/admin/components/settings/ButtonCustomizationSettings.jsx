@@ -15,15 +15,36 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
     const wishlistSettings = settings.wishlist || {};
     const buttonCustomization = wishlistSettings.button_customization || {};
     
+    // Local state for button customization (prevents re-renders during input focus)
+    const [localButtonCustomization, setLocalButtonCustomization] = useState(buttonCustomization);
+    // Ref to track latest local state for use in callbacks
+    const localButtonCustomizationRef = useRef(buttonCustomization);
+    
     // Debounce timer refs for each input
     const debounceTimers = useRef({});
     // Refs to track focused inputs
     const inputRefs = useRef({});
     // Track which input was focused before re-render
     const focusedInputId = useRef(null);
+    // Track if any input is currently focused (prevents parent state updates)
+    const isAnyInputFocused = useRef(false);
+    
+    // Sync local state with props when props change AND no input is focused
+    useEffect(() => {
+        if (!isAnyInputFocused.current) {
+            setLocalButtonCustomization(buttonCustomization);
+            localButtonCustomizationRef.current = buttonCustomization;
+        }
+    }, [buttonCustomization]);
+    
+    // Keep ref in sync with local state
+    useEffect(() => {
+        localButtonCustomizationRef.current = localButtonCustomization;
+    }, [localButtonCustomization]);
     
     // New structure: product_page, product_listing
-    const productPage = buttonCustomization.product_page || {
+    // Use local state for derived values to prevent re-renders
+    const productPage = localButtonCustomization.product_page || {
         backgroundColor: 'linear-gradient(180deg, #ffffff29, #fff0), #253241',
         backgroundHoverColor: 'linear-gradient(180deg, #ffffff29, #fff0), #253241',
         buttonTextColor: '#ffffff',
@@ -33,7 +54,7 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
         iconSize: '14px',
         borderRadius: '8px'
     };
-    const savedProductPage = buttonCustomization.saved_product_page || {
+    const savedProductPage = localButtonCustomization.saved_product_page || {
         backgroundColor: 'linear-gradient(180deg, #ffffff29, #fff0), #253241',
         backgroundHoverColor: 'linear-gradient(180deg, #ffffff29, #fff0), #253241',
         buttonTextColor: '#ffffff',
@@ -43,7 +64,7 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
         iconSize: '14px',
         borderRadius: '8px'
     };
-    const savedProductListing = buttonCustomization.saved_product_listing || {
+    const savedProductListing = localButtonCustomization.saved_product_listing || {
         backgroundColor: '#ebe9eb',
         backgroundHoverColor: '#dad8da',
         buttonTextColor: '#515151',
@@ -56,9 +77,9 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
     
     // Icon structure: support both old (single icon) and new (separate icons) format
     // Migrate old format to new format if needed
-    // Use useMemo to recompute when buttonCustomization.icon changes
+    // Use useMemo to recompute when localButtonCustomization.icon changes
     const { addToWishlistIcon, savedWishlistIcon } = useMemo(() => {
-        const oldIcon = buttonCustomization.icon;
+        const oldIcon = localButtonCustomization.icon;
         let addIcon, savedIcon;
         
         if (oldIcon && oldIcon.addToWishlist) {
@@ -84,9 +105,9 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
         }
         
         return { addToWishlistIcon: addIcon, savedWishlistIcon: savedIcon };
-    }, [buttonCustomization.icon]);
+    }, [localButtonCustomization.icon]);
     
-    const labels = buttonCustomization.labels || { add: '', saved: '' };
+    const labels = localButtonCustomization.labels || { add: '', saved: '' };
 
     // State for color pickers
     const [selectedColorPicker, setSelectedColorPicker] = useState(null);
@@ -126,7 +147,12 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
             debouncedUpdate('labels', 'add', value, addLabelId);
         };
 
+        const handleAddLabelFocus = () => {
+            isAnyInputFocused.current = true;
+        };
+
         const handleAddLabelBlur = () => {
+            isAnyInputFocused.current = false;
             updateButtonCustomization('labels', 'add', addLabel);
             focusedInputId.current = null;
         };
@@ -137,7 +163,12 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
             debouncedUpdate('labels', 'saved', value, savedLabelId);
         };
 
+        const handleSavedLabelFocus = () => {
+            isAnyInputFocused.current = true;
+        };
+
         const handleSavedLabelBlur = () => {
+            isAnyInputFocused.current = false;
             updateButtonCustomization('labels', 'saved', savedLabel);
             focusedInputId.current = null;
         };
@@ -154,6 +185,7 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
                         type="text"
                         value={addLabel}
                         onChange={handleAddLabelChange}
+                        onFocus={handleAddLabelFocus}
                         onBlur={handleAddLabelBlur}
                         placeholder={__('Add to Wishlist', 'wishcart')}
                     />
@@ -170,6 +202,7 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
                         type="text"
                         value={savedLabel}
                         onChange={handleSavedLabelChange}
+                        onFocus={handleSavedLabelFocus}
                         onBlur={handleSavedLabelBlur}
                         placeholder={__('Saved to Wishlist', 'wishcart')}
                     />
@@ -205,15 +238,66 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
             focusedInputId.current = inputId;
         }
         
+        // Update local state immediately for preview (no parent re-render)
+        setLocalButtonCustomization(prev => {
+            const currentSection = prev[section] || {};
+            return {
+                ...prev,
+                [section]: {
+                    ...currentSection,
+                    [key]: value,
+                },
+            };
+        });
+        
         // Clear existing timer for this input
         const timerKey = `${section}-${key}`;
         if (debounceTimers.current[timerKey]) {
             clearTimeout(debounceTimers.current[timerKey]);
         }
         
-        // Set new timer
+        // Set new timer - only update parent state if input is not focused
         debounceTimers.current[timerKey] = setTimeout(() => {
-            const currentCustomization = buttonCustomization || {};
+            // Only update parent state if no input is focused
+            if (!isAnyInputFocused.current) {
+                const currentCustomization = localButtonCustomizationRef.current || {};
+                const currentSection = currentCustomization[section] || {};
+                
+                updateSettings('wishlist', 'button_customization', {
+                    ...currentCustomization,
+                    [section]: {
+                        ...currentSection,
+                        [key]: value,
+                    },
+                });
+            }
+            
+            // Clear the focused input after update completes
+            if (inputId === focusedInputId.current) {
+                focusedInputId.current = null;
+            }
+            
+            delete debounceTimers.current[timerKey];
+        }, 300); // 300ms debounce delay
+    }, [updateSettings]);
+    
+    // Immediate update function (for non-text inputs like selects, color pickers)
+    const updateButtonCustomization = useCallback((section, key, value) => {
+        // Always update local state immediately for preview
+        setLocalButtonCustomization(prev => {
+            const currentSection = prev[section] || {};
+            return {
+                ...prev,
+                [section]: {
+                    ...currentSection,
+                    [key]: value,
+                },
+            };
+        });
+        
+        // Only update parent state if no input is focused
+        if (!isAnyInputFocused.current) {
+            const currentCustomization = localButtonCustomizationRef.current || {};
             const currentSection = currentCustomization[section] || {};
             
             updateSettings('wishlist', 'button_customization', {
@@ -223,29 +307,8 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
                     [key]: value,
                 },
             });
-            
-            // Clear the focused input after update completes
-            if (inputId === focusedInputId.current) {
-                focusedInputId.current = null;
-            }
-            
-            delete debounceTimers.current[timerKey];
-        }, 300); // 300ms debounce delay
-    }, [buttonCustomization, updateSettings]);
-    
-    // Immediate update function (for non-text inputs like selects, color pickers)
-    const updateButtonCustomization = useCallback((section, key, value) => {
-        const currentCustomization = buttonCustomization || {};
-        const currentSection = currentCustomization[section] || {};
-        
-        updateSettings('wishlist', 'button_customization', {
-            ...currentCustomization,
-            [section]: {
-                ...currentSection,
-                [key]: value,
-            },
-        });
-    }, [buttonCustomization, updateSettings]);
+        }
+    }, [updateSettings]);
     
     // Cleanup debounce timers on unmount
     useEffect(() => {
@@ -288,20 +351,39 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
 
     // Update icon structure (supports nested icon properties)
     const updateIcon = (iconType, property, value) => {
-        const currentCustomization = buttonCustomization || {};
-        const currentIcon = currentCustomization.icon || {};
-        const targetIcon = currentIcon[iconType] || { type: 'predefined', value: 'Heart', customUrl: '' };
-        
-        updateSettings('wishlist', 'button_customization', {
-            ...currentCustomization,
-            icon: {
-                ...currentIcon,
-                [iconType]: {
-                    ...targetIcon,
-                    [property]: value,
+        // Always update local state immediately for preview
+        setLocalButtonCustomization(prev => {
+            const currentIcon = prev.icon || {};
+            const targetIcon = currentIcon[iconType] || { type: 'predefined', value: 'Heart', customUrl: '' };
+            return {
+                ...prev,
+                icon: {
+                    ...currentIcon,
+                    [iconType]: {
+                        ...targetIcon,
+                        [property]: value,
+                    },
                 },
-            },
+            };
         });
+        
+        // Only update parent state if no input is focused
+        if (!isAnyInputFocused.current) {
+            const currentCustomization = localButtonCustomizationRef.current || {};
+            const currentIcon = currentCustomization.icon || {};
+            const targetIcon = currentIcon[iconType] || { type: 'predefined', value: 'Heart', customUrl: '' };
+            
+            updateSettings('wishlist', 'button_customization', {
+                ...currentCustomization,
+                icon: {
+                    ...currentIcon,
+                    [iconType]: {
+                        ...targetIcon,
+                        [property]: value,
+                    },
+                },
+            });
+        }
     };
 
     const handleMediaUpload = (iconType) => {
@@ -368,21 +450,41 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
             }
             
             // Update both type and URL in a single update to ensure consistency
-            const currentCustomization = buttonCustomization || {};
-            const currentIcon = currentCustomization.icon || {};
-            const targetIcon = currentIcon[iconType] || { type: 'predefined', value: 'Heart', customUrl: '' };
-            
-            updateSettings('wishlist', 'button_customization', {
-                ...currentCustomization,
-                icon: {
-                    ...currentIcon,
-                    [iconType]: {
-                        ...targetIcon,
-                        type: 'custom',
-                        customUrl: imageUrl
+            // Always update local state immediately for preview
+            setLocalButtonCustomization(prev => {
+                const currentIcon = prev.icon || {};
+                const targetIcon = currentIcon[iconType] || { type: 'predefined', value: 'Heart', customUrl: '' };
+                return {
+                    ...prev,
+                    icon: {
+                        ...currentIcon,
+                        [iconType]: {
+                            ...targetIcon,
+                            type: 'custom',
+                            customUrl: imageUrl
+                        },
                     },
-                },
+                };
             });
+            
+            // Only update parent state if no input is focused
+            if (!isAnyInputFocused.current) {
+                const currentCustomization = localButtonCustomizationRef.current || {};
+                const currentIcon = currentCustomization.icon || {};
+                const targetIcon = currentIcon[iconType] || { type: 'predefined', value: 'Heart', customUrl: '' };
+                
+                updateSettings('wishlist', 'button_customization', {
+                    ...currentCustomization,
+                    icon: {
+                        ...currentIcon,
+                        [iconType]: {
+                            ...targetIcon,
+                            type: 'custom',
+                            customUrl: imageUrl
+                        },
+                    },
+                });
+            }
         });
 
         mediaUploader.open();
@@ -542,10 +644,15 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
             }
         };
 
+        const handleInputFocus = () => {
+            isAnyInputFocused.current = true;
+        };
+
         const handleInputBlur = () => {
+            isAnyInputFocused.current = false;
             // Update immediately on blur to ensure value is saved
             if (section && settingKey) {
-                const currentCustomization = buttonCustomization || {};
+                const currentCustomization = localButtonCustomizationRef.current || {};
                 const currentSection = currentCustomization[section] || {};
                 updateSettings('wishlist', 'button_customization', {
                     ...currentCustomization,
@@ -593,6 +700,7 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
                         type="text"
                         value={localValue}
                         onChange={handleInputChange}
+                        onFocus={handleInputFocus}
                         onBlur={handleInputBlur}
                         placeholder="#ffffff"
                         className="flex-1 font-mono text-sm"
@@ -649,7 +757,12 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
             debouncedUpdate(sectionKey, key, value, inputId);
         };
 
+        const handleTextInputFocus = () => {
+            isAnyInputFocused.current = true;
+        };
+
         const handleTextInputBlur = (value, key) => {
+            isAnyInputFocused.current = false;
             // Update immediately on blur
             updateButtonCustomization(sectionKey, key, value);
             focusedInputId.current = null;
@@ -716,6 +829,7 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
                             type="text"
                             value={fontSize}
                             onChange={(e) => handleTextInputChange(e.target.value, 'fontSize', fontSizeRef, fontSizeId)}
+                            onFocus={handleTextInputFocus}
                             onBlur={() => handleTextInputBlur(fontSize, 'fontSize')}
                             placeholder="16px"
                         />
@@ -727,6 +841,7 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
                             type="text"
                             value={iconSize}
                             onChange={(e) => handleTextInputChange(e.target.value, 'iconSize', iconSizeRef, iconSizeId)}
+                            onFocus={handleTextInputFocus}
                             onBlur={() => handleTextInputBlur(iconSize, 'iconSize')}
                             placeholder="16px"
                         />
@@ -738,6 +853,7 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
                             type="text"
                             value={borderRadius}
                             onChange={(e) => handleTextInputChange(e.target.value, 'borderRadius', borderRadiusRef, borderRadiusId)}
+                            onFocus={handleTextInputFocus}
                             onBlur={() => handleTextInputBlur(borderRadius, 'borderRadius')}
                             placeholder="3px"
                         />
@@ -792,7 +908,7 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
 
             {/* Live Preview Section */}
             <div className="wishcart-preview-wrapper">
-                <ButtonPreview buttonCustomization={buttonCustomization} />
+                <ButtonPreview buttonCustomization={localButtonCustomization} />
             </div>
         </div>
     );
