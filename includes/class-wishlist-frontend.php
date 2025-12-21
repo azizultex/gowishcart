@@ -123,6 +123,7 @@ class WishCart_Wishlist_Frontend {
                     'colors' => isset( $button_customization['colors'] ) ? $button_customization['colors'] : array(), // Keep for backwards compatibility
                     'icon' => isset( $button_customization['icon'] ) ? $button_customization['icon'] : array(),
                     'labels' => isset( $button_customization['labels'] ) ? $button_customization['labels'] : array(),
+                    'buttonStyle' => isset( $button_customization['buttonStyle'] ) ? $button_customization['buttonStyle'] : 'button',
                 ),
             )
         );

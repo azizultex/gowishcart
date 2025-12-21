@@ -108,6 +108,7 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
     }, [localButtonCustomization.icon]);
     
     const labels = localButtonCustomization.labels || { add: '', saved: '' };
+    const buttonStyle = localButtonCustomization.buttonStyle || 'button';
 
     // State for color pickers
     const [selectedColorPicker, setSelectedColorPicker] = useState(null);
@@ -308,6 +309,22 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
                 },
             });
         }
+    }, [updateSettings]);
+
+    // Handler for top-level properties (like buttonStyle)
+    const updateTopLevelProperty = useCallback((key, value) => {
+        // Always update local state immediately for preview
+        setLocalButtonCustomization(prev => ({
+            ...prev,
+            [key]: value,
+        }));
+        
+        // Update parent state immediately
+        const currentCustomization = localButtonCustomizationRef.current || {};
+        updateSettings('wishlist', 'button_customization', {
+            ...currentCustomization,
+            [key]: value,
+        });
     }, [updateSettings]);
     
     // Cleanup debounce timers on unmount
@@ -863,10 +880,45 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
         );
     };
 
+    // Button style options
+    const buttonStyleOptions = [
+        { value: 'button', label: __('Button (Text + Icon)', 'wishcart') },
+        { value: 'text-only', label: __('Text Only', 'wishcart') },
+        { value: 'text-only-link', label: __('Text Only (No Button)', 'wishcart') },
+        { value: 'text-icon-link', label: __('Text with Icon (No Button)', 'wishcart') },
+        { value: 'icon-only', label: __('Icon Only', 'wishcart') },
+    ];
+
     return (
         <div className="wishcart-button-customization-wrapper" style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: '2rem', alignItems: 'start' }}>
                 {/* Settings Section */}
             <div className="wishcart-settings-section">
+                {/* General Settings Section */}
+                <div className="space-y-4 pb-6 border-b">
+                    <Label className="text-base font-semibold">{__('General Settings', 'wishcart')}</Label>
+                    <div className="space-y-2">
+                        <Label className="text-sm">{__('Button Style', 'wishcart')}</Label>
+                        <Select
+                            value={buttonStyle}
+                            onValueChange={(value) => updateTopLevelProperty('buttonStyle', value)}
+                        >
+                            <SelectTrigger>
+                                <SelectValue placeholder={__('Select button style', 'wishcart')} />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {buttonStyleOptions.map((option) => (
+                                    <SelectItem key={option.value} value={option.value}>
+                                        {option.label}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        <p className="text-sm text-muted-foreground">
+                            {__('Choose how the wishlist button should be displayed', 'wishcart')}
+                        </p>
+                    </div>
+                </div>
+
                 {/* Product Page Button Section */}
                 <ButtonSection
                     title={__('"Add To Wishlist" Product Page Button', 'wishcart')}

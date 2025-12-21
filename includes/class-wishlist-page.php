@@ -300,6 +300,7 @@ class WishCart_Wishlist_Page {
                     'add'    => __( 'Add to Wishlist', 'wishcart' ),
                     'saved'  => __( 'Saved to Wishlist', 'wishcart' ),
                 ),
+                'buttonStyle' => 'button',
             ),
         );
     }

@@ -90,8 +90,8 @@ const ButtonPreview = ({ buttonCustomization }) => {
         );
     };
 
-    // Button style (general settings removed, default to standard button)
-    const buttonStyle = 'button';
+    // Get button style from customization settings
+    const buttonStyle = buttonCustomization?.buttonStyle || 'button';
 
     const isGradientValue = (value) => {
         if (!value || typeof value !== 'string') return false;

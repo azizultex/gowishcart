@@ -153,9 +153,14 @@ class WishCart_Wishlist_Button_Shortcode {
                     'showOnShop' => ! empty( $wishlist_settings['shop_page_button'] ),
                     'enableMultipleWishlists' => ! empty( $wishlist_settings['enable_multiple_wishlists'] ),
                     'buttonCustomization' => array(
+                        'product_page' => isset( $button_customization['product_page'] ) ? $button_customization['product_page'] : array(),
+                        'product_listing' => isset( $button_customization['product_listing'] ) ? $button_customization['product_listing'] : array(),
+                        'saved_product_page' => isset( $button_customization['saved_product_page'] ) ? $button_customization['saved_product_page'] : array(),
+                        'saved_product_listing' => isset( $button_customization['saved_product_listing'] ) ? $button_customization['saved_product_listing'] : array(),
                         'colors' => isset( $button_customization['colors'] ) ? $button_customization['colors'] : array(),
                         'icon' => isset( $button_customization['icon'] ) ? $button_customization['icon'] : array(),
                         'labels' => isset( $button_customization['labels'] ) ? $button_customization['labels'] : array(),
+                        'buttonStyle' => isset( $button_customization['buttonStyle'] ) ? $button_customization['buttonStyle'] : 'button',
                     ),
                 )
             );

@@ -1028,8 +1028,8 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
         }
     };
 
-    // Get button style variation (general settings removed, default to standard button)
-    const buttonStyle = 'button';
+    // Get button style variation from customization settings
+    const buttonStyle = customization.buttonStyle || 'button';
     
     // Detect if button is on product listing (shop page) vs product page
     const isProductListing = useMemo(() => {
