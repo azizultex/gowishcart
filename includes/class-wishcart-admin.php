@@ -160,7 +160,7 @@ class wishcart_Admin {
             $this->plugin_slug                     => 'settings',
             $this->plugin_slug . '-settings'       => 'settings',
             $this->plugin_slug . '-customization'  => 'customization',
-            $this->plugin_slug . '-integrations'   => 'fluentcrm',
+            $this->plugin_slug . '-integrations'   => 'integrations',
             $this->plugin_slug . '-analytics'      => 'analytics',
             $this->plugin_slug . '-support'        => 'support',
             $this->plugin_slug . '-get-pro'        => 'get-pro',

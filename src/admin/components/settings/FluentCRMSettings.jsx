@@ -32,7 +32,7 @@ const resolveProStatus = () => {
     );
 };
 
-const FluentCRMSettings = () => {
+const FluentCRMSettings = ({ embedded = false }) => {
     const [settings, setSettings] = useState({
         enabled: false,
         fluentcrm_list_id: 0,
@@ -162,34 +162,8 @@ const FluentCRMSettings = () => {
         }
     };
 
-    if (loading) {
-        return (
-            <div className="wishcart-settings-section">
-                <div className="wishcart-flex-center" style={{padding: '40px'}}>
-                    <Loader2 style={{width: '24px', height: '24px'}} className="animate-spin" />
-                </div>
-            </div>
-        );
-    }
-
-    if (!isAvailable) {
-        return (
-            <div className="wishcart-settings-section">
-                <div className="wishcart-notice wishcart-notice-warning">
-                    <AlertCircle style={{width: '18px', height: '18px', flexShrink: 0}} />
-                    <div>
-                        <strong>{__('FluentCRM Not Available', 'wishcart')}</strong>
-                        <p style={{margin: '4px 0 0'}}>
-                            {__('FluentCRM plugin is not installed or activated. Please install FluentCRM to use this integration.', 'wishcart')}
-                        </p>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    return (
-        <div className="wishcart-settings-section">
+    const renderContent = () => (
+        <>
             {saveMessage === 'success' && (
                 <div className="wishcart-notice wishcart-notice-success">
                     <CheckCircle2 style={{width: '18px', height: '18px', flexShrink: 0}} />
@@ -217,22 +191,24 @@ const FluentCRMSettings = () => {
                 </div>
             </div>
 
-            {/* WebHook Credentials Section - Pro/Upcoming Feature */}
-            <div className="wishcart-notice wishcart-notice-info" style={{marginTop: '16px'}}>
-                <Lock style={{width: '18px', height: '18px', flexShrink: 0}} />
-                <div style={{flex: 1}}>
-                    <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px'}}>
-                        <strong>{__('WebHook Credentials', 'wishcart')}</strong>
-                        <span className="wishcart-badge wishcart-badge-warning">{__('PRO', 'wishcart')}</span>
-                        <span className="wishcart-badge wishcart-badge-info">{__('COMING SOON', 'wishcart')}</span>
+            {settings.enabled && (
+                <>
+                    {/* WebHook Credentials Section - Pro/Upcoming Feature */}
+                    <div className="wishcart-notice wishcart-notice-info" style={{marginTop: '16px'}}>
+                        <Lock style={{width: '18px', height: '18px', flexShrink: 0}} />
+                        <div style={{flex: 1}}>
+                            <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px'}}>
+                                <strong>{__('WebHook Credentials', 'wishcart')}</strong>
+                                <span className="wishcart-badge wishcart-badge-warning">{__('PRO', 'wishcart')}</span>
+                                <span className="wishcart-badge wishcart-badge-info">{__('COMING SOON', 'wishcart')}</span>
+                            </div>
+                            <p style={{fontSize: '13px', margin: '0'}}>{__('This feature is available in WishCart Pro', 'wishcart')}</p>
+                            <p style={{fontSize: '13px', margin: '4px 0 0', color: 'var(--wishcart-text-muted)'}}>{__('Please upgrade to get all the advanced features.', 'wishcart')}</p>
+                        </div>
                     </div>
-                    <p style={{fontSize: '13px', margin: '0'}}>{__('This feature is available in WishCart Pro', 'wishcart')}</p>
-                    <p style={{fontSize: '13px', margin: '4px 0 0', color: 'var(--wishcart-text-muted)'}}>{__('Please upgrade to get all the advanced features.', 'wishcart')}</p>
-                </div>
-            </div>
 
-            {/* List & auto-tag configuration */}
-            <div style={{ marginTop: '24px' }}>
+                    {/* List & auto-tag configuration */}
+                    <div style={{ marginTop: '24px' }}>
                 <div className="wishcart-form-group">
                     <div>
                         <label className="wishcart-label" htmlFor="fluentcrm_list_id">
@@ -349,20 +325,59 @@ const FluentCRMSettings = () => {
                         </div>
                     )}
                 </div>
-            </div>
+                    </div>
 
-            <div className="wishcart-card-footer">
-                <button
-                    onClick={saveSettings}
-                    disabled={saving}
-                    className="wishcart-button wishcart-button-primary"
-                >
-                    {saving ? __('Saving...', 'wishcart') : __('Save Settings', 'wishcart')}
-                </button>
-            </div>
+                    <div className="wishcart-card-footer">
+                        <button
+                            onClick={saveSettings}
+                            disabled={saving}
+                            className="wishcart-button wishcart-button-primary"
+                        >
+                            {saving ? __('Saving...', 'wishcart') : __('Save Settings', 'wishcart')}
+                        </button>
+                    </div>
+                </>
+            )}
+        </>
+    );
+
+    if (loading) {
+        const LoadingWrapper = embedded ? React.Fragment : ({ children }) => <div className="wishcart-settings-section">{children}</div>;
+        return (
+            <LoadingWrapper>
+                <div className="wishcart-flex-center" style={{padding: '40px'}}>
+                    <Loader2 style={{width: '24px', height: '24px'}} className="animate-spin" />
+                </div>
+            </LoadingWrapper>
+        );
+    }
+
+    if (!isAvailable) {
+        const NotAvailableWrapper = embedded ? React.Fragment : ({ children }) => <div className="wishcart-settings-section">{children}</div>;
+        return (
+            <NotAvailableWrapper>
+                <div className="wishcart-notice wishcart-notice-warning">
+                    <AlertCircle style={{width: '18px', height: '18px', flexShrink: 0}} />
+                    <div>
+                        <strong>{__('FluentCRM Not Available', 'wishcart')}</strong>
+                        <p style={{margin: '4px 0 0'}}>
+                            {__('FluentCRM plugin is not installed or activated. Please install FluentCRM to use this integration.', 'wishcart')}
+                        </p>
+                    </div>
+                </div>
+            </NotAvailableWrapper>
+        );
+    }
+
+    if (embedded) {
+        return renderContent();
+    }
+
+    return (
+        <div className="wishcart-settings-section">
+            {renderContent()}
         </div>
     );
 };
 
 export default FluentCRMSettings;
-

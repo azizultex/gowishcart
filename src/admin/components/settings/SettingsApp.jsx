@@ -15,7 +15,7 @@ import {
 
 import WishlistSettings from './WishlistSettings';
 import ButtonCustomizationSettings from './ButtonCustomizationSettings';
-import FluentCRMSettings from './FluentCRMSettings';
+import IntegrationsSettings from './IntegrationsSettings';
 import SupportResources from './SupportResources';
 import UpgradePrompt from './UpgradePrompt';
 import { AnalyticsDashboard } from '../AnalyticsDashboard';
@@ -43,7 +43,7 @@ const SettingsApp = () => {
         settings: `${baseMenuSlug}-settings`,
         customization: `${baseMenuSlug}-customization`,
         analytics: `${baseMenuSlug}-analytics`,
-        fluentcrm: `${baseMenuSlug}-fluentcrm`,
+        integrations: `${baseMenuSlug}-integrations`,
         support: `${baseMenuSlug}-support`,
         'get-pro': `${baseMenuSlug}-get-pro`,
     }), [baseMenuSlug]);
@@ -183,7 +183,7 @@ const SettingsApp = () => {
         { id: 'settings', label: __('Settings', 'wishcart'), icon: Settings },
         { id: 'customization', label: __('Customization', 'wishcart'), icon: Palette },
         { id: 'analytics', label: __('Analytics', 'wishcart'), icon: BarChart3 },
-        { id: 'fluentcrm', label: __('Integrations', 'wishcart'), icon: Plug },
+        { id: 'integrations', label: __('Integrations', 'wishcart'), icon: Plug },
         { id: 'support', label: __('Support', 'wishcart'), icon: LifeBuoy },
         { id: 'get-pro', label: __('Get Pro', 'wishcart'), icon: Sparkles },
     ]), []);
@@ -263,9 +263,9 @@ const SettingsApp = () => {
                             <AnalyticsDashboard />
                         )}
 
-                        {/* FluentCRM Tab */}
-                        {activeTab === 'fluentcrm' && (
-                            <FluentCRMSettings />
+                        {/* Integrations Tab */}
+                        {activeTab === 'integrations' && (
+                            <IntegrationsSettings />
                         )}
 
                         {/* Support Tab */}
