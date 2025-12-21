@@ -146,9 +146,9 @@ class WishCart_FluentCRM_Integration {
             'discount_code_prefix' => 'WISHLIST',
             // FluentCRM UI configuration
             'fluentcrm_list_id' => 0,
-            'fluentcrm_auto_tag_by_product_name' => false,
-            'fluentcrm_auto_tag_by_product_tags' => false,
-            'fluentcrm_auto_tag_by_product_categories' => false,
+            'fluentcrm_tag_format' => 'detailed',
+            'fluentcrm_custom_list_name' => '',
+            'fluentcrm_custom_tag_format' => '',
         );
 
         $settings = get_option('wishcart_fluentcrm_settings', array());
@@ -205,20 +205,31 @@ class WishCart_FluentCRM_Integration {
 
         // Sanitize new FluentCRM UI configuration fields
         if (isset($settings['fluentcrm_list_id'])) {
-            $settings['fluentcrm_list_id'] = absint($settings['fluentcrm_list_id']);
+            $list_id = intval($settings['fluentcrm_list_id']);
+            // Preserve -1 as special value for "Custom" selection
+            if ($list_id === -1) {
+                $settings['fluentcrm_list_id'] = -1;
+            } else {
+                $settings['fluentcrm_list_id'] = absint($list_id);
+            }
         }
 
-        $auto_tag_keys = array(
-            'fluentcrm_auto_tag_by_product_name',
-            'fluentcrm_auto_tag_by_product_tags',
-            'fluentcrm_auto_tag_by_product_categories',
-        );
-
-        foreach ($auto_tag_keys as $auto_tag_key) {
-            if (isset($settings[$auto_tag_key])) {
-                // Normalize various truthy/falsy values coming from REST/JS
-                $settings[$auto_tag_key] = (bool) $settings[$auto_tag_key];
+        // Validate and sanitize tag format
+        if (isset($settings['fluentcrm_tag_format'])) {
+            $valid_formats = array('detailed', 'simple', 'prefixed', 'custom');
+            if (!in_array($settings['fluentcrm_tag_format'], $valid_formats, true)) {
+                $settings['fluentcrm_tag_format'] = 'detailed'; // Default to detailed if invalid
             }
+        }
+
+        // Sanitize custom list name
+        if (isset($settings['fluentcrm_custom_list_name'])) {
+            $settings['fluentcrm_custom_list_name'] = sanitize_text_field($settings['fluentcrm_custom_list_name']);
+        }
+
+        // Sanitize custom tag format
+        if (isset($settings['fluentcrm_custom_tag_format'])) {
+            $settings['fluentcrm_custom_tag_format'] = sanitize_textarea_field($settings['fluentcrm_custom_tag_format']);
         }
 
         return update_option('wishcart_fluentcrm_settings', $settings);
@@ -902,8 +913,40 @@ class WishCart_FluentCRM_Integration {
      */
     public function get_or_create_default_list() {
         $settings = $this->get_settings();
-        $list_name = isset($settings['default_list_name']) ? $settings['default_list_name'] : 'Wishlist Users';
         
+        // Priority 1: If custom list is selected (list_id = -1), use custom list name
+        if (isset($settings['fluentcrm_list_id']) && intval($settings['fluentcrm_list_id']) === -1) {
+            if (!empty($settings['fluentcrm_custom_list_name'])) {
+                $list_name = $settings['fluentcrm_custom_list_name'];
+                return $this->create_list_if_not_exists($list_name);
+            }
+            // If custom selected but no name provided, fall back to default
+            $list_name = isset($settings['default_list_name']) ? $settings['default_list_name'] : 'Wishlist Users';
+            return $this->create_list_if_not_exists($list_name);
+        }
+        
+        // Priority 2: If a specific list ID is selected, use that
+        if (!empty($settings['fluentcrm_list_id'])) {
+            $list_id = absint($settings['fluentcrm_list_id']);
+            if ($list_id > 0) {
+                // Verify the list exists
+                if (class_exists('\FluentCrm\App\Models\Lists')) {
+                    $list = \FluentCrm\App\Models\Lists::find($list_id);
+                    if ($list) {
+                        return $list_id;
+                    }
+                }
+            }
+        }
+        
+        // Priority 3: Use custom list name if provided (legacy support)
+        if (!empty($settings['fluentcrm_custom_list_name'])) {
+            $list_name = $settings['fluentcrm_custom_list_name'];
+            return $this->create_list_if_not_exists($list_name);
+        }
+        
+        // Priority 4: Use default list name
+        $list_name = isset($settings['default_list_name']) ? $settings['default_list_name'] : 'Wishlist Users';
         return $this->create_list_if_not_exists($list_name);
     }
 }

@@ -36,9 +36,9 @@ const FluentCRMSettings = () => {
     const [settings, setSettings] = useState({
         enabled: false,
         fluentcrm_list_id: 0,
-        fluentcrm_auto_tag_by_product_name: false,
-        fluentcrm_auto_tag_by_product_tags: false,
-        fluentcrm_auto_tag_by_product_categories: false,
+        fluentcrm_tag_format: 'detailed',
+        fluentcrm_custom_list_name: '',
+        fluentcrm_custom_tag_format: '',
     });
     const [isAvailable, setIsAvailable] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -46,12 +46,33 @@ const FluentCRMSettings = () => {
     const [saveMessage, setSaveMessage] = useState('');
     const [lists, setLists] = useState([]);
     const [listsLoading, setListsLoading] = useState(true);
+    const [wishlistUsersListId, setWishlistUsersListId] = useState(0);
     const isProActive = useMemo(() => resolveProStatus(), []);
 
     useEffect(() => {
         loadSettings();
         loadLists();
     }, []);
+
+    // Set default to Wishlist Users list ID when lists are loaded and settings have no list selected
+    // Also reset to Wishlist Users if current selection is not valid for simplified dropdown
+    useEffect(() => {
+        if (!listsLoading) {
+            const currentListId = settings.fluentcrm_list_id;
+            const targetListId = wishlistUsersListId || 0;
+            const isValidSelection = currentListId === -1 || currentListId === targetListId;
+            
+            // If no valid selection or using default (0/undefined), set to Wishlist Users list ID
+            // Only update if current value is different from target to prevent unnecessary updates
+            if ((currentListId === 0 || currentListId === undefined || !isValidSelection) && currentListId !== targetListId) {
+                setSettings(prev => ({
+                    ...prev,
+                    fluentcrm_list_id: targetListId
+                }));
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [listsLoading, wishlistUsersListId]);
 
     const loadSettings = async () => {
         try {
@@ -88,6 +109,10 @@ const FluentCRMSettings = () => {
                 const data = await response.json();
                 if (data.success && Array.isArray(data.lists)) {
                     setLists(data.lists);
+                    // Find "Wishlist Users" list ID
+                    const wishlistUsersList = data.lists.find(list => list.title === 'Wishlist Users');
+                    const foundListId = wishlistUsersList ? wishlistUsersList.id : 0;
+                    setWishlistUsersListId(foundListId);
                 }
             }
         } catch (error) {
@@ -208,147 +233,120 @@ const FluentCRMSettings = () => {
 
             {/* List & auto-tag configuration */}
             <div style={{ marginTop: '24px' }}>
-                <div className={`wishcart-form-group wishcart-pro-field ${!isProActive ? 'is-locked' : ''}`}>
-                    <div className="wishcart-pro-field__header">
-                        <div>
-                            <label className="wishcart-label" htmlFor="fluentcrm_list_id">
-                                {__('List select', 'wishcart')}
-                            </label>
-                            <p className="wishcart-form-helper">
-                                {__('Choose which FluentCRM list wishlist contacts will be added to.', 'wishcart')}
-                            </p>
-                        </div>
-                        <div className="wishcart-pro-field__badges">
-                            <span className="wishcart-badge wishcart-badge-warning">{__('PRO', 'wishcart')}</span>
-                            {!isProActive && <Lock style={{width: '16px', height: '16px'}} />}
-                        </div>
+                <div className="wishcart-form-group">
+                    <div>
+                        <label className="wishcart-label" htmlFor="fluentcrm_list_id">
+                            {__('List select', 'wishcart')}
+                        </label>
+                        <p className="wishcart-form-helper">
+                            {__('Choose which FluentCRM list wishlist contacts will be added to.', 'wishcart')}
+                        </p>
                     </div>
                     <Select
-                        value={String(settings.fluentcrm_list_id || 0)}
-                        onValueChange={(value) => updateSetting('fluentcrm_list_id', parseInt(value, 10))}
-                        disabled={!isProActive || listsLoading || !lists.length}
+                        value={String(settings.fluentcrm_list_id === -1 ? -1 : (settings.fluentcrm_list_id || wishlistUsersListId || 0))}
+                        onValueChange={(value) => {
+                            const intValue = parseInt(value, 10);
+                            if (intValue === -1) {
+                                // Custom selected
+                                updateSetting('fluentcrm_list_id', -1);
+                            } else {
+                                // Wishlist Users selected (use the list ID, or 0 if not found)
+                                updateSetting('fluentcrm_list_id', intValue);
+                            }
+                        }}
+                        disabled={listsLoading}
                     >
                         <SelectTrigger id="fluentcrm_list_id" className="wishcart-select">
-                            <SelectValue placeholder={listsLoading ? __('Loading lists...', 'wishcart') : __('Select a list', 'wishcart')} />
+                            <SelectValue placeholder={listsLoading ? __('Loading lists...', 'wishcart') : __('Wishlist Users', 'wishcart')} />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="0">{__('Select a list', 'wishcart')}</SelectItem>
-                            {lists.map((list) => (
-                                <SelectItem key={list.id} value={String(list.id)}>
-                                    {list.title}
-                                </SelectItem>
-                            ))}
+                            <SelectItem value={String(wishlistUsersListId || 0)}>
+                                {__('Wishlist Users', 'wishcart')}
+                            </SelectItem>
+                            <SelectItem value="-1">{__('Custom', 'wishcart')}</SelectItem>
                         </SelectContent>
                     </Select>
-                    {!isProActive && (
-                        <p className="wishcart-pro-field__upsell">
-                            {__('Available in WishCart Pro. Upgrade to assign FluentCRM lists automatically.', 'wishcart')}
-                        </p>
-                    )}
                 </div>
 
-                <div className={`wishcart-form-group wishcart-pro-field ${!isProActive ? 'is-locked' : ''}`}>
-                    <div className="wishcart-pro-field__header">
+                {settings.fluentcrm_list_id === -1 && (
+                    <div className="wishcart-form-group" style={{marginTop: '16px'}}>
                         <div>
-                            <label className="wishcart-label" htmlFor="fluentcrm_auto_tag_by_product_name">
-                                {__('Auto tags by product name', 'wishcart')}
+                            <label className="wishcart-label" htmlFor="fluentcrm_custom_list_name">
+                                {__('Custom list name', 'wishcart')}
                             </label>
                             <p className="wishcart-form-helper">
-                                {__('Automatically tag contacts using the exact product names from their wishlists.', 'wishcart')}
+                                {__('Enter the name of the list. If the list doesn\'t exist, it will be created automatically.', 'wishcart')}
                             </p>
                         </div>
-                        <div className="wishcart-pro-field__badges">
-                            <span className="wishcart-badge wishcart-badge-warning">{__('PRO', 'wishcart')}</span>
-                            {!isProActive && <Lock style={{width: '16px', height: '16px'}} />}
-                        </div>
+                        <input
+                            type="text"
+                            id="fluentcrm_custom_list_name"
+                            className="wishcart-input"
+                            placeholder={__('Enter custom list name', 'wishcart')}
+                            value={settings.fluentcrm_custom_list_name || ''}
+                            onChange={(e) => updateSetting('fluentcrm_custom_list_name', e.target.value)}
+                        />
+                    </div>
+                )}
+
+                <div className="wishcart-form-group" style={{marginTop: '16px'}}>
+                    <div>
+                        <label className="wishcart-label" htmlFor="fluentcrm_tag_format">
+                            {__('Tag format', 'wishcart')}
+                        </label>
+                        <p className="wishcart-form-helper">
+                            {__('Choose how tags are stored in FluentCRM for wishlist products.', 'wishcart')}
+                        </p>
                     </div>
                     <Select
-                        value={settings.fluentcrm_auto_tag_by_product_name ? '1' : '0'}
-                        onValueChange={(value) => updateSetting('fluentcrm_auto_tag_by_product_name', value === '1')}
-                        disabled={!isProActive}
+                        value={settings.fluentcrm_tag_format || 'detailed'}
+                        onValueChange={(value) => updateSetting('fluentcrm_tag_format', value)}
                     >
-                        <SelectTrigger id="fluentcrm_auto_tag_by_product_name" className="wishcart-select">
+                        <SelectTrigger id="fluentcrm_tag_format" className="wishcart-select">
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="0">{__('Disabled', 'wishcart')}</SelectItem>
-                            <SelectItem value="1">{__('Enabled', 'wishcart')}</SelectItem>
+                            <SelectItem value="detailed">{__('Detailed Format', 'wishcart')}</SelectItem>
+                            <SelectItem value="simple">{__('Simple Format', 'wishcart')}</SelectItem>
+                            <SelectItem value="prefixed">{__('Prefixed Format', 'wishcart')}</SelectItem>
+                            <SelectItem value="custom">{__('Custom', 'wishcart')}</SelectItem>
                         </SelectContent>
                     </Select>
-                    {!isProActive && (
-                        <p className="wishcart-pro-field__upsell">
-                            {__('Upgrade to WishCart Pro to unlock dynamic tagging by product name.', 'wishcart')}
+                    {settings.fluentcrm_tag_format === 'detailed' && (
+                        <p style={{fontSize: '12px', color: 'var(--wishcart-text-muted)', marginTop: '8px', lineHeight: '1.5'}}>
+                            {__('Example tags:', 'wishcart')} "Product: Cozy Fleece Hoodie", "Cozy Fleece Hoodie - Price: $4.00", "Cozy Fleece Hoodie - Stock: In Stock"
                         </p>
                     )}
-                </div>
-
-                <div className={`wishcart-form-group wishcart-pro-field ${!isProActive ? 'is-locked' : ''}`}>
-                    <div className="wishcart-pro-field__header">
-                        <div>
-                            <label className="wishcart-label" htmlFor="fluentcrm_auto_tag_by_product_tags">
-                                {__('Auto tag by product tags', 'wishcart')}
-                            </label>
-                            <p className="wishcart-form-helper">
-                                {__('Sync WooCommerce product tags as FluentCRM contact tags.', 'wishcart')}
-                            </p>
-                        </div>
-                        <div className="wishcart-pro-field__badges">
-                            <span className="wishcart-badge wishcart-badge-warning">{__('PRO', 'wishcart')}</span>
-                            {!isProActive && <Lock style={{width: '16px', height: '16px'}} />}
-                        </div>
-                    </div>
-                    <Select
-                        value={settings.fluentcrm_auto_tag_by_product_tags ? '1' : '0'}
-                        onValueChange={(value) => updateSetting('fluentcrm_auto_tag_by_product_tags', value === '1')}
-                        disabled={!isProActive}
-                    >
-                        <SelectTrigger id="fluentcrm_auto_tag_by_product_tags" className="wishcart-select">
-                            <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="0">{__('Disabled', 'wishcart')}</SelectItem>
-                            <SelectItem value="1">{__('Enabled', 'wishcart')}</SelectItem>
-                        </SelectContent>
-                    </Select>
-                    {!isProActive && (
-                        <p className="wishcart-pro-field__upsell">
-                            {__('Upgrade to WishCart Pro to sync WooCommerce product tags into FluentCRM.', 'wishcart')}
+                    {settings.fluentcrm_tag_format === 'simple' && (
+                        <p style={{fontSize: '12px', color: 'var(--wishcart-text-muted)', marginTop: '8px', lineHeight: '1.5'}}>
+                            {__('Example tags:', 'wishcart')} "Cozy Fleece Hoodie"
                         </p>
                     )}
-                </div>
-
-                <div className={`wishcart-form-group wishcart-pro-field ${!isProActive ? 'is-locked' : ''}`}>
-                    <div className="wishcart-pro-field__header">
-                        <div>
-                            <label className="wishcart-label" htmlFor="fluentcrm_auto_tag_by_product_categories">
-                                {__('Auto tag by products category', 'wishcart')}
+                    {settings.fluentcrm_tag_format === 'prefixed' && (
+                        <p style={{fontSize: '12px', color: 'var(--wishcart-text-muted)', marginTop: '8px', lineHeight: '1.5'}}>
+                            {__('Example tags:', 'wishcart')} "Product: Cozy Fleece Hoodie", "Category: Clothing", "Price: $4.00", "Stock: In Stock"
+                        </p>
+                    )}
+                    {settings.fluentcrm_tag_format === 'custom' && (
+                        <div style={{marginTop: '16px'}}>
+                            <label className="wishcart-label" htmlFor="fluentcrm_custom_tag_format" style={{display: 'block', marginBottom: '8px'}}>
+                                {__('Custom tag format', 'wishcart')}
                             </label>
-                            <p className="wishcart-form-helper">
-                                {__('Apply FluentCRM tags that mirror the product categories users save.', 'wishcart')}
+                            <textarea
+                                id="fluentcrm_custom_tag_format"
+                                className="wishcart-textarea"
+                                rows={4}
+                                placeholder={__('Example: {product_name} - {price}', 'wishcart')}
+                                value={settings.fluentcrm_custom_tag_format || ''}
+                                onChange={(e) => updateSetting('fluentcrm_custom_tag_format', e.target.value)}
+                                style={{width: '100%', resize: 'vertical'}}
+                            />
+                            <p style={{fontSize: '12px', color: 'var(--wishcart-text-muted)', marginTop: '8px', lineHeight: '1.5'}}>
+                                {__('Available placeholders:', 'wishcart')} {'{product_name}, {price}, {category}, {stock}, {sku}, {type}'}
+                                <br />
+                                {__('Enter one tag per line or separate multiple tags with commas.', 'wishcart')}
                             </p>
                         </div>
-                        <div className="wishcart-pro-field__badges">
-                            <span className="wishcart-badge wishcart-badge-warning">{__('PRO', 'wishcart')}</span>
-                            {!isProActive && <Lock style={{width: '16px', height: '16px'}} />}
-                        </div>
-                    </div>
-                    <Select
-                        value={settings.fluentcrm_auto_tag_by_product_categories ? '1' : '0'}
-                        onValueChange={(value) => updateSetting('fluentcrm_auto_tag_by_product_categories', value === '1')}
-                        disabled={!isProActive}
-                    >
-                        <SelectTrigger id="fluentcrm_auto_tag_by_product_categories" className="wishcart-select">
-                            <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="0">{__('Disabled', 'wishcart')}</SelectItem>
-                            <SelectItem value="1">{__('Enabled', 'wishcart')}</SelectItem>
-                        </SelectContent>
-                    </Select>
-                    {!isProActive && (
-                        <p className="wishcart-pro-field__upsell">
-                            {__('Upgrade to WishCart Pro to categorize FluentCRM contacts based on wishlist products.', 'wishcart')}
-                        </p>
                     )}
                 </div>
             </div>

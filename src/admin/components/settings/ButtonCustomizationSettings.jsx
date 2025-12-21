@@ -28,9 +28,9 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
         backgroundHoverColor: 'linear-gradient(180deg, #ffffff29, #fff0), #253241',
         buttonTextColor: '#ffffff',
         buttonTextHoverColor: '#ffffff',
-        font: 'default',
-        fontSize: '16px',
-        iconSize: '16px',
+        font: 'Manrope, sans-serif',
+        fontSize: '14px',
+        iconSize: '14px',
         borderRadius: '8px'
     };
     const savedProductPage = buttonCustomization.saved_product_page || {
@@ -38,9 +38,9 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
         backgroundHoverColor: 'linear-gradient(180deg, #ffffff29, #fff0), #253241',
         buttonTextColor: '#ffffff',
         buttonTextHoverColor: '#ffffff',
-        font: 'default',
-        fontSize: '16px',
-        iconSize: '16px',
+        font: 'Manrope, sans-serif',
+        fontSize: '14px',
+        iconSize: '14px',
         borderRadius: '8px'
     };
     const savedProductListing = buttonCustomization.saved_product_listing || {
@@ -48,9 +48,9 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
         backgroundHoverColor: '#dad8da',
         buttonTextColor: '#515151',
         buttonTextHoverColor: '#515151',
-        font: 'default',
-        fontSize: '16px',
-        iconSize: '16px',
+        font: 'Manrope, sans-serif',
+        fontSize: '14px',
+        iconSize: '14px',
         borderRadius: '3px'
     };
     
@@ -184,6 +184,7 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
     // Font options
     const fontOptions = [
         { value: 'default', label: __('Use Default Font', 'wishcart') },
+        { value: 'Manrope, sans-serif', label: 'Manrope, sans-serif' },
         { value: 'Arial', label: 'Arial' },
         { value: 'Helvetica', label: 'Helvetica' },
         { value: 'Times New Roman', label: 'Times New Roman' },

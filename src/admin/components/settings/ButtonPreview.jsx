@@ -12,9 +12,9 @@ const ButtonPreview = ({ buttonCustomization }) => {
         backgroundHoverColor: 'linear-gradient(180deg, #ffffff29, #fff0), #253241',
         buttonTextColor: '#ffffff',
         buttonTextHoverColor: '#ffffff',
-        font: 'default',
-        fontSize: '16px',
-        iconSize: '16px',
+        font: 'Manrope, sans-serif',
+        fontSize: '14px',
+        iconSize: '14px',
         borderRadius: '8px'
     };
     const savedProductPage = buttonCustomization?.saved_product_page || {
@@ -22,9 +22,9 @@ const ButtonPreview = ({ buttonCustomization }) => {
         backgroundHoverColor: 'linear-gradient(180deg, #ffffff29, #fff0), #253241',
         buttonTextColor: '#ffffff',
         buttonTextHoverColor: '#ffffff',
-        font: 'default',
-        fontSize: '16px',
-        iconSize: '16px',
+        font: 'Manrope, sans-serif',
+        fontSize: '14px',
+        iconSize: '14px',
         borderRadius: '8px'
     };
 
@@ -167,7 +167,7 @@ const ButtonPreview = ({ buttonCustomization }) => {
             }
 
             // Padding
-            styles.padding = '8px 12px';
+            styles.padding = '10px 12px';
             styles.width = '100%';
         }
 

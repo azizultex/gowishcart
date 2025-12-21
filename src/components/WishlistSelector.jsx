@@ -202,7 +202,7 @@ export const WishlistSelector = ({ wishlists, currentWishlist, onSelect, onCreat
 
                 .wishlist-create-input {
                     flex: 1;
-                    padding: 8px 12px;
+                    padding: 10px 12px;
                     border: 1px solid #d1d5db;
                     border-radius: 6px;
                     font-size: 13px;
@@ -217,7 +217,7 @@ export const WishlistSelector = ({ wishlists, currentWishlist, onSelect, onCreat
                     display: flex;
                     align-items: center;
                     gap: 4px;
-                    padding: 8px 12px;
+                    padding: 10px 12px;
                     background: #3b82f6;
                     color: white;
                     border: none;
