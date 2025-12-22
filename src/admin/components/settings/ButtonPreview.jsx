@@ -259,7 +259,7 @@ const ButtonPreview = ({ buttonCustomization }) => {
                 </p>
             </div>
 
-            {/* Product Page Button Preview */}
+            {/* Button Preview */}
             <div className="wishcart-preview-section mb-8">
                 <div className="space-y-3">
                     <div>

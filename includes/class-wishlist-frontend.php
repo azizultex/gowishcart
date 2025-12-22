@@ -256,8 +256,8 @@ class WishCart_Wishlist_Frontend {
         // Note: Product listing styles come after and have higher specificity (.wishcart-card-container .wishcart-wishlist-button)
         $product_page = isset( $button_customization['product_page'] ) ? $button_customization['product_page'] : array();
         if ( ! empty( $product_page ) ) {
-            $css_parts[] = '/* Product Page Button Styles */';
-            // Product page buttons are those NOT inside .wishcart-card-container
+            $css_parts[] = '/* Button Styles */';
+            // Buttons are those NOT inside .wishcart-card-container
             // Since listing styles come after with higher specificity, they will override when applicable
             $css_parts[] = '.wishcart-wishlist-button-container:not(.wishcart-card-container) .wishcart-wishlist-button {';
 

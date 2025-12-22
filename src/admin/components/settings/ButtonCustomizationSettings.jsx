@@ -874,16 +874,16 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
                     </div>
                 </div>
 
-                {/* Product Page Button Section */}
+                {/* Button Section */}
                 <ButtonSection
-                    title={__('"Add To Wishlist" Product Page Button', 'wishcart')}
+                    title={__('"Add To Wishlist" Button', 'wishcart')}
                     sectionKey="product_page"
                     settings={productPage}
                 />
 
-                {/* Saved to Wishlist Product Page Button Section */}
+                {/* Saved to Wishlist Button Section */}
                 <ButtonSection
-                    title={__('"Saved to Wishlist" Product Page Button', 'wishcart')}
+                    title={__('"Saved to Wishlist" Button', 'wishcart')}
                     sectionKey="saved_product_page"
                     settings={savedProductPage}
                 />

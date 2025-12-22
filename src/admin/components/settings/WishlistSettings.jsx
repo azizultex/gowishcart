@@ -251,7 +251,7 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                 </div>
             </div>
 
-            {/* Product Page Button */}
+            {/* Button */}
             <div className="wishcart-toggle-row">
                 <div className="toggle-info">
                     <h4>{__('Show Button on Product Page', 'wishcart')}</h4>
