@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { __ } from '@wordpress/i18n';
 import { Heart, ShoppingCart, X } from 'lucide-react';
-import { Sketch } from '@uiw/react-color';
 import IconPicker from './IconPicker';
 import * as LucideIcons from 'lucide-react';
 import ButtonPreview from './ButtonPreview';
@@ -110,8 +109,34 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
     const labels = localButtonCustomization.labels || { add: '', saved: '' };
     const buttonStyle = localButtonCustomization.buttonStyle || 'button';
 
-    // State for color pickers
-    const [selectedColorPicker, setSelectedColorPicker] = useState(null);
+    // Helper to normalize color values to a safe HEX value for the HTML5 color input
+    const normalizeHexColor = (value, fallback = '#ffffff') => {
+        if (!value || typeof value !== 'string') {
+            return fallback;
+        }
+
+        let color = value.trim();
+
+        // If the value looks like a gradient or anything non-hex, fall back
+        if (!color.startsWith('#')) {
+            return fallback;
+        }
+
+        // Support short HEX (#abc)
+        const shortHexMatch = color.match(/^#([0-9a-fA-F]{3})$/);
+        if (shortHexMatch) {
+            const [r, g, b] = shortHexMatch[1].split('');
+            return `#${r}${r}${g}${g}${b}${b}`.toLowerCase();
+        }
+
+        // Support full HEX (#aabbcc)
+        const fullHexMatch = color.match(/^#([0-9a-fA-F]{6})$/);
+        if (fullHexMatch) {
+            return `#${fullHexMatch[0].slice(1).toLowerCase()}`.padStart(7, '#');
+        }
+
+        return fallback;
+    };
     
     // Labels section component with local state
     const LabelsSection = ({ labels }) => {
@@ -145,7 +170,6 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
         const handleAddLabelChange = (e) => {
             const value = e.target.value;
             setAddLabel(value);
-            debouncedUpdate('labels', 'add', value, addLabelId);
         };
 
         const handleAddLabelFocus = () => {
@@ -161,7 +185,6 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
         const handleSavedLabelChange = (e) => {
             const value = e.target.value;
             setSavedLabel(value);
-            debouncedUpdate('labels', 'saved', value, savedLabelId);
         };
 
         const handleSavedLabelFocus = () => {
@@ -231,56 +254,6 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
         { value: 'Impact', label: 'Impact' },
         { value: 'Lucida Console', label: 'Lucida Console' },
     ];
-
-    // Debounced update function to prevent re-renders on every keystroke
-    const debouncedUpdate = useCallback((section, key, value, inputId = null) => {
-        // Store the input ID if provided (for focus preservation)
-        if (inputId) {
-            focusedInputId.current = inputId;
-        }
-        
-        // Update local state immediately for preview (no parent re-render)
-        setLocalButtonCustomization(prev => {
-            const currentSection = prev[section] || {};
-            return {
-                ...prev,
-                [section]: {
-                    ...currentSection,
-                    [key]: value,
-                },
-            };
-        });
-        
-        // Clear existing timer for this input
-        const timerKey = `${section}-${key}`;
-        if (debounceTimers.current[timerKey]) {
-            clearTimeout(debounceTimers.current[timerKey]);
-        }
-        
-        // Set new timer - only update parent state if input is not focused
-        debounceTimers.current[timerKey] = setTimeout(() => {
-            // Only update parent state if no input is focused
-            if (!isAnyInputFocused.current) {
-                const currentCustomization = localButtonCustomizationRef.current || {};
-                const currentSection = currentCustomization[section] || {};
-                
-                updateSettings('wishlist', 'button_customization', {
-                    ...currentCustomization,
-                    [section]: {
-                        ...currentSection,
-                        [key]: value,
-                    },
-                });
-            }
-            
-            // Clear the focused input after update completes
-            if (inputId === focusedInputId.current) {
-                focusedInputId.current = null;
-            }
-            
-            delete debounceTimers.current[timerKey];
-        }, 300); // 300ms debounce delay
-    }, [updateSettings]);
     
     // Immediate update function (for non-text inputs like selects, color pickers)
     const updateButtonCustomization = useCallback((section, key, value) => {
@@ -607,18 +580,16 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
         );
     };
 
-    // Color input component with picker
+    // Color input component using HTML5 input type="color" plus a HEX text field
     const ColorInput = ({ label, value, onChange, colorPickerId, section, settingKey }) => {
-        const isPickerOpen = selectedColorPicker === colorPickerId;
-        const currentColor = value || '#ffffff';
-        const pickerContainerRef = useRef(null);
         const inputRef = useRef(null);
-        const [localValue, setLocalValue] = useState(currentColor);
+        const colorInputRef = useRef(null);
+        const [localValue, setLocalValue] = useState(value || '#ffffff');
         const inputId = `color-${colorPickerId}`;
 
         // Sync local value when prop value changes (from parent)
         useEffect(() => {
-            if (value !== localValue && document.activeElement !== inputRef.current) {
+            if (value !== localValue && document.activeElement !== inputRef.current && document.activeElement !== colorInputRef.current) {
                 setLocalValue(value || '#ffffff');
             }
         }, [value]);
@@ -633,92 +604,77 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
             };
         }, [inputId]);
 
-        // Close picker when clicking outside
-        useEffect(() => {
-            const handleClickOutside = (event) => {
-                if (pickerContainerRef.current && !pickerContainerRef.current.contains(event.target)) {
-                    if (isPickerOpen) {
-                        // setSelectedColorPicker(null);
-                    }
-                }
-            };
-
-            if (isPickerOpen) {
-                document.addEventListener('mousedown', handleClickOutside);
-            }
-
-            return () => {
-                document.removeEventListener('mousedown', handleClickOutside);
-            };
-        }, [isPickerOpen]);
-
-        const handleInputChange = (e) => {
+        const handleTextChange = (e) => {
             const newValue = e.target.value;
             setLocalValue(newValue);
-            // Use debounced update for text input when section/settingKey are provided
-            if (section && settingKey) {
-                debouncedUpdate(section, settingKey, newValue, inputId);
-            }
         };
 
-        const handleInputFocus = () => {
+        const handleTextFocus = () => {
             isAnyInputFocused.current = true;
         };
 
-        const handleInputBlur = () => {
+        const handleTextBlur = () => {
             isAnyInputFocused.current = false;
-            // Update immediately on blur to ensure value is saved
+
+            // Normalize to a valid HEX color for storage
+            const normalized = normalizeHexColor(localValue, '#ffffff');
+            setLocalValue(normalized);
+
             if (section && settingKey) {
-                const currentCustomization = localButtonCustomizationRef.current || {};
-                const currentSection = currentCustomization[section] || {};
-                updateSettings('wishlist', 'button_customization', {
-                    ...currentCustomization,
-                    [section]: {
-                        ...currentSection,
-                        [settingKey]: localValue,
-                    },
-                });
+                updateButtonCustomization(section, settingKey, normalized);
+            } else if (onChange) {
+                onChange(normalized);
             }
+
             focusedInputId.current = null;
         };
 
-        const handleColorPickerChange = (color) => {
-            const hexColor = color.hex;
-            setLocalValue(hexColor);
-            // Color picker changes should update immediately (not debounced)
+        const handleColorInputChange = (e) => {
+            const hexColor = e.target.value;
+            setLocalValue(hexColor); // Update local component state
+            
+            // Update parent's localButtonCustomization for real-time preview
             if (section && settingKey) {
                 updateButtonCustomization(section, settingKey, hexColor);
-            } else {
+            } else if (onChange) {
                 onChange(hexColor);
             }
         };
+
+        const handleColorInputBlur = () => {
+            // Update parent state when color picker closes (user clicks outside)
+            const normalized = normalizeHexColor(localValue, '#ffffff');
+            setLocalValue(normalized);
+
+            if (section && settingKey) {
+                updateButtonCustomization(section, settingKey, normalized);
+            } else if (onChange) {
+                onChange(normalized);
+            }
+        };
+
+        const colorPickerValue = normalizeHexColor(localValue || value, '#ffffff');
 
         return (
             <div className="space-y-2">
                 <Label className="text-sm">{label}</Label>
                 <div className="flex items-center gap-2">
-                    <div className="relative" ref={pickerContainerRef}>
-                        <div
-                            className="w-10 h-10 rounded border-2 border-gray-200 cursor-pointer"
-                            style={{ backgroundColor: localValue }}
-                            onClick={() => setSelectedColorPicker(isPickerOpen ? null : colorPickerId)}
-                        />
-                        {isPickerOpen && (
-                            <div className="absolute z-50 mt-2">
-                                <Sketch
-                                    color={localValue}
-                                    onChange={handleColorPickerChange}
-                                />
-                            </div>
-                        )}
-                    </div>
+                    <input
+                        ref={colorInputRef}
+                        type="color"
+                        value={colorPickerValue}
+                        onChange={handleColorInputChange}
+                        onBlur={handleColorInputBlur}
+                        className="w-10 h-10 rounded border-2 border-gray-200 cursor-pointer bg-transparent p-0"
+                        aria-label={label}
+                    />
                     <Input
                         ref={inputRef}
                         type="text"
                         value={localValue}
-                        onChange={handleInputChange}
-                        onFocus={handleInputFocus}
-                        onBlur={handleInputBlur}
+                        onChange={handleTextChange}
+                        onFocus={handleTextFocus}
+                        onBlur={handleTextBlur}
                         placeholder="#ffffff"
                         className="flex-1 font-mono text-sm"
                     />
@@ -771,7 +727,6 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
             if (key === 'fontSize') setFontSize(value);
             else if (key === 'iconSize') setIconSize(value);
             else if (key === 'borderRadius') setBorderRadius(value);
-            debouncedUpdate(sectionKey, key, value, inputId);
         };
 
         const handleTextInputFocus = () => {

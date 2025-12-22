@@ -287,8 +287,7 @@
   display: flex !important;
   align-items: center;
   gap: 8px;
-  padding: 10px 12px;
-  border: 1px solid;
+  padding: 10px 12px; 
   border-radius: 6px;
   cursor: default;
   transition: all 0.2s ease-in-out;
@@ -297,7 +296,7 @@
   justify-content: center !important;
   background: #ebe9eb;
   color: #515151;
-  border-color: #ebe9eb;
+  border:none !important;
 
   .wishcart-wishlist-button__icon {
     flex-shrink: 0;
