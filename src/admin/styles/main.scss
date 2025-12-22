@@ -2,53 +2,80 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Your custom base styles */
+/* Import FluentCart Design System */
+@import './wishcart-theme.scss';
+@import './settings.scss';
+
+/* wishcart-aligned color system for Tailwind/shadcn components */
 :root {
-  --background: 0 0% 100%;
-  --foreground: 222.2 84% 4.9%;
-  --card: 0 0% 100%;
-  --card-foreground: 222.2 84% 4.9%;
+  /* Background colors - WordPress admin */
+  --background: 0 0% 94%;  /* #f0f0f1 */
+  --foreground: 210 13% 12%;  /* #1d2327 */
+  
+  /* Card colors */
+  --card: 0 0% 100%;  /* #ffffff */
+  --card-foreground: 210 13% 12%;  /* #1d2327 */
+  
+  /* Popover colors */
   --popover: 0 0% 100%;
-  --popover-foreground: 222.2 84% 4.9%;
-  --primary: 221.2 83.2% 53.3%;
-  --primary-foreground: 210 40% 98%;
-  --secondary: 210 40% 96.1%;
-  --secondary-foreground: 222.2 47.4% 11.2%;
-  --muted: 210 40% 96.1%;
-  --muted-foreground: 215.4 16.3% 46.9%;
-  --accent: 210 40% 96.1%;
-  --accent-foreground: 222.2 47.4% 11.2%;
-  --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 210 40% 98%;
-  --border: 214.3 31.8% 91.4%;
-  --input: 214.3 31.8% 91.4%;
-  --ring: 221.2 83.2% 53.3%;
-  --radius: 0.5rem;
+  --popover-foreground: 210 13% 12%;
+  
+  /* Primary - FluentCart/WordPress Admin Blue */
+  --primary: 207 73% 43%;  /* #1e73be - FluentCart primary */
+  --primary-foreground: 0 0% 100%;
+  
+  /* Secondary - WordPress admin gray */
+  --secondary: 210 11% 96%;  /* #f6f7f7 */
+  --secondary-foreground: 210 17% 23%;  /* #3c434a */
+  
+  /* Muted colors */
+  --muted: 210 11% 96%;  /* #f6f7f7 */
+  --muted-foreground: 210 9% 41%;  /* #646970 */
+  
+  /* Accent colors */
+  --accent: 210 11% 96%;  /* #f6f7f7 */
+  --accent-foreground: 207 73% 43%;  /* #1e73be */
+  
+  /* Destructive - WordPress admin red */
+  --destructive: 358 75% 51%;  /* #d63638 */
+  --destructive-foreground: 0 0% 100%;
+  
+  /* Border and input */
+  --border: 240 6% 77%;  /* #c3c4c7 */
+  --input: 210 7% 56%;  /* #8c8f94 */
+  --ring: 207 73% 43%;  /* #1e73be */
+  
+  /* Border radius - WordPress admin style */
+  --radius: 0.25rem;  /* 4px */
 }
 
 .dark {
-  --background: 222.2 84% 4.9%;
-  --foreground: 210 40% 98%;
-  --card: 222.2 84% 4.9%;
-  --card-foreground: 210 40% 98%;
-  --popover: 222.2 84% 4.9%;
-  --popover-foreground: 210 40% 98%;
-  --primary: 210 40% 98%;
-  --primary-foreground: 222.2 47.4% 11.2%;
-  --secondary: 217.2 32.6% 17.5%;
-  --secondary-foreground: 210 40% 98%;
-  --muted: 217.2 32.6% 17.5%;
-  --muted-foreground: 215 20.2% 65.1%;
-  --accent: 217.2 32.6% 17.5%;
-  --accent-foreground: 210 40% 98%;
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 210 40% 98%;
-  --border: 217.2 32.6% 17.5%;
-  --input: 217.2 32.6% 17.5%;
-  --ring: 212.7 26.8% 83.9%;
+  /* Keep dark mode minimal as WordPress admin doesn't use it */
+  --background: 210 13% 12%;
+  --foreground: 210 11% 96%;
+  --card: 210 17% 15%;
+  --card-foreground: 210 11% 96%;
+  --popover: 210 17% 15%;
+  --popover-foreground: 210 11% 96%;
+  --primary: 207 73% 63%;
+  --primary-foreground: 210 13% 12%;
+  --secondary: 210 17% 23%;
+  --secondary-foreground: 210 11% 96%;
+  --muted: 210 17% 23%;
+  --muted-foreground: 210 9% 65%;
+  --accent: 210 17% 23%;
+  --accent-foreground: 210 11% 96%;
+  --destructive: 358 75% 51%;
+  --destructive-foreground: 210 11% 96%;
+  --border: 210 17% 23%;
+  --input: 210 17% 23%;
+  --ring: 207 73% 63%;
 }
 
-/* Ensure admin shell sits nicely within the WordPress admin canvas */
+/* Ensure admin shell uses WordPress/FluentCart typography */
 .wishcart-admin-shell {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  font-size: 13px;
+  line-height: 1.4em;
+  color: var(--wishcart-text-primary);
 }

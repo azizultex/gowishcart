@@ -1,0 +1,306 @@
+import React, { useState, useEffect } from 'react';
+import { TrendingUp, Heart, ShoppingCart, Share2, Users, BarChart, Link as LinkIcon } from 'lucide-react';
+import '../../styles/Analytics.scss';
+
+export const AnalyticsDashboard = () => {
+    const [overview, setOverview] = useState(null);
+    const [popularProducts, setPopularProducts] = useState([]);
+    const [conversionData, setConversionData] = useState(null);
+    const [linkDetails, setLinkDetails] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+
+    const apiUrl = window.wishcartSettings?.apiUrl || '/wp-json/wishcart/v1/';
+    const nonce = window.wishcartSettings?.nonce;
+
+    useEffect(() => {
+        fetchAnalytics();
+    }, []);
+
+    const fetchAnalytics = async () => {
+        setIsLoading(true);
+        try {
+            // Fetch overview
+            const overviewRes = await fetch(`${apiUrl}analytics/overview`, {
+                headers: { 'X-WP-Nonce': nonce },
+            });
+            if (overviewRes.ok) {
+                const overviewData = await overviewRes.json();
+                setOverview(overviewData.data);
+            }
+
+            // Fetch popular products
+            const popularRes = await fetch(`${apiUrl}analytics/popular?limit=10`, {
+                headers: { 'X-WP-Nonce': nonce },
+            });
+            if (popularRes.ok) {
+                const popularData = await popularRes.json();
+                setPopularProducts(popularData.products || []);
+            }
+
+            // Fetch conversion funnel
+            const conversionRes = await fetch(`${apiUrl}analytics/conversion`, {
+                headers: { 'X-WP-Nonce': nonce },
+            });
+            if (conversionRes.ok) {
+                const conversionData = await conversionRes.json();
+                setConversionData(conversionData.data);
+            }
+
+            // Fetch link details
+            const linksRes = await fetch(`${apiUrl}analytics/links`, {
+                headers: { 'X-WP-Nonce': nonce },
+            });
+            if (linksRes.ok) {
+                const linksData = await linksRes.json();
+                setLinkDetails(linksData);
+            }
+        } catch (err) {
+            console.error('Error fetching analytics:', err);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    if (isLoading) {
+        return (
+            <div className="analytics-dashboard">
+                <div className="loading-state">
+                    <div className="spinner"></div>
+                    <p>Loading analytics...</p>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="analytics-dashboard">
+            <div className="dashboard-header">
+                <h2>Wishlist Analytics</h2>
+                <button onClick={fetchAnalytics} className="refresh-button">
+                    Refresh Data
+                </button>
+            </div>
+
+            {/* Overview Cards */}
+            {overview && (
+                <div className="overview-grid">
+                    <div className="stat-card wishcart-card">
+                        <div className="stat-icon wishlist">
+                            <Heart size={24} />
+                        </div>
+                        <div className="stat-content">
+                            <p className="stat-label">Total Wishlists</p>
+                            <p className="stat-value">{overview.total_wishlists || 0}</p>
+                        </div>
+                    </div>
+
+                    <div className="stat-card wishcart-card">
+                        <div className="stat-icon items">
+                            <BarChart size={24} />
+                        </div>
+                        <div className="stat-content">
+                            <p className="stat-label">Total Items</p>
+                            <p className="stat-value">{overview.total_items || 0}</p>
+                            <p className="stat-meta">Avg: {overview.avg_items_per_wishlist || 0} per wishlist</p>
+                        </div>
+                    </div>
+
+                    <div className="stat-card wishcart-card">
+                        <div className="stat-icon conversion">
+                            <ShoppingCart size={24} />
+                        </div>
+                        <div className="stat-content">
+                            <p className="stat-label">Total Purchases</p>
+                            <p className="stat-value">{overview.total_purchases || 0}</p>
+                            <p className="stat-meta">Conversion: {overview.overall_conversion_rate || 0}%</p>
+                        </div>
+                    </div>
+
+                    <div className="stat-card wishcart-card">
+                        <div className="stat-icon shares">
+                            <Share2 size={24} />
+                        </div>
+                        <div className="stat-content">
+                            <p className="stat-label">Total Shares</p>
+                            <p className="stat-value">{overview.total_shares || 0}</p>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Conversion Funnel */}
+            {conversionData && (() => {
+                // Calculate proportional widths based on maximum value
+                const maxValue = Math.max(
+                    conversionData.added_to_wishlist || 0,
+                    conversionData.clicked || 0,
+                    conversionData.added_to_cart || 0,
+                    conversionData.purchased || 0
+                );
+                
+                const calculateWidth = (value) => {
+                    if (maxValue === 0) return '100%';
+                    const percentage = (value / maxValue) * 100;
+                    return `${Math.min(percentage, 100)}%`;
+                };
+
+                return (
+                    <div className="funnel-card wishcart-card">
+                        <h3>Conversion Funnel</h3>
+                        <div className="funnel-visualization">
+                            <div className="funnel-stage">
+                                <div className="funnel-bar" style={{ width: calculateWidth(conversionData.added_to_wishlist || 0) }}>
+                                    <span className="funnel-label">Added to Wishlist</span>
+                                    <span className="funnel-value">{conversionData.added_to_wishlist || 0}</span>
+                                </div>
+                            </div>
+                            <div className="funnel-stage">
+                                <div className="funnel-bar" style={{ width: calculateWidth(conversionData.clicked || 0) }}>
+                                    <span className="funnel-label">Wishlist Shared Link Clicked</span>
+                                    <span className="funnel-value">{conversionData.clicked || 0}</span>
+                                </div>
+                            </div>
+                            <div className="funnel-stage">
+                                <div className="funnel-bar" style={{ width: calculateWidth(conversionData.added_to_cart || 0) }}>
+                                    <span className="funnel-label">Added to Cart</span>
+                                    <span className="funnel-value">{conversionData.added_to_cart || 0}</span>
+                                </div>
+                            </div>
+                            <div className="funnel-stage">
+                                <div className="funnel-bar" style={{ width: calculateWidth(conversionData.purchased || 0) }}>
+                                    <span className="funnel-label">Purchased</span>
+                                    <span className="funnel-value">{conversionData.purchased || 0}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            })()}
+
+            {/* Popular Products */}
+            {popularProducts.length > 0 && (
+                <div className="popular-products-card wishcart-card">
+                    <h3>Most Wishlisted Products</h3>
+                        <div className="products-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Wishlist Count</th>
+                                        <th>Add to Cart</th>
+                                        <th>Purchases</th>
+                                        <th>Conversion Rate</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {popularProducts.map((product) => (
+                                        <tr key={product.product_id}>
+                                            <td>
+                                                <a href={product.product_url} target="_blank" rel="noopener noreferrer">
+                                                    {product.product_name}
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <span className="badge">{product.wishlist_count}</span>
+                                            </td>
+                                            <td>{product.add_to_cart_count}</td>
+                                            <td>{product.purchase_count}</td>
+                                            <td>
+                                                <span className={`conversion-badge ${product.conversion_rate > 10 ? 'high' : ''}`}>
+                                                    {product.conversion_rate}%
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                </div>
+            )}
+
+            {/* Link Details */}
+            {linkDetails && (
+                <div className="links-card wishcart-card">
+                    <div className="links-header">
+                            <h3>
+                                <LinkIcon size={20} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+                                Share Links Details
+                            </h3>
+                            <span className="total-links-badge">Total Links: {linkDetails.total_links || 0}</span>
+                        </div>
+                        {linkDetails.links && linkDetails.links.length > 0 ? (
+                            <div className="links-table">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Share Link</th>
+                                            <th>Wishlist Name</th>
+                                            <th>Items Count</th>
+                                            <th>Products</th>
+                                            <th>Click Count</th>
+                                            <th>Share Type</th>
+                                            <th>Created Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {linkDetails.links.map((link) => (
+                                            <tr key={link.share_id}>
+                                                <td>
+                                                    <a 
+                                                        href={link.share_url} 
+                                                        target="_blank" 
+                                                        rel="noopener noreferrer"
+                                                        className="share-link"
+                                                        title={link.share_url}
+                                                    >
+                                                        {link.share_token.substring(0, 20)}...
+                                                    </a>
+                                                </td>
+                                                <td>{link.wishlist_name}</td>
+                                                <td>
+                                                    <span className="badge">{link.items_count}</span>
+                                                </td>
+                                                <td>
+                                                    <div className="products-list">
+                                                        {link.items && link.items.length > 0 ? (
+                                                            link.items.slice(0, 3).map((item, idx) => (
+                                                                <span key={idx} className="product-tag">
+                                                                    {item.product_name}
+                                                                    {item.quantity > 1 && ` (x${item.quantity})`}
+                                                                </span>
+                                                            ))
+                                                        ) : (
+                                                            <span className="no-items">No items</span>
+                                                        )}
+                                                        {link.items && link.items.length > 3 && (
+                                                            <span className="more-items">+{link.items.length - 3} more</span>
+                                                        )}
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <span className={`click-count ${link.click_count > 0 ? 'has-clicks' : ''}`}>
+                                                        {link.click_count}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span className="share-type-badge">{link.share_type}</span>
+                                                </td>
+                                                <td>
+                                                    {link.date_created ? new Date(link.date_created).toLocaleDateString() : '-'}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        ) : (
+                            <div className="empty-state">
+                                <p>No share links found.</p>
+                            </div>
+                        )}
+                </div>
+            )}
+        </div>
+    );
+};
+

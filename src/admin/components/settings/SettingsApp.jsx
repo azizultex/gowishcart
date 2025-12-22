@@ -1,27 +1,26 @@
 import { __ } from '@wordpress/i18n';
-import React, { useState, useEffect } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Toaster } from "@/components/ui/toaster"
-import { useToast } from "@/components/hooks/use-toast"
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { Toaster } from "@/components/ui/toaster";
+import { useToast } from "@/components/hooks/use-toast";
 import {
-    Heart,
-    HelpCircle,
-    ExternalLink,
     CheckCircle2,
     XCircle,
+    Palette,
+    BarChart3,
     LifeBuoy,
-    ShieldCheck,
-    Wrench
+    Sparkles,
+    Settings,
+    Plug
 } from 'lucide-react';
 
 import WishlistSettings from './WishlistSettings';
-import {buttonVariants} from "../../../components/ui/button";
+import ButtonCustomizationSettings from './ButtonCustomizationSettings';
+import IntegrationsSettings from './IntegrationsSettings';
+import SupportResources from './SupportResources';
+import UpgradePrompt from './UpgradePrompt';
+import { AnalyticsDashboard } from '../AnalyticsDashboard';
 
+const localizedTabPageMap = (typeof window !== 'undefined' && window.wishcartSettings && window.wishcartSettings.tabPageMap) || {};
 
 const SettingsApp = () => {
     const { toast } = useToast()
@@ -34,12 +33,27 @@ const SettingsApp = () => {
             custom_css: '',
             wishlist_page_id: 0,
             guest_cookie_expiry: 30,
-        },
+        }
     });
 
     const [isSaving, setIsSaving] = useState(false);
-    const [saveMessage, setSaveMessage] = useState('');
-    const [activeTab, setActiveTab] = useState("settings");
+    const [activeTab, setActiveTab] = useState(() => wishcartSettings?.defaultTab || 'settings');
+    const baseMenuSlug = wishcartSettings?.menuSlug || 'wishcart';
+    const fallbackTabPageMap = useMemo(() => ({
+        settings: `${baseMenuSlug}-settings`,
+        customization: `${baseMenuSlug}-customization`,
+        analytics: `${baseMenuSlug}-analytics`,
+        integrations: `${baseMenuSlug}-integrations`,
+        support: `${baseMenuSlug}-support`,
+        'get-pro': `${baseMenuSlug}-get-pro`,
+    }), [baseMenuSlug]);
+
+    const tabPageMap = useMemo(() => {
+        if (localizedTabPageMap && Object.keys(localizedTabPageMap).length > 0) {
+            return localizedTabPageMap;
+        }
+        return fallbackTabPageMap;
+    }, [fallbackTabPageMap]);
 
     useEffect(() => {
         // Load settings from WordPress on mount
@@ -50,7 +64,7 @@ const SettingsApp = () => {
         try {
             const response = await fetch('/wp-json/wishcart/v1/settings', {
                 headers: {
-                    'X-WP-Nonce': WishCartSettings.nonce
+                    'X-WP-Nonce': wishcartSettings.nonce
                 }
             });
             const data = await response.json();
@@ -81,13 +95,30 @@ const SettingsApp = () => {
 
                 setSettings(prevSettings => ({
                     ...prevSettings,
-                    ...normalizedData
+                    ...normalizedData,
+                    wishlist: {
+                        ...prevSettings.wishlist,
+                        ...(normalizedData.wishlist || {})
+                    }
                 }));
             }
         } catch (error) {
             console.error('Error loading settings:', error);
         }
     };
+
+    useEffect(() => {
+        const slug = tabPageMap[activeTab] || tabPageMap.settings || fallbackTabPageMap.settings;
+        const url = new URL(window.location.href);
+        url.searchParams.set('page', slug);
+        window.history.replaceState({}, '', url.toString());
+    }, [activeTab, tabPageMap, fallbackTabPageMap]);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined' && typeof window.wishcartSetActiveMenu === 'function') {
+            window.wishcartSetActiveMenu(activeTab);
+        }
+    }, [activeTab]);
 
     // Validate inputs before saving
     const validateBeforeSave = () => {
@@ -103,7 +134,7 @@ const SettingsApp = () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-WP-Nonce': WishCartSettings.nonce
+                    'X-WP-Nonce': wishcartSettings.nonce
                 },
                 body: JSON.stringify(settings)
             });
@@ -113,10 +144,10 @@ const SettingsApp = () => {
                     title: (
                         <div className="flex items-center gap-2">
                             <CheckCircle2 className="h-4 w-4 text-green-500" />
-                            <span>{__('Settings saved successfully!', 'wish-cart')}</span>
+                            <span>{__('Settings saved successfully!', 'wishcart')}</span>
                         </div>
                     ),
-                    description: __('Your changes have been applied.', 'wish-cart'),
+                    description: __('Your changes have been applied.', 'wishcart'),
                     className: "bg-green-50 border-green-200"
                 });
             } else {
@@ -127,10 +158,10 @@ const SettingsApp = () => {
                 title: (
                     <div className="flex items-center gap-2">
                         <XCircle className="h-4 w-4 text-red-500" />
-                        <span>{__('Failed to save settings', 'wish-cart')}</span>
+                        <span>{__('Failed to save settings', 'wishcart')}</span>
                     </div>
                 ),
-                description: __('Please try again or contact support if the problem persists.', 'wish-cart'),
+                description: __('Please try again or contact support if the problem persists.', 'wishcart'),
                 className: "bg-red-50 border-red-200"
             });
         } finally {
@@ -148,216 +179,118 @@ const SettingsApp = () => {
         }));
     };
 
-    const pluginLogo = `${WishCartSettings.pluginUrl}assets/images/icons/menu-icon.svg`;
+    const tabs = useMemo(() => ([
+        { id: 'settings', label: __('Settings', 'wishcart'), icon: Settings },
+        { id: 'customization', label: __('Customization', 'wishcart'), icon: Palette },
+        { id: 'analytics', label: __('Analytics', 'wishcart'), icon: BarChart3 },
+        { id: 'integrations', label: __('Integrations', 'wishcart'), icon: Plug },
+        { id: 'support', label: __('Support', 'wishcart'), icon: LifeBuoy },
+        { id: 'get-pro', label: __('Get Pro', 'wishcart'), icon: Sparkles },
+    ]), []);
+
+    const navigateToTab = useCallback((tabId) => {
+        const exists = tabs.some(tab => tab.id === tabId);
+        if (!exists) {
+            return false;
+        }
+        setActiveTab(tabId);
+        return true;
+    }, [tabs]);
+
+    useEffect(() => {
+        window.wishcartNavigateToTab = navigateToTab;
+        return () => {
+            if (window.wishcartNavigateToTab === navigateToTab) {
+                delete window.wishcartNavigateToTab;
+            }
+        };
+    }, [navigateToTab]);
+
+    const activeTabData = tabs.find(tab => tab.id === activeTab) || tabs[0];
+    const tabsWithSave = ['settings', 'customization'];
+    const shouldShowSave = tabsWithSave.includes(activeTab);
 
     return (
         <>
-            <div className="wishcart-admin-shell min-h-[70vh] bg-slate-50 py-6">
-                <div className="mx-auto max-w-6xl px-4 lg:px-6 space-y-6">
-                    <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                        <div className="flex items-center gap-3">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/5">
-                                <img
-                                    src={pluginLogo}
-                                    alt={__('WishCart logo', 'wish-cart')}
-                                    className="h-6 w-6"
-                                />
-                            </div>
-                            <div>
-                                <h1 className="text-xl font-semibold tracking-tight text-slate-900">
-                                    {__('WishCart', 'wish-cart')}
-                                </h1>
-                                <p className="flex items-center gap-2 text-sm text-slate-500">
-                                    <span>{__('Wishlist & engagement tools for your store', 'wish-cart')}</span>
-                                    <span className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[11px] font-medium uppercase tracking-wide text-emerald-700">
-                                        {__('Free', 'wish-cart')}
-                                    </span>
-                                </p>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <div className="flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
-                                <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                                <span>{__('You are connected.', 'wish-cart')}</span>
-                            </div>
-                            <div className="hidden sm:flex items-center gap-2">
-                                <a
-                                    href="https://wishcart.chat/support"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className={buttonVariants({ variant: "outline", size: "sm" })}
-                                >
-                                    <HelpCircle className="mr-2 h-4 w-4" />
-                                    {__('Support', 'wish-cart')}
-                                </a>
-                                <a
-                                    href="https://wishcart.chat/docs"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className={buttonVariants({ variant: "ghost", size: "sm" })}
-                                >
-                                    <ExternalLink className="mr-2 h-4 w-4" />
-                                    {__('Docs', 'wish-cart')}
-                                </a>
-                            </div>
-                        </div>
-                    </header>
-
-                    {saveMessage && (
-                        <Alert className="border-amber-200 bg-amber-50">
-                            <AlertDescription>{saveMessage}</AlertDescription>
-                        </Alert>
-                    )}
-
-                    <Card className="shadow-sm border-slate-200">
-                        <CardHeader className="border-b border-slate-100 pb-3">
-                            <CardTitle className="text-base font-semibold">
-                                {__('WishCart dashboard', 'wish-cart')}
-                            </CardTitle>
-                            <CardDescription>
-                                {__('Manage wishlist behavior, tools, and plugin information.', 'wish-cart')}
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="pt-4">
-                            <Tabs
-                                value={activeTab}
-                                onValueChange={setActiveTab}
-                                className="w-full"
+            <div className="wishcart-admin-shell wishcart-admin-page">
+                {/* Navigation Tabs - WordPress/FluentCart Style */}
+                <nav className="wishcart-nav-tabs">
+                    {tabs.map((tab) => {
+                        const Icon = tab.icon;
+                        return (
+                            <button
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id)}
+                                className={`wishcart-nav-tab ${activeTab === tab.id ? 'active' : ''}`}
                             >
-                                <TabsList className="mb-4 bg-slate-50 flex flex-wrap">
-                                    <TabsTrigger value="settings" className="flex items-center gap-2">
-                                        <Heart className="w-4 h-4" />
-                                        {__('Settings', 'wish-cart')}
-                                    </TabsTrigger>
-                                    <TabsTrigger value="tools" className="flex items-center gap-2">
-                                        <Wrench className="w-4 h-4" />
-                                        {__('Tools', 'wish-cart')}
-                                    </TabsTrigger>
-                                    <TabsTrigger value="support" className="flex items-center gap-2">
-                                        <LifeBuoy className="w-4 h-4" />
-                                        {__('Support', 'wish-cart')}
-                                    </TabsTrigger>
-                                    <TabsTrigger value="license" className="flex items-center gap-2">
-                                        <ShieldCheck className="w-4 h-4" />
-                                        {__('License', 'wish-cart')}
-                                    </TabsTrigger>
-                                </TabsList>
+                                <Icon />
+                                {tab.label}
+                            </button>
+                        );
+                    })}
+                </nav>
 
-                                <TabsContent value="settings" className="space-y-6">
-                                    <WishlistSettings
-                                        settings={settings}
-                                        updateSettings={updateSettings}
-                                    />
-                                </TabsContent>
+                {/* Active Tab Header */}
+                <div className="wishcart-admin-page-header">
+                    <div className="wishcart-admin-page-header-content">
+                        <h1 className="wishcart-admin-page-title">
+                            {activeTabData.label}
+                        </h1>
+                    </div>
+                </div>
 
-                                <TabsContent value="tools" className="space-y-4">
-                                    <p className="text-sm text-muted-foreground">
-                                        {__('Quick links to wishlist-related tools and pages.', 'wish-cart')}
-                                    </p>
-                                    <div className="grid gap-4 md:grid-cols-2">
-                                        <Card className="border-dashed">
-                                            <CardHeader>
-                                                <CardTitle className="text-sm">
-                                                    {__('Wishlist page', 'wish-cart')}
-                                                </CardTitle>
-                                                <CardDescription>
-                                                    {__('Preview the public wishlist page in a new tab.', 'wish-cart')}
-                                                </CardDescription>
-                                            </CardHeader>
-                                            <CardContent>
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    asChild
-                                                >
-                                                    <a
-                                                        href={WishCartSettings.pluginUrl}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                    >
-                                                        <ExternalLink className="mr-2 h-4 w-4" />
-                                                        {__('Open wishlist page', 'wish-cart')}
-                                                    </a>
-                                                </Button>
-                                            </CardContent>
-                                        </Card>
-                                    </div>
-                                </TabsContent>
+                {/* Main Content Area */}
+                <div className="wishcart-admin-body">
+                    <div className="wishcart-admin-content">
+                        {/* Settings Tab */}
+                        {activeTab === 'settings' && (
+                            <WishlistSettings
+                                settings={settings}
+                                updateSettings={updateSettings}
+                            />
+                        )}
 
-                                <TabsContent value="support" className="space-y-4">
-                                    <p className="text-sm text-muted-foreground">
-                                        {__('Need help? Get in touch with our team or browse documentation.', 'wish-cart')}
-                                    </p>
-                                    <div className="flex flex-wrap gap-3">
-                                        <Button
-                                            asChild
-                                        >
-                                            <a
-                                                href="https://wishcart.chat/support"
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                            >
-                                                <LifeBuoy className="mr-2 h-4 w-4" />
-                                                {__('Contact support', 'wish-cart')}
-                                            </a>
-                                        </Button>
-                                        <Button
-                                            variant="outline"
-                                            asChild
-                                        >
-                                            <a
-                                                href="https://wishcart.chat/docs"
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                            >
-                                                <ExternalLink className="mr-2 h-4 w-4" />
-                                                {__('View docs', 'wish-cart')}
-                                            </a>
-                                        </Button>
-                                    </div>
-                                </TabsContent>
+                        {/* Button Customization Tab */}
+                        {activeTab === 'customization' && (
+                            <ButtonCustomizationSettings
+                                settings={settings}
+                                updateSettings={updateSettings}
+                            />
+                        )}
 
-                                <TabsContent value="license" className="space-y-4">
-                                    <p className="text-sm text-muted-foreground">
-                                        {__('You are currently using the free version of WishCart. All core wishlist features are included.', 'wish-cart')}
-                                    </p>
-                                    <Card>
-                                        <CardHeader>
-                                            <CardTitle className="text-sm">
-                                                {__('Upgrade options', 'wish-cart')}
-                                            </CardTitle>
-                                            <CardDescription>
-                                                {__('Unlock advanced analytics and automation when available.', 'wish-cart')}
-                                            </CardDescription>
-                                        </CardHeader>
-                                        <CardContent>
-                                            <Button
-                                                variant="outline"
-                                                asChild
-                                            >
-                                                <a
-                                                    href="https://wishcart.chat"
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                >
-                                                    {__('Visit website', 'wish-cart')}
-                                                </a>
-                                            </Button>
-                                        </CardContent>
-                                    </Card>
-                                </TabsContent>
-                            </Tabs>
+                        {/* Analytics Tab */}
+                        {activeTab === 'analytics' && (
+                            <AnalyticsDashboard />
+                        )}
 
-                            <div className="mt-6 flex justify-end border-t border-slate-100 pt-4">
-                                <Button
+                        {/* Integrations Tab */}
+                        {activeTab === 'integrations' && (
+                            <IntegrationsSettings />
+                        )}
+
+                        {/* Support Tab */}
+                        {activeTab === 'support' && (
+                            <SupportResources />
+                        )}
+
+                        {/* Get Pro Tab */}
+                        {activeTab === 'get-pro' && (
+                            <UpgradePrompt />
+                        )}
+
+                        {/* Save Button - Only show for tabs that need it */}
+                        {shouldShowSave && (
+                            <div className="wishcart-card-footer" style={{ marginTop: '24px' }}>
+                                <button
                                     onClick={saveSettings}
                                     disabled={isSaving}
+                                    className="wishcart-button wishcart-button-primary"
                                 >
-                                    {isSaving ? __('Saving...', 'wish-cart') : __('Save Settings', 'wish-cart')}
-                                </Button>
+                                    {isSaving ? __('Saving...', 'wishcart') : __('Save Settings', 'wishcart')}
+                                </button>
                             </div>
-                        </CardContent>
-                    </Card>
+                        )}
+                    </div>
                 </div>
             </div>
             <Toaster />

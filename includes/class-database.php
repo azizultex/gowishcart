@@ -1,30 +1,28 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
 /**
- * Database handling class for AISK plugin
+ * Database handling class for WishCart plugin
  *
  * @category WordPress
- * @package  AISK
- * @author   WishCart Team <support@wishcart.chat>
+ * @package  WishCart
+ * @author   WishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
- * @link     https://wishcart.chat
+ * @link     https://gowishcart.com
  */
 
 /**
- * WISHCART_Database Class
+ * WishCart_Database Class
  *
  * @category WordPress
- * @package  AISK
- * @author   WishCart Team <support@wishcart.chat>
+ * @package  WishCart
+ * @author   WishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
- * @link     https://wishcart.chat
+ * @link     https://gowishcart.com
  */
-class WISHCART_Database {
-
+class WishCart_Database {
 
     private $wpdb;
     private $table_prefix;
-    private $embedding_table;
 
     /**
      * Initialize the database class
@@ -35,20 +33,16 @@ class WISHCART_Database {
         global $wpdb;
         $this->wpdb = $wpdb;
         $this->table_prefix = $wpdb->prefix;
-        $this->embedding_table = $this->table_prefix . 'wishcart_embeddings';
 		
-		$this->log_debug('WISHCART_Database::__construct start');
-		// Ensure tables are created using the previously stored version
-		// so version-based creation logic (e.g., wishcart_api_usage) can run.
+		$this->log_debug('WishCart_Database::__construct start');
 		$this->create_tables();
-		$this->check_version_upgrade();
-		$this->log_debug('WISHCART_Database::__construct end');
+		$this->log_debug('WishCart_Database::__construct end');
     }
 
     /**
-     * Create required database tables
+     * Create required database tables (7-table structure)
      *
-     * @since 1.0.0
+     * @since 2.0.0
      *
      * @return void
      */
@@ -56,413 +50,256 @@ class WISHCART_Database {
 		$charset_collate = $this->wpdb->get_charset_collate();
 		$this->log_debug('create_tables: start');
 
-        $sql_conversations = "CREATE TABLE IF NOT EXISTS {$this->table_prefix}wishcart_conversations (
-            id bigint(20) NOT NULL AUTO_INCREMENT,
-            conversation_id varchar(50) NOT NULL,
-            user_id bigint(20),
-            user_name varchar(100),
-            user_email varchar(100),
-            user_phone varchar(50),
-            platform varchar(20) DEFAULT 'web',
-            ip_address varchar(45),
-            city varchar(100),
-            country varchar(100),
-            country_code varchar(2),
-            intents JSON,
-            user_agent varchar(255),
-            page_url varchar(255),
-            created_at datetime DEFAULT CURRENT_TIMESTAMP,
-            updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        // 1. Main Wishlists Table (fc_wishlists)
+        $sql_wishlists = "CREATE TABLE IF NOT EXISTS {$this->table_prefix}fc_wishlists (
+            id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+            wishlist_token varchar(64) NOT NULL UNIQUE,
+            user_id bigint(20) UNSIGNED NULL DEFAULT NULL,
+            session_id varchar(255) NULL DEFAULT NULL,
+            wishlist_name varchar(255) NOT NULL DEFAULT 'My Wishlist',
+            wishlist_slug varchar(255) NOT NULL,
+            description text NULL,
+            privacy_status enum('public', 'shared', 'private') DEFAULT 'private',
+            is_default tinyint(1) DEFAULT 0,
+            expiration_date datetime NULL DEFAULT NULL,
+            dateadded datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            date_modified datetime NULL ON UPDATE CURRENT_TIMESTAMP,
+            menu_order int(11) NOT NULL DEFAULT 0,
+            wishlist_type varchar(50) DEFAULT 'wishlist',
+            status varchar(20) DEFAULT 'active',
             PRIMARY KEY (id),
-            KEY conversation_id (conversation_id),
-            KEY user_id (user_id),
-            KEY user_phone (user_phone),
-            KEY platform (platform),
-            KEY city (city),
-            KEY country (country)
-        ) $charset_collate;";
+            KEY user_id_idx (user_id),
+            KEY session_id_idx (session_id),
+            KEY wishlist_token_idx (wishlist_token),
+            KEY privacy_status_idx (privacy_status),
+            KEY is_default_idx (is_default),
+            KEY status_idx (status),
+            KEY wishlist_slug_idx (wishlist_slug)
+        ) ENGINE=InnoDB $charset_collate;";
 
-        // Messages table
-        $sql_messages = "CREATE TABLE IF NOT EXISTS {$this->table_prefix}wishcart_messages (
-            id bigint(20) NOT NULL AUTO_INCREMENT,
-            conversation_id varchar(50) NOT NULL,
-            message_type enum('user', 'bot') NOT NULL,
-            message TEXT NOT NULL,
-            metadata JSON,
-            created_at datetime DEFAULT CURRENT_TIMESTAMP,
-            PRIMARY KEY (id),
-            KEY conversation_id (conversation_id),
-            KEY message_type (message_type)
-        ) $charset_collate;";
+        // 2. Wishlist Items Table (fc_wishlist_items)
+        $sql_wishlist_items = "CREATE TABLE IF NOT EXISTS {$this->table_prefix}fc_wishlist_items (
+            item_id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+            wishlist_id bigint(20) UNSIGNED NOT NULL,
+            product_id bigint(20) UNSIGNED NOT NULL,
+            variation_id bigint(20) UNSIGNED NULL DEFAULT 0,
+            variation_data longtext NULL,
+            quantity int(11) NOT NULL DEFAULT 1,
+            date_added datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            position int(11) DEFAULT 0,
+            original_price decimal(19,4) NULL,
+            original_currency varchar(10) NULL,
+            on_sale tinyint(1) DEFAULT 0,
+            notes text NULL,
+            user_id bigint(20) UNSIGNED NULL,
+            date_added_to_cart datetime NULL,
+            cart_item_key varchar(255) NULL,
+            custom_attributes text NULL,
+            status varchar(20) DEFAULT 'active',
+            PRIMARY KEY (item_id),
+            UNIQUE KEY wishlist_product_unique (wishlist_id, product_id, variation_id),
+            KEY wishlist_id_idx (wishlist_id),
+            KEY product_id_idx (product_id),
+            KEY variation_id_idx (variation_id),
+            KEY date_added_idx (date_added),
+            KEY user_id_idx (user_id),
+            KEY status_idx (status)
+        ) ENGINE=InnoDB $charset_collate;";
 
-        // Add new table for user states
-        $sql_states = "CREATE TABLE IF NOT EXISTS {$this->table_prefix}wishcart_user_states (
-            id bigint(20) NOT NULL AUTO_INCREMENT,
-            platform_user_id varchar(50) NOT NULL,
-            platform varchar(20) NOT NULL,
-            state_data JSON,
-            created_at datetime DEFAULT CURRENT_TIMESTAMP,
-            updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            PRIMARY KEY (id),
-            UNIQUE KEY platform_user (platform_user_id, platform)
-        ) $charset_collate;";
+        // 3. Wishlist Shares Table (fc_wishlist_shares)
+        $sql_wishlist_shares = "CREATE TABLE IF NOT EXISTS {$this->table_prefix}fc_wishlist_shares (
+            share_id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+            wishlist_id bigint(20) UNSIGNED NOT NULL,
+            share_token varchar(64) UNIQUE,
+            share_type enum('link', 'email', 'facebook', 'twitter', 'pinterest', 'whatsapp', 'instagram', 'other') NOT NULL,
+            shared_by_user_id bigint(20) UNSIGNED NULL,
+            shared_with_email varchar(255) NULL,
+            share_key varchar(255) NULL,
+            share_title varchar(255) NULL,
+            share_message text NULL,
+            click_count int(11) DEFAULT 0,
+            conversion_count int(11) DEFAULT 0,
+            date_created datetime DEFAULT CURRENT_TIMESTAMP,
+            date_expires datetime NULL,
+            last_clicked datetime NULL,
+            status varchar(20) DEFAULT 'active',
+            PRIMARY KEY (share_id),
+            KEY wishlist_id_idx (wishlist_id),
+            KEY share_token_idx (share_token),
+            KEY share_type_idx (share_type),
+            KEY shared_by_user_idx (shared_by_user_id),
+            KEY status_idx (status)
+        ) ENGINE=InnoDB $charset_collate;";
 
-        $sql_inquiries = "CREATE TABLE IF NOT EXISTS {$this->table_prefix}wishcart_inquiries (
-            id bigint(20) NOT NULL AUTO_INCREMENT,
-            conversation_id varchar(50) NOT NULL,
-            order_number varchar(50) NOT NULL,
-            customer_email varchar(100),
-            customer_phone varchar(30),
-            note TEXT NOT NULL,
-            status varchar(20) DEFAULT 'pending',
-            created_at datetime DEFAULT CURRENT_TIMESTAMP,
-            updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            PRIMARY KEY (id),
-            KEY conversation_id (conversation_id),
-            KEY order_number (order_number),
-            KEY status (status)
-        ) $charset_collate;";
+        // 4. Wishlist Analytics Table (fc_wishlist_analytics)
+        $sql_wishlist_analytics = "CREATE TABLE IF NOT EXISTS {$this->table_prefix}fc_wishlist_analytics (
+            analytics_id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+            product_id bigint(20) UNSIGNED NOT NULL,
+            variation_id bigint(20) UNSIGNED NULL DEFAULT 0,
+            wishlist_count int(11) DEFAULT 0,
+            click_count int(11) DEFAULT 0,
+            add_to_cart_count int(11) DEFAULT 0,
+            purchase_count int(11) DEFAULT 0,
+            share_count int(11) DEFAULT 0,
+            first_added_date datetime NULL,
+            last_added_date datetime NULL,
+            last_purchased_date datetime NULL,
+            average_days_in_wishlist decimal(10,2) DEFAULT 0,
+            conversion_rate decimal(5,2) DEFAULT 0,
+            date_updated datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (analytics_id),
+            UNIQUE KEY product_variation_unique (product_id, variation_id),
+            KEY product_id_idx (product_id),
+            KEY wishlist_count_idx (wishlist_count),
+            KEY conversion_rate_idx (conversion_rate)
+        ) ENGINE=InnoDB $charset_collate;";
 
-        $sql_inquiry_notes = "CREATE TABLE IF NOT EXISTS {$this->table_prefix}wishcart_inquiry_notes (
-            id bigint(20) NOT NULL AUTO_INCREMENT,
-            inquiry_id bigint(20) NOT NULL,
-            note text NOT NULL,
-            author_id bigint(20) NOT NULL,
-            author varchar(100) NOT NULL,
-            created_at datetime DEFAULT CURRENT_TIMESTAMP,
-            PRIMARY KEY (id),
-            KEY inquiry_id (inquiry_id)
-        ) $charset_collate;";
+        // 5. Wishlist Notifications Table (fc_wishlist_notifications)
+        $sql_wishlist_notifications = "CREATE TABLE IF NOT EXISTS {$this->table_prefix}fc_wishlist_notifications (
+            notification_id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+            user_id bigint(20) UNSIGNED NULL,
+            wishlist_id bigint(20) UNSIGNED NULL,
+            product_id bigint(20) UNSIGNED NULL,
+            notification_type enum('price_drop', 'back_in_stock', 'promotional', 'reminder', 'share_notification', 'estimate_request') NOT NULL,
+            email_to varchar(255) NOT NULL,
+            email_subject varchar(255) NULL,
+            email_content longtext NULL,
+            trigger_data text NULL,
+            scheduled_date datetime NULL,
+            sent_date datetime NULL,
+            opened_date datetime NULL,
+            clicked_date datetime NULL,
+            status enum('pending', 'sent', 'failed', 'cancelled') DEFAULT 'pending',
+            attempts int(3) DEFAULT 0,
+            error_message text NULL,
+            crm_contact_id bigint(20) UNSIGNED NULL,
+            crm_campaign_id bigint(20) UNSIGNED NULL,
+            crm_email_id bigint(20) UNSIGNED NULL,
+            discount_code varchar(50) NULL,
+            discount_expires datetime NULL,
+            engagement_score decimal(5,2) NULL,
+            conversion_value decimal(19,4) NULL,
+            date_created datetime DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (notification_id),
+            KEY user_id_idx (user_id),
+            KEY wishlist_id_idx (wishlist_id),
+            KEY product_id_idx (product_id),
+            KEY notification_type_idx (notification_type),
+            KEY status_idx (status),
+            KEY scheduled_date_idx (scheduled_date),
+            KEY crm_contact_id_idx (crm_contact_id),
+            KEY crm_campaign_id_idx (crm_campaign_id)
+        ) ENGINE=InnoDB $charset_collate;";
 
-        $sql_embeddings = "CREATE TABLE IF NOT EXISTS {$this->table_prefix}wishcart_embeddings (
-            id bigint(20) NOT NULL AUTO_INCREMENT,
-            content_type varchar(50) NOT NULL,
-            content_id bigint(20) NOT NULL,
-            crawled_url varchar(255) DEFAULT NULL,
-            file_path varchar(255) DEFAULT NULL,
-            embedding longtext NOT NULL,
-            content_chunk longtext NOT NULL,
-            parent_url varchar(255) DEFAULT NULL,
-            created_at datetime DEFAULT CURRENT_TIMESTAMP,
-            updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            PRIMARY KEY  (id),
-            KEY content_type_id (content_type, content_id),
-            KEY parent_url (parent_url)
-        ) {$charset_collate};";
+        // 6. Wishlist Activities Table (fc_wishlist_activities)
+        $sql_wishlist_activities = "CREATE TABLE IF NOT EXISTS {$this->table_prefix}fc_wishlist_activities (
+            activity_id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+            wishlist_id bigint(20) UNSIGNED NULL,
+            user_id bigint(20) UNSIGNED NULL,
+            session_id varchar(255) NULL,
+            activity_type enum('created', 'added_item', 'removed_item', 'moved_item', 'shared', 'viewed', 'renamed', 'deleted', 'purchased', 'updated') NOT NULL,
+            object_id bigint(20) UNSIGNED NULL,
+            object_type varchar(50) NULL,
+            activity_data text NULL,
+            ip_address varchar(45) NULL,
+            user_agent text NULL,
+            referrer_url text NULL,
+            date_created datetime DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (activity_id),
+            KEY wishlist_id_idx (wishlist_id),
+            KEY user_id_idx (user_id),
+            KEY activity_type_idx (activity_type),
+            KEY date_created_idx (date_created)
+        ) ENGINE=InnoDB $charset_collate;";
 
-		$sql_api_usage = $this->get_api_usage_table_sql($this->table_prefix . 'wishcart_api_usage', $charset_collate);
+        // 7. Guest Users Table (fc_wishlist_guest_users)
+        $sql_wishlist_guest_users = "CREATE TABLE IF NOT EXISTS {$this->table_prefix}fc_wishlist_guest_users (
+            guest_id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+            session_id varchar(255) NOT NULL UNIQUE,
+            guest_email varchar(255) NULL,
+            guest_name varchar(255) NULL,
+            ip_address varchar(45) NULL,
+            user_agent text NULL,
+            wishlist_data longtext NULL,
+            conversion_user_id bigint(20) UNSIGNED NULL,
+            date_created datetime DEFAULT CURRENT_TIMESTAMP,
+            date_expires datetime NULL,
+            last_activity datetime NULL,
+            PRIMARY KEY (guest_id),
+            KEY session_id_idx (session_id),
+            KEY guest_email_idx (guest_email),
+            KEY date_expires_idx (date_expires),
+            KEY conversion_user_id_idx (conversion_user_id)
+        ) ENGINE=InnoDB $charset_collate;";
 
-        // Wishlist table
-        $sql_wishlist = "CREATE TABLE IF NOT EXISTS {$this->table_prefix}wishcart_wishlist (
-            id bigint(20) NOT NULL AUTO_INCREMENT,
-            user_id bigint(20) DEFAULT NULL,
-            session_id varchar(50) DEFAULT NULL,
-            product_id bigint(20) NOT NULL,
-            created_at datetime DEFAULT CURRENT_TIMESTAMP,
-            PRIMARY KEY (id),
-            KEY user_id (user_id),
-            KEY session_id (session_id),
-            KEY product_id (product_id),
-            UNIQUE KEY user_product (user_id, product_id),
-            UNIQUE KEY session_product (session_id, product_id)
-        ) $charset_collate;";
+        // 8. CRM Campaigns Table (fc_wishlist_crm_campaigns)
+        $sql_crm_campaigns = "CREATE TABLE IF NOT EXISTS {$this->table_prefix}fc_wishlist_crm_campaigns (
+            campaign_id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+            crm_campaign_id bigint(20) UNSIGNED NULL,
+            wishlist_trigger_type enum('item_added', 'price_drop', 'back_in_stock', 'time_based', 'cart_abandoned_with_wishlist', 'wishlist_anniversary', 'multiple_wishlists', 'high_value_wishlist') NOT NULL,
+            trigger_conditions longtext NULL,
+            discount_type enum('percentage', 'fixed', 'free_shipping', 'bogo') NULL,
+            discount_value decimal(10,2) NULL,
+            email_sequence longtext NULL,
+            target_segment longtext NULL,
+            status enum('active', 'paused', 'completed') DEFAULT 'active',
+            stats longtext NULL,
+            date_created datetime DEFAULT CURRENT_TIMESTAMP,
+            date_modified datetime NULL ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (campaign_id),
+            KEY crm_campaign_id_idx (crm_campaign_id),
+            KEY wishlist_trigger_type_idx (wishlist_trigger_type),
+            KEY status_idx (status)
+        ) ENGINE=InnoDB $charset_collate;";
 
         include_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
-        dbDelta($sql_conversations);
-        dbDelta($sql_messages);
-        dbDelta($sql_states);
-        dbDelta($sql_inquiries);
-        dbDelta($sql_inquiry_notes);
-        dbDelta($sql_embeddings);
-        dbDelta($sql_wishlist);
-        
-		// Only create API usage table if it's a fresh install (2.5.0+) or upgrade from 2.4.1
-		$should_create = $this->should_create_api_usage_table();
-		$this->log_debug('create_tables: should_create_api_usage_table=' . ($should_create ? 'true' : 'false'));
-		if ($should_create) {
-			$result = dbDelta($sql_api_usage);
-			$this->log_debug('create_tables: dbDelta(api_usage) outcome=' . json_encode(array_values($result)));
-		}
-
-		// Safety net: ensure the API usage table exists regardless of version option state
-		$api_usage_table = $this->table_prefix . 'wishcart_api_usage';
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- False positive, this is properly prepared
-		$prepared_query = $this->wpdb->prepare('SHOW TABLES LIKE %s', $api_usage_table);
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Using a pre-prepared query variable
-		$existing_table = $this->wpdb->get_var($prepared_query);
-		$this->log_debug('create_tables: SHOW TABLES LIKE result=' . ($existing_table ? $existing_table : 'null'));
-		if ($existing_table !== $api_usage_table) {
-			$this->log_debug('create_tables: safety net creating wishcart_api_usage');
-			$result2 = dbDelta($sql_api_usage);
-			$this->log_debug('create_tables: safety net dbDelta outcome=' . json_encode(array_values($result2)));
-		}
+        dbDelta($sql_wishlists);
+        dbDelta($sql_wishlist_items);
+        dbDelta($sql_wishlist_shares);
+        dbDelta($sql_wishlist_analytics);
+        dbDelta($sql_wishlist_notifications);
+        dbDelta($sql_wishlist_activities);
+        dbDelta($sql_wishlist_guest_users);
+        dbDelta($sql_crm_campaigns);
+		
+		// Migrate existing notifications table if needed
+		$this->migrate_notifications_table();
+		
 		$this->log_debug('create_tables: end');
     }
 
-	/**
-	 * Build SQL for creating the wishcart_api_usage table with a single source of truth
-	 *
-	 * @param string $table_name
-	 * @param string $charset_collate
-	 * @return string
-	 */
-	private function get_api_usage_table_sql($table_name, $charset_collate) {
-		return "CREATE TABLE IF NOT EXISTS {$table_name} (
-			id bigint(20) NOT NULL AUTO_INCREMENT,
-			request_id varchar(100) NOT NULL,
-			conversation_id varchar(50),
-			user_id bigint(20),
-			user_role varchar(50),
-			channel varchar(50) NOT NULL,
-			feature varchar(50) NOT NULL,
-			provider varchar(50) NOT NULL,
-			endpoint varchar(255),
-			model varchar(100),
-			status varchar(20) NOT NULL,
-			error_code varchar(100),
-			latency_ms int(11),
-			tokens_in int(11) DEFAULT 0,
-			tokens_out int(11) DEFAULT 0,
-			cost_usd decimal(10,4) DEFAULT 0.0000,
-			ip_hash varchar(64),
-			country varchar(100),
-			url varchar(255),
-			context_id varchar(100),
-			metadata JSON,
-			created_at datetime DEFAULT CURRENT_TIMESTAMP,
-			PRIMARY KEY (id),
-			KEY request_id (request_id),
-			KEY conversation_id (conversation_id),
-			KEY user_id (user_id),
-			KEY channel (channel),
-			KEY feature (feature),
-			KEY provider (provider),
-			KEY status (status),
-			KEY created_at (created_at),
-			KEY provider_feature (provider, feature),
-			KEY created_at_provider (created_at, provider),
-			KEY created_at_feature (created_at, feature)
-		) {$charset_collate};";
-	}
-
-
-
     /**
-     * Store embedding data in database
-     *
-     * @param array $data Embedding data to store
-     *
-     * @since 1.0.0
-     *
-     * @return int|false Number of rows affected or false on error
-     */
-    public function store_embedding( $data ) {
-        // Remove any existing embeddings for this content
-        $this->delete_embedding($data['content_type'], $data['content_id']);
-
-        // Insert new embedding
-        return $this->wpdb->insert(
-            $this->embedding_table,
-            [
-                'content_type' => $data['content_type'],
-                'content_id' => $data['content_id'],
-                'embedding' => $data['embedding'],
-                'content_chunk' => $data['content_chunk'],
-            ],
-            [ '%s', '%d', '%s', '%s' ]
-        );
-    }
-
-    /**
-     * Delete embedding for specific content
-     *
-     * @param string $content_type Content type to delete
-     * @param int    $content_id   Content ID to delete
-     *
-     * @since 1.0.0
-     *
-     * @return int|false Number of rows affected or false on error
-     */
-    public function delete_embedding( $content_type, $content_id ) {
-        return $this->wpdb->delete(
-            $this->embedding_table,
-            [
-                'content_type' => $content_type,
-                'content_id' => $content_id,
-            ],
-            [ '%s', '%d' ]
-        );
-    }
-
-    /**
-     * Get embeddings for specific content
-     *
-     * @param string $content_type Content type to retrieve
-     * @param int    $content_id   Content ID to retrieve
-     *
-     * @since 1.0.0
-     *
-     * @return array Array of embedding results
-     */
-    public function get_embeddings($content_type, $content_id)
-    {
-        $cache_key = 'wishcart_embedding_' . $content_type . '_' . $content_id;
-        $embeddings = wp_cache_get($cache_key, 'wishcart_embeddings');
-        
-        if (false === $embeddings) {
-            // @codingStandardsIgnoreStart
-            global $wpdb;
-            
-            $embeddings = $wpdb->get_results(
-                $wpdb->prepare(
-                    "SELECT * FROM {$this->embedding_table} 
-                    WHERE content_type = %s AND content_id = %d",
-                    $content_type,
-                    $content_id
-                )
-            );
-            // @codingStandardsIgnoreEnd
-            
-            if ($embeddings) {
-                wp_cache_set($cache_key, $embeddings, 'wishcart_embeddings', 3600); // Cache for 1 hour
-            }
-        }
-        
-        return $embeddings ?: array();
-    }
-
-    /**
-     * Get all embeddings from database
-     *
-     * @since 1.0.0
-     *
-     * @return array Array of all embeddings
-     */
-    public function get_all_embeddings()
-    {
-        $cache_key = 'wishcart_all_embeddings';
-        $embeddings = wp_cache_get($cache_key, 'wishcart_embeddings');
-        
-        if (false === $embeddings) {
-            // @codingStandardsIgnoreStart
-            global $wpdb;
-            
-            $embeddings = $wpdb->get_results(
-                "SELECT * FROM {$this->embedding_table}"
-            );
-            // @codingStandardsIgnoreEnd
-            
-            if ($embeddings) {
-                wp_cache_set($cache_key, $embeddings, 'wishcart_embeddings', 3600); // Cache for 1 hour
-            }
-        }
-        
-        return $embeddings ?: array();
-    }
-
-    /**
-     * Clear all embeddings from database
-     *
-     * @since 1.0.0
-     *
-     * @return int|false Number of rows affected or false on error
-     */
-    public function clear_all_embeddings() {
-        global $wpdb;
-        return $wpdb->query( $wpdb->prepare( 'TRUNCATE TABLE %s', $this->embedding_table ) );
-    }
-
-    /**
-     * Store API usage data in database
-     *
-     * @param array $data API usage data to store
-     *
-     * @since 1.0.0
-     *
-     * @return int|false Number of rows affected or false on error
-     */
-    public function store_api_usage( $data ) {
-        $table_name = $this->table_prefix . 'wishcart_api_usage';
-        
-        return $this->wpdb->insert(
-            $table_name,
-            [
-                'request_id' => $data['request_id'],
-                'conversation_id' => $data['conversation_id'] ?? null,
-                'user_id' => $data['user_id'] ?? null,
-                'user_role' => $data['user_role'] ?? null,
-                'channel' => $data['channel'],
-                'feature' => $data['feature'],
-                'provider' => $data['provider'],
-                'endpoint' => $data['endpoint'] ?? null,
-                'model' => $data['model'] ?? null,
-                'status' => $data['status'],
-                'error_code' => $data['error_code'] ?? null,
-                'latency_ms' => $data['latency_ms'] ?? null,
-                'tokens_in' => $data['tokens_in'] ?? 0,
-                'tokens_out' => $data['tokens_out'] ?? 0,
-                'cost_usd' => $data['cost_usd'] ?? 0.0000,
-                'ip_hash' => $data['ip_hash'] ?? null,
-                'country' => $data['country'] ?? null,
-                'url' => $data['url'] ?? null,
-                'context_id' => $data['context_id'] ?? null,
-                'metadata' => isset($data['metadata']) ? json_encode($data['metadata']) : null,
-            ],
-            [
-                '%s', '%s', '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', 
-                '%s', '%d', '%d', '%d', '%f', '%s', '%s', '%s', '%s', '%s'
-            ]
-        );
-    }
-
-    /**
-     * Check if this is a version upgrade and handle accordingly
-     *
-     * @since 2.5.0
+     * Migrate existing notifications table to add CRM columns
      *
      * @return void
      */
-    private function check_version_upgrade() {
-        $stored_version = get_option('wishcart_plugin_version', '1.0.0');
-        $current_version = WISHCART_VERSION;
-		$this->log_debug('check_version_upgrade: stored_version=' . $stored_version . ', current_version=' . $current_version);
-        // If versions are different, this is an upgrade
-        if (version_compare($stored_version, $current_version, '!=')) {
-            // Update the stored version
-            update_option('wishcart_plugin_version', $current_version);
-            $this->log_debug("check_version_upgrade: updated option wishcart_plugin_version to {$current_version}");
-        }
-    }
-
-    /**
-     * Determine if the API usage table should be created
-     *
-     * @since 2.5.0
-     *
-     * @return bool True if table should be created, false otherwise
-     */
-    private function should_create_api_usage_table() {
-        $stored_version = get_option('wishcart_plugin_version', '1.0.0');
-        $current_version = WISHCART_VERSION;
-		$this->log_debug('should_create_api_usage_table: stored=' . $stored_version . ', current=' . $current_version);
-        // Case 1: Fresh install of 2.5.0+ (no stored version or very old version)
-        if (version_compare($stored_version, '2.5.0', '<')) {
-			$this->log_debug('should_create_api_usage_table: CASE1 true');
-            return true;
-        }
+    private function migrate_notifications_table() {
+        $table_name = $this->table_prefix . 'fc_wishlist_notifications';
         
-        // Case 2: Upgrade from 2.4.1 to 2.5.0+
-        if (version_compare($stored_version, '2.4.1', '>=') && 
-            version_compare($stored_version, '2.5.0', '<') && 
-            version_compare($current_version, '2.5.0', '>=')) {
-			$this->log_debug('should_create_api_usage_table: CASE2 true');
-            return true;
-        }
+        // Check if CRM columns exist
+        $columns = $this->wpdb->get_col("DESCRIBE {$table_name}");
         
-        // Case 3: Already on 2.5.0+ - don't recreate
-		$this->log_debug('should_create_api_usage_table: CASE3 false');
-        return false;
+        $crm_columns = array(
+            'crm_contact_id' => "ALTER TABLE {$table_name} ADD COLUMN crm_contact_id bigint(20) UNSIGNED NULL AFTER error_message",
+            'crm_campaign_id' => "ALTER TABLE {$table_name} ADD COLUMN crm_campaign_id bigint(20) UNSIGNED NULL AFTER crm_contact_id",
+            'crm_email_id' => "ALTER TABLE {$table_name} ADD COLUMN crm_email_id bigint(20) UNSIGNED NULL AFTER crm_campaign_id",
+            'discount_code' => "ALTER TABLE {$table_name} ADD COLUMN discount_code varchar(50) NULL AFTER crm_email_id",
+            'discount_expires' => "ALTER TABLE {$table_name} ADD COLUMN discount_expires datetime NULL AFTER discount_code",
+            'engagement_score' => "ALTER TABLE {$table_name} ADD COLUMN engagement_score decimal(5,2) NULL AFTER discount_expires",
+            'conversion_value' => "ALTER TABLE {$table_name} ADD COLUMN conversion_value decimal(19,4) NULL AFTER engagement_score"
+        );
+        
+        foreach ($crm_columns as $column => $sql) {
+            if (!in_array($column, $columns)) {
+                $this->wpdb->query($sql);
+                // Add indexes if needed
+                if (in_array($column, array('crm_contact_id', 'crm_campaign_id'))) {
+                    $index_name = $column . '_idx';
+                    $this->wpdb->query("ALTER TABLE {$table_name} ADD INDEX {$index_name} ({$column})");
+                }
+            }
+        }
     }
 
 	/**
@@ -474,7 +311,7 @@ class WISHCART_Database {
 	private function log_debug($message) {
 		if (defined('WP_DEBUG') && WP_DEBUG) {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Debug logging is properly guarded
-			error_log('[AISK DB] ' . $message);
+			error_log('[WishCart DB] ' . $message);
 		}
 	}
 }

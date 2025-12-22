@@ -8,27 +8,85 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  *
  * @category WordPress
  * @package  WishCart
- * @author   WishCart Team <support@wishcart.chat>
+ * @author   WishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
- * @link     https://wishcart.chat
+ * @link     https://gowishcart.com
  */
-class WISHCART_Wishlist_Page {
+class WishCart_Wishlist_Page {
+
+    /**
+     * Constructor - Initialize rewrite rules
+     */
+    public function __construct() {
+        add_action( 'init', array( $this, 'add_rewrite_rules' ) );
+        add_filter( 'query_vars', array( $this, 'add_query_vars' ) );
+        add_action( 'template_redirect', array( $this, 'handle_wishlist_share_code' ) );
+    }
+
+    /**
+     * Add rewrite rules for wishlist share codes
+     *
+     * @return void
+     */
+    public function add_rewrite_rules() {
+        $page_id = self::get_wishlist_page_id();
+        if ( ! $page_id ) {
+            return;
+        }
+
+        $page = get_post( $page_id );
+        if ( ! $page ) {
+            return;
+        }
+
+        $page_slug = $page->post_name;
+        add_rewrite_rule(
+            '^' . $page_slug . '/([^/]+)/?$',
+            'index.php?pagename=' . $page_slug . '&wishlist_share_code=$matches[1]',
+            'top'
+        );
+    }
+
+    /**
+     * Add query vars for wishlist share code
+     *
+     * @param array $vars Query vars
+     * @return array
+     */
+    public function add_query_vars( $vars ) {
+        $vars[] = 'wishlist_share_code';
+        return $vars;
+    }
+
+    /**
+     * Handle wishlist share code in URL
+     *
+     * @return void
+     */
+    public function handle_wishlist_share_code() {
+        $share_code = get_query_var( 'wishlist_share_code' );
+        if ( ! empty( $share_code ) ) {
+            // Share code will be passed to shortcode via global or filter
+            set_query_var( 'wishlist_share_code', $share_code );
+        }
+    }
 
     /**
      * Create default wishlist page on activation
      *
      * @return int Page ID
      */
-    public static function create_wishlist_page() {
-        $page_id = self::locate_existing_page();
+    public static function create_wishlist_page( $page_name = '' ) {
+        $page_id   = self::locate_existing_page();
+        $page_name = $page_name ? $page_name : __( 'Wishlist', 'wishcart' );
 
         if ( ! $page_id ) {
             $page_data = array(
-                'post_title'   => __( 'Wishlist', 'wish-cart' ),
+                'post_title'   => $page_name,
                 'post_content' => '[wishcart_wishlist]',
                 'post_status'  => 'publish',
                 'post_type'    => 'page',
-                'post_name'    => 'wishlist',
+                'post_name'    => sanitize_title( $page_name ),
             );
 
             $page_id = wp_insert_post( $page_data );
@@ -180,6 +238,98 @@ class WISHCART_Wishlist_Page {
             'custom_css'           => '',
             'wishlist_page_id'     => intval( $page_id ),
             'guest_cookie_expiry'  => 30,
+            'enable_multiple_wishlists' => false,
+            'button_customization' => array(
+                'product_page' => array(
+                    'backgroundColor'        => 'linear-gradient(180deg, #ffffff29, #fff0), #253241',
+                    'backgroundHoverColor'   => 'linear-gradient(180deg, #ffffff29, #fff0), #253241',
+                    'buttonTextColor'        => '#ffffff',
+                    'buttonTextHoverColor'   => '#ffffff',
+                    'font'                   => 'Manrope, sans-serif',
+                    'fontSize'               => '14px',
+                    'iconSize'               => '14px',
+                    'borderRadius'           => '8px',
+                ),
+                'product_listing' => array(
+                    'backgroundColor'        => '#ebe9eb',
+                    'backgroundHoverColor'  => '#dad8da',
+                    'buttonTextColor'       => '#515151',
+                    'buttonTextHoverColor'  => '#515151',
+                    'font'                  => 'Manrope, sans-serif',
+                    'fontSize'              => '14px',
+                    'iconSize'              => '14px',
+                    'borderRadius'          => '3px',
+                ),
+                'saved_product_page' => array(
+                    'backgroundColor'        => 'linear-gradient(180deg, #ffffff29, #fff0), #253241',
+                    'backgroundHoverColor'   => 'linear-gradient(180deg, #ffffff29, #fff0), #253241',
+                    'buttonTextColor'        => '#ffffff',
+                    'buttonTextHoverColor'   => '#ffffff',
+                    'font'                   => 'Manrope, sans-serif',
+                    'fontSize'               => '14px',
+                    'iconSize'               => '14px',
+                    'borderRadius'           => '8px',
+                ),
+                'saved_product_listing' => array(
+                    'backgroundColor'        => '#ebe9eb',
+                    'backgroundHoverColor'  => '#dad8da',
+                    'buttonTextColor'       => '#515151',
+                    'buttonTextHoverColor'  => '#515151',
+                    'font'                  => 'Manrope, sans-serif',
+                    'fontSize'              => '14px',
+                    'iconSize'              => '14px',
+                    'borderRadius'          => '3px',
+                ),
+                'colors' => array(
+                    'background'      => '#ffffff',
+                    'text'            => '#374151',
+                    'border'          => 'rgba(107, 114, 128, 0.3)',
+                    'hoverBackground' => '#f3f4f6',
+                    'hoverText'       => '#374151',
+                    'activeBackground' => '#fef2f2',
+                    'activeText'      => '#991b1b',
+                    'activeBorder'   => 'rgba(220, 38, 38, 0.4)',
+                    'focusBorder'    => '#3b82f6',
+                ),
+                'icon' => array(
+                    'type'      => 'predefined',
+                    'value'      => 'heart',
+                    'customUrl'  => '',
+                ),
+                'labels' => array(
+                    'add'    => __( 'Add to Wishlist', 'wishcart' ),
+                    'saved'  => __( 'Saved to Wishlist', 'wishcart' ),
+                ),
+                'buttonStyle' => 'button',
+            ),
+        );
+    }
+
+    /**
+     * Default integration settings for admin UI
+     *
+     * @return array
+     */
+    public static function get_default_integrations_settings() {
+        return array(
+            'whatsapp' => array(
+                'enabled' => false,
+                'account_sid' => '',
+                'auth_token' => '',
+                'phone_number' => '',
+                'welcome_message' => '',
+                'enable_template_messages' => false,
+            ),
+            'telegram' => array(
+                'enabled' => false,
+                'bot_token' => '',
+                'bot_username' => '',
+                'welcome_message' => '',
+            ),
+            'contact_form' => array(
+                'enabled' => false,
+                'shortcode' => '',
+            ),
         );
     }
 }

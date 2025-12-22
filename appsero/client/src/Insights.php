@@ -815,7 +815,7 @@ class Insights {
         }
 
         if ( ! current_user_can('manage_options') ) {
-            wp_send_json_error('You are not allowed for this wishcart');
+            wp_send_json_error('You are not allowed for this WishCart');
         }
 
         $data                = $this->get_tracking_data();

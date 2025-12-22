@@ -1,0 +1,383 @@
+import React, { useState, useEffect, useMemo } from 'react';
+import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
+import { CheckCircle2, XCircle, AlertCircle, Loader2, Lock } from 'lucide-react';
+import { __ } from '@wordpress/i18n';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue
+} from "@/components/ui/select";
+
+const resolveProStatus = () => {
+    if (typeof wishcartSettings === 'undefined' || !wishcartSettings) {
+        return false;
+    }
+
+    const {
+        isProActive,
+        isPro,
+        hasPro,
+        isWishcartPro
+    } = wishcartSettings;
+
+    return Boolean(
+        isProActive ??
+        isPro ??
+        hasPro ??
+        isWishcartPro ??
+        false
+    );
+};
+
+const FluentCRMSettings = ({ embedded = false }) => {
+    const [settings, setSettings] = useState({
+        enabled: false,
+        fluentcrm_list_id: 0,
+        fluentcrm_tag_format: 'detailed',
+        fluentcrm_custom_list_name: '',
+        fluentcrm_custom_tag_format: '',
+    });
+    const [isAvailable, setIsAvailable] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+    const [saveMessage, setSaveMessage] = useState('');
+    const [lists, setLists] = useState([]);
+    const [listsLoading, setListsLoading] = useState(true);
+    const [wishlistUsersListId, setWishlistUsersListId] = useState(0);
+    const isProActive = useMemo(() => resolveProStatus(), []);
+
+    useEffect(() => {
+        loadSettings();
+        loadLists();
+    }, []);
+
+    // Set default to Wishlist Users list ID when lists are loaded and settings have no list selected
+    // Also reset to Wishlist Users if current selection is not valid for simplified dropdown
+    useEffect(() => {
+        if (!listsLoading) {
+            const currentListId = settings.fluentcrm_list_id;
+            const targetListId = wishlistUsersListId || 0;
+            const isValidSelection = currentListId === -1 || currentListId === targetListId;
+            
+            // If no valid selection or using default (0/undefined), set to Wishlist Users list ID
+            // Only update if current value is different from target to prevent unnecessary updates
+            if ((currentListId === 0 || currentListId === undefined || !isValidSelection) && currentListId !== targetListId) {
+                setSettings(prev => ({
+                    ...prev,
+                    fluentcrm_list_id: targetListId
+                }));
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [listsLoading, wishlistUsersListId]);
+
+    const loadSettings = async () => {
+        try {
+            const response = await fetch(`${wishcartSettings.apiUrl}fluentcrm/settings`, {
+                headers: {
+                    'X-WP-Nonce': wishcartSettings.nonce
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success) {
+                    setSettings(data.settings);
+                    setIsAvailable(data.is_available);
+                }
+            }
+
+        } catch (error) {
+            console.error('Error loading FluentCRM settings:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const loadLists = async () => {
+        try {
+            const response = await fetch(`${wishcartSettings.apiUrl}fluentcrm/lists`, {
+                headers: {
+                    'X-WP-Nonce': wishcartSettings.nonce
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success && Array.isArray(data.lists)) {
+                    setLists(data.lists);
+                    // Find "Wishlist Users" list ID
+                    const wishlistUsersList = data.lists.find(list => list.title === 'Wishlist Users');
+                    const foundListId = wishlistUsersList ? wishlistUsersList.id : 0;
+                    setWishlistUsersListId(foundListId);
+                }
+            }
+        } catch (error) {
+            console.error('Error loading FluentCRM lists:', error);
+        } finally {
+            setListsLoading(false);
+        }
+    };
+
+    const updateSetting = (key, value) => {
+        setSettings(prev => ({
+            ...prev,
+            [key]: value
+        }));
+    };
+
+    const saveSettings = async () => {
+        setSaving(true);
+        setSaveMessage('');
+
+        try {
+            const response = await fetch(`${wishcartSettings.apiUrl}fluentcrm/settings`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-WP-Nonce': wishcartSettings.nonce
+                },
+                body: JSON.stringify(settings)
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success) {
+                    setSaveMessage('success');
+                    setTimeout(() => setSaveMessage(''), 3000);
+                } else {
+                    setSaveMessage('error');
+                }
+            } else {
+                setSaveMessage('error');
+            }
+        } catch (error) {
+            console.error('Error saving settings:', error);
+            setSaveMessage('error');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const renderContent = () => (
+        <>
+            {saveMessage === 'success' && (
+                <div className="wishcart-notice wishcart-notice-success">
+                    <CheckCircle2 style={{width: '18px', height: '18px', flexShrink: 0}} />
+                    <span>{__('Settings saved successfully!', 'wishcart')}</span>
+                </div>
+            )}
+
+            {saveMessage === 'error' && (
+                <div className="wishcart-notice wishcart-notice-error">
+                    <XCircle style={{width: '18px', height: '18px', flexShrink: 0}} />
+                    <span>{__('Failed to save settings. Please try again.', 'wishcart')}</span>
+                </div>
+            )}
+
+            <div className="wishcart-toggle-row">
+                <div className="toggle-info">
+                    <h4>{__('Enable FluentCRM Integration', 'wishcart')}</h4>
+                    <p>{__('Activate FluentCRM integration for automated campaigns, contact creation, welcome emails, price drops, back-in-stock alerts, time-based reminders, and progressive discounts', 'wishcart')}</p>
+                </div>
+                <div className="toggle-control">
+                    <Switch
+                        checked={settings.enabled}
+                        onCheckedChange={(checked) => updateSetting('enabled', checked)}
+                    />
+                </div>
+            </div>
+
+            {settings.enabled && (
+                <>
+                    {/* WebHook Credentials Section - Pro/Upcoming Feature */}
+                    <div className="wishcart-notice wishcart-notice-info" style={{marginTop: '16px'}}>
+                        <Lock style={{width: '18px', height: '18px', flexShrink: 0}} />
+                        <div style={{flex: 1}}>
+                            <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px'}}>
+                                <strong>{__('WebHook Credentials', 'wishcart')}</strong>
+                                <span className="wishcart-badge wishcart-badge-warning">{__('PRO', 'wishcart')}</span>
+                                <span className="wishcart-badge wishcart-badge-info">{__('COMING SOON', 'wishcart')}</span>
+                            </div>
+                            <p style={{fontSize: '13px', margin: '0'}}>{__('This feature is available in WishCart Pro', 'wishcart')}</p>
+                            <p style={{fontSize: '13px', margin: '4px 0 0', color: 'var(--wishcart-text-muted)'}}>{__('Please upgrade to get all the advanced features.', 'wishcart')}</p>
+                        </div>
+                    </div>
+
+                    {/* List & auto-tag configuration */}
+                    <div style={{ marginTop: '24px' }}>
+                <div className="wishcart-form-group">
+                    <div>
+                        <label className="wishcart-label" htmlFor="fluentcrm_list_id">
+                            {__('List select', 'wishcart')}
+                        </label>
+                        <p className="wishcart-form-helper">
+                            {__('Choose which FluentCRM list wishlist contacts will be added to.', 'wishcart')}
+                        </p>
+                    </div>
+                    <Select
+                        value={String(settings.fluentcrm_list_id === -1 ? -1 : (settings.fluentcrm_list_id || wishlistUsersListId || 0))}
+                        onValueChange={(value) => {
+                            const intValue = parseInt(value, 10);
+                            if (intValue === -1) {
+                                // Custom selected
+                                updateSetting('fluentcrm_list_id', -1);
+                            } else {
+                                // Wishlist Users selected (use the list ID, or 0 if not found)
+                                updateSetting('fluentcrm_list_id', intValue);
+                            }
+                        }}
+                        disabled={listsLoading}
+                    >
+                        <SelectTrigger id="fluentcrm_list_id" className="wishcart-select">
+                            <SelectValue placeholder={listsLoading ? __('Loading lists...', 'wishcart') : __('Wishlist Users', 'wishcart')} />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value={String(wishlistUsersListId || 0)}>
+                                {__('Wishlist Users', 'wishcart')}
+                            </SelectItem>
+                            <SelectItem value="-1">{__('Custom', 'wishcart')}</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+
+                {settings.fluentcrm_list_id === -1 && (
+                    <div className="wishcart-form-group" style={{marginTop: '16px'}}>
+                        <div>
+                            <label className="wishcart-label" htmlFor="fluentcrm_custom_list_name">
+                                {__('Custom list name', 'wishcart')}
+                            </label>
+                            <p className="wishcart-form-helper">
+                                {__('Enter the name of the list. If the list doesn\'t exist, it will be created automatically.', 'wishcart')}
+                            </p>
+                        </div>
+                        <input
+                            type="text"
+                            id="fluentcrm_custom_list_name"
+                            className="wishcart-input"
+                            placeholder={__('Enter custom list name', 'wishcart')}
+                            value={settings.fluentcrm_custom_list_name || ''}
+                            onChange={(e) => updateSetting('fluentcrm_custom_list_name', e.target.value)}
+                        />
+                    </div>
+                )}
+
+                <div className="wishcart-form-group" style={{marginTop: '16px'}}>
+                    <div>
+                        <label className="wishcart-label" htmlFor="fluentcrm_tag_format">
+                            {__('Tag format', 'wishcart')}
+                        </label>
+                        <p className="wishcart-form-helper">
+                            {__('Choose how tags are stored in FluentCRM for wishlist products.', 'wishcart')}
+                        </p>
+                    </div>
+                    <Select
+                        value={settings.fluentcrm_tag_format || 'detailed'}
+                        onValueChange={(value) => updateSetting('fluentcrm_tag_format', value)}
+                    >
+                        <SelectTrigger id="fluentcrm_tag_format" className="wishcart-select">
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="detailed">{__('Detailed Format', 'wishcart')}</SelectItem>
+                            <SelectItem value="simple">{__('Simple Format', 'wishcart')}</SelectItem>
+                            <SelectItem value="prefixed">{__('Prefixed Format', 'wishcart')}</SelectItem>
+                            <SelectItem value="custom">{__('Custom', 'wishcart')}</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    {settings.fluentcrm_tag_format === 'detailed' && (
+                        <p style={{fontSize: '12px', color: 'var(--wishcart-text-muted)', marginTop: '8px', lineHeight: '1.5'}}>
+                            {__('Example tags:', 'wishcart')} "Product: Cozy Fleece Hoodie", "Cozy Fleece Hoodie - Price: $4.00", "Cozy Fleece Hoodie - Stock: In Stock"
+                        </p>
+                    )}
+                    {settings.fluentcrm_tag_format === 'simple' && (
+                        <p style={{fontSize: '12px', color: 'var(--wishcart-text-muted)', marginTop: '8px', lineHeight: '1.5'}}>
+                            {__('Example tags:', 'wishcart')} "Cozy Fleece Hoodie"
+                        </p>
+                    )}
+                    {settings.fluentcrm_tag_format === 'prefixed' && (
+                        <p style={{fontSize: '12px', color: 'var(--wishcart-text-muted)', marginTop: '8px', lineHeight: '1.5'}}>
+                            {__('Example tags:', 'wishcart')} "Product: Cozy Fleece Hoodie", "Category: Clothing", "Price: $4.00", "Stock: In Stock"
+                        </p>
+                    )}
+                    {settings.fluentcrm_tag_format === 'custom' && (
+                        <div style={{marginTop: '16px'}}>
+                            <label className="wishcart-label" htmlFor="fluentcrm_custom_tag_format" style={{display: 'block', marginBottom: '8px'}}>
+                                {__('Custom tag format', 'wishcart')}
+                            </label>
+                            <textarea
+                                id="fluentcrm_custom_tag_format"
+                                className="wishcart-textarea"
+                                rows={4}
+                                placeholder={__('Example: {product_name} - {price}', 'wishcart')}
+                                value={settings.fluentcrm_custom_tag_format || ''}
+                                onChange={(e) => updateSetting('fluentcrm_custom_tag_format', e.target.value)}
+                                style={{width: '100%', resize: 'vertical'}}
+                            />
+                            <p style={{fontSize: '12px', color: 'var(--wishcart-text-muted)', marginTop: '8px', lineHeight: '1.5'}}>
+                                {__('Available placeholders:', 'wishcart')} {'{product_name}, {price}, {category}, {stock}, {sku}, {type}'}
+                                <br />
+                                {__('Enter one tag per line or separate multiple tags with commas.', 'wishcart')}
+                            </p>
+                        </div>
+                    )}
+                </div>
+                    </div>
+
+                    <div className="wishcart-card-footer">
+                        <button
+                            onClick={saveSettings}
+                            disabled={saving}
+                            className="wishcart-button wishcart-button-primary"
+                        >
+                            {saving ? __('Saving...', 'wishcart') : __('Save Settings', 'wishcart')}
+                        </button>
+                    </div>
+                </>
+            )}
+        </>
+    );
+
+    if (loading) {
+        const LoadingWrapper = embedded ? React.Fragment : ({ children }) => <div className="wishcart-settings-section">{children}</div>;
+        return (
+            <LoadingWrapper>
+                <div className="wishcart-flex-center" style={{padding: '40px'}}>
+                    <Loader2 style={{width: '24px', height: '24px'}} className="animate-spin" />
+                </div>
+            </LoadingWrapper>
+        );
+    }
+
+    if (!isAvailable) {
+        const NotAvailableWrapper = embedded ? React.Fragment : ({ children }) => <div className="wishcart-settings-section">{children}</div>;
+        return (
+            <NotAvailableWrapper>
+                <div className="wishcart-notice wishcart-notice-warning">
+                    <AlertCircle style={{width: '18px', height: '18px', flexShrink: 0}} />
+                    <div>
+                        <strong>{__('FluentCRM Not Available', 'wishcart')}</strong>
+                        <p style={{margin: '4px 0 0'}}>
+                            {__('FluentCRM plugin is not installed or activated. Please install FluentCRM to use this integration.', 'wishcart')}
+                        </p>
+                    </div>
+                </div>
+            </NotAvailableWrapper>
+        );
+    }
+
+    if (embedded) {
+        return renderContent();
+    }
+
+    return (
+        <div className="wishcart-settings-section">
+            {renderContent()}
+        </div>
+    );
+};
+
+export default FluentCRMSettings;

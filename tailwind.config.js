@@ -55,6 +55,37 @@ module.exports = {
     				'3': 'hsl(var(--chart-3))',
     				'4': 'hsl(var(--chart-4))',
     				'5': 'hsl(var(--chart-5))'
+    			},
+    			// FluentCRM/WordPress Admin Color System
+    			'fluentcrm': {
+    				primary: '#1e73be',
+    				'primary-hover': '#1a5fa0',
+    				'primary-active': '#165082',
+    			},
+    			'wp-admin': {
+    				blue: '#2271b1',
+    				'blue-hover': '#135e96',
+    				'blue-active': '#0a4b78',
+    			},
+    			'wp': {
+    				success: '#00a32a',
+    				warning: '#dba617',
+    				danger: '#d63638',
+    				info: '#2271b1',
+    			},
+    			'wp-gray': {
+    				900: '#1d2327',
+    				800: '#2c3338',
+    				700: '#3c434a',
+    				600: '#50575e',
+    				500: '#646970',
+    				400: '#787c82',
+    				300: '#8c8f94',
+    				200: '#a7aaad',
+    				100: '#c3c4c7',
+    				50: '#dcdcde',
+    				25: '#f0f0f1',
+    				10: '#f6f7f7',
     			}
     		},
     		keyframes: {

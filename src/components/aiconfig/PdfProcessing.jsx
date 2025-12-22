@@ -27,18 +27,18 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
 
     // Helper function to get max upload size
     const getMaxUploadSize = () => {
-        if (window.WishCartSettings && window.WishCartSettings.maxUploadSize) {
-            return (window.WishCartSettings.maxUploadSize / (1024 * 1024)).toFixed(1) + ' MB';
+        if (window.wishcartSettings && window.wishcartSettings.maxUploadSize) {
+            return (window.wishcartSettings.maxUploadSize / (1024 * 1024)).toFixed(1) + ' MB';
         }
         return '2 MB'; // Default fallback
     };
 
     // Helper function to validate file size
     const validateFileSize = (file) => {
-        const maxSize = window.WishCartSettings?.maxUploadSize || 2 * 1024 * 1024; // Default 2MB
+        const maxSize = window.wishcartSettings?.maxUploadSize || 2 * 1024 * 1024; // Default 2MB
         if (file.size > maxSize) {
             setPdfError(sprintf(
-                __('File size exceeds the maximum allowed size of %s. This is limited by your server configuration.', 'wish-cart'),
+                __('File size exceeds the maximum allowed size of %s. This is limited by your server configuration.', 'wishcart'),
                 getMaxUploadSize()
             ));
             return false;
@@ -50,13 +50,13 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
     const validatePdfFile = (file) => {
         // Check file extension
         if (!file.name.toLowerCase().endsWith('.pdf')) {
-            setPdfError(__('Please upload a PDF file with .pdf extension', 'wish-cart'));
+            setPdfError(__('Please upload a PDF file with .pdf extension', 'wishcart'));
             return false;
         }
 
         // Check MIME type
         if (file.type && file.type !== 'application/pdf') {
-            setPdfError(__('Invalid file type. Please upload a valid PDF file', 'wish-cart'));
+            setPdfError(__('Invalid file type. Please upload a valid PDF file', 'wishcart'));
             return false;
         }
 
@@ -72,7 +72,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
                 if (header === '%PDF-') {
                     resolve(true);
                 } else {
-                    setPdfError(__('Invalid PDF file. The file does not appear to be a valid PDF document', 'wish-cart'));
+                    setPdfError(__('Invalid PDF file. The file does not appear to be a valid PDF document', 'wishcart'));
                     resolve(false);
                 }
             };
@@ -90,7 +90,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
 
     const processPdf = async () => {
         if (!pdfFile) {
-            setPdfError(__('No PDF file selected', 'wish-cart'));
+            setPdfError(__('No PDF file selected', 'wishcart'));
             return;
         }
 
@@ -112,7 +112,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
                 const settingsResponse = await fetch('/wp-json/wishcart/v1/settings', {
                     method: 'GET',
                     headers: {
-                        'X-WP-Nonce': window.WishCartData.nonce
+                        'X-WP-Nonce': window.wishcartData.nonce
                     },
                 });
 
@@ -165,7 +165,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-WP-Nonce': window.WishCartData.nonce
+                        'X-WP-Nonce': window.wishcartData.nonce
                     },
                     body: JSON.stringify(currentSettings)
                 });
@@ -185,7 +185,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
             // After closing popup, start progress animation and show processing message in the main UI
             setPdfProcessing(true);
             setPdfProgress(10);
-            setProcessMessage(__('Processing PDF...', 'wish-cart'));
+            setProcessMessage(__('Processing PDF...', 'wishcart'));
 
             // Now process the PDF in the background
             const formData = new FormData();
@@ -194,7 +194,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
             const response = await fetch('/wp-json/wishcart/v1/process-pdf', {
                 method: 'POST',
                 headers: {
-                    'X-WP-Nonce': window.WishCartData.nonce
+                    'X-WP-Nonce': window.wishcartData.nonce
                 },
                 body: formData
             });
@@ -209,16 +209,16 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
                 // Handle non-JSON response
                 const text = await response.text();
                 console.error('Invalid response:', text);
-                throw new Error(__('Server returned an invalid response. Please try again.', 'wish-cart'));
+                throw new Error(__('Server returned an invalid response. Please try again.', 'wishcart'));
             }
 
             if (!response.ok) {
-                throw new Error(result.message || __('Failed to process PDF', 'wish-cart'));
+                throw new Error(result.message || __('Failed to process PDF', 'wishcart'));
             }
 
             if (result.success) {
                 setPdfProgress(100);
-                setProcessMessage(__('PDF queued for processing!', 'wish-cart'));
+                setProcessMessage(__('PDF queued for processing!', 'wishcart'));
 
                 // When updating after upload, only update the last PDF (the new one)
                 const latestPdfs = (settings.ai_config.pdf_files || []);
@@ -239,7 +239,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-WP-Nonce': window.WishCartData.nonce
+                        'X-WP-Nonce': window.wishcartData.nonce
                     },
                     body: JSON.stringify(currentSettings)
                 }).catch(error => {
@@ -253,7 +253,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
                     }, 2000);
                 }
             } else {
-                throw new Error(result.message || __('Failed to process PDF', 'wish-cart'));
+                throw new Error(result.message || __('Failed to process PDF', 'wishcart'));
             }
 
             // Reset states after a short delay
@@ -267,7 +267,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
             console.error('Error processing PDF:', error);
             setPdfProgress(0);
             setPdfProcessing(false);
-            setProcessMessage(error.message || __('Failed to process PDF. Please try again.', 'wish-cart'));
+            setProcessMessage(error.message || __('Failed to process PDF. Please try again.', 'wishcart'));
 
             // Remove the failed PDF from settings
             try {
@@ -275,7 +275,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
                 const settingsResponse = await fetch('/wp-json/wishcart/v1/settings', {
                     method: 'GET',
                     headers: {
-                        'X-WP-Nonce': window.WishCartData.nonce
+                        'X-WP-Nonce': window.wishcartData.nonce
                     },
                 });
 
@@ -294,7 +294,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
-                                'X-WP-Nonce': window.WishCartData.nonce
+                                'X-WP-Nonce': window.wishcartData.nonce
                             },
                             body: JSON.stringify(freshSettings)
                         }).catch(error => {
@@ -317,7 +317,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
             try {
                 const response = await fetch(`/wp-json/wishcart/v1/pdf-job-status?job_id=${queueId}`, {
                     headers: {
-                        'X-WP-Nonce': window.WishCartData.nonce
+                        'X-WP-Nonce': window.wishcartData.nonce
                     }
                 });
 
@@ -341,7 +341,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
                         if (data.failed) {
                             newStatus = 'failed';
                             newChunks = 0;
-                            errorMsg = data.user_message || __('PDF processing failed', 'wish-cart');
+                            errorMsg = data.user_message || __('PDF processing failed', 'wishcart');
                         }
                         currentSettings.ai_config.pdf_files[pdfIndex] = {
                             ...currentSettings.ai_config.pdf_files[pdfIndex],
@@ -358,7 +358,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
-                                'X-WP-Nonce': window.WishCartData.nonce
+                                'X-WP-Nonce': window.wishcartData.nonce
                             },
                             body: JSON.stringify(currentSettings)
                         }).catch(error => {
@@ -377,9 +377,9 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
                     attempts++;
                     setTimeout(checkStatus, 5000); // Check every 5 seconds
                 } else if (data.failed) {
-                    setProcessMessage(data.user_message || __('PDF processing failed', 'wish-cart'));
+                    setProcessMessage(data.user_message || __('PDF processing failed', 'wishcart'));
                 } else if (data.processed) {
-                    setProcessMessage(__('PDF processed successfully!', 'wish-cart'));
+                    setProcessMessage(__('PDF processed successfully!', 'wishcart'));
                 }
             } catch (error) {
                 console.error('Error checking PDF status:', error);
@@ -399,7 +399,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
         if (!pdf.job_id) return pdf;
         try {
             const response = await fetch(`/wp-json/wishcart/v1/pdf-job-status?job_id=${pdf.job_id}`, {
-                headers: { 'X-WP-Nonce': window.WishCartData.nonce }
+                headers: { 'X-WP-Nonce': window.wishcartData.nonce }
             });
             if (!response.ok) return pdf;
             const data = await response.json();
@@ -450,7 +450,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
             const pdfToRemove = settings.ai_config.pdf_files[index];
 
             // Show processing state
-            setProcessMessage(__('Deleting PDF...', 'wish-cart'));
+            setProcessMessage(__('Deleting PDF...', 'wishcart'));
 
             // First, remove from local state
             const newPdfs = [...(settings.ai_config.pdf_files || [])];
@@ -465,7 +465,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-WP-Nonce': window.WishCartData.nonce
+                        'X-WP-Nonce': window.wishcartData.nonce
                     },
                     body: JSON.stringify({
                         job_id: pdfToRemove.job_id
@@ -488,7 +488,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
 
                 if (data.success) {
                     // Set success message
-                    setProcessMessage(__('PDF deleted successfully.', 'wish-cart'));
+                    setProcessMessage(__('PDF deleted successfully.', 'wishcart'));
 
                     // Fetch the updated queue list from backend
                     await fetchPdfQueueList();
@@ -499,7 +499,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
                         const response = await fetch('/wp-json/wishcart/v1/settings', {
                             method: 'GET',
                             headers: {
-                                'X-WP-Nonce': window.WishCartData.nonce
+                                'X-WP-Nonce': window.wishcartData.nonce
                             }
                         });
 
@@ -538,7 +538,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-WP-Nonce': window.WishCartData.nonce
+                            'X-WP-Nonce': window.wishcartData.nonce
                         },
                         body: JSON.stringify(freshSettings)
                     }).catch(error => {
@@ -550,14 +550,14 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
                         setProcessMessage('');
                     }, 3000);
                 } else {
-                    throw new Error(data.message || __('Failed to delete PDF', 'wish-cart'));
+                    throw new Error(data.message || __('Failed to delete PDF', 'wishcart'));
                 }
             } else {
                 // For PDFs that are still processing or don't have an attachment ID yet
                 console.log('PDF had no attachment ID, only removed from settings');
 
                 // Set success message
-                setProcessMessage(__('PDF removed from settings.', 'wish-cart'));
+                setProcessMessage(__('PDF removed from settings.', 'wishcart'));
 
                 // Fetch fresh settings before updating
                 let freshSettings;
@@ -565,7 +565,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
                     const response = await fetch('/wp-json/wishcart/v1/settings', {
                         method: 'GET',
                         headers: {
-                            'X-WP-Nonce': window.WishCartData.nonce
+                            'X-WP-Nonce': window.wishcartData.nonce
                         }
                     });
 
@@ -608,7 +608,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-WP-Nonce': window.WishCartData.nonce
+                        'X-WP-Nonce': window.wishcartData.nonce
                     },
                     body: JSON.stringify(freshSettings)
                 }).catch(error => {
@@ -622,7 +622,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
             }
         } catch (error) {
             console.error('Error removing PDF:', error);
-            setProcessMessage(__(`Error: ${error.message}`, 'wish-cart'));
+            setProcessMessage(__(`Error: ${error.message}`, 'wishcart'));
 
             // Reset error message after a delay
             setTimeout(() => {
@@ -637,7 +637,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
     const fetchPdfQueueList = useCallback(async () => {
         try {
             const response = await fetch('/wp-json/wishcart/v1/pdf-queue-list', {
-                headers: { 'X-WP-Nonce': window.WishCartData.nonce }
+                headers: { 'X-WP-Nonce': window.wishcartData.nonce }
             });
             if (!response.ok) return;
             const pdfQueue = await response.json();
@@ -671,7 +671,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
     return (
         <div className="space-y-4 mt-6">
             <div className="flex items-center justify-between mb-4">
-                <Label>{__('PDF Sources', 'wish-cart')}</Label>
+                <Label>{__('PDF Sources', 'wishcart')}</Label>
                 <div className="flex gap-2">
                     <Button
                         variant="outline"
@@ -680,7 +680,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
                         className="flex items-center gap-2"
                     >
                         <PlusIcon className="h-4 w-4" />
-                        {__('Add PDF', 'wish-cart')}
+                        {__('Add PDF', 'wishcart')}
                     </Button>
                 </div>
             </div>
@@ -697,7 +697,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
                 <div className="space-y-2">
                     <Progress value={pdfProgress} className="w-full" />
                     <p className="text-sm text-center text-gray-500">
-                        {__('Processing... This may take a few minutes for larger files.', 'wish-cart')}
+                        {__('Processing... This may take a few minutes for larger files.', 'wishcart')}
                     </p>
                 </div>
             )}
@@ -705,7 +705,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
             {(settings.ai_config.pdf_files || []).length === 0 ? (
                 <div className="text-center py-4 border rounded-lg bg-gray-50">
                     <p className="text-sm text-gray-500">
-                        {__('No PDF sources added yet', 'wish-cart')}
+                        {__('No PDF sources added yet', 'wishcart')}
                     </p>
                 </div>
             ) : (
@@ -717,7 +717,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
                         >
                             <div className="flex items-center gap-2 w-full">
                                 <span className="font-medium">
-                                    {pdfConfig.name || __('Unnamed PDF', 'wish-cart')}
+                                    {pdfConfig.name || __('Unnamed PDF', 'wishcart')}
                                 </span>
                                 {/* Status badge with color and error message for failed */}
                                 {pdfConfig.status && (
@@ -741,7 +741,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
                                 )}
                                 {pdfConfig.chunks !== undefined && (
                                     <span className="text-xs text-gray-500">
-                                        {pdfConfig.chunks} {__('chunks', 'wish-cart')}
+                                        {pdfConfig.chunks} {__('chunks', 'wishcart')}
                                     </span>
                                 )}
 
@@ -754,7 +754,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
 
                                 {pdfConfig.status === 'failed' && pdfConfig.user_message && (
                                     <span className="text-xs text-red-600 bg-red-100 px-2 py-0.5 rounded ml-2">
-                                        <strong>{__('Error:', 'wish-cart')}</strong> {pdfConfig.user_message}
+                                        <strong>{__('Error:', 'wishcart')}</strong> {pdfConfig.user_message}
                                     </span>
                                 )}
                             </div>
@@ -775,14 +775,14 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
             <Dialog open={openPdfDialog} onOpenChange={setOpenPdfDialog}>
                 <DialogContent className="sm:max-w-md">
                     <DialogHeader>
-                        <DialogTitle>{__('Add PDF Document', 'wish-cart')}</DialogTitle>
+                        <DialogTitle>{__('Add PDF Document', 'wishcart')}</DialogTitle>
                         <DialogDescription>
-                            {__('Upload a PDF document to process and include in the knowledge base', 'wish-cart')}
+                            {__('Upload a PDF document to process and include in the knowledge base', 'wishcart')}
                         </DialogDescription>
                     </DialogHeader>
                     <div className="space-y-4 py-2">
                         <div className="space-y-2">
-                            <Label htmlFor="pdf-upload">{__('PDF Document', 'wish-cart')}</Label>
+                            <Label htmlFor="pdf-upload">{__('PDF Document', 'wishcart')}</Label>
                             <Input
                                 id="pdf-upload"
                                 type="file"
@@ -791,12 +791,12 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
                                     const file = e.target.files[0];
                                     if (file) {
                                         // Check file size on client side
-                                        // const maxSize = window.WishCartSettings?.maxUploadSize || 2 * 1024 * 1024; // Default 2MB
+                                        // const maxSize = window.wishcartSettings?.maxUploadSize || 2 * 1024 * 1024; // Default 2MB
                                         const maxSize = getMaxUploadSize();
 
                                         if (file.size > maxSize) {
                                             setPdfError(
-                                                __(`The file is too large. Maximum allowed size is ${getMaxUploadSize()}. This is limited by your server configuration.`, 'wish-cart')
+                                                __(`The file is too large. Maximum allowed size is ${getMaxUploadSize()}. This is limited by your server configuration.`, 'wishcart')
                                             );
                                             e.target.value = ''; // Clear the input
                                         } else {
@@ -814,11 +814,11 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
                                 }}
                             />
                             <p className="text-xs text-gray-500">
-                                {__(`Maximum file size: ${getMaxUploadSize()} (server limit)`, 'wish-cart')}
+                                {__(`Maximum file size: ${getMaxUploadSize()} (server limit)`, 'wishcart')}
                             </p>
                             {pdfFile && (
                                 <p className="text-sm text-gray-500">
-                                    {__('Selected file:', 'wish-cart')} {pdfFile.name} ({(pdfFile.size / (1024 * 1024)).toFixed(2)} MB)
+                                    {__('Selected file:', 'wishcart')} {pdfFile.name} ({(pdfFile.size / (1024 * 1024)).toFixed(2)} MB)
                                 </p>
                             )}
                         </div>
@@ -847,7 +847,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
                             }}
                             disabled={pdfProcessing}
                         >
-                            {__('Cancel', 'wish-cart')}
+                            {__('Cancel', 'wishcart')}
                         </Button>
                         <Button
                             variant="default"
@@ -855,7 +855,7 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
                             onClick={processPdf}
                             disabled={!pdfFile || pdfProcessing || pdfError}
                         >
-                            {pdfProcessing ? __('Processing...', 'wish-cart') : __('Process Now', 'wish-cart')}
+                            {pdfProcessing ? __('Processing...', 'wishcart') : __('Process Now', 'wishcart')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -865,15 +865,15 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
             <Dialog open={openDeleteDialog} onOpenChange={setOpenDeleteDialog}>
                 <DialogContent className="sm:max-w-md">
                     <DialogHeader>
-                        <DialogTitle>{__('Confirm Deletion', 'wish-cart')}</DialogTitle>
+                        <DialogTitle>{__('Confirm Deletion', 'wishcart')}</DialogTitle>
                         <DialogDescription>
-                            {__('Are you sure you want to delete this PDF? This will remove it from your knowledge base.', 'wish-cart')}
+                            {__('Are you sure you want to delete this PDF? This will remove it from your knowledge base.', 'wishcart')}
                         </DialogDescription>
                     </DialogHeader>
                     {pdfToDelete !== null && settings.ai_config.pdf_files && settings.ai_config.pdf_files[pdfToDelete] && (
                         <div className="py-3">
                             <p className="font-medium text-center">
-                                {settings.ai_config.pdf_files[pdfToDelete].name || __('Unnamed PDF', 'wish-cart')}
+                                {settings.ai_config.pdf_files[pdfToDelete].name || __('Unnamed PDF', 'wishcart')}
                             </p>
                         </div>
                     )}
@@ -882,13 +882,13 @@ const PdfProcessing = ({ settings, updateSettings, isActiveConfigTab }) => {
                             variant="secondary"
                             onClick={cancelDelete}
                         >
-                            {__('Cancel', 'wish-cart')}
+                            {__('Cancel', 'wishcart')}
                         </Button>
                         <Button
                             variant="destructive"
                             onClick={confirmDelete}
                         >
-                            {__('Delete', 'wish-cart')}
+                            {__('Delete', 'wishcart')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>

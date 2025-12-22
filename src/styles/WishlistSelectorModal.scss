@@ -1,0 +1,651 @@
+// Wishlist Selector Modal Styles
+.wishcart-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 1rem;
+    animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.wishcart-modal {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.wishcart-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+
+    h2 {
+        margin: 0;
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #111827;
+    }
+}
+
+.wishcart-modal-close {
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    cursor: pointer;
+    color: #6b7280;
+    border-radius: 4px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+        background-color: #f3f4f6;
+        color: #111827;
+    }
+
+    &:focus {
+        outline: 2px solid #3b82f6;
+        outline-offset: 2px;
+    }
+}
+
+.wishcart-modal-body {
+    padding: 1.5rem;
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex: 1;
+    min-height: 0;
+    
+    // Only show scrollbar when actually scrolling
+    &::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+        background: #d1d5db;
+        border-radius: 4px;
+        
+        &:hover {
+            background: #9ca3af;
+        }
+    }
+}
+
+.wishcart-modal-error {
+    background-color: #fee2e2;
+    border: 1px solid #fecaca;
+    color: #991b1b;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+}
+
+.wishcart-modal-loading {
+    text-align: center;
+    padding: 2.5rem 1.5rem;
+    color: #6b7280;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    min-height: 220px;
+    justify-content: center;
+
+    p {
+        margin: 0;
+        color: #111827;
+        font-size: 1rem;
+    }
+}
+
+.wishcart-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #e5e7eb;
+    border-top-color: #3b82f6;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.wishcart-success-checkmark {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: #10b981;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    font-weight: bold;
+    animation: scaleIn 0.3s ease-out;
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0);
+    }
+    to {
+        transform: scale(1);
+    }
+}
+
+.wishcart-wishlists-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.wishcart-wishlist-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+        border-color: #d1d5db;
+        background-color: #f9fafb;
+    }
+
+    &.selected {
+        border-color: #3b82f6;
+        background-color: #eff6ff;
+    }
+
+    &:focus-within {
+        outline: 2px solid #3b82f6;
+        outline-offset: 2px;
+    }
+}
+
+.wishcart-wishlist-radio {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #d1d5db;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s;
+
+    .wishcart-wishlist-item.selected & {
+        border-color: #3b82f6;
+        background-color: #3b82f6;
+        color: white;
+    }
+}
+
+.wishcart-wishlist-info {
+    flex: 1;
+}
+
+.wishcart-wishlist-name {
+    font-weight: 500;
+    color: #111827;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.wishcart-default-badge {
+    display: inline-block;
+    padding: 0.125rem 0.5rem;
+    background-color: #dbeafe;
+    color: #1e40af;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.wishcart-create-new-button {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid #374151;
+    border-radius: 6px;
+    background: #374151;
+    color: #ffffff;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+
+    &:hover {
+        background: #4b5563;
+        border-color: #4b5563;
+    }
+
+    &:active {
+        background: #1f2937;
+        border-color: #1f2937;
+    }
+
+    &:focus {
+        outline: 2px solid #3b82f6;
+        outline-offset: 2px;
+    }
+}
+
+.wishcart-create-new-form {
+    display: flex;
+    flex-direction: column;
+    
+    label {
+        display: block;
+        font-weight: 500;
+        color: #374151;
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+    }
+
+    input[type="text"] {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 2px solid #d1d5db;
+        border-radius: 6px;
+        font-size: 1rem;
+        transition: all 0.2s;
+        margin-bottom: 1rem;
+        box-sizing: border-box;
+
+        &:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        &::placeholder {
+            color: #9ca3af;
+        }
+
+        &:disabled {
+            background-color: #f3f4f6;
+            cursor: not-allowed;
+        }
+    }
+}
+
+.wishcart-back-button {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #374151;
+    border-radius: 6px;
+    background: #374151;
+    color: #ffffff;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+
+    &:hover {
+        background: #4b5563;
+        border-color: #4b5563;
+    }
+
+    &:focus {
+        outline: 2px solid #3b82f6;
+        outline-offset: 2px;
+    }
+
+    &:active {
+        background: #1f2937;
+        border-color: #1f2937;
+    }
+}
+
+.wishcart-modal-footer {
+    display: flex;
+    gap: 0.75rem;
+    padding: 1.5rem;
+    border-top: 1px solid #e5e7eb;
+    background-color: #f9fafb;
+
+    button {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        transition: all 0.2s;
+        background-color: #374151;
+        border: 1px solid #374151;
+        color: #ffffff;
+        padding: 0.75rem 1rem;
+        border-radius: 6px;
+        font-weight: 500;
+        cursor: pointer;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+
+        &:hover:not(:disabled) {
+            background-color: #4b5563;
+            border-color: #4b5563;
+        }
+
+        &:active:not(:disabled) {
+            background-color: #1f2937;
+            border-color: #1f2937;
+        }
+
+        &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        &.wishcart-button-success {
+            // background-color: #10b981;
+            // border-color: #10b981;
+
+            // &:hover:not(:disabled) {
+            //     background-color: #059669;
+            // }
+        }
+    }
+}
+
+.wishcart-button-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
+
+// Guest Email Modal Specific Styles
+.wishcart-email-modal {
+    max-width: 480px;
+}
+
+.wishcart-modal-header-content {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.wishcart-modal-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #3B82F6;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+}
+
+.wishcart-email-description {
+    margin-bottom: 1.5rem;
+    color: #6b7280;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    text-align: left;
+}
+
+.wishcart-email-form {
+    width: 100%;
+}
+
+.wishcart-email-input-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+}
+
+.wishcart-email-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    color: #374151;
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+
+    svg {
+        color: #6b7280;
+    }
+}
+
+.wishcart-input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s;
+
+    &.focused {
+        .wishcart-input-icon {
+            color: #3b82f6;
+        }
+    }
+
+    &.error {
+        .wishcart-email-input {
+            border-color: #ef4444;
+        }
+    }
+}
+
+.wishcart-input-icon {
+    position: absolute;
+    left: 1rem;
+    color: #9ca3af;
+    transition: color 0.2s;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.wishcart-email-input {
+    width: 100%;
+    padding: 0.875rem 1rem 0.875rem 3rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 0.9375rem;
+    transition: all 0.2s;
+    box-sizing: border-box;
+    background: white;
+    color: #111827;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+
+    &:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    &::placeholder {
+        color: #9ca3af;
+    }
+
+    &:disabled {
+        background-color: #f9fafb;
+        cursor: not-allowed;
+        opacity: 0.7;
+    }
+}
+
+.wishcart-email-hint {
+    font-size: 0.8125rem;
+    color: #6b7280;
+    margin: 0;
+    padding-left: 0.25rem;
+}
+
+.wishcart-button-primary,
+.wishcart-button-secondary {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    min-height: 44px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+    &:focus {
+        outline: 2px solid #3b82f6;
+        outline-offset: 2px;
+    }
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+}
+
+.wishcart-button-primary {
+    background: #3B82F6;
+    color: white;
+
+    &:hover:not(:disabled) {
+        background: #2563EB;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    &:active:not(:disabled) {
+        background: #1D4ED8;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+}
+
+.wishcart-button-secondary {
+    background: white;
+    color: #374151;
+    border: 2px solid #e5e7eb;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+
+    &:hover:not(:disabled) {
+        background: #f9fafb;
+        border-color: #d1d5db;
+    }
+
+    &:active:not(:disabled) {
+        background: #f3f4f6;
+    }
+}
+
+// Responsive styles
+@media (max-width: 640px) {
+    .wishcart-modal-overlay {
+        padding: 0;
+        align-items: flex-end;
+    }
+
+    .wishcart-modal {
+        max-width: 100%;
+        max-height: 95vh;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+        animation: slideUpMobile 0.3s ease-out;
+    }
+
+    @keyframes slideUpMobile {
+        from {
+            transform: translateY(100%);
+        }
+        to {
+            transform: translateY(0);
+        }
+    }
+
+    .wishcart-modal-header,
+    .wishcart-modal-body,
+    .wishcart-modal-footer {
+        padding: 1rem;
+    }
+
+    .wishcart-wishlist-item {
+        padding: 0.875rem;
+    }
+
+    .wishcart-modal-footer {
+        flex-direction: column-reverse;
+
+        button {
+            width: 100%;
+        }
+    }
+
+    .wishcart-email-modal {
+        .wishcart-modal-icon {
+            width: 40px;
+            height: 40px;
+
+            svg {
+                width: 20px;
+                height: 20px;
+            }
+        }
+
+        .wishcart-modal-header h2 {
+            font-size: 1.125rem;
+        }
+    }
+}
+

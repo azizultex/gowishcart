@@ -1,16 +1,45 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import WishlistButton from '../components/WishlistButton';
+import VariantWishlistButtons from '../components/VariantWishlistButtons';
 import WishlistPage from '../components/WishlistPage';
+import SharedWishlistView from '../components/SharedWishlistView';
 import '../styles/WishlistButton.scss';
+import '../styles/VariantWishlistButtons.scss';
 import '../styles/WishlistPage.scss';
+import '../styles/SharedWishlistView.scss';
+
+// Wrapper component that falls back to single button if variants not detected
+const VariantWishlistButtonsWrapper = ({ productId, fallbackVariantId, fallbackPosition }) => {
+    const [showFallback, setShowFallback] = useState(false);
+    
+    useEffect(() => {
+        // Give VariantWishlistButtons time to detect variants
+        const timer = setTimeout(() => {
+            // Check if variant buttons were rendered
+            const variantButtonsContainer = document.querySelector(`[data-product-id="${productId}"]`)?.closest('.wishcart-wishlist-button-container');
+            const hasVariantButtons = variantButtonsContainer?.querySelector('.variant-wishlist-buttons');
+            if (!hasVariantButtons) {
+                setShowFallback(true);
+            }
+        }, 2000); // Wait 2 seconds for variant detection
+        
+        return () => clearTimeout(timer);
+    }, [productId]);
+    
+    if (showFallback) {
+        return <WishlistButton productId={productId} variationId={fallbackVariantId} position={fallbackPosition} />;
+    }
+    
+    return <VariantWishlistButtons productId={productId} />;
+};
 
 const getSetting = (key, fallback) => {
-    if (!window.WishCartWishlist || !(key in window.WishCartWishlist)) {
+    if (!window.wishcartWishlist || !(key in window.wishcartWishlist)) {
         return fallback;
     }
 
-    return window.WishCartWishlist[key];
+    return window.wishcartWishlist[key];
 };
 
 const normalizeBoolean = (value, fallback = true) => {
@@ -85,6 +114,64 @@ const applyPlacementLayout = (container, position) => {
     }
 };
 
+// Detect if product has variants
+const detectProductVariants = (productId) => {
+    if (!productId) {
+        return false;
+    }
+
+    // Find the product modal or detail page
+    const button = document.querySelector(`[data-product-id="${productId}"]`);
+    if (!button) {
+        return false;
+    }
+
+    const modal = button.closest('.fc-product-modal, .fc-product-detail, form');
+    if (!modal) {
+        return false;
+    }
+
+    // Look for variant buttons - common selectors
+    const variantSelectors = [
+        '[data-variant-id]',
+        '[data-variation-id]',
+        '.fc-variant-button',
+        '.variant-button',
+        '.product-variant',
+        'button[class*="variant"]',
+        '[class*="variant-option"]'
+    ];
+
+    let variantElements = [];
+    
+    for (const selector of variantSelectors) {
+        const elements = modal.querySelectorAll(selector);
+        if (elements.length > 1) { // More than one means it's a variable product
+            variantElements = Array.from(elements);
+            break;
+        }
+    }
+
+    // If no variant buttons found, check for variant selection area
+    if (variantElements.length === 0) {
+        const variantContainers = modal.querySelectorAll(
+            '.fc-variants, .product-variants, .variants-container, [class*="variant"]'
+        );
+        
+        if (variantContainers.length > 0) {
+            variantContainers.forEach(container => {
+                const buttons = container.querySelectorAll('button, [role="button"], [data-id]');
+                if (buttons.length > 1) {
+                    variantElements = Array.from(buttons);
+                }
+            });
+        }
+    }
+
+    // Return true if we found multiple variants
+    return variantElements.length > 1;
+};
+
 const mountWishlistButtonAtContainer = (container) => {
     if (!container || container.dataset.mounted === 'true') {
         return;
@@ -98,8 +185,66 @@ const mountWishlistButtonAtContainer = (container) => {
     const position = normalizePosition(container.getAttribute('data-position'));
     applyPlacementLayout(container, position);
 
+    const productIdNum = parseInt(productId, 10);
+    
+    // Check if product has variants
+    const hasVariants = detectProductVariants(productIdNum);
+
     const root = createRoot(container);
-    root.render(<WishlistButton productId={parseInt(productId, 10)} position={position} />);
+    
+    // Detect current variant ID from nearby elements (for single button fallback)
+    const detectVariantId = () => {
+        // Check container for data-variation-id
+        const variationIdAttr = container.getAttribute('data-variation-id');
+        if (variationIdAttr) {
+            const parsed = parseInt(variationIdAttr, 10);
+            if (!isNaN(parsed)) {
+                return parsed;
+            }
+        }
+
+        // Check nearby form for variation_id input
+        const form = container.closest('form');
+        if (form) {
+            const variationInput = form.querySelector('input[name="variation_id"]');
+            if (variationInput && variationInput.value) {
+                const parsed = parseInt(variationInput.value, 10);
+                if (!isNaN(parsed)) {
+                    return parsed;
+                }
+            }
+        }
+
+        // Check for FluentCart variant selection
+        const variantButton = container.closest('.fc-product-modal, .fc-product-detail')?.querySelector('[data-variant-id].selected, [data-variation-id].selected');
+        if (variantButton) {
+            const variantId = variantButton.getAttribute('data-variant-id') || variantButton.getAttribute('data-variation-id');
+            if (variantId) {
+                const parsed = parseInt(variantId, 10);
+                if (!isNaN(parsed)) {
+                    return parsed;
+                }
+            }
+        }
+
+        return 0; // Default to 0 if no variant detected
+    };
+
+    const variantId = detectVariantId();
+    
+    if (hasVariants) {
+        // Render variant wishlist buttons component (will fall back to single button if variants not detected)
+        root.render(
+            <VariantWishlistButtons 
+                productId={productIdNum} 
+                fallbackVariantId={variantId}
+                fallbackPosition={position}
+            />
+        );
+    } else {
+        // Render single wishlist button
+        root.render(<WishlistButton productId={productIdNum} variationId={variantId} position={position} />);
+    }
 
     container.dataset.mounted = 'true';
 };
@@ -131,7 +276,7 @@ const injectFluentCartContainer = () => {
         return null;
     }
 
-    const position = normalizePosition(null, window.WishCartWishlist?.buttonPosition);
+    const position = normalizePosition(null, window.wishcartWishlist?.buttonPosition);
 
     const container = document.createElement('div');
     container.className = `wishcart-wishlist-button-container wishcart-position-${position}`;
@@ -184,7 +329,7 @@ const injectWishlistIntoProductCards = () => {
     }
 
     const cards = document.querySelectorAll(
-        '.fc-product-card, [data-fluent-cart-shop-app-single-product], [data-fluent-cart-product-entry], [data-fluent-cart-product-row], .wp-block-post.type-fluent-products'
+        '.fct-product-card, .fc-product-card, [data-fluent-cart-shop-app-single-product], [data-fluent-cart-product-entry], [data-fluent-cart-product-row], .wp-block-post.type-fluent-products'
     );
 
     cards.forEach((card) => {
@@ -197,21 +342,60 @@ const injectWishlistIntoProductCards = () => {
             return;
         }
 
-        const position = normalizePosition(window.WishCartWishlist?.buttonPosition);
+        const position = normalizePosition(window.wishcartWishlist?.buttonPosition);
         const container = document.createElement('div');
         container.className = `wishcart-wishlist-button-container wishcart-position-${position} wishcart-card-container`;
         container.setAttribute('data-product-id', String(productId));
         container.setAttribute('data-position', position);
 
-        const content =
-            card.querySelector('.fc-product-card-content') ||
-            card.querySelector('[data-fluent-cart-product-content]') ||
-            card.querySelector('.wp-block-post-content') ||
-            card;
-        if (position === 'top' || position === 'left') {
-            content.prepend(container);
+        // Try to find "View Options" button to insert after it
+        const findViewOptionsButton = (card) => {
+            // Search by text content
+            const allButtons = card.querySelectorAll('button, a[role="button"], [role="button"]');
+            for (const btn of allButtons) {
+                const text = btn.textContent?.toLowerCase().trim() || '';
+                const ariaLabel = btn.getAttribute('aria-label')?.toLowerCase() || '';
+                if (text.includes('view options') || text.includes('view option') || 
+                    ariaLabel.includes('view options') || ariaLabel.includes('view option')) {
+                    return btn;
+                }
+            }
+            
+            // Search by class names
+            const classSelectors = [
+                '.view-options',
+                '.fc-view-options',
+                '.fct-view-options',
+                '[class*="view-options"]',
+                '[class*="view_options"]'
+            ];
+            for (const selector of classSelectors) {
+                const btn = card.querySelector(selector);
+                if (btn) {
+                    return btn;
+                }
+            }
+            
+            return null;
+        };
+
+        const viewOptionsButton = findViewOptionsButton(card);
+        
+        if (viewOptionsButton && viewOptionsButton.parentElement) {
+            // Insert after "View Options" button
+            viewOptionsButton.parentElement.insertBefore(container, viewOptionsButton.nextSibling);
         } else {
-            content.appendChild(container);
+            // Fallback to existing placement logic
+            const content =
+                card.querySelector('.fc-product-card-content') ||
+                card.querySelector('[data-fluent-cart-product-content]') ||
+                card.querySelector('.wp-block-post-content') ||
+                card;
+            if (position === 'top' || position === 'left') {
+                content.prepend(container);
+            } else {
+                content.appendChild(container);
+            }
         }
 
         applyPlacementLayout(container, position);
@@ -245,7 +429,7 @@ const injectWishlistIntoArchiveEntries = () => {
             return;
         }
 
-        const position = normalizePosition(window.WishCartWishlist?.buttonPosition);
+        const position = normalizePosition(window.wishcartWishlist?.buttonPosition);
         const container = document.createElement('div');
         container.className = `wishcart-wishlist-button-container wishcart-position-${position} wishcart-archive-container`;
         container.setAttribute('data-product-id', String(productId));
@@ -283,7 +467,7 @@ const injectWishlistNearActionButtons = () => {
             return;
         }
 
-        const position = normalizePosition(window.WishCartWishlist?.buttonPosition);
+        const position = normalizePosition(window.wishcartWishlist?.buttonPosition);
         const wrapper = button.closest('.fc-product-buttons-wrap') || button.parentElement;
 
         if (!wrapper) {
@@ -312,7 +496,7 @@ const injectWishlistNearActionButtons = () => {
 
 // Initialize session ID cookie management
 const initializeSessionId = () => {
-    if (window.WishCartWishlist?.isLoggedIn) {
+    if (window.wishcartWishlist?.isLoggedIn) {
         return; // Logged in users don't need session ID
     }
 
@@ -329,7 +513,7 @@ const initializeSessionId = () => {
     }
 
     // Create session ID if it doesn't exist
-    if (!hasSessionId && window.WishCartWishlist) {
+    if (!hasSessionId && window.wishcartWishlist) {
         const sessionId = 'wc_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
         const expiryDays = 30;
         const expiryDate = new Date();
@@ -337,8 +521,8 @@ const initializeSessionId = () => {
         document.cookie = `wishcart_session_id=${sessionId};expires=${expiryDate.toUTCString()};path=/;SameSite=Lax`;
         
         // Update global object
-        if (window.WishCartWishlist) {
-            window.WishCartWishlist.sessionId = sessionId;
+        if (window.wishcartWishlist) {
+            window.wishcartWishlist.sessionId = sessionId;
         }
     }
 };
@@ -385,7 +569,7 @@ const mountWishlistButtons = () => {
     containers.forEach((container) => {
         const position = normalizePosition(
             container.getAttribute('data-position'),
-            window.WishCartWishlist?.buttonPosition
+            window.wishcartWishlist?.buttonPosition
         );
         container.setAttribute('data-position', position);
         mountWishlistButtonAtContainer(container);
@@ -402,18 +586,240 @@ const mountWishlistPage = () => {
     }
 };
 
+// Mount shared wishlist view
+const mountSharedWishlistView = () => {
+    const container = document.getElementById('shared-wishlist-app');
+    
+    if (container) {
+        const shareToken = container.getAttribute('data-share-token') || window.wishcartShared?.shareToken;
+        if (shareToken) {
+            const root = createRoot(container);
+            root.render(<SharedWishlistView shareToken={shareToken} />);
+        }
+    }
+};
+
 // Initialize when DOM is ready
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         initializeSessionId();
         mountWishlistButtons();
         mountWishlistPage();
+        mountSharedWishlistView();
+        setupAddToCartTracking();
     });
 } else {
     initializeSessionId();
     mountWishlistButtons();
     mountWishlistPage();
+    mountSharedWishlistView();
+    setupAddToCartTracking();
 }
+
+// Wishlist status cache to avoid multiple API calls
+const wishlistStatusCache = new Map();
+
+// Get session ID helper
+const getSessionIdForTracking = () => {
+    if (window.wishcartWishlist?.isLoggedIn) {
+        return null;
+    }
+    
+    const cookies = document.cookie.split(';');
+    for (let cookie of cookies) {
+        const [name, value] = cookie.trim().split('=');
+        if (name === 'wishcart_session_id') {
+            return value;
+        }
+    }
+    
+    return window.wishcartWishlist?.sessionId || null;
+};
+
+// Check if product is in wishlist
+const checkProductInWishlist = async (productId) => {
+    // Check cache first
+    if (wishlistStatusCache.has(productId)) {
+        return wishlistStatusCache.get(productId);
+    }
+    
+    if (!productId || !window.wishcartWishlist) {
+        return false;
+    }
+    
+    try {
+        const sessionId = getSessionIdForTracking();
+        const url = `${window.wishcartWishlist.apiUrl}wishlist/check/${productId}${sessionId ? `?session_id=${sessionId}` : ''}`;
+        
+        const response = await fetch(url, {
+            headers: {
+                'X-WP-Nonce': window.wishcartWishlist.nonce,
+            },
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            const inWishlist = data.in_wishlist || false;
+            // Cache the result
+            wishlistStatusCache.set(productId, inWishlist);
+            return inWishlist;
+        }
+    } catch (error) {
+        console.error('Error checking wishlist status:', error);
+    }
+    
+    return false;
+};
+
+// Extract product ID and variation ID from add to cart button/form
+const extractProductData = (element) => {
+    let productId = null;
+    let variationId = 0;
+    
+    // Try to get from button attributes
+    productId = element.getAttribute('data-product-id') || 
+                element.dataset?.productId ||
+                element.closest('[data-product-id]')?.getAttribute('data-product-id');
+    
+    variationId = element.getAttribute('data-variation-id') || 
+                  element.dataset?.variationId ||
+                  element.closest('[data-variation-id]')?.getAttribute('data-variation-id');
+    
+    // Try to get from form
+    const form = element.closest('form');
+    if (form) {
+        // WooCommerce form
+        const productIdInput = form.querySelector('input[name="product_id"], input[name="add-to-cart"]');
+        if (productIdInput && !productId) {
+            productId = productIdInput.value;
+        }
+        
+        const variationIdInput = form.querySelector('input[name="variation_id"]');
+        if (variationIdInput && !variationId) {
+            variationId = variationIdInput.value;
+        }
+        
+        // FluentCart form
+        if (!productId) {
+            const fcProductId = form.querySelector('[data-product-id]');
+            if (fcProductId) {
+                productId = fcProductId.getAttribute('data-product-id');
+            }
+        }
+    }
+    
+    // Try to get from URL or page context
+    if (!productId) {
+        const urlParams = new URLSearchParams(window.location.search);
+        productId = urlParams.get('product_id') || urlParams.get('add-to-cart');
+    }
+    
+    // Parse to integers
+    productId = productId ? parseInt(productId, 10) : null;
+    variationId = variationId ? parseInt(variationId, 10) : 0;
+    
+    return { productId, variationId };
+};
+
+// Track add to cart event if product is in wishlist
+const trackAddToCartIfInWishlist = async (productId, variationId = 0) => {
+    if (!productId || !window.wishcartWishlist) {
+        return;
+    }
+    
+    // Check if product is in wishlist
+    const inWishlist = await checkProductInWishlist(productId);
+    
+    if (!inWishlist) {
+        return; // Product not in wishlist, no need to track
+    }
+    
+    // Track the event
+    try {
+        const sessionId = getSessionIdForTracking();
+        const trackUrl = `${window.wishcartWishlist.apiUrl}wishlist/track-cart`;
+        const trackBody = {
+            product_id: productId,
+            variation_id: variationId || 0,
+            session_id: sessionId,
+        };
+        
+        await fetch(trackUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-WP-Nonce': window.wishcartWishlist.nonce,
+            },
+            body: JSON.stringify(trackBody),
+        });
+    } catch (error) {
+        // Don't block cart addition if tracking fails
+        console.error('Error tracking cart event from product page:', error);
+    }
+};
+
+// Setup event listeners for add to cart buttons
+const setupAddToCartTracking = () => {
+    // Use event delegation to catch all add to cart button clicks
+    document.addEventListener('click', async (event) => {
+        const target = event.target;
+        
+        // Check if clicked element or its parent is an add to cart button
+        const addToCartButton = target.closest(
+            '.fluent-cart-add-to-cart-button, ' +
+            '.single_add_to_cart_button, ' +
+            'button[type="submit"][name="add-to-cart"], ' +
+            'button.add_to_cart_button, ' +
+            '[data-action="add-to-cart"], ' +
+            '.add-to-cart-button, ' +
+            'button[class*="add-to-cart"], ' +
+            'button[class*="add_to_cart"]'
+        );
+        
+        if (!addToCartButton) {
+            return;
+        }
+        
+        // Extract product data
+        const { productId, variationId } = extractProductData(addToCartButton);
+        
+        if (!productId) {
+            return;
+        }
+        
+        // Track if product is in wishlist (non-blocking)
+        trackAddToCartIfInWishlist(productId, variationId).catch(err => {
+            console.error('Error in add to cart tracking:', err);
+        });
+    }, true); // Use capture phase to catch early
+    
+    // Also listen for WooCommerce AJAX add to cart events
+    if (typeof jQuery !== 'undefined') {
+        jQuery(document.body).on('added_to_cart', (event, fragments, cart_hash, $button) => {
+            if ($button && $button.length) {
+                const { productId, variationId } = extractProductData($button[0]);
+                if (productId) {
+                    trackAddToCartIfInWishlist(productId, variationId).catch(err => {
+                        console.error('Error in add to cart tracking:', err);
+                    });
+                }
+            }
+        });
+    }
+    
+    // Listen for FluentCart add to cart events
+    document.addEventListener('fluentcart:added_to_cart', (event) => {
+        const detail = event.detail || {};
+        const productId = detail.productId || detail.product_id;
+        const variationId = detail.variationId || detail.variation_id || 0;
+        
+        if (productId) {
+            trackAddToCartIfInWishlist(productId, variationId).catch(err => {
+                console.error('Error in add to cart tracking:', err);
+            });
+        }
+    });
+};
 
 // Re-mount buttons when new content is loaded (for AJAX-loaded products)
 if (typeof MutationObserver !== 'undefined') {

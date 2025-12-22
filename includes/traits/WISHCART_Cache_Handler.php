@@ -3,7 +3,7 @@
  * Trait Cache_Handler
  * Provides common caching functionality for database queries
  */
-trait WISHCART_Cache_Handler {
+trait wishcart_Cache_Handler {
     /**
      * Get cached data or fetch from database
      *

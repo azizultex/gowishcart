@@ -1,12 +1,12 @@
 {
-    "name": "wishcart/wish-cart",
+    "name": "wishcart/wishcart",
     "description": "AI chatbot for WordPress with messaging platform integration",
     "type": "wordpress-plugin",
     "license": "GPL-2.0-or-later",
     "authors": [
         {
             "name": "WishCart Team",
-            "email": "support@wishcart.chat"
+            "email": "support@gowishcart.com"
         }
     ],
     "require": {
