@@ -632,13 +632,6 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
         const handleColorInputChange = (e) => {
             const hexColor = e.target.value;
             setLocalValue(hexColor); // Update local component state
-            
-            // Update parent's localButtonCustomization for real-time preview
-            if (section && settingKey) {
-                updateButtonCustomization(section, settingKey, hexColor);
-            } else if (onChange) {
-                onChange(hexColor);
-            }
         };
 
         const handleColorInputBlur = () => {
