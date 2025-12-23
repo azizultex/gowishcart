@@ -376,6 +376,15 @@
 
 /* Button Customization Wrapper */
 .wishcart-button-customization-wrapper {
+  position: relative;
+
+  
+  .wishcart-preview-wrapper {
+    position: sticky;
+    top: 50px;
+    z-index: 100;
+  }
+
   @media (max-width: 1200px) {
     grid-template-columns: 1fr !important;
     
