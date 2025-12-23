@@ -8,6 +8,27 @@ import VariantSelector from './VariantSelector';
 import { cn } from '../lib/utils';
 import { addToCartViaAJAX, openCartSidebar } from '../lib/fluentcartCart';
 import '../styles/WishlistPage.scss';
+import '../styles/ShareModal.scss';
+
+const SuccessModal = ({ isOpen, message, onClose }) => {
+    if (!isOpen) return null;
+
+    return (
+        <div className="share-modal-overlay" onClick={onClose}>
+            <div className="share-modal-content" onClick={(e) => e.stopPropagation()}>
+                <div className="share-modal-header">
+                    <h2>Success</h2>
+                    <button className="close-button" onClick={onClose} aria-label="Close">
+                        <X size={20} />
+                    </button>
+                </div>
+                <div className="share-modal-body">
+                    <p>{message}</p>
+                </div>
+            </div>
+        </div>
+    );
+};
 
 const WishlistPage = () => {
     const [products, setProducts] = useState([]);
@@ -22,6 +43,8 @@ const WishlistPage = () => {
     const [isLoadingWishlists, setIsLoadingWishlists] = useState(false);
     const [error, setError] = useState(null);
     const [cartMessage, setCartMessage] = useState({ type: null, text: '' });
+    const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+    const [successMessage, setSuccessMessage] = useState('');
     const [selectedVariants, setSelectedVariants] = useState(new Map()); // Map of productId -> variantId
     
     // Track if wishlist has been loaded to prevent infinite loops
@@ -962,19 +985,27 @@ const WishlistPage = () => {
 
     // Generate share link via API
     const generateShareLink = async () => {
+        // If we don't have a valid wishlist, do not attempt to share
         if (!currentWishlist || !currentWishlist.id) {
-            return window.location.href;
+            return null;
+        }
+
+        console.log('currentWishlist', currentWishlist);
+        if(currentWishlist.privacy_status === 'private'){
+            console.log('x');
+            return false;
+        }
+
+        // Check privacy status - do not generate share link for private wishlists
+        if (currentWishlist.privacy_status === 'private') {
+            setSuccessMessage('This wishlist is private. Please change privacy to "Shared" to share it.');
+            setIsSuccessModalOpen(true);
+            return null;
         }
 
         // Check if we already have a share link
         if (shareLink) {
             return shareLink;
-        }
-
-        // Check privacy status
-        if (currentWishlist.privacy_status === 'private') {
-            alert('This wishlist is private. Please change privacy to "Shared" to share it.');
-            return window.location.href;
         }
 
         setIsGeneratingShare(true);
@@ -1008,7 +1039,8 @@ const WishlistPage = () => {
             setIsGeneratingShare(false);
         }
         
-        return window.location.href;
+        // If we reach here, something went wrong; do not fall back to current URL
+        return null;
     };
 
     // Get wishlist share URL (async wrapper)
@@ -1020,87 +1052,86 @@ const WishlistPage = () => {
     const getWishlistShareText = () => {
         return 'Check out my wishlist!';
     };
+// Put this above the share handlers
+const ensureWishlistShareAllowed = () => {
+    if (!currentWishlist || currentWishlist.privacy_status === 'private') {
+        setSuccessMessage('This wishlist is private. Please change privacy to "Shared" to share it.');
+        setIsSuccessModalOpen(true);
+        return false; // stop
+    }
+    return true; // ok to continue
+};
 
     // Share on Facebook
-    const shareOnFacebook = async () => {
-        const url = await getWishlistShareUrl();
-        const encodedUrl = encodeURIComponent(url);
-        const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
-        window.open(shareUrl, '_blank', 'width=600,height=400');
-    };
+const shareOnFacebook = async () => {
+    if (!ensureWishlistShareAllowed()) return;
 
-    // Share on Twitter
-    const shareOnTwitter = async () => {
-        const url = await getWishlistShareUrl();
-        const encodedUrl = encodeURIComponent(url);
-        const text = encodeURIComponent(getWishlistShareText());
-        const shareUrl = `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${text}`;
-        window.open(shareUrl, '_blank', 'width=600,height=400');
-    };
+    const url = await getWishlistShareUrl();
+    const encodedUrl = encodeURIComponent(url);
+    const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
+    window.open(shareUrl, '_blank', 'width=600,height=400');
+};
 
-    // Share on Pinterest
-    const shareOnPinterest = async () => {
-        const url = await getWishlistShareUrl();
-        const encodedUrl = encodeURIComponent(url);
-        const description = encodeURIComponent(getWishlistShareText());
-        const shareUrl = `https://pinterest.com/pin/create/button/?url=${encodedUrl}&description=${description}`;
-        window.open(shareUrl, '_blank', 'width=600,height=400');
-    };
+// Share on Twitter
+const shareOnTwitter = async () => {
+    if (!ensureWishlistShareAllowed()) return;
 
-    // Share on WhatsApp
-    const shareOnWhatsApp = async () => {
-        const url = await getWishlistShareUrl();
-        const text = encodeURIComponent(`${getWishlistShareText()} ${url}`);
-        const shareUrl = `https://wa.me/?text=${text}`;
-        window.open(shareUrl, '_blank');
-    };
+    const url = await getWishlistShareUrl();
+    const encodedUrl = encodeURIComponent(url);
+    const text = encodeURIComponent(getWishlistShareText());
+    const shareUrl = `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${text}`;
+    window.open(shareUrl, '_blank', 'width=600,height=400');
+};
 
-    // Share via Email
-    const shareViaEmail = async () => {
-        const url = await getWishlistShareUrl();
-        const subject = encodeURIComponent('My Wishlist');
-        const body = encodeURIComponent(`${getWishlistShareText()}\n\n${url}`);
-        const mailtoUrl = `mailto:?subject=${subject}&body=${body}`;
-        window.location.href = mailtoUrl;
-    };
+// Share on Pinterest
+const shareOnPinterest = async () => {
+    if (!ensureWishlistShareAllowed()) return;
 
-    // Copy wishlist link
-    const copyWishlistLink = async () => {
-        if (isGeneratingShare) {
-            return; // Prevent multiple clicks
-        }
-        
-        try {
-            const url = await getWishlistShareUrl();
-            await navigator.clipboard.writeText(url);
-            setLinkCopied(true);
-            setTimeout(() => {
-                setLinkCopied(false);
-            }, 2000);
-        } catch (error) {
-            console.error('Failed to copy link:', error);
-            // Fallback for older browsers
-            try {
-                const url = await getWishlistShareUrl();
-                const textArea = document.createElement('textarea');
-                textArea.value = url;
-                document.body.appendChild(textArea);
-                textArea.select();
-                try {
-                    document.execCommand('copy');
-                    setLinkCopied(true);
-                    setTimeout(() => {
-                        setLinkCopied(false);
-                    }, 2000);
-                } catch (err) {
-                    console.error('Fallback copy failed:', err);
-                }
-                document.body.removeChild(textArea);
-            } catch (fallbackError) {
-                console.error('Failed to get share URL in fallback:', fallbackError);
-            }
-        }
-    };
+    const url = await getWishlistShareUrl();
+    const encodedUrl = encodeURIComponent(url);
+    const description = encodeURIComponent(getWishlistShareText());
+    const shareUrl = `https://pinterest.com/pin/create/button/?url=${encodedUrl}&description=${description}`;
+    window.open(shareUrl, '_blank', 'width=600,height=400');
+};
+
+// Share on WhatsApp
+const shareOnWhatsApp = async () => {
+    if (!ensureWishlistShareAllowed()) return;
+
+    const url = await getWishlistShareUrl();
+    const text = encodeURIComponent(`${getWishlistShareText()} ${url}`);
+    const shareUrl = `https://wa.me/?text=${text}`;
+    window.open(shareUrl, '_blank');
+};
+
+// Share via Email
+const shareViaEmail = async () => {
+    if (!ensureWishlistShareAllowed()) return;
+
+    const url = await getWishlistShareUrl();
+    const subject = encodeURIComponent('My Wishlist');
+    const body = encodeURIComponent(`${getWishlistShareText()}\n\n${url}`);
+    const mailtoUrl = `mailto:?subject=${subject}&body=${body}`;
+    window.location.href = mailtoUrl;
+};
+
+// Copy wishlist link
+const copyWishlistLink = async () => {
+    if (!ensureWishlistShareAllowed()) return;
+    if (isGeneratingShare) return;
+
+    try {
+        const url = await getWishlistShareUrl();
+        if (!url) return;
+
+        await navigator.clipboard.writeText(url);
+        setLinkCopied(true);
+        setTimeout(() => setLinkCopied(false), 2000);
+    } catch (error) {
+        console.error('Failed to copy link:', error);
+        // Fallback path can also early-return if !url after re-fetch
+    }
+};
 
     // Handle wishlist selection
     const handleWishlistSelect = (wishlistId) => {
@@ -1185,8 +1216,10 @@ const WishlistPage = () => {
                 
                 // Clear cached share link so it regenerates
                 setShareLink('');
-                
-                // Show success message
+
+                // Show success message in modal
+                setSuccessMessage('Privacy updated to: ' + newPrivacy);
+                setIsSuccessModalOpen(true);
                 console.log('Privacy updated to:', newPrivacy);
             } else {
                 const errorData = await response.json();
@@ -1255,6 +1288,12 @@ const WishlistPage = () => {
 
     return (
         <div className="wishcart-wishlist-page">
+            <SuccessModal
+                isOpen={isSuccessModalOpen}
+                message={successMessage}
+                onClose={() => setIsSuccessModalOpen(false)}
+            />
+
             {wishlists.length > 0 && !isViewingShared && (
                 <div className="wishlist-selector">
                     <CustomSelect
