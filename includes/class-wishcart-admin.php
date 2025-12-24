@@ -1993,8 +1993,9 @@ JS;
         $order_by = $request->get_param('order_by') ? sanitize_text_field($request->get_param('order_by')) : 'wishlist_count';
         $page = $request->get_param('page') ? intval($request->get_param('page')) : 1;
         $per_page = $request->get_param('per_page') ? intval($request->get_param('per_page')) : 10;
+        $time_period = $request->get_param('time_period') ? sanitize_text_field($request->get_param('time_period')) : 'all';
         
-        $result = $analytics->get_popular_products($limit, $order_by, $page, $per_page);
+        $result = $analytics->get_popular_products($limit, $order_by, $page, $per_page, $time_period);
         
         return rest_ensure_response(array(
             'success' => true,
@@ -2029,8 +2030,9 @@ JS;
         $analytics = new WishCart_Analytics_Handler();
         $page = $request->get_param('page') ? intval($request->get_param('page')) : 1;
         $per_page = $request->get_param('per_page') ? intval($request->get_param('per_page')) : 10;
+        $time_period = $request->get_param('time_period') ? sanitize_text_field($request->get_param('time_period')) : 'all';
         
-        $link_details = $analytics->get_link_details($page, $per_page);
+        $link_details = $analytics->get_link_details($page, $per_page, $time_period);
         
         return rest_ensure_response(array(
             'success' => true,

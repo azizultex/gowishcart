@@ -172,15 +172,36 @@ class WishCart_Analytics_Handler {
     }
 
     /**
+     * Get date range from time period string
+     *
+     * @param string $time_period Time period string (7days, 30days, 90days, 365days, all)
+     * @return array Array with 'date_from' or null for 'all'
+     */
+    private function get_date_range_from_period($time_period) {
+        if (empty($time_period) || $time_period === 'all') {
+            return null;
+        }
+
+        $days = intval($time_period);
+        if ($days <= 0) {
+            return null;
+        }
+
+        $date_from = date('Y-m-d H:i:s', strtotime("-{$days} days"));
+        return $date_from;
+    }
+
+    /**
      * Get popular products
      *
      * @param int $limit Number of products to return (deprecated, use $per_page)
      * @param string $order_by Order by field (wishlist_count, conversion_rate, share_count)
      * @param int $page Current page number
      * @param int $per_page Number of products per page
+     * @param string $time_period Time period filter (7days, 30days, 90days, 365days, all)
      * @return array Array of popular products with analytics and pagination info
      */
-    public function get_popular_products($limit = 10, $order_by = 'wishlist_count', $page = 1, $per_page = 10) {
+    public function get_popular_products($limit = 10, $order_by = 'wishlist_count', $page = 1, $per_page = 10, $time_period = 'all') {
         $valid_order_fields = array('wishlist_count', 'conversion_rate', 'share_count', 'add_to_cart_count', 'purchase_count');
         
         if (!in_array($order_by, $valid_order_fields)) {
@@ -192,20 +213,55 @@ class WishCart_Analytics_Handler {
         $current_page = max(1, intval($page));
         $offset = ($current_page - 1) * $items_per_page;
 
+        // Get date range filter
+        $date_from = $this->get_date_range_from_period($time_period);
+        
+        // Build WHERE clause and prepare parameters
+        $where_conditions = array('wishlist_count > 0');
+        $where_values = array();
+        
+        if ($date_from) {
+            $where_conditions[] = "(last_added_date >= %s OR first_added_date >= %s)";
+            $where_values[] = $date_from;
+            $where_values[] = $date_from;
+        }
+        
+        $where_clause = implode(' AND ', $where_conditions);
+
         // Get total count
-        $total = $this->wpdb->get_var(
-            "SELECT COUNT(*) FROM {$this->analytics_table} WHERE wishlist_count > 0"
-        );
+        if (!empty($where_values)) {
+            $total = $this->wpdb->get_var(
+                $this->wpdb->prepare(
+                    "SELECT COUNT(*) FROM {$this->analytics_table} WHERE {$where_clause}",
+                    $where_values
+                )
+            );
+        } else {
+            $total = $this->wpdb->get_var(
+                "SELECT COUNT(*) FROM {$this->analytics_table} WHERE {$where_clause}"
+            );
+        }
 
         // Get paginated results
-        $results = $this->wpdb->get_results(
-            $this->wpdb->prepare(
-                "SELECT * FROM {$this->analytics_table} WHERE wishlist_count > 0 ORDER BY {$order_by} DESC LIMIT %d OFFSET %d",
-                $items_per_page,
-                $offset
-            ),
-            ARRAY_A
-        );
+        $query_values = array_merge($where_values, array($items_per_page, $offset));
+        if (!empty($where_values)) {
+            $results = $this->wpdb->get_results(
+                $this->wpdb->prepare(
+                    "SELECT * FROM {$this->analytics_table} WHERE {$where_clause} ORDER BY {$order_by} DESC LIMIT %d OFFSET %d",
+                    $query_values
+                ),
+                ARRAY_A
+            );
+        } else {
+            $results = $this->wpdb->get_results(
+                $this->wpdb->prepare(
+                    "SELECT * FROM {$this->analytics_table} WHERE {$where_clause} ORDER BY {$order_by} DESC LIMIT %d OFFSET %d",
+                    $items_per_page,
+                    $offset
+                ),
+                ARRAY_A
+            );
+        }
 
         // Enrich with product data
         $products = array();
@@ -541,44 +597,96 @@ class WishCart_Analytics_Handler {
      *
      * @param int $page Current page number
      * @param int $per_page Number of links per page
+     * @param string $time_period Time period filter (7days, 30days, 90days, 365days, all)
      * @return array Link details with items and pagination info
      */
-    public function get_link_details($page = 1, $per_page = 10) {
+    public function get_link_details($page = 1, $per_page = 10, $time_period = 'all') {
         $current_page = max(1, intval($page));
         $items_per_page = $per_page > 0 ? $per_page : 10;
         $offset = ($current_page - 1) * $items_per_page;
 
-        // Get total count
-        $total = $this->wpdb->get_var(
-            "SELECT COUNT(*) 
-            FROM {$this->shares_table} s
-            INNER JOIN {$this->wishlists_table} w ON s.wishlist_id = w.id
-            WHERE s.status = 'active' AND w.status = 'active'"
-        );
+        // Get date range filter
+        $date_from = $this->get_date_range_from_period($time_period);
+        
+        // Build WHERE clause and prepare parameters
+        $where_conditions = array("s.status = 'active'", "w.status = 'active'");
+        $where_values = array();
+        
+        if ($date_from) {
+            $where_conditions[] = "s.date_created >= %s";
+            $where_values[] = $date_from;
+        }
+        
+        $where_clause = implode(' AND ', $where_conditions);
 
-        // Get paginated shares
-        $shares = $this->wpdb->get_results(
-            $this->wpdb->prepare(
-                "SELECT 
-                    s.share_id,
-                    s.wishlist_id,
-                    s.share_token,
-                    s.share_type,
-                    s.click_count,
-                    s.conversion_count,
-                    s.date_created,
-                    s.last_clicked,
-                    w.wishlist_name
+        // Get total count
+        if (!empty($where_values)) {
+            $total = $this->wpdb->get_var(
+                $this->wpdb->prepare(
+                    "SELECT COUNT(*) 
+                    FROM {$this->shares_table} s
+                    INNER JOIN {$this->wishlists_table} w ON s.wishlist_id = w.id
+                    WHERE {$where_clause}",
+                    $where_values
+                )
+            );
+        } else {
+            $total = $this->wpdb->get_var(
+                "SELECT COUNT(*) 
                 FROM {$this->shares_table} s
                 INNER JOIN {$this->wishlists_table} w ON s.wishlist_id = w.id
-                WHERE s.status = 'active' AND w.status = 'active'
-                ORDER BY s.date_created DESC
-                LIMIT %d OFFSET %d",
-                $items_per_page,
-                $offset
-            ),
-            ARRAY_A
-        );
+                WHERE {$where_clause}"
+            );
+        }
+
+        // Get paginated shares
+        $query_values = array_merge($where_values, array($items_per_page, $offset));
+        if (!empty($where_values)) {
+            $shares = $this->wpdb->get_results(
+                $this->wpdb->prepare(
+                    "SELECT 
+                        s.share_id,
+                        s.wishlist_id,
+                        s.share_token,
+                        s.share_type,
+                        s.click_count,
+                        s.conversion_count,
+                        s.date_created,
+                        s.last_clicked,
+                        w.wishlist_name
+                    FROM {$this->shares_table} s
+                    INNER JOIN {$this->wishlists_table} w ON s.wishlist_id = w.id
+                    WHERE {$where_clause}
+                    ORDER BY s.date_created DESC
+                    LIMIT %d OFFSET %d",
+                    $query_values
+                ),
+                ARRAY_A
+            );
+        } else {
+            $shares = $this->wpdb->get_results(
+                $this->wpdb->prepare(
+                    "SELECT 
+                        s.share_id,
+                        s.wishlist_id,
+                        s.share_token,
+                        s.share_type,
+                        s.click_count,
+                        s.conversion_count,
+                        s.date_created,
+                        s.last_clicked,
+                        w.wishlist_name
+                    FROM {$this->shares_table} s
+                    INNER JOIN {$this->wishlists_table} w ON s.wishlist_id = w.id
+                    WHERE {$where_clause}
+                    ORDER BY s.date_created DESC
+                    LIMIT %d OFFSET %d",
+                    $items_per_page,
+                    $offset
+                ),
+                ARRAY_A
+            );
+        }
 
         if (empty($shares)) {
             return array(

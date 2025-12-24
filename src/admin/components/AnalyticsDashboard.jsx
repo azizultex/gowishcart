@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { TrendingUp, Heart, ShoppingCart, Share2, Users, BarChart, Link as LinkIcon } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { TrendingUp, Heart, ShoppingCart, Share2, Users, BarChart, Link as LinkIcon, ArrowUp, ArrowDown } from 'lucide-react';
 import Pagination from './Pagination';
 import '../../styles/Analytics.scss';
 
@@ -14,11 +14,15 @@ export const AnalyticsDashboard = () => {
     const [popularProductsPage, setPopularProductsPage] = useState(1);
     const [popularProductsPerPage] = useState(10);
     const [popularProductsPagination, setPopularProductsPagination] = useState(null);
+    const [popularProductsTimePeriod, setPopularProductsTimePeriod] = useState('7days');
+    const [popularProductsSort, setPopularProductsSort] = useState({ column: null, direction: 'asc' });
     
     // Pagination state for link details
     const [linkDetailsPage, setLinkDetailsPage] = useState(1);
     const [linkDetailsPerPage] = useState(10);
     const [linkDetailsPagination, setLinkDetailsPagination] = useState(null);
+    const [linkDetailsTimePeriod, setLinkDetailsTimePeriod] = useState('7days');
+    const [linkDetailsSort, setLinkDetailsSort] = useState({ column: null, direction: 'asc' });
 
     const apiUrl = window.wishcartSettings?.apiUrl || '/wp-json/wishcart/v1/';
     const nonce = window.wishcartSettings?.nonce;
@@ -29,11 +33,11 @@ export const AnalyticsDashboard = () => {
 
     useEffect(() => {
         fetchPopularProducts();
-    }, [popularProductsPage]);
+    }, [popularProductsPage, popularProductsTimePeriod]);
 
     useEffect(() => {
         fetchLinkDetails();
-    }, [linkDetailsPage]);
+    }, [linkDetailsPage, linkDetailsTimePeriod]);
 
     const fetchAnalytics = async () => {
         setIsLoading(true);
@@ -71,7 +75,7 @@ export const AnalyticsDashboard = () => {
     const fetchPopularProducts = async () => {
         try {
             const popularRes = await fetch(
-                `${apiUrl}analytics/popular?page=${popularProductsPage}&per_page=${popularProductsPerPage}`,
+                `${apiUrl}analytics/popular?page=${popularProductsPage}&per_page=${popularProductsPerPage}&time_period=${popularProductsTimePeriod}`,
                 {
                     headers: { 'X-WP-Nonce': nonce },
                 }
@@ -89,7 +93,7 @@ export const AnalyticsDashboard = () => {
     const fetchLinkDetails = async () => {
         try {
             const linksRes = await fetch(
-                `${apiUrl}analytics/links?page=${linkDetailsPage}&per_page=${linkDetailsPerPage}`,
+                `${apiUrl}analytics/links?page=${linkDetailsPage}&per_page=${linkDetailsPerPage}&time_period=${linkDetailsTimePeriod}`,
                 {
                     headers: { 'X-WP-Nonce': nonce },
                 }
@@ -102,6 +106,133 @@ export const AnalyticsDashboard = () => {
         } catch (err) {
             console.error('Error fetching link details:', err);
         }
+    };
+
+    // Sort handler for popular products
+    const handlePopularProductsSort = (column) => {
+        setPopularProductsSort((prev) => {
+            if (prev.column === column) {
+                return { column, direction: prev.direction === 'asc' ? 'desc' : 'asc' };
+            }
+            return { column, direction: 'asc' };
+        });
+    };
+
+    // Sort handler for link details
+    const handleLinkDetailsSort = (column) => {
+        setLinkDetailsSort((prev) => {
+            if (prev.column === column) {
+                return { column, direction: prev.direction === 'asc' ? 'desc' : 'asc' };
+            }
+            return { column, direction: 'asc' };
+        });
+    };
+
+    // Sort popular products data
+    const sortedPopularProducts = useMemo(() => {
+        if (!popularProductsSort.column) return popularProducts;
+        
+        const sorted = [...popularProducts].sort((a, b) => {
+            let aVal, bVal;
+            
+            switch (popularProductsSort.column) {
+                case 'product':
+                    aVal = (a.product_name || '').toLowerCase();
+                    bVal = (b.product_name || '').toLowerCase();
+                    break;
+                case 'wishlist_count':
+                    aVal = a.wishlist_count || 0;
+                    bVal = b.wishlist_count || 0;
+                    break;
+                case 'add_to_cart':
+                    aVal = a.add_to_cart_count || 0;
+                    bVal = b.add_to_cart_count || 0;
+                    break;
+                case 'purchases':
+                    aVal = a.purchase_count || 0;
+                    bVal = b.purchase_count || 0;
+                    break;
+                case 'conversion_rate':
+                    aVal = a.conversion_rate || 0;
+                    bVal = b.conversion_rate || 0;
+                    break;
+                default:
+                    return 0;
+            }
+            
+            if (typeof aVal === 'string') {
+                return popularProductsSort.direction === 'asc' 
+                    ? aVal.localeCompare(bVal)
+                    : bVal.localeCompare(aVal);
+            } else {
+                return popularProductsSort.direction === 'asc' 
+                    ? aVal - bVal
+                    : bVal - aVal;
+            }
+        });
+        
+        return sorted;
+    }, [popularProducts, popularProductsSort]);
+
+    // Sort link details data
+    const sortedLinkDetails = useMemo(() => {
+        if (!linkDetails || !linkDetails.links) return linkDetails;
+        if (!linkDetailsSort.column) return linkDetails;
+        
+        const sortedLinks = [...linkDetails.links].sort((a, b) => {
+            let aVal, bVal;
+            
+            switch (linkDetailsSort.column) {
+                case 'share_link':
+                    aVal = (a.share_token || '').toLowerCase();
+                    bVal = (b.share_token || '').toLowerCase();
+                    break;
+                case 'wishlist_name':
+                    aVal = (a.wishlist_name || '').toLowerCase();
+                    bVal = (b.wishlist_name || '').toLowerCase();
+                    break;
+                case 'items_count':
+                    aVal = a.items_count || 0;
+                    bVal = b.items_count || 0;
+                    break;
+                case 'click_count':
+                    aVal = a.click_count || 0;
+                    bVal = b.click_count || 0;
+                    break;
+                case 'share_type':
+                    aVal = (a.share_type || '').toLowerCase();
+                    bVal = (b.share_type || '').toLowerCase();
+                    break;
+                case 'created_date':
+                    aVal = a.date_created ? new Date(a.date_created).getTime() : 0;
+                    bVal = b.date_created ? new Date(b.date_created).getTime() : 0;
+                    break;
+                default:
+                    return 0;
+            }
+            
+            if (typeof aVal === 'string') {
+                return linkDetailsSort.direction === 'asc' 
+                    ? aVal.localeCompare(bVal)
+                    : bVal.localeCompare(aVal);
+            } else {
+                return linkDetailsSort.direction === 'asc' 
+                    ? aVal - bVal
+                    : bVal - aVal;
+            }
+        });
+        
+        return { ...linkDetails, links: sortedLinks };
+    }, [linkDetails, linkDetailsSort]);
+
+    // Helper to render sort icon
+    const renderSortIcon = (column, currentSort) => {
+        if (currentSort.column !== column) {
+            return <span className="sort-icon inactive"><ArrowUp size={14} /></span>;
+        }
+        return currentSort.direction === 'asc' 
+            ? <ArrowUp size={14} className="sort-icon active" />
+            : <ArrowDown size={14} className="sort-icon active" />;
     };
 
     if (isLoading) {
@@ -224,19 +355,79 @@ export const AnalyticsDashboard = () => {
             {popularProducts.length > 0 && (
                 <div className="popular-products-card wishcart-card">
                     <h3>Most Wishlisted Products</h3>
+                    <div className="section-filters">
+                        <div className="filter-group">
+                            <label htmlFor="popular-products-time-period">Time Period</label>
+                            <select
+                                id="popular-products-time-period"
+                                value={popularProductsTimePeriod}
+                                onChange={(e) => {
+                                    setPopularProductsTimePeriod(e.target.value);
+                                    setPopularProductsPage(1);
+                                }}
+                                className="time-period-select"
+                            >
+                                <option value="7days">Past 7 Days</option>
+                                <option value="30days">Past 30 Days</option>
+                                <option value="90days">Past 90 Days</option>
+                                <option value="365days">Past Year</option>
+                                <option value="all">All Time</option>
+                            </select>
+                        </div>
+                    </div>
                         <div className="products-table">
                             <table>
                                 <thead>
                                     <tr>
-                                        <th>Product</th>
-                                        <th>Wishlist Count</th>
-                                        <th>Add to Cart</th>
-                                        <th>Purchases</th>
-                                        <th>Conversion Rate</th>
+                                        <th 
+                                            className="sortable" 
+                                            onClick={() => handlePopularProductsSort('product')}
+                                        >
+                                            <span className="th-content">
+                                                Product
+                                                {renderSortIcon('product', popularProductsSort)}
+                                            </span>
+                                        </th>
+                                        <th 
+                                            className="sortable" 
+                                            onClick={() => handlePopularProductsSort('wishlist_count')}
+                                        >
+                                            <span className="th-content">
+                                                Wishlist Count
+                                                {renderSortIcon('wishlist_count', popularProductsSort)}
+                                            </span>
+                                        </th>
+                                        <th 
+                                            className="sortable" 
+                                            onClick={() => handlePopularProductsSort('add_to_cart')}
+                                        >
+                                            <span className="th-content">
+                                                Add to Cart
+                                                {renderSortIcon('add_to_cart', popularProductsSort)}
+                                            </span>
+                                        </th>
+                                        <th 
+                                            className="sortable" 
+                                            onClick={() => handlePopularProductsSort('purchases')}
+                                        >
+                                            <span className="th-content">
+                                                Purchases
+                                                {renderSortIcon('purchases', popularProductsSort)}
+                                            </span>
+                                        </th>
+                                        <th 
+                                            className="sortable" 
+                                            onClick={() => handlePopularProductsSort('conversion_rate')}
+                                        >
+                                            <span className="th-content">
+                                                Conversion Rate
+                                                {renderSortIcon('conversion_rate', popularProductsSort)}
+                                            </span>
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {popularProducts.map((product) => (
+                                    {sortedPopularProducts.map((product) => (
                                         <tr key={product.product_id}>
                                             <td>
                                                 <a href={product.product_url} target="_blank" rel="noopener noreferrer">
@@ -280,23 +471,91 @@ export const AnalyticsDashboard = () => {
                             </h3>
                             <span className="total-links-badge">Total Links: {linkDetails.total_links || 0}</span>
                         </div>
+                    <div className="section-filters">
+                        <div className="filter-group">
+                            <label htmlFor="link-details-time-period">Time Period</label>
+                            <select
+                                id="link-details-time-period"
+                                value={linkDetailsTimePeriod}
+                                onChange={(e) => {
+                                    setLinkDetailsTimePeriod(e.target.value);
+                                    setLinkDetailsPage(1);
+                                }}
+                                className="time-period-select"
+                            >
+                                <option value="7days">Past 7 Days</option>
+                                <option value="30days">Past 30 Days</option>
+                                <option value="90days">Past 90 Days</option>
+                                <option value="365days">Past Year</option>
+                                <option value="all">All Time</option>
+                            </select>
+                        </div>
+                    </div>
                         {linkDetails.links && linkDetails.links.length > 0 ? (
                             <>
                                 <div className="links-table">
                                     <table>
                                         <thead>
                                             <tr>
-                                                <th>Share Link</th>
-                                                <th>Wishlist Name</th>
-                                                <th>Items Count</th>
+                                                <th 
+                                                    className="sortable" 
+                                                    onClick={() => handleLinkDetailsSort('share_link')}
+                                                >
+                                                    <span className="th-content">
+                                                        Share Link
+                                                        {renderSortIcon('share_link', linkDetailsSort)}
+                                                    </span>
+                                                </th>
+                                                <th 
+                                                    className="sortable" 
+                                                    onClick={() => handleLinkDetailsSort('wishlist_name')}
+                                                >
+                                                    <span className="th-content">
+                                                        Wishlist Name
+                                                        {renderSortIcon('wishlist_name', linkDetailsSort)}
+                                                    </span>
+                                                </th>
+                                                <th 
+                                                    className="sortable" 
+                                                    onClick={() => handleLinkDetailsSort('items_count')}
+                                                >
+                                                    <span className="th-content">
+                                                        Items Count
+                                                        {renderSortIcon('items_count', linkDetailsSort)}
+                                                    </span>
+                                                </th>
                                                 <th>Products</th>
-                                                <th>Click Count</th>
-                                                <th>Share Type</th>
-                                                <th>Created Date</th>
+                                                <th 
+                                                    className="sortable" 
+                                                    onClick={() => handleLinkDetailsSort('click_count')}
+                                                >
+                                                    <span className="th-content">
+                                                        Click Count
+                                                        {renderSortIcon('click_count', linkDetailsSort)}
+                                                    </span>
+                                                </th>
+                                                <th 
+                                                    className="sortable" 
+                                                    onClick={() => handleLinkDetailsSort('share_type')}
+                                                >
+                                                    <span className="th-content">
+                                                        Share Type
+                                                        {renderSortIcon('share_type', linkDetailsSort)}
+                                                    </span>
+                                                </th>
+                                                <th 
+                                                    className="sortable" 
+                                                    onClick={() => handleLinkDetailsSort('created_date')}
+                                                >
+                                                    <span className="th-content">
+                                                        Created Date
+                                                        {renderSortIcon('created_date', linkDetailsSort)}
+                                                    </span>
+                                                </th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {linkDetails.links.map((link) => (
+                                            {sortedLinkDetails.links.map((link) => (
                                                 <tr key={link.share_id}>
                                                     <td>
                                                         <a 
