@@ -1309,13 +1309,15 @@ const copyWishlistLink = async () => {
                         placeholder="Select Wishlist"
                         className="wishlist-select-trigger"
                     />
-                    <Button
-                        onClick={createNewWishlist}
-                        className="create-wishlist-btn"
-                        variant="outline"
-                    >
-                        Create New
-                    </Button>
+                    {window.wishcartWishlist?.enableMultipleWishlists && (
+                        <Button
+                            onClick={createNewWishlist}
+                            className="create-wishlist-btn"
+                            variant="outline"
+                        >
+                            Create New
+                        </Button>
+                    )}
                     
                     {/* Privacy Control */}
                     {currentWishlist && !isViewingShared && (

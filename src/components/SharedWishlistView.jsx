@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Heart, ShoppingCart, Twitter, Mail, MessageCircle, Link2, Check } from 'lucide-react';
 import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
@@ -22,9 +22,23 @@ const SharedWishlistView = ({ shareToken }) => {
     const siteUrl = window.wishcartShared?.siteUrl || '';
     const isUserLoggedIn = window.wishcartShared?.isUserLoggedIn || false;
     const [linkCopied, setLinkCopied] = useState(false);
+    
+    // Use ref to prevent double-fetching when component mounts twice (React StrictMode)
+    const hasFetchedRef = useRef(false);
+    const lastShareTokenRef = useRef(null);
 
     useEffect(() => {
-        fetchSharedWishlist();
+        // Reset fetch flag if shareToken changed
+        if (lastShareTokenRef.current !== shareToken) {
+            hasFetchedRef.current = false;
+            lastShareTokenRef.current = shareToken;
+        }
+        
+        // Only fetch if we haven't already fetched for this shareToken
+        if (!hasFetchedRef.current) {
+            hasFetchedRef.current = true;
+            fetchSharedWishlist();
+        }
     }, [shareToken]);
 
     // Helper function to get unique key for product variant tracking

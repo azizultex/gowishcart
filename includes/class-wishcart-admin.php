@@ -2263,14 +2263,27 @@ JS;
                 }
             }
             
-            $product_data['variants'] = $variants;
-            $products[] = $product_data;
-        }
-        
-        // Track click
+        $product_data['variants'] = $variants;
+        $products[] = $product_data;
+    }
+    
+    // Track click with simple deduplication to prevent double counting from React StrictMode
+    // Use a very short transient (2 seconds) to prevent duplicate tracking within the same request cycle
+    // Key is based on share_token only - if same token is accessed within 2 seconds, skip tracking
+    $transient_key = 'wishcart_share_click_' . $share_token;
+    
+    // Check if this click was already tracked in the last 2 seconds (prevents double-mounting)
+    $already_tracked = get_transient($transient_key);
+    
+    if (!$already_tracked) {
+        // Track the click
         $sharing->track_share_click($share['share_id']);
         
-        // Log activity
+        // Set transient to prevent duplicate tracking (expires in 2 seconds)
+        set_transient($transient_key, time(), 2);
+    }
+    
+    // Log activity
         if (class_exists('wishcart_Activity_Logger')) {
             $logger = new wishcart_Activity_Logger();
             $session_id = isset($_COOKIE['wishcart_session']) ? sanitize_text_field($_COOKIE['wishcart_session']) : null;
