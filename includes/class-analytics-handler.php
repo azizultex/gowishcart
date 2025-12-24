@@ -174,21 +174,35 @@ class WishCart_Analytics_Handler {
     /**
      * Get popular products
      *
-     * @param int $limit Number of products to return
+     * @param int $limit Number of products to return (deprecated, use $per_page)
      * @param string $order_by Order by field (wishlist_count, conversion_rate, share_count)
-     * @return array Array of popular products with analytics
+     * @param int $page Current page number
+     * @param int $per_page Number of products per page
+     * @return array Array of popular products with analytics and pagination info
      */
-    public function get_popular_products($limit = 10, $order_by = 'wishlist_count') {
+    public function get_popular_products($limit = 10, $order_by = 'wishlist_count', $page = 1, $per_page = 10) {
         $valid_order_fields = array('wishlist_count', 'conversion_rate', 'share_count', 'add_to_cart_count', 'purchase_count');
         
         if (!in_array($order_by, $valid_order_fields)) {
             $order_by = 'wishlist_count';
         }
 
+        // Use per_page if provided, otherwise fall back to limit for backward compatibility
+        $items_per_page = $per_page > 0 ? $per_page : ($limit > 0 ? $limit : 10);
+        $current_page = max(1, intval($page));
+        $offset = ($current_page - 1) * $items_per_page;
+
+        // Get total count
+        $total = $this->wpdb->get_var(
+            "SELECT COUNT(*) FROM {$this->analytics_table} WHERE wishlist_count > 0"
+        );
+
+        // Get paginated results
         $results = $this->wpdb->get_results(
             $this->wpdb->prepare(
-                "SELECT * FROM {$this->analytics_table} WHERE wishlist_count > 0 ORDER BY {$order_by} DESC LIMIT %d",
-                $limit
+                "SELECT * FROM {$this->analytics_table} WHERE wishlist_count > 0 ORDER BY {$order_by} DESC LIMIT %d OFFSET %d",
+                $items_per_page,
+                $offset
             ),
             ARRAY_A
         );
@@ -214,7 +228,17 @@ class WishCart_Analytics_Handler {
             }
         }
 
-        return $products;
+        $total_pages = $items_per_page > 0 ? ceil($total / $items_per_page) : 1;
+
+        return array(
+            'products' => $products,
+            'pagination' => array(
+                'total' => intval($total),
+                'total_pages' => intval($total_pages),
+                'current_page' => $current_page,
+                'per_page' => $items_per_page,
+            ),
+        );
     }
 
     /**
@@ -515,25 +539,44 @@ class WishCart_Analytics_Handler {
     /**
      * Get link details with items and click counts
      *
-     * @return array Link details with items
+     * @param int $page Current page number
+     * @param int $per_page Number of links per page
+     * @return array Link details with items and pagination info
      */
-    public function get_link_details() {
-        // Get all active shares with wishlist info
-        $shares = $this->wpdb->get_results(
-            "SELECT 
-                s.share_id,
-                s.wishlist_id,
-                s.share_token,
-                s.share_type,
-                s.click_count,
-                s.conversion_count,
-                s.date_created,
-                s.last_clicked,
-                w.wishlist_name
+    public function get_link_details($page = 1, $per_page = 10) {
+        $current_page = max(1, intval($page));
+        $items_per_page = $per_page > 0 ? $per_page : 10;
+        $offset = ($current_page - 1) * $items_per_page;
+
+        // Get total count
+        $total = $this->wpdb->get_var(
+            "SELECT COUNT(*) 
             FROM {$this->shares_table} s
             INNER JOIN {$this->wishlists_table} w ON s.wishlist_id = w.id
-            WHERE s.status = 'active' AND w.status = 'active'
-            ORDER BY s.date_created DESC",
+            WHERE s.status = 'active' AND w.status = 'active'"
+        );
+
+        // Get paginated shares
+        $shares = $this->wpdb->get_results(
+            $this->wpdb->prepare(
+                "SELECT 
+                    s.share_id,
+                    s.wishlist_id,
+                    s.share_token,
+                    s.share_type,
+                    s.click_count,
+                    s.conversion_count,
+                    s.date_created,
+                    s.last_clicked,
+                    w.wishlist_name
+                FROM {$this->shares_table} s
+                INNER JOIN {$this->wishlists_table} w ON s.wishlist_id = w.id
+                WHERE s.status = 'active' AND w.status = 'active'
+                ORDER BY s.date_created DESC
+                LIMIT %d OFFSET %d",
+                $items_per_page,
+                $offset
+            ),
             ARRAY_A
         );
 
@@ -541,6 +584,12 @@ class WishCart_Analytics_Handler {
             return array(
                 'total_links' => 0,
                 'links' => array(),
+                'pagination' => array(
+                    'total' => 0,
+                    'total_pages' => 0,
+                    'current_page' => $current_page,
+                    'per_page' => $items_per_page,
+                ),
             );
         }
 
@@ -615,9 +664,17 @@ class WishCart_Analytics_Handler {
             );
         }
 
+        $total_pages = $items_per_page > 0 ? ceil($total / $items_per_page) : 1;
+
         return array(
-            'total_links' => count($links_data),
+            'total_links' => intval($total),
             'links' => $links_data,
+            'pagination' => array(
+                'total' => intval($total),
+                'total_pages' => intval($total_pages),
+                'current_page' => $current_page,
+                'per_page' => $items_per_page,
+            ),
         );
     }
 }

@@ -1991,13 +1991,15 @@ JS;
         $analytics = new WishCart_Analytics_Handler();
         $limit = $request->get_param('limit') ? intval($request->get_param('limit')) : 10;
         $order_by = $request->get_param('order_by') ? sanitize_text_field($request->get_param('order_by')) : 'wishlist_count';
+        $page = $request->get_param('page') ? intval($request->get_param('page')) : 1;
+        $per_page = $request->get_param('per_page') ? intval($request->get_param('per_page')) : 10;
         
-        $products = $analytics->get_popular_products($limit, $order_by);
+        $result = $analytics->get_popular_products($limit, $order_by, $page, $per_page);
         
         return rest_ensure_response(array(
             'success' => true,
-            'products' => $products,
-            'count' => count($products),
+            'products' => $result['products'],
+            'pagination' => $result['pagination'],
         ));
     }
 
@@ -2025,12 +2027,16 @@ JS;
      */
     public function analytics_get_links($request) {
         $analytics = new WishCart_Analytics_Handler();
-        $link_details = $analytics->get_link_details();
+        $page = $request->get_param('page') ? intval($request->get_param('page')) : 1;
+        $per_page = $request->get_param('per_page') ? intval($request->get_param('per_page')) : 10;
+        
+        $link_details = $analytics->get_link_details($page, $per_page);
         
         return rest_ensure_response(array(
             'success' => true,
             'total_links' => $link_details['total_links'],
             'links' => $link_details['links'],
+            'pagination' => $link_details['pagination'],
         ));
     }
 

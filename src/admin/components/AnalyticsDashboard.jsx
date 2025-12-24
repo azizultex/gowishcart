@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { TrendingUp, Heart, ShoppingCart, Share2, Users, BarChart, Link as LinkIcon } from 'lucide-react';
+import Pagination from './Pagination';
 import '../../styles/Analytics.scss';
 
 export const AnalyticsDashboard = () => {
@@ -8,6 +9,16 @@ export const AnalyticsDashboard = () => {
     const [conversionData, setConversionData] = useState(null);
     const [linkDetails, setLinkDetails] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    
+    // Pagination state for popular products
+    const [popularProductsPage, setPopularProductsPage] = useState(1);
+    const [popularProductsPerPage] = useState(10);
+    const [popularProductsPagination, setPopularProductsPagination] = useState(null);
+    
+    // Pagination state for link details
+    const [linkDetailsPage, setLinkDetailsPage] = useState(1);
+    const [linkDetailsPerPage] = useState(10);
+    const [linkDetailsPagination, setLinkDetailsPagination] = useState(null);
 
     const apiUrl = window.wishcartSettings?.apiUrl || '/wp-json/wishcart/v1/';
     const nonce = window.wishcartSettings?.nonce;
@@ -15,6 +26,14 @@ export const AnalyticsDashboard = () => {
     useEffect(() => {
         fetchAnalytics();
     }, []);
+
+    useEffect(() => {
+        fetchPopularProducts();
+    }, [popularProductsPage]);
+
+    useEffect(() => {
+        fetchLinkDetails();
+    }, [linkDetailsPage]);
 
     const fetchAnalytics = async () => {
         setIsLoading(true);
@@ -28,15 +47,6 @@ export const AnalyticsDashboard = () => {
                 setOverview(overviewData.data);
             }
 
-            // Fetch popular products
-            const popularRes = await fetch(`${apiUrl}analytics/popular?limit=10`, {
-                headers: { 'X-WP-Nonce': nonce },
-            });
-            if (popularRes.ok) {
-                const popularData = await popularRes.json();
-                setPopularProducts(popularData.products || []);
-            }
-
             // Fetch conversion funnel
             const conversionRes = await fetch(`${apiUrl}analytics/conversion`, {
                 headers: { 'X-WP-Nonce': nonce },
@@ -46,18 +56,51 @@ export const AnalyticsDashboard = () => {
                 setConversionData(conversionData.data);
             }
 
-            // Fetch link details
-            const linksRes = await fetch(`${apiUrl}analytics/links`, {
-                headers: { 'X-WP-Nonce': nonce },
-            });
-            if (linksRes.ok) {
-                const linksData = await linksRes.json();
-                setLinkDetails(linksData);
-            }
+            // Fetch initial data for paginated tables
+            await Promise.all([
+                fetchPopularProducts(),
+                fetchLinkDetails(),
+            ]);
         } catch (err) {
             console.error('Error fetching analytics:', err);
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const fetchPopularProducts = async () => {
+        try {
+            const popularRes = await fetch(
+                `${apiUrl}analytics/popular?page=${popularProductsPage}&per_page=${popularProductsPerPage}`,
+                {
+                    headers: { 'X-WP-Nonce': nonce },
+                }
+            );
+            if (popularRes.ok) {
+                const popularData = await popularRes.json();
+                setPopularProducts(popularData.products || []);
+                setPopularProductsPagination(popularData.pagination || null);
+            }
+        } catch (err) {
+            console.error('Error fetching popular products:', err);
+        }
+    };
+
+    const fetchLinkDetails = async () => {
+        try {
+            const linksRes = await fetch(
+                `${apiUrl}analytics/links?page=${linkDetailsPage}&per_page=${linkDetailsPerPage}`,
+                {
+                    headers: { 'X-WP-Nonce': nonce },
+                }
+            );
+            if (linksRes.ok) {
+                const linksData = await linksRes.json();
+                setLinkDetails(linksData);
+                setLinkDetailsPagination(linksData.pagination || null);
+            }
+        } catch (err) {
+            console.error('Error fetching link details:', err);
         }
     };
 
@@ -215,6 +258,15 @@ export const AnalyticsDashboard = () => {
                                 </tbody>
                             </table>
                         </div>
+                        {popularProductsPagination && (
+                            <Pagination
+                                currentPage={popularProductsPagination.current_page}
+                                totalPages={popularProductsPagination.total_pages}
+                                totalItems={popularProductsPagination.total}
+                                perPage={popularProductsPagination.per_page}
+                                onPageChange={setPopularProductsPage}
+                            />
+                        )}
                 </div>
             )}
 
@@ -229,70 +281,81 @@ export const AnalyticsDashboard = () => {
                             <span className="total-links-badge">Total Links: {linkDetails.total_links || 0}</span>
                         </div>
                         {linkDetails.links && linkDetails.links.length > 0 ? (
-                            <div className="links-table">
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>Share Link</th>
-                                            <th>Wishlist Name</th>
-                                            <th>Items Count</th>
-                                            <th>Products</th>
-                                            <th>Click Count</th>
-                                            <th>Share Type</th>
-                                            <th>Created Date</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {linkDetails.links.map((link) => (
-                                            <tr key={link.share_id}>
-                                                <td>
-                                                    <a 
-                                                        href={link.share_url} 
-                                                        target="_blank" 
-                                                        rel="noopener noreferrer"
-                                                        className="share-link"
-                                                        title={link.share_url}
-                                                    >
-                                                        {link.share_token.substring(0, 20)}...
-                                                    </a>
-                                                </td>
-                                                <td>{link.wishlist_name}</td>
-                                                <td>
-                                                    <span className="badge">{link.items_count}</span>
-                                                </td>
-                                                <td>
-                                                    <div className="products-list">
-                                                        {link.items && link.items.length > 0 ? (
-                                                            link.items.slice(0, 3).map((item, idx) => (
-                                                                <span key={idx} className="product-tag">
-                                                                    {item.product_name}
-                                                                    {item.quantity > 1 && ` (x${item.quantity})`}
-                                                                </span>
-                                                            ))
-                                                        ) : (
-                                                            <span className="no-items">No items</span>
-                                                        )}
-                                                        {link.items && link.items.length > 3 && (
-                                                            <span className="more-items">+{link.items.length - 3} more</span>
-                                                        )}
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <span className={`click-count ${link.click_count > 0 ? 'has-clicks' : ''}`}>
-                                                        {link.click_count}
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <span className="share-type-badge">{link.share_type}</span>
-                                                </td>
-                                                <td>
-                                                    {link.date_created ? new Date(link.date_created).toLocaleDateString() : '-'}
-                                                </td>
+                            <>
+                                <div className="links-table">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Share Link</th>
+                                                <th>Wishlist Name</th>
+                                                <th>Items Count</th>
+                                                <th>Products</th>
+                                                <th>Click Count</th>
+                                                <th>Share Type</th>
+                                                <th>Created Date</th>
                                             </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
+                                        </thead>
+                                        <tbody>
+                                            {linkDetails.links.map((link) => (
+                                                <tr key={link.share_id}>
+                                                    <td>
+                                                        <a 
+                                                            href={link.share_url} 
+                                                            target="_blank" 
+                                                            rel="noopener noreferrer"
+                                                            className="share-link"
+                                                            title={link.share_url}
+                                                        >
+                                                            {link.share_token.substring(0, 20)}...
+                                                        </a>
+                                                    </td>
+                                                    <td>{link.wishlist_name}</td>
+                                                    <td>
+                                                        <span className="badge">{link.items_count}</span>
+                                                    </td>
+                                                    <td>
+                                                        <div className="products-list">
+                                                            {link.items && link.items.length > 0 ? (
+                                                                link.items.slice(0, 3).map((item, idx) => (
+                                                                    <span key={idx} className="product-tag">
+                                                                        {item.product_name}
+                                                                        {item.quantity > 1 && ` (x${item.quantity})`}
+                                                                    </span>
+                                                                ))
+                                                            ) : (
+                                                                <span className="no-items">No items</span>
+                                                            )}
+                                                            {link.items && link.items.length > 3 && (
+                                                                <span className="more-items">+{link.items.length - 3} more</span>
+                                                            )}
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <span className={`click-count ${link.click_count > 0 ? 'has-clicks' : ''}`}>
+                                                            {link.click_count}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <span className="share-type-badge">{link.share_type}</span>
+                                                    </td>
+                                                    <td>
+                                                        {link.date_created ? new Date(link.date_created).toLocaleDateString() : '-'}
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                {linkDetailsPagination && (
+                                    <Pagination
+                                        currentPage={linkDetailsPagination.current_page}
+                                        totalPages={linkDetailsPagination.total_pages}
+                                        totalItems={linkDetailsPagination.total}
+                                        perPage={linkDetailsPagination.per_page}
+                                        onPageChange={setLinkDetailsPage}
+                                    />
+                                )}
+                            </>
                         ) : (
                             <div className="empty-state">
                                 <p>No share links found.</p>
