@@ -54,11 +54,7 @@ const IntegrationsSettings = () => {
                                 marginBottom: index < integrations.length - 1 ? '32px' : '0',
                             }}
                         >
-                            <h3>{integration.name}</h3>
-                            {integration.description && (
-                                <p className="description">{integration.description}</p>
-                            )}
-                            <div style={{ marginTop: '24px' }}>
+                            <div style={{ marginTop: '0' }}>
                                 <IntegrationComponent embedded={true} />
                             </div>
                         </div>
