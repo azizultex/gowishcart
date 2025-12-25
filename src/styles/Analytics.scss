@@ -287,6 +287,29 @@
                             }
                         }
 
+                        .user-name {
+                            font-size: 13px;
+                            color: var(--wishcart-text-primary);
+                        }
+
+                        .user-email {
+                            font-size: 13px;
+
+                            a {
+                                color: var(--wishcart-primary);
+                                text-decoration: none;
+
+                                &:hover {
+                                    text-decoration: underline;
+                                }
+                            }
+                        }
+
+                        .no-data {
+                            color: var(--wishcart-text-muted);
+                            font-style: italic;
+                        }
+
                         .products-list {
                             display: flex;
                             flex-wrap: wrap;
@@ -490,6 +513,39 @@
                         &.high {
                             @extend .wishcart-badge-success;
                         }
+                    }
+
+                    .users-list,
+                    .emails-list {
+                        display: flex;
+                        flex-wrap: wrap;
+                        gap: var(--wishcart-space-xs);
+                        max-width: 250px;
+
+                        .user-name,
+                        .user-email {
+                            font-size: 13px;
+                            color: var(--wishcart-text-primary);
+
+                            a {
+                                color: var(--wishcart-primary);
+                                text-decoration: none;
+
+                                &:hover {
+                                    text-decoration: underline;
+                                }
+                            }
+                        }
+
+                        .no-email {
+                            color: var(--wishcart-text-muted);
+                            font-style: italic;
+                        }
+                    }
+
+                    .no-data {
+                        color: var(--wishcart-text-muted);
+                        font-style: italic;
                     }
                 }
             }

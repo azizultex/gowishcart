@@ -19,6 +19,8 @@ class WishCart_Analytics_Handler {
     private $items_table;
     private $wishlists_table;
     private $shares_table;
+    private $guest_users_table;
+    private $notifications_table;
 
     /**
      * Constructor
@@ -30,6 +32,8 @@ class WishCart_Analytics_Handler {
         $this->items_table = $wpdb->prefix . 'fc_wishlist_items';
         $this->wishlists_table = $wpdb->prefix . 'fc_wishlists';
         $this->shares_table = $wpdb->prefix . 'fc_wishlist_shares';
+        $this->guest_users_table = $wpdb->prefix . 'fc_wishlist_guest_users';
+        $this->notifications_table = $wpdb->prefix . 'fc_wishlist_notifications';
     }
 
     /**
@@ -192,6 +196,80 @@ class WishCart_Analytics_Handler {
     }
 
     /**
+     * Get user information (name and email) from user_id or session_id
+     *
+     * @param int|null $user_id User ID
+     * @param string|null $session_id Session ID
+     * @param int|null $wishlist_id Optional wishlist ID for notification fallback
+     * @return array Array with 'user_name' and 'email'
+     */
+    private function get_user_info($user_id = null, $session_id = null, $wishlist_id = null) {
+        $user_name = null;
+        $email = null;
+
+        // If user_id exists, get from WordPress users table
+        if (!empty($user_id)) {
+            $user = get_userdata($user_id);
+            if ($user) {
+                $user_name = $user->display_name ? $user->display_name : $user->user_login;
+                $email = $user->user_email;
+            }
+        }
+        // If session_id exists, get from guest users table
+        elseif (!empty($session_id)) {
+            $guest = $this->wpdb->get_row(
+                $this->wpdb->prepare(
+                    "SELECT guest_email, guest_name FROM {$this->guest_users_table} WHERE session_id = %s ORDER BY date_created DESC LIMIT 1",
+                    $session_id
+                ),
+                ARRAY_A
+            );
+
+            if ($guest) {
+                $user_name = !empty($guest['guest_name']) ? $guest['guest_name'] : __('Guest', 'wishcart');
+                $email = !empty($guest['guest_email']) ? $guest['guest_email'] : null;
+            }
+
+            // If no email found in guest_users, check notifications table as fallback
+            if (empty($email)) {
+                if (!empty($wishlist_id)) {
+                    // Use wishlist_id directly if provided (more efficient)
+                    $notification = $this->wpdb->get_var(
+                        $this->wpdb->prepare(
+                            "SELECT email_to FROM {$this->notifications_table} 
+                            WHERE wishlist_id = %d
+                            AND email_to IS NOT NULL AND email_to != ''
+                            ORDER BY date_created DESC LIMIT 1",
+                            $wishlist_id
+                        )
+                    );
+                } else {
+                    // Fallback to subquery if wishlist_id not provided
+                    $notification = $this->wpdb->get_var(
+                        $this->wpdb->prepare(
+                            "SELECT email_to FROM {$this->notifications_table} 
+                            WHERE wishlist_id IN (SELECT id FROM {$this->wishlists_table} WHERE session_id = %s)
+                            AND email_to IS NOT NULL AND email_to != ''
+                            ORDER BY date_created DESC LIMIT 1",
+                            $session_id
+                        )
+                    );
+                }
+
+                if ($notification) {
+                    $email = $notification;
+                }
+            }
+        }
+
+        return array(
+            'user_name' => $user_name ? $user_name : __('Guest', 'wishcart'),
+            'email' => $email ? $email : null,
+            'is_guest' => empty($user_id),
+        );
+    }
+
+    /**
      * Get popular products
      *
      * @param int $limit Number of products to return (deprecated, use $per_page)
@@ -268,6 +346,41 @@ class WishCart_Analytics_Handler {
         foreach ($results as $row) {
             $product = WishCart_FluentCart_Helper::get_product($row['product_id']);
             if ($product) {
+                // Get all wishlist items for this product
+                $items = $this->wpdb->get_results(
+                    $this->wpdb->prepare(
+                        "SELECT i.wishlist_id, w.user_id, w.session_id
+                        FROM {$this->items_table} i
+                        INNER JOIN {$this->wishlists_table} w ON i.wishlist_id = w.id
+                        WHERE i.product_id = %d AND i.variation_id = %d 
+                        AND i.status = 'active' AND w.status = 'active'",
+                        $row['product_id'],
+                        $row['variation_id']
+                    ),
+                    ARRAY_A
+                );
+
+                // Aggregate unique users/emails for this product
+                $users_map = array();
+                foreach ($items as $item) {
+                    $user_info = $this->get_user_info(
+                        !empty($item['user_id']) ? intval($item['user_id']) : null,
+                        !empty($item['session_id']) ? $item['session_id'] : null,
+                        !empty($item['wishlist_id']) ? intval($item['wishlist_id']) : null
+                    );
+
+                    // Use email as key to avoid duplicates, or user_id/session_id if no email
+                    $key = $user_info['email'] ? $user_info['email'] : 
+                           (!empty($item['user_id']) ? 'user_' . $item['user_id'] : 'session_' . $item['session_id']);
+
+                    if (!isset($users_map[$key])) {
+                        $users_map[$key] = $user_info;
+                    }
+                }
+
+                // Convert map to array
+                $users = array_values($users_map);
+
                 $products[] = array(
                     'product_id' => $row['product_id'],
                     'variation_id' => $row['variation_id'],
@@ -280,6 +393,7 @@ class WishCart_Analytics_Handler {
                     'share_count' => intval($row['share_count']),
                     'conversion_rate' => floatval($row['conversion_rate']),
                     'average_days_in_wishlist' => floatval($row['average_days_in_wishlist']),
+                    'users' => $users,
                 );
             }
         }
@@ -653,7 +767,9 @@ class WishCart_Analytics_Handler {
                         s.conversion_count,
                         s.date_created,
                         s.last_clicked,
-                        w.wishlist_name
+                        w.wishlist_name,
+                        w.user_id,
+                        w.session_id
                     FROM {$this->shares_table} s
                     INNER JOIN {$this->wishlists_table} w ON s.wishlist_id = w.id
                     WHERE {$where_clause}
@@ -675,7 +791,9 @@ class WishCart_Analytics_Handler {
                         s.conversion_count,
                         s.date_created,
                         s.last_clicked,
-                        w.wishlist_name
+                        w.wishlist_name,
+                        w.user_id,
+                        w.session_id
                     FROM {$this->shares_table} s
                     INNER JOIN {$this->wishlists_table} w ON s.wishlist_id = w.id
                     WHERE {$where_clause}
@@ -756,6 +874,13 @@ class WishCart_Analytics_Handler {
                 }
             }
 
+            // Get user information
+            $user_info = $this->get_user_info(
+                !empty($share['user_id']) ? intval($share['user_id']) : null,
+                !empty($share['session_id']) ? $share['session_id'] : null,
+                !empty($share['wishlist_id']) ? intval($share['wishlist_id']) : null
+            );
+
             $links_data[] = array(
                 'share_id' => intval($share['share_id']),
                 'share_token' => $share['share_token'],
@@ -769,6 +894,8 @@ class WishCart_Analytics_Handler {
                 'items' => $items_data,
                 'date_created' => $share['date_created'],
                 'last_clicked' => $share['last_clicked'],
+                'user_name' => $user_info['user_name'],
+                'user_email' => $user_info['email'],
             );
         }
 

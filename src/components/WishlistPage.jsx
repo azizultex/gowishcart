@@ -990,12 +990,6 @@ const WishlistPage = () => {
             return null;
         }
 
-        console.log('currentWishlist', currentWishlist);
-        if(currentWishlist.privacy_status === 'private'){
-            console.log('x');
-            return false;
-        }
-
         // Check privacy status - do not generate share link for private wishlists
         if (currentWishlist.privacy_status === 'private') {
             setSuccessMessage('This wishlist is private. Please change privacy to "Shared" to share it.');
@@ -1027,20 +1021,35 @@ const WishlistPage = () => {
                 if (data.success && data.share_url) {
                     setShareLink(data.share_url);
                     return data.share_url;
+                } else {
+                    // API returned success but no share_url
+                    const errorMsg = data.message || 'Failed to generate share link. The response was invalid.';
+                    setSuccessMessage(errorMsg);
+                    setIsSuccessModalOpen(true);
+                    return null;
                 }
             } else {
-                const errorData = await response.json();
-                alert(errorData.message || 'Failed to create share link. Please try again.');
+                // Handle non-OK responses
+                let errorMessage = 'Failed to create share link. Please try again.';
+                try {
+                    const errorData = await response.json();
+                    errorMessage = errorData.message || errorData.error || errorMessage;
+                } catch (parseError) {
+                    // If response is not JSON, use status text
+                    errorMessage = `Failed to create share link (${response.status}). Please try again.`;
+                }
+                setSuccessMessage(errorMessage);
+                setIsSuccessModalOpen(true);
+                return null;
             }
         } catch (err) {
             console.error('Error generating share link:', err);
-            alert('Failed to create share link. Please try again.');
+            setSuccessMessage('Network error. Failed to create share link. Please check your connection and try again.');
+            setIsSuccessModalOpen(true);
+            return null;
         } finally {
             setIsGeneratingShare(false);
         }
-        
-        // If we reach here, something went wrong; do not fall back to current URL
-        return null;
     };
 
     // Get wishlist share URL (async wrapper)
@@ -1122,14 +1131,42 @@ const copyWishlistLink = async () => {
 
     try {
         const url = await getWishlistShareUrl();
-        if (!url) return;
+        if (!url) {
+            setSuccessMessage('Failed to generate share link. Please try again.');
+            setIsSuccessModalOpen(true);
+            return;
+        }
 
         await navigator.clipboard.writeText(url);
         setLinkCopied(true);
+        setSuccessMessage('Share link copied to clipboard!');
+        setIsSuccessModalOpen(true);
         setTimeout(() => setLinkCopied(false), 2000);
     } catch (error) {
         console.error('Failed to copy link:', error);
-        // Fallback path can also early-return if !url after re-fetch
+        setSuccessMessage('Failed to copy link to clipboard. Please try again.');
+        setIsSuccessModalOpen(true);
+        
+        // Fallback for older browsers or when clipboard API fails
+        try {
+            const url = await getWishlistShareUrl();
+            if (url) {
+                const textArea = document.createElement('textarea');
+                textArea.value = url;
+                textArea.style.position = 'fixed';
+                textArea.style.opacity = '0';
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                setLinkCopied(true);
+                setSuccessMessage('Share link copied to clipboard!');
+                setIsSuccessModalOpen(true);
+                setTimeout(() => setLinkCopied(false), 2000);
+            }
+        } catch (fallbackError) {
+            console.error('Fallback copy failed:', fallbackError);
+        }
     }
 };
 

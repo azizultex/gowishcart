@@ -388,6 +388,8 @@ export const AnalyticsDashboard = () => {
                                                 {renderSortIcon('product', popularProductsSort)}
                                             </span>
                                         </th>
+                                        <th>User</th>
+                                        <th>Email</th>
                                         <th 
                                             className="sortable" 
                                             onClick={() => handlePopularProductsSort('wishlist_count')}
@@ -433,6 +435,38 @@ export const AnalyticsDashboard = () => {
                                                 <a href={product.product_url} target="_blank" rel="noopener noreferrer">
                                                     {product.product_name}
                                                 </a>
+                                            </td>
+                                            <td>
+                                                {product.users && product.users.length > 0 ? (
+                                                    <div className="users-list">
+                                                        {product.users.map((user, idx) => (
+                                                            <span key={idx} className="user-name">
+                                                                {user.user_name}
+                                                                {idx < product.users.length - 1 && ', '}
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                ) : (
+                                                    <span className="no-data">-</span>
+                                                )}
+                                            </td>
+                                            <td>
+                                                {product.users && product.users.length > 0 ? (
+                                                    <div className="emails-list">
+                                                        {product.users.map((user, idx) => (
+                                                            <span key={idx} className="user-email">
+                                                                {user.email ? (
+                                                                    <a href={`mailto:${user.email}`}>{user.email}</a>
+                                                                ) : (
+                                                                    <span className="no-email">-</span>
+                                                                )}
+                                                                {idx < product.users.length - 1 && ', '}
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                ) : (
+                                                    <span className="no-data">-</span>
+                                                )}
                                             </td>
                                             <td>
                                                 <span className="badge">{product.wishlist_count}</span>
@@ -515,6 +549,8 @@ export const AnalyticsDashboard = () => {
                                                         {renderSortIcon('wishlist_name', linkDetailsSort)}
                                                     </span>
                                                 </th>
+                                                <th>User</th>
+                                                <th>Email</th>
                                                 <th 
                                                     className="sortable" 
                                                     onClick={() => handleLinkDetailsSort('items_count')}
@@ -569,6 +605,22 @@ export const AnalyticsDashboard = () => {
                                                         </a>
                                                     </td>
                                                     <td>{link.wishlist_name}</td>
+                                                    <td>
+                                                        {link.user_name ? (
+                                                            <span className="user-name">{link.user_name}</span>
+                                                        ) : (
+                                                            <span className="no-data">-</span>
+                                                        )}
+                                                    </td>
+                                                    <td>
+                                                        {link.user_email ? (
+                                                            <a href={`mailto:${link.user_email}`} className="user-email">
+                                                                {link.user_email}
+                                                            </a>
+                                                        ) : (
+                                                            <span className="no-data">-</span>
+                                                        )}
+                                                    </td>
                                                     <td>
                                                         <span className="badge">{link.items_count}</span>
                                                     </td>
