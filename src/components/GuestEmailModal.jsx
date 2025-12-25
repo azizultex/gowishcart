@@ -109,6 +109,14 @@ const GuestEmailModal = ({ isOpen, onClose, onEmailSubmitted }) => {
     return (
         <div className="wishcart-modal-overlay" onClick={onClose}>
             <div className="wishcart-modal wishcart-email-modal" onClick={(e) => e.stopPropagation()}>
+                <button 
+                    className="wishcart-modal-close" 
+                    onClick={onClose}
+                    aria-label="Close"
+                    disabled={isSubmitting}
+                >
+                    <X size={18} />
+                </button>
                 <div className="wishcart-modal-header">
                     <div className="wishcart-modal-header-content">
                         <div className="wishcart-modal-icon">
@@ -116,14 +124,6 @@ const GuestEmailModal = ({ isOpen, onClose, onEmailSubmitted }) => {
                         </div>
                         <h2>Get Notified About Your Wishlist</h2>
                     </div>
-                    <button 
-                        className="wishcart-modal-close" 
-                        onClick={onClose}
-                        aria-label="Close"
-                        disabled={isSubmitting}
-                    >
-                        <X size={20} />
-                    </button>
                 </div>
 
                 <div className="wishcart-modal-body">
@@ -139,10 +139,6 @@ const GuestEmailModal = ({ isOpen, onClose, onEmailSubmitted }) => {
 
                     <form onSubmit={handleSubmit} className="wishcart-email-form">
                         <div className="wishcart-email-input-wrapper">
-                            <label htmlFor="guest-email" className="wishcart-email-label">
-                                <Mail size={16} />
-                                <span>Email Address</span>
-                            </label>
                             <div className={`wishcart-input-container ${focused ? 'focused' : ''} ${error ? 'error' : ''}`}>
                                 <Mail size={18} className="wishcart-input-icon" />
                                 <input
