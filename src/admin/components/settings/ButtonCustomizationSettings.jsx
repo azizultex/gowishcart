@@ -497,7 +497,7 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value="predefined" id={`${iconType}_predefined`} />
                         <Label htmlFor={`${iconType}_predefined`} className="cursor-pointer">
-                            {__('Predefined Icon', 'wishcart')}
+                            {__('Default Icon', 'wishcart')}
                         </Label>
                     </div>
                     <div className="flex items-center space-x-2">

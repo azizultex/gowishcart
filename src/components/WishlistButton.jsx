@@ -1094,7 +1094,7 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
             );
         }
 
-        // Handle predefined icon
+        // Handle Default Icon
         const iconValue = currentIcon.value || 'Heart';
         const IconComponent = LucideIcons[iconValue] || Heart;
         
