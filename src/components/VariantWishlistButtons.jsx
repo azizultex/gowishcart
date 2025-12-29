@@ -311,6 +311,152 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
             styles.backgroundColor = background;
         }
     };
+
+    // Generate a simple hash from a string for unique class names
+    const generateHash = (str) => {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            const char = str.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash; // Convert to 32bit integer
+        }
+        return Math.abs(hash).toString(36);
+    };
+
+    // Generate CSS rules as a string instead of inline styles
+    const generateButtonCSS = (className, settings, isActive, buttonStyleVar, customStylesObj, fallbackColors) => {
+        const cssRules = [];
+        const baseSelector = `.${className}`;
+        
+        // Start with base styles
+        cssRules.push(`${baseSelector} {`);
+        
+        // Apply button style variations
+        if (buttonStyleVar === 'text-icon-link' || buttonStyleVar === 'icon-only' || buttonStyleVar === 'text-only-link') {
+            cssRules.push('  background: transparent !important;');
+            cssRules.push('  background-color: transparent !important;');
+            cssRules.push('  border: none !important;');
+            cssRules.push('  border-color: transparent !important;');
+            cssRules.push('  padding: 0 !important;');
+            cssRules.push('  box-shadow: none !important;');
+            cssRules.push('  width: auto !important;');
+            cssRules.push('  min-height: auto !important;');
+        }
+        
+        // Check if we should use fallback colors
+        const useFallback = !settings || Object.keys(settings).length === 0 || (!settings.backgroundColor && fallbackColors?.background);
+        
+        if (useFallback && fallbackColors) {
+            // Apply fallback colors structure
+            if (fallbackColors.background) {
+                cssRules.push(`  --wishlist-bg: ${fallbackColors.background} !important;`);
+            }
+            if (fallbackColors.text) {
+                cssRules.push(`  --wishlist-text: ${fallbackColors.text} !important;`);
+            }
+            if (fallbackColors.border) {
+                cssRules.push(`  --wishlist-border: ${fallbackColors.border} !important;`);
+            }
+            if (fallbackColors.activeBackground) {
+                cssRules.push(`  --wishlist-active-bg: ${fallbackColors.activeBackground} !important;`);
+            }
+            if (fallbackColors.activeText) {
+                cssRules.push(`  --wishlist-active-text: ${fallbackColors.activeText} !important;`);
+            }
+            if (fallbackColors.activeBorder) {
+                cssRules.push(`  --wishlist-active-border: ${fallbackColors.activeBorder} !important;`);
+            }
+            if (fallbackColors.hoverBackground) {
+                cssRules.push(`  --wishlist-hover-bg: ${fallbackColors.hoverBackground} !important;`);
+            }
+            if (fallbackColors.hoverText) {
+                cssRules.push(`  --wishlist-hover-text: ${fallbackColors.hoverText} !important;`);
+            }
+
+            if (!isActive) {
+                if (fallbackColors.background) {
+                    if (isGradientValue(fallbackColors.background)) {
+                        cssRules.push(`  background: ${fallbackColors.background} !important;`);
+                    } else {
+                        cssRules.push(`  background-color: ${fallbackColors.background} !important;`);
+                    }
+                }
+                if (fallbackColors.text) {
+                    cssRules.push(`  color: ${fallbackColors.text} !important;`);
+                }
+                if (fallbackColors.border) {
+                    cssRules.push(`  border-color: ${fallbackColors.border} !important;`);
+                }
+            } else {
+                if (fallbackColors.activeBackground) {
+                    if (isGradientValue(fallbackColors.activeBackground)) {
+                        cssRules.push(`  background: ${fallbackColors.activeBackground} !important;`);
+                    } else {
+                        cssRules.push(`  background-color: ${fallbackColors.activeBackground} !important;`);
+                    }
+                }
+                if (fallbackColors.activeText) {
+                    cssRules.push(`  color: ${fallbackColors.activeText} !important;`);
+                }
+                if (fallbackColors.activeBorder) {
+                    cssRules.push(`  border-color: ${fallbackColors.activeBorder} !important;`);
+                }
+            }
+        } else if (settings) {
+            // Apply specific settings
+            if (settings.backgroundColor) {
+                if (isGradientValue(settings.backgroundColor)) {
+                    cssRules.push(`  background: ${settings.backgroundColor} !important;`);
+                } else {
+                    cssRules.push(`  background-color: ${settings.backgroundColor} !important;`);
+                }
+            }
+            if (settings.buttonTextColor) {
+                cssRules.push(`  color: ${settings.buttonTextColor} !important;`);
+            }
+            if (settings.font && settings.font !== 'default') {
+                cssRules.push(`  font-family: ${settings.font} !important;`);
+            }
+            if (settings.fontSize) {
+                cssRules.push(`  font-size: ${settings.fontSize} !important;`);
+            }
+            if (settings.borderRadius) {
+                cssRules.push(`  border-radius: ${settings.borderRadius} !important;`);
+            }
+            if (settings.iconSize) {
+                cssRules.push(`  --icon-size: ${settings.iconSize} !important;`);
+            }
+            
+            // Apply hover colors as CSS variables
+            if (settings.backgroundHoverColor) {
+                cssRules.push(`  --wishlist-hover-bg: ${settings.backgroundHoverColor} !important;`);
+            }
+            if (settings.buttonTextHoverColor) {
+                cssRules.push(`  --wishlist-hover-text: ${settings.buttonTextHoverColor} !important;`);
+            }
+        }
+        
+        // Apply custom styles if provided
+        if (customStylesObj) {
+            Object.entries(customStylesObj).forEach(([key, value]) => {
+                if (value !== undefined && value !== null) {
+                    const cssKey = key.replace(/([A-Z])/g, '-$1').toLowerCase();
+                    cssRules.push(`  ${cssKey}: ${value} !important;`);
+                }
+            });
+        }
+        
+        cssRules.push('}');
+        
+        // Icon size handling - use iconSize from settings if available
+        const iconSize = (settings && settings.iconSize) ? settings.iconSize : '1.125rem';
+        cssRules.push(`${baseSelector} .wishcart-wishlist-button__icon {`);
+        cssRules.push(`  width: ${iconSize} !important;`);
+        cssRules.push(`  height: ${iconSize} !important;`);
+        cssRules.push('}');
+        
+        return cssRules.join('\n');
+    };
     
     // Get button style variation from customization settings
     const buttonStyle = customization.buttonStyle || 'button';
@@ -358,19 +504,6 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
 
     const getIconComponent = () => {
         const currentIcon = isInWishlist ? savedWishlistIcon : addToWishlistIcon;
-        // Use saved settings if in wishlist, otherwise use add settings
-        // Always use product_page settings for consistent styling everywhere
-        let settings;
-        if (isInWishlist) {
-            settings = savedProductPage;
-            // Fallback to add state settings if saved settings are not available
-            if (!settings || Object.keys(settings).length === 0) {
-                settings = productPage;
-            }
-        } else {
-            settings = productPage;
-        }
-        const iconSize = settings.iconSize || '1.125rem';
         
         if (currentIcon.type === 'custom' && currentIcon.customUrl) {
             return (
@@ -378,7 +511,6 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
                     src={currentIcon.customUrl}
                     alt=""
                     className={cn("wishcart-wishlist-button__icon", isInWishlist && "wishcart-wishlist-button__icon--filled")}
-                    style={{ width: iconSize, height: iconSize }}
                 />
             );
         }
@@ -389,111 +521,95 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
         return (
             <IconComponent 
                 className={cn("wishcart-wishlist-button__icon", isInWishlist && "wishcart-wishlist-button__icon--filled")}
-                style={{ width: iconSize, height: iconSize }}
             />
         );
     };
 
-    const buildButtonStyles = () => {
-        const baseStyles = customStyles || {};
-        const dynamicStyles = {};
-
-        // Use saved settings if in wishlist, otherwise use add settings
-        // Always use product_page settings for consistent styling everywhere
-        let settings;
+    // Get settings for current button state
+    const getCurrentSettings = () => {
         if (isInWishlist) {
-            // Use saved state settings
-            settings = savedProductPage;
-            // Fallback to add state settings if saved settings are not available
-            if (!settings || Object.keys(settings).length === 0) {
-                settings = productPage;
-            }
+            return savedProductPage && Object.keys(savedProductPage).length > 0 ? savedProductPage : productPage;
         } else {
-            // Use add state settings
-            settings = productPage;
+            return productPage;
         }
-        
-        // Apply button style variations
-        if (buttonStyle === 'text-icon-link' || buttonStyle === 'icon-only' || buttonStyle === 'text-only-link') {
-            // Remove button styling for link-style variations
-            dynamicStyles.background = 'transparent';
-            dynamicStyles.backgroundColor = 'transparent';
-            dynamicStyles.border = 'none';
-            dynamicStyles.borderColor = 'transparent';
-            dynamicStyles.padding = '0';
-            dynamicStyles.boxShadow = 'none';
-            dynamicStyles.width = 'auto';
-            dynamicStyles.minHeight = 'auto';
-        }
-        
-        // Apply specific settings (product_page, product_listing, saved_product_page, or saved_product_listing)
-        if (settings.backgroundColor) {
-            applyBackgroundToStyles(dynamicStyles, settings.backgroundColor);
-        }
-        if (settings.buttonTextColor) {
-            dynamicStyles.color = settings.buttonTextColor;
-        }
-        if (settings.font && settings.font !== 'default') {
-            dynamicStyles.fontFamily = settings.font;
-        }
-        if (settings.fontSize) {
-            dynamicStyles.fontSize = settings.fontSize;
-        }
-        if (settings.borderRadius) {
-            dynamicStyles.borderRadius = settings.borderRadius;
-        }
-        if (settings.iconSize) {
-            dynamicStyles['--icon-size'] = settings.iconSize;
-        }
-        
-        // Apply hover colors as CSS variables
-        if (settings.backgroundHoverColor) {
-            dynamicStyles['--wishlist-hover-bg'] = settings.backgroundHoverColor;
-        }
-        if (settings.buttonTextHoverColor) {
-            dynamicStyles['--wishlist-hover-text'] = settings.buttonTextHoverColor;
-        }
-        
-        // Fallback to old colors structure for backwards compatibility
-        if (Object.keys(dynamicStyles).length === 0 || (!settings.backgroundColor && colors.background)) {
-            if (colors.background) {
-                dynamicStyles['--wishlist-bg'] = colors.background;
-            }
-            if (colors.text) {
-                dynamicStyles['--wishlist-text'] = colors.text;
-            }
-            if (colors.border) {
-                dynamicStyles['--wishlist-border'] = colors.border;
-            }
-            if (colors.activeBackground) {
-                dynamicStyles['--wishlist-active-bg'] = colors.activeBackground;
-            }
-            if (colors.activeText) {
-                dynamicStyles['--wishlist-active-text'] = colors.activeText;
-            }
-            if (colors.activeBorder) {
-                dynamicStyles['--wishlist-active-border'] = colors.activeBorder;
-            }
-            if (colors.hoverBackground) {
-                dynamicStyles['--wishlist-hover-bg'] = colors.hoverBackground;
-            }
-            if (colors.hoverText) {
-                dynamicStyles['--wishlist-hover-text'] = colors.hoverText;
-            }
-
-            if (!isInWishlist) {
-                if (colors.background) applyBackgroundToStyles(dynamicStyles, colors.background);
-                if (colors.text) dynamicStyles.color = colors.text;
-                if (colors.border) dynamicStyles.borderColor = colors.border;
-            } else {
-                if (colors.activeBackground) applyBackgroundToStyles(dynamicStyles, colors.activeBackground);
-                if (colors.activeText) dynamicStyles.color = colors.activeText;
-                if (colors.activeBorder) dynamicStyles.borderColor = colors.activeBorder;
-            }
-        }
-
-        return { ...baseStyles, ...dynamicStyles };
     };
+
+    const currentSettings = getCurrentSettings();
+    
+    // Generate unique class name based on settings and button state
+    const settingsHash = generateHash(JSON.stringify({
+        settings: currentSettings,
+        isInWishlist,
+        buttonStyle,
+        variantId
+    }));
+    const dynamicButtonClass = `wishcart-variant-wishlist-button--dynamic-${settingsHash}`;
+
+    // Inject CSS styles via style tag
+    useEffect(() => {
+        const styleId = 'wishcart-variant-button-styles';
+        let styleElement = document.getElementById(styleId);
+        
+        if (!styleElement) {
+            styleElement = document.createElement('style');
+            styleElement.id = styleId;
+            document.head.appendChild(styleElement);
+        }
+
+        // Generate CSS for this button instance
+        const css = generateButtonCSS(
+            dynamicButtonClass,
+            currentSettings,
+            isInWishlist,
+            buttonStyle,
+            customStyles,
+            colors
+        );
+
+        // Escape class name for regex (class names don't have special chars, but be safe)
+        const escapedClass = dynamicButtonClass.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        
+        // Remove existing CSS for this class
+        // Use a more robust pattern that matches CSS rules properly
+        const existingStyle = styleElement.textContent || '';
+        // Match: .className { ... } potentially followed by .className .selector { ... }
+        // This pattern handles multi-line CSS rules
+        const classRegex = new RegExp(
+            `\\.${escapedClass}\\s*\\{[\\s\\S]*?\\}(?:\\s*\\.${escapedClass}\\s+[^{]+\\{[\\s\\S]*?\\})?`,
+            'g'
+        );
+        let cleanedStyle = existingStyle.replace(classRegex, '').trim();
+        
+        // Clean up extra whitespace
+        cleanedStyle = cleanedStyle.replace(/\n{3,}/g, '\n\n').trim();
+        
+        // Append new CSS
+        styleElement.textContent = (cleanedStyle ? cleanedStyle + '\n\n' : '') + css;
+
+        // Cleanup function - remove this class's CSS when component unmounts
+        return () => {
+            const styleEl = document.getElementById(styleId);
+            if (styleEl) {
+                const escapedClassCleanup = dynamicButtonClass.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                // Match: .className { ... } potentially followed by .className .selector { ... }
+                const cleanupRegex = new RegExp(
+                    `\\.${escapedClassCleanup}\\s*\\{[\\s\\S]*?\\}(?:\\s*\\.${escapedClassCleanup}\\s+[^{]+\\{[\\s\\S]*?\\})?`,
+                    'g'
+                );
+                let cleanedContent = (styleEl.textContent || '').replace(cleanupRegex, '').trim();
+                
+                // Clean up extra whitespace
+                cleanedContent = cleanedContent.replace(/\n{3,}/g, '\n\n').trim();
+                
+                styleEl.textContent = cleanedContent;
+                
+                // Remove style element if empty
+                if (!styleEl.textContent.trim()) {
+                    styleEl.remove();
+                }
+            }
+        };
+    }, [dynamicButtonClass, currentSettings, isInWishlist, buttonStyle, customStyles, colors]);
 
     if (isLoading) {
         return null;
@@ -527,9 +643,9 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
                     buttonStyle === 'text-only-link' && "wishcart-variant-wishlist-button--text-only-link",
                     buttonStyle === 'text-icon-link' && "wishcart-variant-wishlist-button--text-icon-link",
                     buttonStyle === 'icon-only' && "wishcart-variant-wishlist-button--icon-only",
+                    dynamicButtonClass,
                     className
                 )}
-                style={buildButtonStyles()}
                 aria-label={`${srLabel} - ${variantName}`}
                 data-variant-id={variantId}
             >
