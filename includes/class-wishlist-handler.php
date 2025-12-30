@@ -602,56 +602,155 @@ class WishCart_Wishlist_Handler {
 
         $variation_id = isset($options['variation_id']) ? intval($options['variation_id']) : 0;
 
-        // Check if already in wishlist
-        $exists = $this->wpdb->get_var(
+        // Check for ANY existing row (not just active ones) to handle unique constraint properly
+        // This prevents duplicate entry errors from race conditions or inactive rows
+        $existing_item = $this->wpdb->get_row(
             $this->wpdb->prepare(
-                "SELECT COUNT(*) FROM {$this->items_table} WHERE wishlist_id = %d AND product_id = %d AND variation_id = %d AND status = 'active'",
+                "SELECT item_id, status FROM {$this->items_table} WHERE wishlist_id = %d AND product_id = %d AND variation_id = %d LIMIT 1",
                 $wishlist_id,
                 $product_id,
                 $variation_id
-            )
+            ),
+            ARRAY_A
         );
-
-        if ($exists > 0) {
-            return true; // Already added
-        }
 
         // Get product price for tracking
         $original_price = $product->get_price();
         $original_currency = 'USD'; // TODO: Get from settings or WooCommerce
         $on_sale = $product->is_on_sale() ? 1 : 0;
 
-        // Get highest position for ordering
-        $max_position = $this->wpdb->get_var(
-            $this->wpdb->prepare(
-                "SELECT MAX(position) FROM {$this->items_table} WHERE wishlist_id = %d",
-                $wishlist_id
-            )
-        );
-        $position = ($max_position !== null) ? $max_position + 1 : 0;
+        // If item already exists
+        if ($existing_item) {
+            // If already active, return success
+            if ($existing_item['status'] === 'active') {
+                return true; // Already added
+            }
 
-        $data = array(
-            'wishlist_id' => $wishlist_id,
-            'product_id' => $product_id,
-            'variation_id' => $variation_id,
-            'variation_data' => isset($options['variation_data']) ? wp_json_encode($options['variation_data']) : null,
-            'quantity' => isset($options['quantity']) ? intval($options['quantity']) : 1,
-            'position' => $position,
-            'original_price' => $original_price,
-            'original_currency' => $original_currency,
-            'on_sale' => $on_sale,
-            'notes' => isset($options['notes']) ? sanitize_textarea_field($options['notes']) : null,
-            'user_id' => $user_id,
-            'custom_attributes' => isset($options['custom_attributes']) ? wp_json_encode($options['custom_attributes']) : null,
-            'status' => 'active',
-        );
+            // If inactive, reactivate it and update product data
+            $max_position = $this->wpdb->get_var(
+                $this->wpdb->prepare(
+                    "SELECT MAX(position) FROM {$this->items_table} WHERE wishlist_id = %d",
+                    $wishlist_id
+                )
+            );
+            $position = ($max_position !== null) ? $max_position + 1 : 0;
 
-        $format = array('%d', '%d', '%d', '%s', '%d', '%d', '%f', '%s', '%d', '%s', '%d', '%s', '%s');
+            $update_data = array(
+                'status' => 'active',
+                'original_price' => $original_price,
+                'original_currency' => $original_currency,
+                'on_sale' => $on_sale,
+                'position' => $position,
+                'user_id' => $user_id,
+            );
 
-        $result = $this->wpdb->insert($this->items_table, $data, $format);
+            // Update optional fields if provided
+            if (isset($options['variation_data'])) {
+                $update_data['variation_data'] = wp_json_encode($options['variation_data']);
+            }
+            if (isset($options['quantity'])) {
+                $update_data['quantity'] = intval($options['quantity']);
+            }
+            if (isset($options['notes'])) {
+                $update_data['notes'] = sanitize_textarea_field($options['notes']);
+            }
+            if (isset($options['custom_attributes'])) {
+                $update_data['custom_attributes'] = wp_json_encode($options['custom_attributes']);
+            }
 
-        if (false === $result) {
-            return new WP_Error('db_error', __('Failed to add product to wishlist', 'wishcart'));
+            $update_format = array('%s', '%f', '%s', '%d', '%d', '%d');
+            if (isset($options['variation_data'])) {
+                $update_format[] = '%s';
+            }
+            if (isset($options['quantity'])) {
+                $update_format[] = '%d';
+            }
+            if (isset($options['notes'])) {
+                $update_format[] = '%s';
+            }
+            if (isset($options['custom_attributes'])) {
+                $update_format[] = '%s';
+            }
+
+            $result = $this->wpdb->update(
+                $this->items_table,
+                $update_data,
+                array('item_id' => $existing_item['item_id']),
+                $update_format,
+                array('%d')
+            );
+
+            if (false === $result) {
+                return new WP_Error('db_error', __('Failed to reactivate product in wishlist', 'wishcart'));
+            }
+
+            // Use existing item_id for subsequent operations
+            $item_id = $existing_item['item_id'];
+        } else {
+            // No existing row, insert new one
+            // Get highest position for ordering
+            $max_position = $this->wpdb->get_var(
+                $this->wpdb->prepare(
+                    "SELECT MAX(position) FROM {$this->items_table} WHERE wishlist_id = %d",
+                    $wishlist_id
+                )
+            );
+            $position = ($max_position !== null) ? $max_position + 1 : 0;
+
+            $data = array(
+                'wishlist_id' => $wishlist_id,
+                'product_id' => $product_id,
+                'variation_id' => $variation_id,
+                'variation_data' => isset($options['variation_data']) ? wp_json_encode($options['variation_data']) : null,
+                'quantity' => isset($options['quantity']) ? intval($options['quantity']) : 1,
+                'position' => $position,
+                'original_price' => $original_price,
+                'original_currency' => $original_currency,
+                'on_sale' => $on_sale,
+                'notes' => isset($options['notes']) ? sanitize_textarea_field($options['notes']) : null,
+                'user_id' => $user_id,
+                'custom_attributes' => isset($options['custom_attributes']) ? wp_json_encode($options['custom_attributes']) : null,
+                'status' => 'active',
+            );
+
+            $format = array('%d', '%d', '%d', '%s', '%d', '%d', '%f', '%s', '%d', '%s', '%d', '%s', '%s');
+
+            $result = $this->wpdb->insert($this->items_table, $data, $format);
+
+            if (false === $result) {
+                // Check if it's a duplicate key error (race condition)
+                $last_error = $this->wpdb->last_error;
+                if (strpos($last_error, 'Duplicate entry') !== false) {
+                    // Race condition occurred - item was added between check and insert
+                    // Query again to get the item_id
+                    $existing_item = $this->wpdb->get_row(
+                        $this->wpdb->prepare(
+                            "SELECT item_id FROM {$this->items_table} WHERE wishlist_id = %d AND product_id = %d AND variation_id = %d LIMIT 1",
+                            $wishlist_id,
+                            $product_id,
+                            $variation_id
+                        ),
+                        ARRAY_A
+                    );
+                    if ($existing_item) {
+                        // Item exists now, update it to active if needed
+                        $this->wpdb->update(
+                            $this->items_table,
+                            array('status' => 'active'),
+                            array('item_id' => $existing_item['item_id']),
+                            array('%s'),
+                            array('%d')
+                        );
+                        $item_id = $existing_item['item_id'];
+                    } else {
+                        return new WP_Error('db_error', __('Failed to add product to wishlist', 'wishcart'));
+                    }
+                } else {
+                    return new WP_Error('db_error', __('Failed to add product to wishlist', 'wishcart'));
+                }
+            } else {
+                $item_id = $this->wpdb->insert_id;
+            }
         }
 
         // Log activity
@@ -726,7 +825,7 @@ class WishCart_Wishlist_Handler {
 
         // Trigger CRM event hook
         $item_data = array(
-            'item_id' => $this->wpdb->insert_id,
+            'item_id' => $item_id,
             'wishlist_id' => $wishlist_id,
             'product_id' => $product_id,
             'variation_id' => $variation_id,
