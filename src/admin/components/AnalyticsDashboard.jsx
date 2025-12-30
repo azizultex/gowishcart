@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { TrendingUp, Heart, ShoppingCart, Share2, Users, BarChart, Link as LinkIcon, ArrowUp, ArrowDown } from 'lucide-react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { TrendingUp, Heart, ShoppingCart, Share2, Users, BarChart, Link as LinkIcon, ArrowUp, ArrowDown, X } from 'lucide-react';
 import Pagination from './Pagination';
 import '../../styles/Analytics.scss';
 
@@ -23,6 +23,13 @@ export const AnalyticsDashboard = () => {
     const [linkDetailsPagination, setLinkDetailsPagination] = useState(null);
     const [linkDetailsTimePeriod, setLinkDetailsTimePeriod] = useState('7days');
     const [linkDetailsSort, setLinkDetailsSort] = useState({ column: null, direction: 'asc' });
+    
+    // Tooltip state for variation breakdown
+    const [hoveredProductId, setHoveredProductId] = useState(null);
+    const [tooltipType, setTooltipType] = useState(null); // 'purchases' or 'add-to-cart'
+    const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });
+    const [fixedTooltip, setFixedTooltip] = useState({ productId: null, type: null }); // Track fixed tooltip
+    const tooltipRefs = useRef({}); // Store refs for each tooltip
 
     const apiUrl = window.wishcartSettings?.apiUrl || '/wp-json/wishcart/v1/';
     const nonce = window.wishcartSettings?.nonce;
@@ -38,6 +45,39 @@ export const AnalyticsDashboard = () => {
     useEffect(() => {
         fetchLinkDetails();
     }, [linkDetailsPage, linkDetailsTimePeriod]);
+
+    // Handle click outside tooltip to close it
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (fixedTooltip.productId) {
+                const tooltipKey = `${fixedTooltip.productId}-${fixedTooltip.type}`;
+                const tooltipElement = tooltipRefs.current[tooltipKey];
+                
+                if (tooltipElement && !tooltipElement.contains(event.target)) {
+                    // Check if click is not on the trigger element
+                    const triggerElements = document.querySelectorAll('.purchase-count-wrapper');
+                    let isTriggerClick = false;
+                    triggerElements.forEach((el) => {
+                        if (el.contains(event.target)) {
+                            isTriggerClick = true;
+                        }
+                    });
+                    
+                    if (!isTriggerClick) {
+                        setFixedTooltip({ productId: null, type: null });
+                    }
+                }
+            }
+        };
+
+        if (fixedTooltip.productId) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [fixedTooltip]);
 
     const fetchAnalytics = async () => {
         setIsLoading(true);
@@ -471,8 +511,180 @@ export const AnalyticsDashboard = () => {
                                             <td>
                                                 <span className="badge">{product.wishlist_count}</span>
                                             </td>
-                                            <td>{product.add_to_cart_count}</td>
-                                            <td>{product.purchase_count}</td>
+                                            <td>
+                                                <div 
+                                                    className="purchase-count-wrapper"
+                                                    onMouseEnter={(e) => {
+                                                        if (product.variations && product.variations.length > 0 && fixedTooltip.productId !== product.product_id) {
+                                                            const rect = e.currentTarget.getBoundingClientRect();
+                                                            setTooltipPosition({
+                                                                top: rect.bottom + 8,
+                                                                left: rect.left
+                                                            });
+                                                            setHoveredProductId(product.product_id);
+                                                            setTooltipType('add-to-cart');
+                                                        }
+                                                    }}
+                                                    onMouseLeave={() => {
+                                                        if (fixedTooltip.productId !== product.product_id) {
+                                                            setHoveredProductId(null);
+                                                            setTooltipType(null);
+                                                        }
+                                                    }}
+                                                    onClick={(e) => {
+                                                        if (product.variations && product.variations.length > 0) {
+                                                            const rect = e.currentTarget.getBoundingClientRect();
+                                                            setTooltipPosition({
+                                                                top: rect.bottom + 8,
+                                                                left: rect.left
+                                                            });
+                                                            setFixedTooltip({ productId: product.product_id, type: 'add-to-cart' });
+                                                            setHoveredProductId(null);
+                                                            setTooltipType(null);
+                                                        }
+                                                    }}
+                                                >
+                                                    <span className="purchase-count-value">{product.add_to_cart_count}</span>
+                                                    {(hoveredProductId === product.product_id && tooltipType === 'add-to-cart' || fixedTooltip.productId === product.product_id && fixedTooltip.type === 'add-to-cart') && product.variations && product.variations.length > 0 && (
+                                                        <div 
+                                                            ref={(el) => {
+                                                                const key = `${product.product_id}-add-to-cart`;
+                                                                if (el) {
+                                                                    tooltipRefs.current[key] = el;
+                                                                } else {
+                                                                    delete tooltipRefs.current[key];
+                                                                }
+                                                            }}
+                                                            className="variation-tooltip"
+                                                            style={{
+                                                                top: `${tooltipPosition.top}px`,
+                                                                left: `${tooltipPosition.left}px`
+                                                            }}
+                                                            onMouseEnter={(e) => e.stopPropagation()}
+                                                            onMouseLeave={(e) => {
+                                                                if (fixedTooltip.productId !== product.product_id) {
+                                                                    e.stopPropagation();
+                                                                }
+                                                            }}
+                                                        >
+                                                            <div className="tooltip-header">
+                                                                <span>Add to Cart - Variation Breakdown</span>
+                                                                <button 
+                                                                    className="tooltip-close"
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        setFixedTooltip({ productId: null, type: null });
+                                                                        setHoveredProductId(null);
+                                                                        setTooltipType(null);
+                                                                    }}
+                                                                    aria-label="Close"
+                                                                >
+                                                                    <X size={16} />
+                                                                </button>
+                                                            </div>
+                                                            <div className="tooltip-content">
+                                                                {product.variations.map((variation, idx) => (
+                                                                    <div key={idx} className="variation-item">
+                                                                        <div className="variation-name">{variation.variation_name}</div>
+                                                                        <div className="variation-stats">
+                                                                            <span className="stat-item">
+                                                                                <strong>{variation.add_to_cart_count}</strong> add-to-cart
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div 
+                                                    className="purchase-count-wrapper"
+                                                    onMouseEnter={(e) => {
+                                                        if (product.variations && product.variations.length > 0 && fixedTooltip.productId !== product.product_id) {
+                                                            const rect = e.currentTarget.getBoundingClientRect();
+                                                            setTooltipPosition({
+                                                                top: rect.bottom + 8,
+                                                                left: rect.left
+                                                            });
+                                                            setHoveredProductId(product.product_id);
+                                                            setTooltipType('purchases');
+                                                        }
+                                                    }}
+                                                    onMouseLeave={() => {
+                                                        if (fixedTooltip.productId !== product.product_id) {
+                                                            setHoveredProductId(null);
+                                                            setTooltipType(null);
+                                                        }
+                                                    }}
+                                                    onClick={(e) => {
+                                                        if (product.variations && product.variations.length > 0) {
+                                                            const rect = e.currentTarget.getBoundingClientRect();
+                                                            setTooltipPosition({
+                                                                top: rect.bottom + 8,
+                                                                left: rect.left
+                                                            });
+                                                            setFixedTooltip({ productId: product.product_id, type: 'purchases' });
+                                                            setHoveredProductId(null);
+                                                            setTooltipType(null);
+                                                        }
+                                                    }}
+                                                >
+                                                    <span className="purchase-count-value">{product.purchase_count}</span>
+                                                    {(hoveredProductId === product.product_id && tooltipType === 'purchases' || fixedTooltip.productId === product.product_id && fixedTooltip.type === 'purchases') && product.variations && product.variations.length > 0 && (
+                                                        <div 
+                                                            ref={(el) => {
+                                                                const key = `${product.product_id}-purchases`;
+                                                                if (el) {
+                                                                    tooltipRefs.current[key] = el;
+                                                                } else {
+                                                                    delete tooltipRefs.current[key];
+                                                                }
+                                                            }}
+                                                            className="variation-tooltip"
+                                                            style={{
+                                                                top: `${tooltipPosition.top}px`,
+                                                                left: `${tooltipPosition.left}px`
+                                                            }}
+                                                            onMouseEnter={(e) => e.stopPropagation()}
+                                                            onMouseLeave={(e) => {
+                                                                if (fixedTooltip.productId !== product.product_id) {
+                                                                    e.stopPropagation();
+                                                                }
+                                                            }}
+                                                        >
+                                                            <div className="tooltip-header">
+                                                                <span>Purchases - Variation Breakdown</span>
+                                                                <button 
+                                                                    className="tooltip-close"
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        setFixedTooltip({ productId: null, type: null });
+                                                                        setHoveredProductId(null);
+                                                                        setTooltipType(null);
+                                                                    }}
+                                                                    aria-label="Close"
+                                                                >
+                                                                    <X size={16} />
+                                                                </button>
+                                                            </div>
+                                                            <div className="tooltip-content">
+                                                                {product.variations.map((variation, idx) => (
+                                                                    <div key={idx} className="variation-item">
+                                                                        <div className="variation-name">{variation.variation_name}</div>
+                                                                        <div className="variation-stats">
+                                                                            <span className="stat-item">
+                                                                                <strong>{variation.purchase_count}</strong> purchases
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </td>
                                             <td>
                                                 <span className={`conversion-badge ${product.conversion_rate > 10 ? 'high' : ''}`}>
                                                     {product.conversion_rate}%

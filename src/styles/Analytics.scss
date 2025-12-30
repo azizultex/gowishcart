@@ -52,6 +52,17 @@
         to { transform: rotate(360deg); }
     }
 
+    @keyframes tooltipFadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-4px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
     .overview-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -546,6 +557,120 @@
                     .no-data {
                         color: var(--wishcart-text-muted);
                         font-style: italic;
+                    }
+
+                    .purchase-count-wrapper {
+                        position: relative;
+                        display: inline-block;
+                        cursor: pointer;
+
+                        .purchase-count-value {
+                            color: var(--wishcart-text-primary);
+                            font-weight: 500;
+                            transition: color 0.15s;
+
+                            &:hover {
+                                color: var(--wishcart-primary);
+                            }
+                        }
+
+                        .variation-tooltip {
+                            position: fixed;
+                            z-index: 1000;
+                            background: white;
+                            border: 1px solid var(--wishcart-border-light);
+                            border-radius: var(--wishcart-radius);
+                            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                            min-width: 280px;
+                            max-width: 400px;
+                            animation: tooltipFadeIn 0.2s ease-out;
+                            pointer-events: auto;
+
+                            .tooltip-header {
+                                padding: var(--wishcart-space-md) var(--wishcart-space-lg);
+                                background: var(--wishcart-bg-light);
+                                border-bottom: 1px solid var(--wishcart-border-light);
+                                font-size: 13px;
+                                font-weight: 600;
+                                color: var(--wishcart-text-primary);
+                                border-radius: var(--wishcart-radius) var(--wishcart-radius) 0 0;
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+                                gap: var(--wishcart-space-md);
+
+                                .tooltip-close {
+                                    background: none;
+                                    border: none;
+                                    padding: 4px;
+                                    cursor: pointer;
+                                    color: var(--wishcart-text-secondary);
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    border-radius: var(--wishcart-radius-sm);
+                                    transition: all 0.15s;
+                                    flex-shrink: 0;
+
+                                    &:hover {
+                                        background: var(--wishcart-border-light);
+                                        color: var(--wishcart-text-primary);
+                                    }
+
+                                    &:focus {
+                                        outline: none;
+                                        box-shadow: 0 0 0 2px rgba(30, 115, 190, 0.2);
+                                    }
+                                }
+                            }
+
+                            .tooltip-content {
+                                padding: var(--wishcart-space-sm);
+                                max-height: 300px;
+                                overflow-y: auto;
+                                overflow-x: hidden;
+                                -webkit-overflow-scrolling: touch;
+
+                                .variation-item {
+                                    padding: var(--wishcart-space-sm) var(--wishcart-space-md);
+                                    border-bottom: 1px solid var(--wishcart-border-light);
+                                    transition: background 0.15s;
+
+                                    &:last-child {
+                                        border-bottom: none;
+                                    }
+
+                                    &:hover {
+                                        background: var(--wishcart-bg-light);
+                                    }
+
+                                    .variation-name {
+                                        font-size: 13px;
+                                        font-weight: 500;
+                                        color: var(--wishcart-text-primary);
+                                        margin-bottom: var(--wishcart-space-xs);
+                                    }
+
+                                    .variation-stats {
+                                        display: flex;
+                                        gap: var(--wishcart-space-md);
+                                        font-size: 12px;
+                                        color: var(--wishcart-text-secondary);
+
+                                        .stat-item {
+                                            display: flex;
+                                            align-items: center;
+                                            gap: 4px;
+
+                                            strong {
+                                                color: var(--wishcart-text-primary);
+                                                font-weight: 600;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
