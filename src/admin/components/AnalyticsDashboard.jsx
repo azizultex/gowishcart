@@ -28,8 +28,31 @@ export const AnalyticsDashboard = () => {
     const [hoveredProductId, setHoveredProductId] = useState(null);
     const [tooltipType, setTooltipType] = useState(null); // 'purchases' or 'add-to-cart'
     const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });
-    const [fixedTooltip, setFixedTooltip] = useState({ productId: null, type: null }); // Track fixed tooltip
-    const tooltipRefs = useRef({}); // Store refs for each tooltip
+    const tooltipRef = useRef(null);
+    
+    // Handle click outside to close tooltip
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (tooltipRef.current && !tooltipRef.current.contains(event.target)) {
+                // Check if click is not on the purchase-count-value
+                const isClickOnValue = event.target.closest('.purchase-count-value');
+                const isClickOnTooltip = event.target.closest('.variation-tooltip');
+                
+                if (!isClickOnValue && !isClickOnTooltip) {
+                    setHoveredProductId(null);
+                    setTooltipType(null);
+                }
+            }
+        };
+
+        if (hoveredProductId) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [hoveredProductId]);
 
     const apiUrl = window.wishcartSettings?.apiUrl || '/wp-json/wishcart/v1/';
     const nonce = window.wishcartSettings?.nonce;
@@ -45,39 +68,6 @@ export const AnalyticsDashboard = () => {
     useEffect(() => {
         fetchLinkDetails();
     }, [linkDetailsPage, linkDetailsTimePeriod]);
-
-    // Handle click outside tooltip to close it
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (fixedTooltip.productId) {
-                const tooltipKey = `${fixedTooltip.productId}-${fixedTooltip.type}`;
-                const tooltipElement = tooltipRefs.current[tooltipKey];
-                
-                if (tooltipElement && !tooltipElement.contains(event.target)) {
-                    // Check if click is not on the trigger element
-                    const triggerElements = document.querySelectorAll('.purchase-count-wrapper');
-                    let isTriggerClick = false;
-                    triggerElements.forEach((el) => {
-                        if (el.contains(event.target)) {
-                            isTriggerClick = true;
-                        }
-                    });
-                    
-                    if (!isTriggerClick) {
-                        setFixedTooltip({ productId: null, type: null });
-                    }
-                }
-            }
-        };
-
-        if (fixedTooltip.productId) {
-            document.addEventListener('mousedown', handleClickOutside);
-        }
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, [fixedTooltip]);
 
     const fetchAnalytics = async () => {
         setIsLoading(true);
@@ -512,68 +502,75 @@ export const AnalyticsDashboard = () => {
                                                 <span className="badge">{product.wishlist_count}</span>
                                             </td>
                                             <td>
-                                                <div 
-                                                    className="purchase-count-wrapper"
-                                                    onMouseEnter={(e) => {
-                                                        if (product.variations && product.variations.length > 0 && fixedTooltip.productId !== product.product_id) {
-                                                            const rect = e.currentTarget.getBoundingClientRect();
-                                                            setTooltipPosition({
-                                                                top: rect.bottom + 8,
-                                                                left: rect.left
-                                                            });
-                                                            setHoveredProductId(product.product_id);
-                                                            setTooltipType('add-to-cart');
-                                                        }
-                                                    }}
-                                                    onMouseLeave={() => {
-                                                        if (fixedTooltip.productId !== product.product_id) {
-                                                            setHoveredProductId(null);
-                                                            setTooltipType(null);
-                                                        }
-                                                    }}
-                                                    onClick={(e) => {
-                                                        if (product.variations && product.variations.length > 0) {
-                                                            const rect = e.currentTarget.getBoundingClientRect();
-                                                            setTooltipPosition({
-                                                                top: rect.bottom + 8,
-                                                                left: rect.left
-                                                            });
-                                                            setFixedTooltip({ productId: product.product_id, type: 'add-to-cart' });
-                                                            setHoveredProductId(null);
-                                                            setTooltipType(null);
-                                                        }
-                                                    }}
-                                                >
-                                                    <span className="purchase-count-value">{product.add_to_cart_count}</span>
-                                                    {(hoveredProductId === product.product_id && tooltipType === 'add-to-cart' || fixedTooltip.productId === product.product_id && fixedTooltip.type === 'add-to-cart') && product.variations && product.variations.length > 0 && (
-                                                        <div 
-                                                            ref={(el) => {
-                                                                const key = `${product.product_id}-add-to-cart`;
-                                                                if (el) {
-                                                                    tooltipRefs.current[key] = el;
+                                                <div className="purchase-count-wrapper">
+                                                    <span 
+                                                        className="purchase-count-value"
+                                                        onClick={(e) => {
+                                                            if (product.variations && product.variations.length > 0) {
+                                                                const rect = e.currentTarget.getBoundingClientRect();
+                                                                const isCurrentlyOpen = hoveredProductId === product.product_id && tooltipType === 'add-to-cart';
+                                                                
+                                                                if (isCurrentlyOpen) {
+                                                                    // Close if already open
+                                                                    setHoveredProductId(null);
+                                                                    setTooltipType(null);
                                                                 } else {
-                                                                    delete tooltipRefs.current[key];
+                                                                    // Open tooltip
+                                                                    // For position: fixed, getBoundingClientRect() already gives viewport coordinates
+                                                                    const tooltipWidth = 300; // Approximate tooltip width
+                                                                    const tooltipHeight = 200; // Approximate tooltip height
+                                                                    const viewportWidth = window.innerWidth;
+                                                                    const viewportHeight = window.innerHeight;
+                                                                    
+                                                                    // Calculate position with viewport bounds checking
+                                                                    let left = rect.left;
+                                                                    let top = rect.bottom + 8;
+                                                                    
+                                                                    // Adjust if tooltip would go off right edge
+                                                                    if (left + tooltipWidth > viewportWidth) {
+                                                                        left = viewportWidth - tooltipWidth - 10;
+                                                                    }
+                                                                    
+                                                                    // Adjust if tooltip would go off bottom edge
+                                                                    if (top + tooltipHeight > viewportHeight) {
+                                                                        // Show above the element instead
+                                                                        top = rect.top - tooltipHeight - 8;
+                                                                    }
+                                                                    
+                                                                    // Ensure tooltip doesn't go off left edge
+                                                                    if (left < 10) {
+                                                                        left = 10;
+                                                                    }
+                                                                    
+                                                                    // Ensure tooltip doesn't go off top edge
+                                                                    if (top < 10) {
+                                                                        top = 10;
+                                                                    }
+                                                                    
+                                                                    setTooltipPosition({ top, left });
+                                                                    setHoveredProductId(product.product_id);
+                                                                    setTooltipType('add-to-cart');
                                                                 }
-                                                            }}
+                                                            }
+                                                        }}
+                                                    >
+                                                        {product.add_to_cart_count}
+                                                    </span>
+                                                    {hoveredProductId === product.product_id && tooltipType === 'add-to-cart' && product.variations && product.variations.length > 0 && (
+                                                        <div 
+                                                            ref={tooltipRef}
                                                             className="variation-tooltip"
                                                             style={{
                                                                 top: `${tooltipPosition.top}px`,
                                                                 left: `${tooltipPosition.left}px`
                                                             }}
-                                                            onMouseEnter={(e) => e.stopPropagation()}
-                                                            onMouseLeave={(e) => {
-                                                                if (fixedTooltip.productId !== product.product_id) {
-                                                                    e.stopPropagation();
-                                                                }
-                                                            }}
+                                                            onClick={(e) => e.stopPropagation()}
                                                         >
                                                             <div className="tooltip-header">
                                                                 <span>Add to Cart - Variation Breakdown</span>
                                                                 <button 
                                                                     className="tooltip-close"
-                                                                    onClick={(e) => {
-                                                                        e.stopPropagation();
-                                                                        setFixedTooltip({ productId: null, type: null });
+                                                                    onClick={() => {
                                                                         setHoveredProductId(null);
                                                                         setTooltipType(null);
                                                                     }}
@@ -599,68 +596,75 @@ export const AnalyticsDashboard = () => {
                                                 </div>
                                             </td>
                                             <td>
-                                                <div 
-                                                    className="purchase-count-wrapper"
-                                                    onMouseEnter={(e) => {
-                                                        if (product.variations && product.variations.length > 0 && fixedTooltip.productId !== product.product_id) {
-                                                            const rect = e.currentTarget.getBoundingClientRect();
-                                                            setTooltipPosition({
-                                                                top: rect.bottom + 8,
-                                                                left: rect.left
-                                                            });
-                                                            setHoveredProductId(product.product_id);
-                                                            setTooltipType('purchases');
-                                                        }
-                                                    }}
-                                                    onMouseLeave={() => {
-                                                        if (fixedTooltip.productId !== product.product_id) {
-                                                            setHoveredProductId(null);
-                                                            setTooltipType(null);
-                                                        }
-                                                    }}
-                                                    onClick={(e) => {
-                                                        if (product.variations && product.variations.length > 0) {
-                                                            const rect = e.currentTarget.getBoundingClientRect();
-                                                            setTooltipPosition({
-                                                                top: rect.bottom + 8,
-                                                                left: rect.left
-                                                            });
-                                                            setFixedTooltip({ productId: product.product_id, type: 'purchases' });
-                                                            setHoveredProductId(null);
-                                                            setTooltipType(null);
-                                                        }
-                                                    }}
-                                                >
-                                                    <span className="purchase-count-value">{product.purchase_count}</span>
-                                                    {(hoveredProductId === product.product_id && tooltipType === 'purchases' || fixedTooltip.productId === product.product_id && fixedTooltip.type === 'purchases') && product.variations && product.variations.length > 0 && (
-                                                        <div 
-                                                            ref={(el) => {
-                                                                const key = `${product.product_id}-purchases`;
-                                                                if (el) {
-                                                                    tooltipRefs.current[key] = el;
+                                                <div className="purchase-count-wrapper">
+                                                    <span 
+                                                        className="purchase-count-value"
+                                                        onClick={(e) => {
+                                                            if (product.variations && product.variations.length > 0) {
+                                                                const rect = e.currentTarget.getBoundingClientRect();
+                                                                const isCurrentlyOpen = hoveredProductId === product.product_id && tooltipType === 'purchases';
+                                                                
+                                                                if (isCurrentlyOpen) {
+                                                                    // Close if already open
+                                                                    setHoveredProductId(null);
+                                                                    setTooltipType(null);
                                                                 } else {
-                                                                    delete tooltipRefs.current[key];
+                                                                    // Open tooltip
+                                                                    // For position: fixed, getBoundingClientRect() already gives viewport coordinates
+                                                                    const tooltipWidth = 300; // Approximate tooltip width
+                                                                    const tooltipHeight = 200; // Approximate tooltip height
+                                                                    const viewportWidth = window.innerWidth;
+                                                                    const viewportHeight = window.innerHeight;
+                                                                    
+                                                                    // Calculate position with viewport bounds checking
+                                                                    let left = rect.left;
+                                                                    let top = rect.bottom + 8;
+                                                                    
+                                                                    // Adjust if tooltip would go off right edge
+                                                                    if (left + tooltipWidth > viewportWidth) {
+                                                                        left = viewportWidth - tooltipWidth - 10;
+                                                                    }
+                                                                    
+                                                                    // Adjust if tooltip would go off bottom edge
+                                                                    if (top + tooltipHeight > viewportHeight) {
+                                                                        // Show above the element instead
+                                                                        top = rect.top - tooltipHeight - 8;
+                                                                    }
+                                                                    
+                                                                    // Ensure tooltip doesn't go off left edge
+                                                                    if (left < 10) {
+                                                                        left = 10;
+                                                                    }
+                                                                    
+                                                                    // Ensure tooltip doesn't go off top edge
+                                                                    if (top < 10) {
+                                                                        top = 10;
+                                                                    }
+                                                                    
+                                                                    setTooltipPosition({ top, left });
+                                                                    setHoveredProductId(product.product_id);
+                                                                    setTooltipType('purchases');
                                                                 }
-                                                            }}
+                                                            }
+                                                        }}
+                                                    >
+                                                        {product.purchase_count}
+                                                    </span>
+                                                    {hoveredProductId === product.product_id && tooltipType === 'purchases' && product.variations && product.variations.length > 0 && (
+                                                        <div 
+                                                            ref={tooltipRef}
                                                             className="variation-tooltip"
                                                             style={{
                                                                 top: `${tooltipPosition.top}px`,
                                                                 left: `${tooltipPosition.left}px`
                                                             }}
-                                                            onMouseEnter={(e) => e.stopPropagation()}
-                                                            onMouseLeave={(e) => {
-                                                                if (fixedTooltip.productId !== product.product_id) {
-                                                                    e.stopPropagation();
-                                                                }
-                                                            }}
+                                                            onClick={(e) => e.stopPropagation()}
                                                         >
                                                             <div className="tooltip-header">
                                                                 <span>Purchases - Variation Breakdown</span>
                                                                 <button 
                                                                     className="tooltip-close"
-                                                                    onClick={(e) => {
-                                                                        e.stopPropagation();
-                                                                        setFixedTooltip({ productId: null, type: null });
+                                                                    onClick={() => {
                                                                         setHoveredProductId(null);
                                                                         setTooltipType(null);
                                                                     }}

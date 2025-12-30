@@ -306,61 +306,109 @@ class WishCart_Analytics_Handler {
         
         $where_clause = implode(' AND ', $where_conditions);
 
-        // Get total count
+        // Get total count of unique products (grouped by product_id)
         if (!empty($where_values)) {
             $total = $this->wpdb->get_var(
                 $this->wpdb->prepare(
-                    "SELECT COUNT(*) FROM {$this->analytics_table} WHERE {$where_clause}",
+                    "SELECT COUNT(DISTINCT product_id) FROM {$this->analytics_table} WHERE {$where_clause}",
                     $where_values
                 )
             );
         } else {
             $total = $this->wpdb->get_var(
-                "SELECT COUNT(*) FROM {$this->analytics_table} WHERE {$where_clause}"
+                "SELECT COUNT(DISTINCT product_id) FROM {$this->analytics_table} WHERE {$where_clause}"
             );
         }
 
-        // Get paginated results
-        $query_values = array_merge($where_values, array($items_per_page, $offset));
+        // Build ORDER BY clause for aggregated query
+        // For aggregated fields, we need to use SUM() in ORDER BY
+        $order_by_clause = '';
+        if ($order_by === 'wishlist_count') {
+            $order_by_clause = 'SUM(wishlist_count)';
+        } elseif ($order_by === 'add_to_cart_count') {
+            $order_by_clause = 'SUM(add_to_cart_count)';
+        } elseif ($order_by === 'purchase_count') {
+            $order_by_clause = 'SUM(purchase_count)';
+        } elseif ($order_by === 'share_count') {
+            $order_by_clause = 'SUM(share_count)';
+        } elseif ($order_by === 'conversion_rate') {
+            // For conversion_rate, calculate it from aggregated values
+            $order_by_clause = 'CASE WHEN SUM(wishlist_count) > 0 THEN (SUM(purchase_count) / SUM(wishlist_count)) * 100 ELSE 0 END';
+        } else {
+            $order_by_clause = 'SUM(wishlist_count)';
+        }
+
+        // Get paginated results grouped by product_id
+        // First, get product IDs that match the main filter (for pagination)
+        // This determines which products to show in the list
+        $product_ids_query = '';
         if (!empty($where_values)) {
-            $results = $this->wpdb->get_results(
-                $this->wpdb->prepare(
-                    "SELECT * FROM {$this->analytics_table} WHERE {$where_clause} ORDER BY {$order_by} DESC LIMIT %d OFFSET %d",
-                    $query_values
-                ),
-                ARRAY_A
+            $product_ids_query = $this->wpdb->prepare(
+                "SELECT DISTINCT product_id FROM {$this->analytics_table} WHERE {$where_clause}",
+                $where_values
             );
         } else {
-            $results = $this->wpdb->get_results(
-                $this->wpdb->prepare(
-                    "SELECT * FROM {$this->analytics_table} WHERE {$where_clause} ORDER BY {$order_by} DESC LIMIT %d OFFSET %d",
-                    $items_per_page,
-                    $offset
+            $product_ids_query = "SELECT DISTINCT product_id FROM {$this->analytics_table} WHERE {$where_clause}";
+        }
+        
+        $product_ids = $this->wpdb->get_col($product_ids_query);
+        
+        if (empty($product_ids)) {
+            return array(
+                'products' => array(),
+                'pagination' => array(
+                    'total' => 0,
+                    'total_pages' => 0,
+                    'current_page' => $current_page,
+                    'per_page' => $items_per_page,
                 ),
-                ARRAY_A
             );
         }
+        
+        // Now get aggregated data for these products, including ALL their variations
+        // We don't filter variations here - we sum ALL variations for products that match the filter
+        $placeholders = implode(',', array_fill(0, count($product_ids), '%d'));
+        
+        // Get all aggregated data for matching products (all variations included)
+        $aggregation_query = $this->wpdb->prepare(
+            "SELECT 
+                product_id,
+                SUM(wishlist_count) as wishlist_count,
+                SUM(click_count) as click_count,
+                SUM(add_to_cart_count) as add_to_cart_count,
+                SUM(purchase_count) as purchase_count,
+                SUM(share_count) as share_count,
+                CASE WHEN SUM(wishlist_count) > 0 THEN (SUM(purchase_count) / SUM(wishlist_count)) * 100 ELSE 0 END as conversion_rate,
+                AVG(average_days_in_wishlist) as average_days_in_wishlist
+            FROM {$this->analytics_table} 
+            WHERE product_id IN ($placeholders)
+            GROUP BY product_id
+            ORDER BY {$order_by_clause} DESC 
+            LIMIT %d OFFSET %d",
+            array_merge($product_ids, array($items_per_page, $offset))
+        );
+        
+        $results = $this->wpdb->get_results($aggregation_query, ARRAY_A);
 
-        // Enrich with product data
+        // Enrich with product data and variations breakdown
         $products = array();
         foreach ($results as $row) {
             $product = WishCart_FluentCart_Helper::get_product($row['product_id']);
             if ($product) {
-                // Get all wishlist items for this product
+                // Get all wishlist items for this product (across all variations)
                 $items = $this->wpdb->get_results(
                     $this->wpdb->prepare(
                         "SELECT i.wishlist_id, w.user_id, w.session_id
                         FROM {$this->items_table} i
                         INNER JOIN {$this->wishlists_table} w ON i.wishlist_id = w.id
-                        WHERE i.product_id = %d AND i.variation_id = %d 
+                        WHERE i.product_id = %d 
                         AND i.status = 'active' AND w.status = 'active'",
-                        $row['product_id'],
-                        $row['variation_id']
+                        $row['product_id']
                     ),
                     ARRAY_A
                 );
 
-                // Aggregate unique users/emails for this product
+                // Aggregate unique users/emails for this product (across all variations)
                 $users_map = array();
                 foreach ($items as $item) {
                     $user_info = $this->get_user_info(
@@ -381,9 +429,48 @@ class WishCart_Analytics_Handler {
                 // Convert map to array
                 $users = array_values($users_map);
 
+                // Get variations breakdown for this product
+                $variations_breakdown = array();
+                $all_variations = $this->wpdb->get_results(
+                    $this->wpdb->prepare(
+                        "SELECT 
+                            variation_id,
+                            purchase_count,
+                            add_to_cart_count
+                        FROM {$this->analytics_table}
+                        WHERE product_id = %d",
+                        $row['product_id']
+                    ),
+                    ARRAY_A
+                );
+
+                foreach ($all_variations as $variation_row) {
+                    $variation_id = intval($variation_row['variation_id']);
+                    $variation_name = '';
+                    
+                    // Get variation name
+                    if ($variation_id > 0) {
+                        $variation_product = WishCart_FluentCart_Helper::get_product($variation_id);
+                        if ($variation_product) {
+                            $variation_name = $variation_product->get_name();
+                        } else {
+                            $variation_name = sprintf(__('Variation #%d', 'wishcart'), $variation_id);
+                        }
+                    } else {
+                        $variation_name = __('Default', 'wishcart');
+                    }
+
+                    $variations_breakdown[] = array(
+                        'variation_id' => $variation_id,
+                        'variation_name' => $variation_name,
+                        'purchase_count' => intval($variation_row['purchase_count']),
+                        'add_to_cart_count' => intval($variation_row['add_to_cart_count']),
+                    );
+                }
+
                 $products[] = array(
-                    'product_id' => $row['product_id'],
-                    'variation_id' => $row['variation_id'],
+                    'product_id' => intval($row['product_id']),
+                    'variation_id' => 0, // Set to 0 since we're aggregating across variations
                     'product_name' => $product->get_name(),
                     'product_url' => get_permalink($row['product_id']),
                     'wishlist_count' => intval($row['wishlist_count']),
@@ -391,9 +478,10 @@ class WishCart_Analytics_Handler {
                     'add_to_cart_count' => intval($row['add_to_cart_count']),
                     'purchase_count' => intval($row['purchase_count']),
                     'share_count' => intval($row['share_count']),
-                    'conversion_rate' => floatval($row['conversion_rate']),
-                    'average_days_in_wishlist' => floatval($row['average_days_in_wishlist']),
+                    'conversion_rate' => round(floatval($row['conversion_rate']), 2),
+                    'average_days_in_wishlist' => round(floatval($row['average_days_in_wishlist']), 2),
                     'users' => $users,
+                    'variations' => $variations_breakdown,
                 );
             }
         }

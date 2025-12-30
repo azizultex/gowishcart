@@ -568,9 +568,17 @@
                             color: var(--wishcart-text-primary);
                             font-weight: 500;
                             transition: color 0.15s;
+                            cursor: pointer;
+                            user-select: none;
+                            display: inline-block;
 
                             &:hover {
                                 color: var(--wishcart-primary);
+                                text-decoration: underline;
+                            }
+
+                            &:active {
+                                transform: scale(0.98);
                             }
                         }
 
@@ -597,29 +605,26 @@
                                 display: flex;
                                 justify-content: space-between;
                                 align-items: center;
-                                gap: var(--wishcart-space-md);
 
                                 .tooltip-close {
                                     background: none;
                                     border: none;
-                                    padding: 4px;
                                     cursor: pointer;
-                                    color: var(--wishcart-text-secondary);
+                                    padding: 4px;
                                     display: flex;
                                     align-items: center;
                                     justify-content: center;
+                                    color: var(--wishcart-text-secondary);
                                     border-radius: var(--wishcart-radius-sm);
                                     transition: all 0.15s;
-                                    flex-shrink: 0;
 
                                     &:hover {
-                                        background: var(--wishcart-border-light);
+                                        background: var(--wishcart-bg-light);
                                         color: var(--wishcart-text-primary);
                                     }
 
-                                    &:focus {
-                                        outline: none;
-                                        box-shadow: 0 0 0 2px rgba(30, 115, 190, 0.2);
+                                    &:active {
+                                        transform: scale(0.95);
                                     }
                                 }
                             }
@@ -630,6 +635,25 @@
                                 overflow-y: auto;
                                 overflow-x: hidden;
                                 -webkit-overflow-scrolling: touch;
+
+                                &::-webkit-scrollbar {
+                                    width: 8px;
+                                }
+
+                                &::-webkit-scrollbar-track {
+                                    background: var(--wishcart-bg-light);
+                                    border-radius: 4px;
+                                }
+
+                                &::-webkit-scrollbar-thumb {
+                                    background: var(--wishcart-border-light);
+                                    border-radius: 4px;
+                                    transition: background 0.15s;
+
+                                    &:hover {
+                                        background: var(--wishcart-text-muted);
+                                    }
+                                }
 
                                 .variation-item {
                                     padding: var(--wishcart-space-sm) var(--wishcart-space-md);
