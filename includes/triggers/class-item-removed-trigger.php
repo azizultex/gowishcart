@@ -44,7 +44,7 @@ class wishcart_Item_Removed_Trigger extends \FluentCrm\App\Services\Funnel\BaseT
             'category'    => __( 'WishCart', 'wishcart' ),
             'label'       => __( 'Item Removed from WishCart', 'wishcart' ),
             'description' => __( 'This funnel will be initiated when a product is removed from a wishlist', 'wishcart' ),
-            'icon'        => 'fc-icon-heart',
+            // 'icon'        => 'fc-icon-heart',
         );
     }
 
