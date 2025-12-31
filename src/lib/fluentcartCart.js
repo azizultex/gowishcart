@@ -675,6 +675,11 @@ export const openCartSidebar = () => {
         for (const selector of cartButtonSelectors) {
             const buttons = document.querySelectorAll(selector);
             for (const button of buttons) {
+                // Skip anchor tags with href attributes to prevent page redirects
+                if (button.tagName === 'A' && button.hasAttribute('href')) {
+                    continue;
+                }
+                
                 if (button && typeof button.click === 'function' && button.offsetParent !== null) {
                     try {
                         button.click();
