@@ -31,7 +31,7 @@ class wishcart_Back_In_Stock_Trigger extends \FluentCrm\App\Services\Funnel\Base
      */
     public function getTrigger() {
         return array(
-            'category'      => __( 'wishcart', 'wishcart' ),
+            'category'      => __( 'WishCart', 'wishcart' ),
             'label'         => __( 'Item Back in Stock', 'wishcart' ) . ' (' . __( 'Upcoming', 'wishcart' ) . ')',
             'description'  => __( 'This funnel will be initiated when a product in a wishlist comes back in stock', 'wishcart' ),
             'icon'          => 'fc-icon-heart',

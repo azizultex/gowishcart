@@ -31,7 +31,7 @@ class wishcart_Price_Drop_Trigger extends \FluentCrm\App\Services\Funnel\BaseTri
      */
     public function getTrigger() {
         return array(
-            'category'      => __( 'wishcart', 'wishcart' ),
+            'category'      => __( 'WishCart', 'wishcart' ),
             'label'         => __( 'Price Drop on Wishlist Item', 'wishcart' ) . ' (' . __( 'Upcoming', 'wishcart' ) . ')',
             'description'  => __( 'This funnel will be initiated when a product in a wishlist has a price drop', 'wishcart' ),
             'icon'          => 'fc-icon-heart',

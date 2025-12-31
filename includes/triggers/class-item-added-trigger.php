@@ -41,8 +41,8 @@ class wishcart_Item_Added_Trigger extends \FluentCrm\App\Services\Funnel\BaseTri
      */
     public function getTrigger() {
         return array(
-            'category'    => __( 'wishcart', 'wishcart' ),
-            'label'       => __( 'Item Added to Wishlist', 'wishcart' ),
+            'category'    => __( 'WishCart', 'wishcart' ),
+            'label'       => __( 'Item Added to WishCart', 'wishcart' ),
             'description' => __( 'This funnel will be initiated when a product is added to a wishlist', 'wishcart' ),
             'icon'        => 'fc-icon-heart',
         );
