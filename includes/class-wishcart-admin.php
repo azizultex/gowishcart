@@ -65,6 +65,15 @@ class wishcart_Admin {
             [],
             WishCart_VERSION
         );
+
+        // Add inline CSS with dynamic URL for trigger icon background image
+        $icon_url = WishCart_PLUGIN_URL . 'assets/images/icons/menu-icon-short.svg';
+        $inline_css = "
+        .wishcart-trigger-icon i {
+            background-image: url('" . esc_url( $icon_url ) . "');
+        }";
+
+        wp_add_inline_style( 'wishcart-admin-style', $inline_css );
     }
 
     /**
