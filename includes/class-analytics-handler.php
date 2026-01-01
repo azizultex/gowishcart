@@ -19,6 +19,8 @@ class WishCart_Analytics_Handler {
     private $items_table;
     private $wishlists_table;
     private $shares_table;
+    private $guest_users_table;
+    private $notifications_table;
 
     /**
      * Constructor
@@ -30,6 +32,8 @@ class WishCart_Analytics_Handler {
         $this->items_table = $wpdb->prefix . 'fc_wishlist_items';
         $this->wishlists_table = $wpdb->prefix . 'fc_wishlists';
         $this->shares_table = $wpdb->prefix . 'fc_wishlist_shares';
+        $this->guest_users_table = $wpdb->prefix . 'fc_wishlist_guest_users';
+        $this->notifications_table = $wpdb->prefix . 'fc_wishlist_notifications';
     }
 
     /**
@@ -172,35 +176,301 @@ class WishCart_Analytics_Handler {
     }
 
     /**
+     * Get date range from time period string
+     *
+     * @param string $time_period Time period string (7days, 30days, 90days, 365days, all)
+     * @return array Array with 'date_from' or null for 'all'
+     */
+    private function get_date_range_from_period($time_period) {
+        if (empty($time_period) || $time_period === 'all') {
+            return null;
+        }
+
+        $days = intval($time_period);
+        if ($days <= 0) {
+            return null;
+        }
+
+        $date_from = date('Y-m-d H:i:s', strtotime("-{$days} days"));
+        return $date_from;
+    }
+
+    /**
+     * Get user information (name and email) from user_id or session_id
+     *
+     * @param int|null $user_id User ID
+     * @param string|null $session_id Session ID
+     * @param int|null $wishlist_id Optional wishlist ID for notification fallback
+     * @return array Array with 'user_name' and 'email'
+     */
+    private function get_user_info($user_id = null, $session_id = null, $wishlist_id = null) {
+        $user_name = null;
+        $email = null;
+
+        // If user_id exists, get from WordPress users table
+        if (!empty($user_id)) {
+            $user = get_userdata($user_id);
+            if ($user) {
+                $user_name = $user->display_name ? $user->display_name : $user->user_login;
+                $email = $user->user_email;
+            }
+        }
+        // If session_id exists, get from guest users table
+        elseif (!empty($session_id)) {
+            $guest = $this->wpdb->get_row(
+                $this->wpdb->prepare(
+                    "SELECT guest_email, guest_name FROM {$this->guest_users_table} WHERE session_id = %s ORDER BY date_created DESC LIMIT 1",
+                    $session_id
+                ),
+                ARRAY_A
+            );
+
+            if ($guest) {
+                $user_name = !empty($guest['guest_name']) ? $guest['guest_name'] : __('Guest', 'wishcart');
+                $email = !empty($guest['guest_email']) ? $guest['guest_email'] : null;
+            }
+
+            // If no email found in guest_users, check notifications table as fallback
+            if (empty($email)) {
+                if (!empty($wishlist_id)) {
+                    // Use wishlist_id directly if provided (more efficient)
+                    $notification = $this->wpdb->get_var(
+                        $this->wpdb->prepare(
+                            "SELECT email_to FROM {$this->notifications_table} 
+                            WHERE wishlist_id = %d
+                            AND email_to IS NOT NULL AND email_to != ''
+                            ORDER BY date_created DESC LIMIT 1",
+                            $wishlist_id
+                        )
+                    );
+                } else {
+                    // Fallback to subquery if wishlist_id not provided
+                    $notification = $this->wpdb->get_var(
+                        $this->wpdb->prepare(
+                            "SELECT email_to FROM {$this->notifications_table} 
+                            WHERE wishlist_id IN (SELECT id FROM {$this->wishlists_table} WHERE session_id = %s)
+                            AND email_to IS NOT NULL AND email_to != ''
+                            ORDER BY date_created DESC LIMIT 1",
+                            $session_id
+                        )
+                    );
+                }
+
+                if ($notification) {
+                    $email = $notification;
+                }
+            }
+        }
+
+        return array(
+            'user_name' => $user_name ? $user_name : __('Guest', 'wishcart'),
+            'email' => $email ? $email : null,
+            'is_guest' => empty($user_id),
+        );
+    }
+
+    /**
      * Get popular products
      *
-     * @param int $limit Number of products to return
+     * @param int $limit Number of products to return (deprecated, use $per_page)
      * @param string $order_by Order by field (wishlist_count, conversion_rate, share_count)
-     * @return array Array of popular products with analytics
+     * @param int $page Current page number
+     * @param int $per_page Number of products per page
+     * @param string $time_period Time period filter (7days, 30days, 90days, 365days, all)
+     * @return array Array of popular products with analytics and pagination info
      */
-    public function get_popular_products($limit = 10, $order_by = 'wishlist_count') {
+    public function get_popular_products($limit = 10, $order_by = 'wishlist_count', $page = 1, $per_page = 10, $time_period = 'all') {
         $valid_order_fields = array('wishlist_count', 'conversion_rate', 'share_count', 'add_to_cart_count', 'purchase_count');
         
         if (!in_array($order_by, $valid_order_fields)) {
             $order_by = 'wishlist_count';
         }
 
-        $results = $this->wpdb->get_results(
-            $this->wpdb->prepare(
-                "SELECT * FROM {$this->analytics_table} WHERE wishlist_count > 0 ORDER BY {$order_by} DESC LIMIT %d",
-                $limit
-            ),
-            ARRAY_A
-        );
+        // Use per_page if provided, otherwise fall back to limit for backward compatibility
+        $items_per_page = $per_page > 0 ? $per_page : ($limit > 0 ? $limit : 10);
+        $current_page = max(1, intval($page));
+        $offset = ($current_page - 1) * $items_per_page;
 
-        // Enrich with product data
+        // Get date range filter
+        $date_from = $this->get_date_range_from_period($time_period);
+        
+        // Build WHERE clause and prepare parameters
+        $where_conditions = array('wishlist_count > 0');
+        $where_values = array();
+        
+        if ($date_from) {
+            $where_conditions[] = "(last_added_date >= %s OR first_added_date >= %s)";
+            $where_values[] = $date_from;
+            $where_values[] = $date_from;
+        }
+        
+        $where_clause = implode(' AND ', $where_conditions);
+
+        // Get total count of unique products (grouped by product_id)
+        if (!empty($where_values)) {
+            $total = $this->wpdb->get_var(
+                $this->wpdb->prepare(
+                    "SELECT COUNT(DISTINCT product_id) FROM {$this->analytics_table} WHERE {$where_clause}",
+                    $where_values
+                )
+            );
+        } else {
+            $total = $this->wpdb->get_var(
+                "SELECT COUNT(DISTINCT product_id) FROM {$this->analytics_table} WHERE {$where_clause}"
+            );
+        }
+
+        // Build ORDER BY clause for aggregated query
+        // For aggregated fields, we need to use SUM() in ORDER BY
+        $order_by_clause = '';
+        if ($order_by === 'wishlist_count') {
+            $order_by_clause = 'SUM(wishlist_count)';
+        } elseif ($order_by === 'add_to_cart_count') {
+            $order_by_clause = 'SUM(add_to_cart_count)';
+        } elseif ($order_by === 'purchase_count') {
+            $order_by_clause = 'SUM(purchase_count)';
+        } elseif ($order_by === 'share_count') {
+            $order_by_clause = 'SUM(share_count)';
+        } elseif ($order_by === 'conversion_rate') {
+            // For conversion_rate, calculate it from aggregated values
+            $order_by_clause = 'CASE WHEN SUM(wishlist_count) > 0 THEN (SUM(purchase_count) / SUM(wishlist_count)) * 100 ELSE 0 END';
+        } else {
+            $order_by_clause = 'SUM(wishlist_count)';
+        }
+
+        // Get paginated results grouped by product_id
+        // First, get product IDs that match the main filter (for pagination)
+        // This determines which products to show in the list
+        $product_ids_query = '';
+        if (!empty($where_values)) {
+            $product_ids_query = $this->wpdb->prepare(
+                "SELECT DISTINCT product_id FROM {$this->analytics_table} WHERE {$where_clause}",
+                $where_values
+            );
+        } else {
+            $product_ids_query = "SELECT DISTINCT product_id FROM {$this->analytics_table} WHERE {$where_clause}";
+        }
+        
+        $product_ids = $this->wpdb->get_col($product_ids_query);
+        
+        if (empty($product_ids)) {
+            return array(
+                'products' => array(),
+                'pagination' => array(
+                    'total' => 0,
+                    'total_pages' => 0,
+                    'current_page' => $current_page,
+                    'per_page' => $items_per_page,
+                ),
+            );
+        }
+        
+        // Now get aggregated data for these products, including ALL their variations
+        // We don't filter variations here - we sum ALL variations for products that match the filter
+        $placeholders = implode(',', array_fill(0, count($product_ids), '%d'));
+        
+        // Get all aggregated data for matching products (all variations included)
+        $aggregation_query = $this->wpdb->prepare(
+            "SELECT 
+                product_id,
+                SUM(wishlist_count) as wishlist_count,
+                SUM(click_count) as click_count,
+                SUM(add_to_cart_count) as add_to_cart_count,
+                SUM(purchase_count) as purchase_count,
+                SUM(share_count) as share_count,
+                CASE WHEN SUM(wishlist_count) > 0 THEN (SUM(purchase_count) / SUM(wishlist_count)) * 100 ELSE 0 END as conversion_rate,
+                AVG(average_days_in_wishlist) as average_days_in_wishlist
+            FROM {$this->analytics_table} 
+            WHERE product_id IN ($placeholders)
+            GROUP BY product_id
+            ORDER BY {$order_by_clause} DESC 
+            LIMIT %d OFFSET %d",
+            array_merge($product_ids, array($items_per_page, $offset))
+        );
+        
+        $results = $this->wpdb->get_results($aggregation_query, ARRAY_A);
+
+        // Enrich with product data and variations breakdown
         $products = array();
         foreach ($results as $row) {
             $product = WishCart_FluentCart_Helper::get_product($row['product_id']);
             if ($product) {
+                // Get all wishlist items for this product (across all variations)
+                $items = $this->wpdb->get_results(
+                    $this->wpdb->prepare(
+                        "SELECT i.wishlist_id, w.user_id, w.session_id
+                        FROM {$this->items_table} i
+                        INNER JOIN {$this->wishlists_table} w ON i.wishlist_id = w.id
+                        WHERE i.product_id = %d 
+                        AND i.status = 'active' AND w.status = 'active'",
+                        $row['product_id']
+                    ),
+                    ARRAY_A
+                );
+
+                // Aggregate unique users/emails for this product (across all variations)
+                $users_map = array();
+                foreach ($items as $item) {
+                    $user_info = $this->get_user_info(
+                        !empty($item['user_id']) ? intval($item['user_id']) : null,
+                        !empty($item['session_id']) ? $item['session_id'] : null,
+                        !empty($item['wishlist_id']) ? intval($item['wishlist_id']) : null
+                    );
+
+                    // Use email as key to avoid duplicates, or user_id/session_id if no email
+                    $key = $user_info['email'] ? $user_info['email'] : 
+                           (!empty($item['user_id']) ? 'user_' . $item['user_id'] : 'session_' . $item['session_id']);
+
+                    if (!isset($users_map[$key])) {
+                        $users_map[$key] = $user_info;
+                    }
+                }
+
+                // Convert map to array
+                $users = array_values($users_map);
+
+                // Get variations breakdown for this product
+                $variations_breakdown = array();
+                $all_variations = $this->wpdb->get_results(
+                    $this->wpdb->prepare(
+                        "SELECT 
+                            variation_id,
+                            purchase_count,
+                            add_to_cart_count
+                        FROM {$this->analytics_table}
+                        WHERE product_id = %d",
+                        $row['product_id']
+                    ),
+                    ARRAY_A
+                );
+
+                foreach ($all_variations as $variation_row) {
+                    $variation_id = intval($variation_row['variation_id']);
+                    $variation_name = '';
+                    
+                    // Get variation name
+                    if ($variation_id > 0) {
+                        $variation_product = WishCart_FluentCart_Helper::get_product($variation_id);
+                        if ($variation_product) {
+                            $variation_name = $variation_product->get_name();
+                        } else {
+                            $variation_name = sprintf(__('Variation #%d', 'wishcart'), $variation_id);
+                        }
+                    } else {
+                        $variation_name = __('Default', 'wishcart');
+                    }
+
+                    $variations_breakdown[] = array(
+                        'variation_id' => $variation_id,
+                        'variation_name' => $variation_name,
+                        'purchase_count' => intval($variation_row['purchase_count']),
+                        'add_to_cart_count' => intval($variation_row['add_to_cart_count']),
+                    );
+                }
+
                 $products[] = array(
-                    'product_id' => $row['product_id'],
-                    'variation_id' => $row['variation_id'],
+                    'product_id' => intval($row['product_id']),
+                    'variation_id' => 0, // Set to 0 since we're aggregating across variations
                     'product_name' => $product->get_name(),
                     'product_url' => get_permalink($row['product_id']),
                     'wishlist_count' => intval($row['wishlist_count']),
@@ -208,13 +478,25 @@ class WishCart_Analytics_Handler {
                     'add_to_cart_count' => intval($row['add_to_cart_count']),
                     'purchase_count' => intval($row['purchase_count']),
                     'share_count' => intval($row['share_count']),
-                    'conversion_rate' => floatval($row['conversion_rate']),
-                    'average_days_in_wishlist' => floatval($row['average_days_in_wishlist']),
+                    'conversion_rate' => round(floatval($row['conversion_rate']), 2),
+                    'average_days_in_wishlist' => round(floatval($row['average_days_in_wishlist']), 2),
+                    'users' => $users,
+                    'variations' => $variations_breakdown,
                 );
             }
         }
 
-        return $products;
+        $total_pages = $items_per_page > 0 ? ceil($total / $items_per_page) : 1;
+
+        return array(
+            'products' => $products,
+            'pagination' => array(
+                'total' => intval($total),
+                'total_pages' => intval($total_pages),
+                'current_page' => $current_page,
+                'per_page' => $items_per_page,
+            ),
+        );
     }
 
     /**
@@ -515,32 +797,113 @@ class WishCart_Analytics_Handler {
     /**
      * Get link details with items and click counts
      *
-     * @return array Link details with items
+     * @param int $page Current page number
+     * @param int $per_page Number of links per page
+     * @param string $time_period Time period filter (7days, 30days, 90days, 365days, all)
+     * @return array Link details with items and pagination info
      */
-    public function get_link_details() {
-        // Get all active shares with wishlist info
-        $shares = $this->wpdb->get_results(
-            "SELECT 
-                s.share_id,
-                s.wishlist_id,
-                s.share_token,
-                s.share_type,
-                s.click_count,
-                s.conversion_count,
-                s.date_created,
-                s.last_clicked,
-                w.wishlist_name
-            FROM {$this->shares_table} s
-            INNER JOIN {$this->wishlists_table} w ON s.wishlist_id = w.id
-            WHERE s.status = 'active' AND w.status = 'active'
-            ORDER BY s.date_created DESC",
-            ARRAY_A
-        );
+    public function get_link_details($page = 1, $per_page = 10, $time_period = 'all') {
+        $current_page = max(1, intval($page));
+        $items_per_page = $per_page > 0 ? $per_page : 10;
+        $offset = ($current_page - 1) * $items_per_page;
+
+        // Get date range filter
+        $date_from = $this->get_date_range_from_period($time_period);
+        
+        // Build WHERE clause and prepare parameters
+        $where_conditions = array("s.status = 'active'", "w.status = 'active'");
+        $where_values = array();
+        
+        if ($date_from) {
+            $where_conditions[] = "s.date_created >= %s";
+            $where_values[] = $date_from;
+        }
+        
+        $where_clause = implode(' AND ', $where_conditions);
+
+        // Get total count
+        if (!empty($where_values)) {
+            $total = $this->wpdb->get_var(
+                $this->wpdb->prepare(
+                    "SELECT COUNT(*) 
+                    FROM {$this->shares_table} s
+                    INNER JOIN {$this->wishlists_table} w ON s.wishlist_id = w.id
+                    WHERE {$where_clause}",
+                    $where_values
+                )
+            );
+        } else {
+            $total = $this->wpdb->get_var(
+                "SELECT COUNT(*) 
+                FROM {$this->shares_table} s
+                INNER JOIN {$this->wishlists_table} w ON s.wishlist_id = w.id
+                WHERE {$where_clause}"
+            );
+        }
+
+        // Get paginated shares
+        $query_values = array_merge($where_values, array($items_per_page, $offset));
+        if (!empty($where_values)) {
+            $shares = $this->wpdb->get_results(
+                $this->wpdb->prepare(
+                    "SELECT 
+                        s.share_id,
+                        s.wishlist_id,
+                        s.share_token,
+                        s.share_type,
+                        s.click_count,
+                        s.conversion_count,
+                        s.date_created,
+                        s.last_clicked,
+                        w.wishlist_name,
+                        w.user_id,
+                        w.session_id
+                    FROM {$this->shares_table} s
+                    INNER JOIN {$this->wishlists_table} w ON s.wishlist_id = w.id
+                    WHERE {$where_clause}
+                    ORDER BY s.date_created DESC
+                    LIMIT %d OFFSET %d",
+                    $query_values
+                ),
+                ARRAY_A
+            );
+        } else {
+            $shares = $this->wpdb->get_results(
+                $this->wpdb->prepare(
+                    "SELECT 
+                        s.share_id,
+                        s.wishlist_id,
+                        s.share_token,
+                        s.share_type,
+                        s.click_count,
+                        s.conversion_count,
+                        s.date_created,
+                        s.last_clicked,
+                        w.wishlist_name,
+                        w.user_id,
+                        w.session_id
+                    FROM {$this->shares_table} s
+                    INNER JOIN {$this->wishlists_table} w ON s.wishlist_id = w.id
+                    WHERE {$where_clause}
+                    ORDER BY s.date_created DESC
+                    LIMIT %d OFFSET %d",
+                    $items_per_page,
+                    $offset
+                ),
+                ARRAY_A
+            );
+        }
 
         if (empty($shares)) {
             return array(
                 'total_links' => 0,
                 'links' => array(),
+                'pagination' => array(
+                    'total' => 0,
+                    'total_pages' => 0,
+                    'current_page' => $current_page,
+                    'per_page' => $items_per_page,
+                ),
             );
         }
 
@@ -599,6 +962,13 @@ class WishCart_Analytics_Handler {
                 }
             }
 
+            // Get user information
+            $user_info = $this->get_user_info(
+                !empty($share['user_id']) ? intval($share['user_id']) : null,
+                !empty($share['session_id']) ? $share['session_id'] : null,
+                !empty($share['wishlist_id']) ? intval($share['wishlist_id']) : null
+            );
+
             $links_data[] = array(
                 'share_id' => intval($share['share_id']),
                 'share_token' => $share['share_token'],
@@ -612,12 +982,22 @@ class WishCart_Analytics_Handler {
                 'items' => $items_data,
                 'date_created' => $share['date_created'],
                 'last_clicked' => $share['last_clicked'],
+                'user_name' => $user_info['user_name'],
+                'user_email' => $user_info['email'],
             );
         }
 
+        $total_pages = $items_per_page > 0 ? ceil($total / $items_per_page) : 1;
+
         return array(
-            'total_links' => count($links_data),
+            'total_links' => intval($total),
             'links' => $links_data,
+            'pagination' => array(
+                'total' => intval($total),
+                'total_pages' => intval($total_pages),
+                'current_page' => $current_page,
+                'per_page' => $items_per_page,
+            ),
         );
     }
 }

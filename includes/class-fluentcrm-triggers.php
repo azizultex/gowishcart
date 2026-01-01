@@ -47,6 +47,9 @@ class WishCart_FluentCRM_Triggers {
         
         // Also try to register on init in case fluent_crm/after_init doesn't fire
         add_action( 'init', array( $this, 'register_triggers' ), 30 );
+        
+        // Add CSS class to WishCart category icon in FluentCRM interface
+        add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_category_icon_script' ), 20 );
     }
 
     /**
@@ -332,5 +335,77 @@ class WishCart_FluentCRM_Triggers {
 
         // Fire custom hook for extensions (does not trigger FluentCRM funnels)
         do_action( 'wishcart_trigger_' . $trigger_key, $data );
+    }
+
+    /**
+     * Enqueue script to add CSS class to WishCart category icon in FluentCRM interface
+     *
+     * @param string $hook Current admin page hook
+     * @return void
+     */
+    public function enqueue_category_icon_script( $hook ) {
+        // Only run on FluentCRM admin pages
+        if ( strpos( $hook, 'fluentcrm' ) === false ) {
+            return;
+        }
+
+        // Enqueue jQuery if not already enqueued (it's usually available but ensure it)
+        wp_enqueue_script( 'jquery' );
+
+        // Inline JavaScript to add wishcart-trigger-icon class to category icon
+        $script = "
+        (function() {
+            function addCategoryIconClass() {
+                // Find menu items containing 'WishCart' text
+                const menuItems = document.querySelectorAll('.el-menu-item, .el-menu-item--horizontal');
+                menuItems.forEach(function(item) {
+                    const textContent = item.textContent || item.innerText || '';
+                    if (textContent.indexOf('WishCart') !== -1) {
+                        // Find icon element within this menu item
+                        const iconElement = item.querySelector('.el-icon, .fc_trigger_icon, i');
+                        if (iconElement && !iconElement.classList.contains('wishcart-trigger-icon')) {
+                            iconElement.classList.add('wishcart-trigger-icon');
+                        }
+                    }
+                });
+            }
+
+            // Run immediately if DOM is ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', addCategoryIconClass);
+            } else {
+                addCategoryIconClass();
+            }
+
+            // Also use MutationObserver to handle dynamically loaded content
+            if (typeof MutationObserver !== 'undefined') {
+                const observer = new MutationObserver(function(mutations) {
+                    addCategoryIconClass();
+                });
+
+                // Start observing when DOM is ready
+                if (document.body) {
+                    observer.observe(document.body, {
+                        childList: true,
+                        subtree: true
+                    });
+                } else {
+                    document.addEventListener('DOMContentLoaded', function() {
+                        observer.observe(document.body, {
+                            childList: true,
+                            subtree: true
+                        });
+                    });
+                }
+            }
+
+            // Fallback: run periodically for dynamic content
+            setTimeout(addCategoryIconClass, 500);
+            setTimeout(addCategoryIconClass, 1000);
+            setTimeout(addCategoryIconClass, 2000);
+        })();
+        ";
+
+        wp_add_inline_script( 'jquery', $script );
     }
 }

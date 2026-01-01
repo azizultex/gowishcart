@@ -334,9 +334,6 @@ class WishCart_Wishlist {
         // Create wishlist page
         WishCart_Wishlist_Page::create_wishlist_page();
         
-        // Create shared wishlist page
-        WishCart_Shared_Wishlist_Page::create_shared_page();
-        
         // Schedule cron events
         WishCart_Cron_Handler::schedule_events();
         

@@ -303,8 +303,8 @@
     width: 16px;
     height: 16px;
 
-    &--filled {
-      // fill: currentColor;
+    &--filled.lucide-heart {
+      fill: currentColor;
     }
   }
 
@@ -376,12 +376,47 @@
 
 /* Button Customization Wrapper */
 .wishcart-button-customization-wrapper {
+  position: relative;
+
+  
+  .wishcart-preview-wrapper {
+    position: sticky;
+    top: 50px;
+    z-index: 50;
+  }
+
   @media (max-width: 1200px) {
     grid-template-columns: 1fr !important;
     
     .wishcart-preview-wrapper {
       margin-top: var(--wishcart-space-xl);
     }
+  }
+}
+
+/* Sticky Save Button - Make default save button always visible */
+.wishcart-admin-shell {
+  .wishcart-admin-body {
+    position: relative;
+    padding-bottom: 0; // Reset any existing padding
+  }
+
+  .wishcart-admin-content {
+    padding-bottom: 100px; // Extra space to prevent overlap with sticky button
+  }
+
+  .wishcart-card-footer {
+    position: sticky;
+    bottom: 0;
+    background: var(--wishcart-bg-white);
+    border-top: 1px solid var(--wishcart-border);
+    box-shadow: none;
+    z-index: 9999;
+    margin-top: var(--wishcart-space-lg);
+    margin-bottom: 0;
+    margin-left: -24px;
+    margin-right: -24px;
+    padding: 16px 24px;
   }
 }
 
@@ -423,6 +458,18 @@
     position: relative !important;
     top: 0 !important;
     max-height: none !important;
+  }
+
+  .wishcart-admin-shell {
+    .wishcart-admin-content {
+      padding-bottom: 90px; // Slightly less padding on mobile
+    }
+
+    .wishcart-card-footer {
+      margin-left: -24px;
+      margin-right: -24px;
+      padding: 16px 24px;
+    }
   }
 }
 

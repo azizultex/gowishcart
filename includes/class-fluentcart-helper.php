@@ -409,10 +409,103 @@ class WishCart_FluentCart_Order {
         // Get order items from relationship
         if ( $this->fc_order->order_items ) {
             foreach ( $this->fc_order->order_items as $fc_item ) {
+                // Get variation_id if available (FluentCart may store it in various fields)
+                $variation_id = 0;
+                
+                // Debug: Log all available attributes on the Eloquent model
+                if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+                    $item_attributes = array();
+                    if ( is_object( $fc_item ) ) {
+                        // For Laravel Eloquent models, use getAttributes() or access attributes directly
+                        if ( method_exists( $fc_item, 'getAttributes' ) ) {
+                            $item_attributes = $fc_item->getAttributes();
+                        } elseif ( method_exists( $fc_item, 'getAttribute' ) ) {
+                            // Try to get common fields
+                            $common_fields = array( 'id', 'post_id', 'variation_id', 'variant_id', 'product_variation_id', 'variation', 'item_id', 'product_id' );
+                            foreach ( $common_fields as $field ) {
+                                try {
+                                    $value = $fc_item->getAttribute( $field );
+                                    if ( $value !== null ) {
+                                        $item_attributes[ $field ] = is_scalar( $value ) ? $value : gettype( $value );
+                                    }
+                                } catch ( Exception $e ) {
+                                    // Ignore
+                                }
+                            }
+                        }
+                        // Also try direct property access (Laravel magic methods)
+                        $direct_properties = array( 'id', 'post_id', 'variation_id', 'variant_id', 'product_variation_id', 'variation', 'item_id', 'product_id' );
+                        foreach ( $direct_properties as $prop ) {
+                            if ( isset( $fc_item->$prop ) ) {
+                                $item_attributes[ $prop ] = is_scalar( $fc_item->$prop ) ? $fc_item->$prop : gettype( $fc_item->$prop );
+                            }
+                        }
+                    }
+                    error_log( '[WishCart] FluentCart order item attributes: ' . print_r( $item_attributes, true ) );
+                }
+                
+                // Check multiple possible field names for variation_id
+                // FluentCart stores variation_id in object_id field!
+                // Try direct property access first (Laravel magic methods)
+                if ( isset( $fc_item->object_id ) && $fc_item->object_id > 0 && isset( $fc_item->post_id ) && $fc_item->object_id != $fc_item->post_id ) {
+                    // object_id contains the variation_id when it differs from post_id
+                    $variation_id = intval( $fc_item->object_id );
+                } elseif ( isset( $fc_item->variation_id ) && $fc_item->variation_id > 0 ) {
+                    $variation_id = intval( $fc_item->variation_id );
+                } elseif ( isset( $fc_item->variant_id ) && $fc_item->variant_id > 0 ) {
+                    $variation_id = intval( $fc_item->variant_id );
+                } elseif ( isset( $fc_item->product_variation_id ) && $fc_item->product_variation_id > 0 ) {
+                    $variation_id = intval( $fc_item->product_variation_id );
+                } elseif ( isset( $fc_item->variation ) && $fc_item->variation > 0 ) {
+                    $variation_id = intval( $fc_item->variation );
+                } elseif ( isset( $fc_item->item_id ) && $fc_item->item_id > 0 && isset( $fc_item->post_id ) && $fc_item->item_id != $fc_item->post_id ) {
+                    // Sometimes FluentCart stores variation_id in item_id when it differs from post_id
+                    $variation_id = intval( $fc_item->item_id );
+                }
+                
+                // Try getAttribute() method if available (Laravel Eloquent)
+                if ( $variation_id === 0 && method_exists( $fc_item, 'getAttribute' ) ) {
+                    // Check object_id first (FluentCart stores variation_id here)
+                    $object_id = $fc_item->getAttribute( 'object_id' );
+                    $post_id = $fc_item->getAttribute( 'post_id' );
+                    if ( $object_id > 0 && $post_id > 0 && $object_id != $post_id ) {
+                        $variation_id = intval( $object_id );
+                    } else {
+                        $variation_id = $fc_item->getAttribute( 'variation_id' );
+                        if ( $variation_id > 0 ) {
+                            $variation_id = intval( $variation_id );
+                        } else {
+                            $variation_id = $fc_item->getAttribute( 'variant_id' );
+                            if ( $variation_id > 0 ) {
+                                $variation_id = intval( $variation_id );
+                            } else {
+                                $variation_id = 0;
+                            }
+                        }
+                    }
+                }
+                
+                // Check if variation info is in attributes array (if it's an array)
+                if ( $variation_id === 0 && isset( $fc_item->attributes ) && is_array( $fc_item->attributes ) ) {
+                    // Check attributes array for variation_id
+                    if ( isset( $fc_item->attributes['variation_id'] ) && $fc_item->attributes['variation_id'] > 0 ) {
+                        $variation_id = intval( $fc_item->attributes['variation_id'] );
+                    } elseif ( isset( $fc_item->attributes['variant_id'] ) && $fc_item->attributes['variant_id'] > 0 ) {
+                        $variation_id = intval( $fc_item->attributes['variant_id'] );
+                    }
+                }
+                
+                // Debug: Log extracted variation_id
+                if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+                    $post_id = isset( $fc_item->post_id ) ? $fc_item->post_id : ( method_exists( $fc_item, 'getAttribute' ) ? $fc_item->getAttribute( 'post_id' ) : 'N/A' );
+                    error_log( '[WishCart] FluentCart order item: post_id=' . $post_id . ', extracted variation_id=' . $variation_id );
+                }
+                
                 $items[] = new WishCart_FluentCart_Order_Item( [
                     'id' => $fc_item->id,
                     'name' => $fc_item->title,
                     'product_id' => $fc_item->post_id,
+                    'variation_id' => $variation_id,
                     'quantity' => $fc_item->quantity,
                     'total' => $fc_item->line_total / 100, // Convert from cents to decimal
                 ] );
@@ -484,6 +577,15 @@ class WishCart_FluentCart_Order_Item {
     public function get_product() {
         $product_id = isset( $this->item_data['product_id'] ) ? $this->item_data['product_id'] : null;
         return $product_id ? WishCart_FluentCart_Helper::get_product( $product_id ) : null;
+    }
+
+    public function get_product_id() {
+        return isset( $this->item_data['product_id'] ) ? intval( $this->item_data['product_id'] ) : 0;
+    }
+
+    public function get_variation_id() {
+        $variation_id = isset( $this->item_data['variation_id'] ) ? intval( $this->item_data['variation_id'] ) : 0;
+        return $variation_id > 0 ? $variation_id : 0;
     }
 
     public function get_total() {

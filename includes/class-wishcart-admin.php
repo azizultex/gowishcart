@@ -65,6 +65,15 @@ class wishcart_Admin {
             [],
             WishCart_VERSION
         );
+
+        // Add inline CSS with dynamic URL for trigger icon background image
+        $icon_url = WishCart_PLUGIN_URL . 'assets/images/icons/menu-icon-short.svg';
+        $inline_css = "
+        .wishcart-trigger-icon i {
+            background-image: url('" . esc_url( $icon_url ) . "');
+        }";
+
+        wp_add_inline_style( 'wishcart-admin-style', $inline_css );
     }
 
     /**
@@ -1991,13 +2000,16 @@ JS;
         $analytics = new WishCart_Analytics_Handler();
         $limit = $request->get_param('limit') ? intval($request->get_param('limit')) : 10;
         $order_by = $request->get_param('order_by') ? sanitize_text_field($request->get_param('order_by')) : 'wishlist_count';
+        $page = $request->get_param('page') ? intval($request->get_param('page')) : 1;
+        $per_page = $request->get_param('per_page') ? intval($request->get_param('per_page')) : 10;
+        $time_period = $request->get_param('time_period') ? sanitize_text_field($request->get_param('time_period')) : 'all';
         
-        $products = $analytics->get_popular_products($limit, $order_by);
+        $result = $analytics->get_popular_products($limit, $order_by, $page, $per_page, $time_period);
         
         return rest_ensure_response(array(
             'success' => true,
-            'products' => $products,
-            'count' => count($products),
+            'products' => $result['products'],
+            'pagination' => $result['pagination'],
         ));
     }
 
@@ -2025,12 +2037,17 @@ JS;
      */
     public function analytics_get_links($request) {
         $analytics = new WishCart_Analytics_Handler();
-        $link_details = $analytics->get_link_details();
+        $page = $request->get_param('page') ? intval($request->get_param('page')) : 1;
+        $per_page = $request->get_param('per_page') ? intval($request->get_param('per_page')) : 10;
+        $time_period = $request->get_param('time_period') ? sanitize_text_field($request->get_param('time_period')) : 'all';
+        
+        $link_details = $analytics->get_link_details($page, $per_page, $time_period);
         
         return rest_ensure_response(array(
             'success' => true,
             'total_links' => $link_details['total_links'],
             'links' => $link_details['links'],
+            'pagination' => $link_details['pagination'],
         ));
     }
 
@@ -2263,14 +2280,27 @@ JS;
                 }
             }
             
-            $product_data['variants'] = $variants;
-            $products[] = $product_data;
-        }
-        
-        // Track click
+        $product_data['variants'] = $variants;
+        $products[] = $product_data;
+    }
+    
+    // Track click with simple deduplication to prevent double counting from React StrictMode
+    // Use a very short transient (2 seconds) to prevent duplicate tracking within the same request cycle
+    // Key is based on share_token only - if same token is accessed within 2 seconds, skip tracking
+    $transient_key = 'wishcart_share_click_' . $share_token;
+    
+    // Check if this click was already tracked in the last 2 seconds (prevents double-mounting)
+    $already_tracked = get_transient($transient_key);
+    
+    if (!$already_tracked) {
+        // Track the click
         $sharing->track_share_click($share['share_id']);
         
-        // Log activity
+        // Set transient to prevent duplicate tracking (expires in 2 seconds)
+        set_transient($transient_key, time(), 2);
+    }
+    
+    // Log activity
         if (class_exists('wishcart_Activity_Logger')) {
             $logger = new wishcart_Activity_Logger();
             $session_id = isset($_COOKIE['wishcart_session']) ? sanitize_text_field($_COOKIE['wishcart_session']) : null;

@@ -21,14 +21,37 @@ const updateCartFromFragments = (fragments) => {
         }
 
         try {
-            const element = document.querySelector(fragment.selector);
+            let element = document.querySelector(fragment.selector);
+            let elementWasCreated = false;
+            
+            // If element doesn't exist and it's the cart drawer container, create it
+            if (!element && fragment.selector === '[data-fluent-cart-cart-drawer-container]') {
+                // Create a temporary container to parse the HTML
+                const tempContainer = document.createElement('div');
+                tempContainer.innerHTML = fragment.content.trim();
+                
+                // Extract the cart drawer container element
+                const cartContainer = tempContainer.querySelector(fragment.selector);
+                
+                if (cartContainer) {
+                    // Append to document body
+                    document.body.appendChild(cartContainer);
+                    element = cartContainer;
+                    elementWasCreated = true;
+                    console.log('Cart drawer container created from fragment');
+                }
+            }
+            
             if (element) {
-                if (fragment.type === 'replace') {
-                    // Replace entire element content
-                    element.innerHTML = fragment.content;
-                } else {
-                    // Default: replace innerHTML
-                    element.innerHTML = fragment.content;
+                // Only update innerHTML if element already existed (not just created)
+                if (!elementWasCreated) {
+                    if (fragment.type === 'replace') {
+                        // Replace entire element content
+                        element.innerHTML = fragment.content;
+                    } else {
+                        // Default: replace innerHTML
+                        element.innerHTML = fragment.content;
+                    }
                 }
 
                 // Trigger any scripts in the new content
@@ -652,164 +675,20 @@ export const triggerCartRefresh = (productId, variationId = 0) => {
 export const openCartSidebar = () => {
     // Wait a moment to ensure cart has updated
     setTimeout(() => {
-        // Method 1: Try to find and click cart icon/button (most reliable)
-        const cartButtonSelectors = [
-            '[data-fluent-cart-cart-expand-button]',
-            '[data-fc-cart-expand-button]',
-            '.fc-cart-trigger',
-            '.fc-cart-button',
-            '.fluent-cart-trigger',
-            '[data-cart-trigger]',
-            '[data-fc-cart-trigger]',
-            '[data-fluent-cart-trigger]',
-            '.cart-icon',
-            '.cart-toggle',
-            '.shopping-cart-icon',
-            'button[aria-label*="cart" i]',
-            'a[href*="cart"]',
-            '.cart-link',
-            '#cart-trigger',
-            '#fc-cart-trigger',
-        ];
-
-        for (const selector of cartButtonSelectors) {
-            const buttons = document.querySelectorAll(selector);
-            for (const button of buttons) {
-                if (button && typeof button.click === 'function' && button.offsetParent !== null) {
-                    try {
-                        button.click();
-                        console.log('Cart sidebar opened via button click:', selector);
-                        return;
-                    } catch (e) {
-                        console.debug('Button click failed:', e);
-                    }
-                }
-            }
-        }
-
-        // Method 2: Try FluentCart global functions
-        if (window.FluentCart) {
-            const methods = ['openCart', 'toggleCart', 'showCart', 'openSidebar', 'showSidebar', 'open'];
-            for (const method of methods) {
-                if (typeof window.FluentCart[method] === 'function') {
-                    try {
-                        window.FluentCart[method]();
-                        console.log(`Cart sidebar opened via FluentCart.${method}()`);
-                        return;
-                    } catch (e) {
-                        console.debug(`FluentCart.${method}() failed:`, e);
-                    }
-                }
-            }
-        }
-
-        // Method 3: Try FCTCart global object
-        if (window.FCTCart) {
-            const methods = ['open', 'toggle', 'show', 'openSidebar'];
-            for (const method of methods) {
-                if (typeof window.FCTCart[method] === 'function') {
-                    try {
-                        window.FCTCart[method]();
-                        console.log(`Cart sidebar opened via FCTCart.${method}()`);
-                        return;
-                    } catch (e) {
-                        console.debug(`FCTCart.${method}() failed:`, e);
-                    }
-                }
-            }
-        }
-
-        // Method 4: Dispatch custom events
-        const events = [
-            'fc:cart:open',
-            'fc:cart:toggle',
-            'fluentcart:open_cart',
-            'fct:cart:open',
-            'cart:open',
-            'cart:toggle',
-        ];
+        // Find and click the cart expand button
+        const cartButton = document.querySelector('[data-fluent-cart-cart-expand-button]');
         
-        events.forEach(eventName => {
-            const event = new CustomEvent(eventName, {
-                bubbles: true,
-                cancelable: true,
-            });
-            document.dispatchEvent(event);
-        });
-
-        // Method 5: Try to find cart sidebar and manipulate directly
-        const cartSidebarSelectors = [
-            '[data-fluent-cart-cart-drawer]',
-            '[data-fc-cart-drawer]',
-            '.fct-cart-drawer',
-            '.fc-cart-sidebar',
-            '.fluent-cart-sidebar',
-            '[data-cart-sidebar]',
-            '[data-fc-cart-sidebar]',
-            '[data-fluent-cart-sidebar]',
-            '.cart-drawer',
-            '.cart-panel',
-            '.shopping-cart-sidebar',
-            '#fc-cart-sidebar',
-            '#cart-sidebar',
-        ];
-
-        for (const selector of cartSidebarSelectors) {
-            const cartSidebar = document.querySelector(selector);
-            
-            if (cartSidebar) {
-                // Add open classes
-                const openClasses = ['is-open', 'open', 'active', 'visible', 'show', 'opened', 'fc-open'];
-                openClasses.forEach(className => {
-                    cartSidebar.classList.add(className);
-                });
-                
-                // Remove close classes
-                const closeClasses = ['is-closed', 'closed', 'hidden', 'hide'];
-                closeClasses.forEach(className => {
-                    cartSidebar.classList.remove(className);
-                });
-                
-                // Set styles
-                cartSidebar.style.display = 'block';
-                cartSidebar.style.visibility = 'visible';
-                cartSidebar.style.opacity = '1';
-                cartSidebar.style.transform = 'translateX(0)';
-                cartSidebar.style.right = '0';
-                
-                cartSidebar.setAttribute('aria-hidden', 'false');
-                cartSidebar.setAttribute('aria-expanded', 'true');
-
-                // Trigger transition
-                setTimeout(() => {
-                    cartSidebar.dispatchEvent(new Event('transitionend'));
-                }, 100);
-
-                console.log('Cart sidebar opened via DOM manipulation:', selector);
-                
-                // Also show overlay if it exists
-                const overlay = document.querySelector(
-                    '[data-fluent-cart-cart-drawer-overlay], .fct-cart-drawer-overlay, .fc-cart-overlay, .cart-overlay, [data-cart-overlay]'
-                );
-                if (overlay) {
-                    overlay.style.display = 'block';
-                    overlay.style.visibility = 'visible';
-                    overlay.style.opacity = '1';
-                    overlay.classList.add('active', 'visible', 'show');
-                    overlay.setAttribute('aria-hidden', 'false');
+        if (cartButton && typeof cartButton.click === 'function' && cartButton.offsetParent !== null) {
+            // Skip if it's an anchor tag with href to prevent page redirects
+            if (cartButton.tagName !== 'A' || !cartButton.hasAttribute('href')) {
+                try {
+                    cartButton.click();
+                    console.log('Cart sidebar opened via button click');
+                    return;
+                } catch (e) {
+                    console.debug('Button click failed:', e);
                 }
-                
-                return;
             }
         }
-
-        // Method 6: Try jQuery trigger if available
-        if (typeof jQuery !== 'undefined') {
-            jQuery(document.body).trigger('fc:cart:open');
-            jQuery(document.body).trigger('fluentcart:open_cart');
-            jQuery(document.body).trigger('fct:cart:open');
-            jQuery(document.body).trigger('added_to_cart');
-            jQuery(document.body).trigger('cart:open');
-        }
-    }, 800); // Wait 800ms to ensure cart has updated
+    }, 300); // Wait 300ms to ensure cart has updated
 };

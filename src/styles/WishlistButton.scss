@@ -10,6 +10,46 @@
     &.wishcart-button-wrapper--right {
         align-items: center;
     }
+
+    &.wishcart-button-wrapper--top {
+
+        .wishcart-wishlist-button-container {
+            grid-column: 1;
+            grid-row: 4;
+            margin-top: 1rem;
+        }
+
+        &:has(p) .wishcart-wishlist-button-container {
+            grid-row: 6;
+        }
+    }
+}
+
+.fct-products-wrapper-inner {
+    &.fct-full-container-width.mode-list {
+
+        .wishcart-button-wrapper.wishcart-button-wrapper--top .wishcart-wishlist-button-container {
+            grid-column: 2;
+            grid-row: 2;
+            margin-top: 1rem;
+        }
+    }
+
+    .wishcart-variant-wishlist-button--text-only-link {
+        margin-bottom: 1rem;
+    }
+
+    .wishcart-wishlist-button-container {
+
+        
+        &.wishcart-position-top {
+            margin-top: 0 !important;
+
+            .wishcart-variant-wishlist-button--text-only-link {
+                margin-bottom: 0;
+            }
+        }
+    }
 }
 
 .wishcart-wishlist-button-container {
@@ -22,7 +62,7 @@
     }
 
     &.wishcart-position-top {
-        margin-bottom: 1rem;
+        margin-bottom: 1rem; 
     }
 
     &.wishcart-position-bottom {
@@ -35,6 +75,37 @@
 
     &.wishcart-position-right {
         margin-left: 0.75rem;
+    }
+}
+
+.fct-product-buttons-wrap {
+
+    &.wishcart-button-wrapper--text-only-link {
+    
+        .wishcart-variant-wishlist-buttons  {
+            display: block;
+        }
+    
+    }
+
+    &.wishcart-button-wrapper--top.wishcart-button-wrapper--top.wishcart-button-wrapper--button {
+
+        .wishcart-wishlist-button-container.wishcart-position-top {
+            grid-column: 3 / 1;
+            margin-top: 1rem;  
+            grid-row: 1; 
+            max-width: 50%;
+        }
+    }
+
+    &.wishcart-button-wrapper--top.wishcart-button-wrapper--top.wishcart-button-wrapper--text-only-link {
+
+        .wishcart-wishlist-button-container.wishcart-position-top {
+            grid-column: 3 / 1;
+            margin-top: 1rem;  
+            grid-row: 1; 
+            max-width: 50%;
+        }
     }
 }
 

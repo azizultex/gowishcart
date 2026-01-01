@@ -121,6 +121,43 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
         checkWishlist();
     }, [productId, variantId]);
 
+    // Listen for wishlist item added/removed events to sync state across components
+    useEffect(() => {
+        const handleItemAdded = (event) => {
+            const { productId: eventProductId, variationId: eventVariationId } = event.detail || {};
+            
+            // Normalize variation IDs (handle undefined/null as 0)
+            const eventVarId = eventVariationId ?? 0;
+            const currentVarId = variantId || 0;
+            
+            // Only update if this event is for the same product and variant
+            if (eventProductId === productId && eventVarId === currentVarId) {
+                setIsInWishlist(true);
+            }
+        };
+
+        const handleItemRemoved = (event) => {
+            const { productId: eventProductId, variationId: eventVariationId } = event.detail || {};
+            
+            // Normalize variation IDs (handle undefined/null as 0)
+            const eventVarId = eventVariationId ?? 0;
+            const currentVarId = variantId || 0;
+            
+            // Only update if this event is for the same product and variant
+            if (eventProductId === productId && eventVarId === currentVarId) {
+                setIsInWishlist(false);
+            }
+        };
+
+        window.addEventListener('wishcart:item-added', handleItemAdded);
+        window.addEventListener('wishcart:item-removed', handleItemRemoved);
+
+        return () => {
+            window.removeEventListener('wishcart:item-added', handleItemAdded);
+            window.removeEventListener('wishcart:item-removed', handleItemRemoved);
+        };
+    }, [productId, variantId]);
+
     // Add product directly to default wishlist
     const addToDefaultWishlist = async (skipEmailCheck = false) => {
         if (!skipEmailCheck && !window.wishcartWishlist?.isLoggedIn) {
@@ -311,6 +348,152 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
             styles.backgroundColor = background;
         }
     };
+
+    // Generate a simple hash from a string for unique class names
+    const generateHash = (str) => {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            const char = str.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash; // Convert to 32bit integer
+        }
+        return Math.abs(hash).toString(36);
+    };
+
+    // Generate CSS rules as a string instead of inline styles
+    const generateButtonCSS = (className, settings, isActive, buttonStyleVar, customStylesObj, fallbackColors) => {
+        const cssRules = [];
+        const baseSelector = `.${className}`;
+        
+        // Start with base styles
+        cssRules.push(`${baseSelector} {`);
+        
+        // Apply button style variations
+        if (buttonStyleVar === 'text-icon-link' || buttonStyleVar === 'icon-only' || buttonStyleVar === 'text-only-link') {
+            cssRules.push('  background: transparent !important;');
+            cssRules.push('  background-color: transparent !important;');
+            cssRules.push('  border: none !important;');
+            cssRules.push('  border-color: transparent !important;');
+            cssRules.push('  padding: 0 !important;');
+            cssRules.push('  box-shadow: none !important;');
+            cssRules.push('  width: auto !important;');
+            cssRules.push('  min-height: auto !important;');
+        }
+        
+        // Check if we should use fallback colors
+        const useFallback = !settings || Object.keys(settings).length === 0 || (!settings.backgroundColor && fallbackColors?.background);
+        
+        if (useFallback && fallbackColors) {
+            // Apply fallback colors structure
+            if (fallbackColors.background) {
+                cssRules.push(`  --wishlist-bg: ${fallbackColors.background} !important;`);
+            }
+            if (fallbackColors.text) {
+                cssRules.push(`  --wishlist-text: ${fallbackColors.text} !important;`);
+            }
+            if (fallbackColors.border) {
+                cssRules.push(`  --wishlist-border: ${fallbackColors.border} !important;`);
+            }
+            if (fallbackColors.activeBackground) {
+                cssRules.push(`  --wishlist-active-bg: ${fallbackColors.activeBackground} !important;`);
+            }
+            if (fallbackColors.activeText) {
+                cssRules.push(`  --wishlist-active-text: ${fallbackColors.activeText} !important;`);
+            }
+            if (fallbackColors.activeBorder) {
+                cssRules.push(`  --wishlist-active-border: ${fallbackColors.activeBorder} !important;`);
+            }
+            if (fallbackColors.hoverBackground) {
+                cssRules.push(`  --wishlist-hover-bg: ${fallbackColors.hoverBackground} !important;`);
+            }
+            if (fallbackColors.hoverText) {
+                cssRules.push(`  --wishlist-hover-text: ${fallbackColors.hoverText} !important;`);
+            }
+
+            if (!isActive) {
+                if (fallbackColors.background) {
+                    if (isGradientValue(fallbackColors.background)) {
+                        cssRules.push(`  background: ${fallbackColors.background} !important;`);
+                    } else {
+                        cssRules.push(`  background-color: ${fallbackColors.background} !important;`);
+                    }
+                }
+                if (fallbackColors.text) {
+                    cssRules.push(`  color: ${fallbackColors.text} !important;`);
+                }
+                if (fallbackColors.border) {
+                    cssRules.push(`  border-color: ${fallbackColors.border} !important;`);
+                }
+            } else {
+                if (fallbackColors.activeBackground) {
+                    if (isGradientValue(fallbackColors.activeBackground)) {
+                        cssRules.push(`  background: ${fallbackColors.activeBackground} !important;`);
+                    } else {
+                        cssRules.push(`  background-color: ${fallbackColors.activeBackground} !important;`);
+                    }
+                }
+                if (fallbackColors.activeText) {
+                    cssRules.push(`  color: ${fallbackColors.activeText} !important;`);
+                }
+                if (fallbackColors.activeBorder) {
+                    cssRules.push(`  border-color: ${fallbackColors.activeBorder} !important;`);
+                }
+            }
+        } else if (settings) {
+            // Apply specific settings
+            if (settings.backgroundColor) {
+                if (isGradientValue(settings.backgroundColor)) {
+                    cssRules.push(`  background: ${settings.backgroundColor} !important;`);
+                } else {
+                    cssRules.push(`  background-color: ${settings.backgroundColor} !important;`);
+                }
+            }
+            if (settings.buttonTextColor) {
+                cssRules.push(`  color: ${settings.buttonTextColor} !important;`);
+            }
+            if (settings.font && settings.font !== 'default') {
+                cssRules.push(`  font-family: ${settings.font} !important;`);
+            }
+            if (settings.fontSize) {
+                cssRules.push(`  font-size: ${settings.fontSize} !important;`);
+            }
+            if (settings.borderRadius) {
+                cssRules.push(`  border-radius: ${settings.borderRadius} !important;`);
+            }
+            if (settings.iconSize) {
+                cssRules.push(`  --icon-size: ${settings.iconSize} !important;`);
+            }
+            
+            // Apply hover colors as CSS variables
+            if (settings.backgroundHoverColor) {
+                cssRules.push(`  --wishlist-hover-bg: ${settings.backgroundHoverColor} !important;`);
+            }
+            if (settings.buttonTextHoverColor) {
+                cssRules.push(`  --wishlist-hover-text: ${settings.buttonTextHoverColor} !important;`);
+            }
+        }
+        
+        // Apply custom styles if provided
+        if (customStylesObj) {
+            Object.entries(customStylesObj).forEach(([key, value]) => {
+                if (value !== undefined && value !== null) {
+                    const cssKey = key.replace(/([A-Z])/g, '-$1').toLowerCase();
+                    cssRules.push(`  ${cssKey}: ${value} !important;`);
+                }
+            });
+        }
+        
+        cssRules.push('}');
+        
+        // Icon size handling - use iconSize from settings if available
+        const iconSize = (settings && settings.iconSize) ? settings.iconSize : '1.125rem';
+        cssRules.push(`${baseSelector} .wishcart-wishlist-button__icon {`);
+        cssRules.push(`  width: ${iconSize} !important;`);
+        cssRules.push(`  height: ${iconSize} !important;`);
+        cssRules.push('}');
+        
+        return cssRules.join('\n');
+    };
     
     // Get button style variation from customization settings
     const buttonStyle = customization.buttonStyle || 'button';
@@ -358,19 +541,6 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
 
     const getIconComponent = () => {
         const currentIcon = isInWishlist ? savedWishlistIcon : addToWishlistIcon;
-        // Use saved settings if in wishlist, otherwise use add settings
-        // Always use product_page settings for consistent styling everywhere
-        let settings;
-        if (isInWishlist) {
-            settings = savedProductPage;
-            // Fallback to add state settings if saved settings are not available
-            if (!settings || Object.keys(settings).length === 0) {
-                settings = productPage;
-            }
-        } else {
-            settings = productPage;
-        }
-        const iconSize = settings.iconSize || '1.125rem';
         
         if (currentIcon.type === 'custom' && currentIcon.customUrl) {
             return (
@@ -378,7 +548,6 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
                     src={currentIcon.customUrl}
                     alt=""
                     className={cn("wishcart-wishlist-button__icon", isInWishlist && "wishcart-wishlist-button__icon--filled")}
-                    style={{ width: iconSize, height: iconSize }}
                 />
             );
         }
@@ -389,111 +558,95 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
         return (
             <IconComponent 
                 className={cn("wishcart-wishlist-button__icon", isInWishlist && "wishcart-wishlist-button__icon--filled")}
-                style={{ width: iconSize, height: iconSize }}
             />
         );
     };
 
-    const buildButtonStyles = () => {
-        const baseStyles = customStyles || {};
-        const dynamicStyles = {};
-
-        // Use saved settings if in wishlist, otherwise use add settings
-        // Always use product_page settings for consistent styling everywhere
-        let settings;
+    // Get settings for current button state
+    const getCurrentSettings = () => {
         if (isInWishlist) {
-            // Use saved state settings
-            settings = savedProductPage;
-            // Fallback to add state settings if saved settings are not available
-            if (!settings || Object.keys(settings).length === 0) {
-                settings = productPage;
-            }
+            return savedProductPage && Object.keys(savedProductPage).length > 0 ? savedProductPage : productPage;
         } else {
-            // Use add state settings
-            settings = productPage;
+            return productPage;
         }
-        
-        // Apply button style variations
-        if (buttonStyle === 'text-icon-link' || buttonStyle === 'icon-only' || buttonStyle === 'text-only-link') {
-            // Remove button styling for link-style variations
-            dynamicStyles.background = 'transparent';
-            dynamicStyles.backgroundColor = 'transparent';
-            dynamicStyles.border = 'none';
-            dynamicStyles.borderColor = 'transparent';
-            dynamicStyles.padding = '0';
-            dynamicStyles.boxShadow = 'none';
-            dynamicStyles.width = 'auto';
-            dynamicStyles.minHeight = 'auto';
-        }
-        
-        // Apply specific settings (product_page, product_listing, saved_product_page, or saved_product_listing)
-        if (settings.backgroundColor) {
-            applyBackgroundToStyles(dynamicStyles, settings.backgroundColor);
-        }
-        if (settings.buttonTextColor) {
-            dynamicStyles.color = settings.buttonTextColor;
-        }
-        if (settings.font && settings.font !== 'default') {
-            dynamicStyles.fontFamily = settings.font;
-        }
-        if (settings.fontSize) {
-            dynamicStyles.fontSize = settings.fontSize;
-        }
-        if (settings.borderRadius) {
-            dynamicStyles.borderRadius = settings.borderRadius;
-        }
-        if (settings.iconSize) {
-            dynamicStyles['--icon-size'] = settings.iconSize;
-        }
-        
-        // Apply hover colors as CSS variables
-        if (settings.backgroundHoverColor) {
-            dynamicStyles['--wishlist-hover-bg'] = settings.backgroundHoverColor;
-        }
-        if (settings.buttonTextHoverColor) {
-            dynamicStyles['--wishlist-hover-text'] = settings.buttonTextHoverColor;
-        }
-        
-        // Fallback to old colors structure for backwards compatibility
-        if (Object.keys(dynamicStyles).length === 0 || (!settings.backgroundColor && colors.background)) {
-            if (colors.background) {
-                dynamicStyles['--wishlist-bg'] = colors.background;
-            }
-            if (colors.text) {
-                dynamicStyles['--wishlist-text'] = colors.text;
-            }
-            if (colors.border) {
-                dynamicStyles['--wishlist-border'] = colors.border;
-            }
-            if (colors.activeBackground) {
-                dynamicStyles['--wishlist-active-bg'] = colors.activeBackground;
-            }
-            if (colors.activeText) {
-                dynamicStyles['--wishlist-active-text'] = colors.activeText;
-            }
-            if (colors.activeBorder) {
-                dynamicStyles['--wishlist-active-border'] = colors.activeBorder;
-            }
-            if (colors.hoverBackground) {
-                dynamicStyles['--wishlist-hover-bg'] = colors.hoverBackground;
-            }
-            if (colors.hoverText) {
-                dynamicStyles['--wishlist-hover-text'] = colors.hoverText;
-            }
-
-            if (!isInWishlist) {
-                if (colors.background) applyBackgroundToStyles(dynamicStyles, colors.background);
-                if (colors.text) dynamicStyles.color = colors.text;
-                if (colors.border) dynamicStyles.borderColor = colors.border;
-            } else {
-                if (colors.activeBackground) applyBackgroundToStyles(dynamicStyles, colors.activeBackground);
-                if (colors.activeText) dynamicStyles.color = colors.activeText;
-                if (colors.activeBorder) dynamicStyles.borderColor = colors.activeBorder;
-            }
-        }
-
-        return { ...baseStyles, ...dynamicStyles };
     };
+
+    const currentSettings = getCurrentSettings();
+    
+    // Generate unique class name based on settings and button state
+    const settingsHash = generateHash(JSON.stringify({
+        settings: currentSettings,
+        isInWishlist,
+        buttonStyle,
+        variantId
+    }));
+    const dynamicButtonClass = `wishcart-variant-wishlist-button--dynamic-${settingsHash}`;
+
+    // Inject CSS styles via style tag
+    useEffect(() => {
+        const styleId = 'wishcart-variant-button-styles';
+        let styleElement = document.getElementById(styleId);
+        
+        if (!styleElement) {
+            styleElement = document.createElement('style');
+            styleElement.id = styleId;
+            document.head.appendChild(styleElement);
+        }
+
+        // Generate CSS for this button instance
+        const css = generateButtonCSS(
+            dynamicButtonClass,
+            currentSettings,
+            isInWishlist,
+            buttonStyle,
+            customStyles,
+            colors
+        );
+
+        // Escape class name for regex (class names don't have special chars, but be safe)
+        const escapedClass = dynamicButtonClass.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        
+        // Remove existing CSS for this class
+        // Use a more robust pattern that matches CSS rules properly
+        const existingStyle = styleElement.textContent || '';
+        // Match: .className { ... } potentially followed by .className .selector { ... }
+        // This pattern handles multi-line CSS rules
+        const classRegex = new RegExp(
+            `\\.${escapedClass}\\s*\\{[\\s\\S]*?\\}(?:\\s*\\.${escapedClass}\\s+[^{]+\\{[\\s\\S]*?\\})?`,
+            'g'
+        );
+        let cleanedStyle = existingStyle.replace(classRegex, '').trim();
+        
+        // Clean up extra whitespace
+        cleanedStyle = cleanedStyle.replace(/\n{3,}/g, '\n\n').trim();
+        
+        // Append new CSS
+        styleElement.textContent = (cleanedStyle ? cleanedStyle + '\n\n' : '') + css;
+
+        // Cleanup function - remove this class's CSS when component unmounts
+        return () => {
+            const styleEl = document.getElementById(styleId);
+            if (styleEl) {
+                const escapedClassCleanup = dynamicButtonClass.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                // Match: .className { ... } potentially followed by .className .selector { ... }
+                const cleanupRegex = new RegExp(
+                    `\\.${escapedClassCleanup}\\s*\\{[\\s\\S]*?\\}(?:\\s*\\.${escapedClassCleanup}\\s+[^{]+\\{[\\s\\S]*?\\})?`,
+                    'g'
+                );
+                let cleanedContent = (styleEl.textContent || '').replace(cleanupRegex, '').trim();
+                
+                // Clean up extra whitespace
+                cleanedContent = cleanedContent.replace(/\n{3,}/g, '\n\n').trim();
+                
+                styleEl.textContent = cleanedContent;
+                
+                // Remove style element if empty
+                if (!styleEl.textContent.trim()) {
+                    styleEl.remove();
+                }
+            }
+        };
+    }, [dynamicButtonClass, currentSettings, isInWishlist, buttonStyle, customStyles, colors]);
 
     if (isLoading) {
         return null;
@@ -527,9 +680,9 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
                     buttonStyle === 'text-only-link' && "wishcart-variant-wishlist-button--text-only-link",
                     buttonStyle === 'text-icon-link' && "wishcart-variant-wishlist-button--text-icon-link",
                     buttonStyle === 'icon-only' && "wishcart-variant-wishlist-button--icon-only",
+                    dynamicButtonClass,
                     className
                 )}
-                style={buildButtonStyles()}
                 aria-label={`${srLabel} - ${variantName}`}
                 data-variant-id={variantId}
             >
@@ -573,9 +726,41 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
         let modalOpenCheckInterval = null;
         let isModalOpen = false;
         
-        // Function to check if modal is open and variations are loaded
+        // Check if we're in a modal context and return the modal element
+        const getModalContext = () => {
+            // First try to find button by product ID
+            const button = document.querySelector(`[data-product-id="${productId}"]`);
+            if (button) {
+                const modal = button.closest('.fc-product-modal, .fc-product-detail, [class*="product-modal"], [class*="quick-view"]');
+                if (modal) {
+                    // Verify this modal contains the correct product
+                    const modalProductId = modal.querySelector(`[data-product-id="${productId}"]`);
+                    if (modalProductId) {
+                        return modal;
+                    }
+                }
+            }
+            
+            // Fallback: find modal by checking if it contains the product ID
+            const modals = document.querySelectorAll('.fc-product-modal, .fc-product-detail, [class*="product-modal"], [class*="quick-view"]');
+            for (const modal of modals) {
+                const modalProductId = modal.querySelector(`[data-product-id="${productId}"]`);
+                if (modalProductId) {
+                    return modal;
+                }
+            }
+            
+            return null;
+        };
+        
+        // Legacy function for boolean checks (keep for backward compatibility)
+        const isInModalContext = () => {
+            return getModalContext() !== null;
+        };
+        
+        // Function to check if modal is open and variations are loaded, scoped to specific product
         const checkModalAndVariations = () => {
-            const modal = document.querySelector('.fc-product-modal, .fc-product-detail, [class*="product-modal"], [class*="quick-view"]');
+            const modal = getModalContext();
             if (modal) {
                 // Specifically check for fct-product-variants class (FluentCart's variation container)
                 const fctVariants = modal.querySelector('.fct-product-variants');
@@ -635,11 +820,26 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
             }
         };
         
+        // Helper function to validate variant ID exists in variants array
+        const isValidVariantId = (detectedId) => {
+            if (detectedId === null || detectedId === undefined) return false;
+            const parsedId = typeof detectedId === 'number' ? detectedId : parseInt(detectedId, 10);
+            if (isNaN(parsedId) || parsedId <= 0) return false;
+            return variants.some(v => {
+                const vId = v.id || v.variation_id || v.ID;
+                return Number(vId) === parsedId;
+            });
+        };
+        
         // Comprehensive function to detect selected variation using multiple strategies
-        const detectSelectedVariation = () => {
+        const detectSelectedVariation = (modalContext = null) => {
+            // Get modal context if not provided
+            const modal = modalContext || getModalContext();
+            const searchRoot = modal || document;
+            
             // Strategy 1: PRIORITY - Look for .selected class in fct-product-variants container first
             // First, check within .fct-product-variants container (FluentCart specific)
-            const fctVariantsContainer = document.querySelector('.fct-product-variants');
+            const fctVariantsContainer = searchRoot.querySelector('.fct-product-variants');
             if (fctVariantsContainer) {
                 // PRIORITY 1: Check for .selected class first (highest priority)
                 const selectedByClass = fctVariantsContainer.querySelector(
@@ -663,8 +863,8 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
                             const result = matchedVariant.id || matchedVariant.variation_id || matchedVariant.ID;
                             return result;
                         }
-                        // If no match, use cartId as fallback (might be the variation ID)
-                        if (!isNaN(parsedCartId) && parsedCartId > 0) {
+                        // If cartId is a valid variant ID, use it
+                        if (isValidVariantId(parsedCartId)) {
                             return parsedCartId;
                         }
                     }
@@ -672,7 +872,7 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
                     // Use variantId if available
                     if (variantId) {
                         const parsedId = parseInt(variantId, 10);
-                        if (!isNaN(parsedId) && parsedId > 0) {
+                        if (isValidVariantId(parsedId)) {
                             return parsedId;
                         }
                     }
@@ -698,10 +898,13 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
                         });
                         if (matchedVariant) {
                             const result = matchedVariant.id || matchedVariant.variation_id || matchedVariant.ID;
-                            return result;
+                            // Validate the result before returning
+                            if (isValidVariantId(result)) {
+                                return result;
+                            }
                         }
-                        // If no match, use cartId as fallback (might be the variation ID)
-                        if (!isNaN(parsedCartId) && parsedCartId > 0) {
+                        // If cartId is a valid variant ID, use it
+                        if (isValidVariantId(parsedCartId)) {
                             return parsedCartId;
                         }
                     }
@@ -709,7 +912,7 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
                     // Use variantId if available
                     if (variantId) {
                         const parsedId = parseInt(variantId, 10);
-                        if (!isNaN(parsedId) && parsedId > 0) {
+                        if (isValidVariantId(parsedId)) {
                             return parsedId;
                         }
                     }
@@ -739,13 +942,13 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
             ];
             
             for (const selector of selectors) {
-                const selectedButton = document.querySelector(selector);
+                const selectedButton = searchRoot.querySelector(selector);
                 if (selectedButton) {
                     const variantId = selectedButton.getAttribute('data-variant-id') || 
                                      selectedButton.getAttribute('data-variation-id');
                     if (variantId) {
                         const parsedId = parseInt(variantId, 10);
-                        if (!isNaN(parsedId) && parsedId > 0) {
+                        if (isValidVariantId(parsedId)) {
                             return parsedId;
                         }
                     }
@@ -767,10 +970,13 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
                             return vId === parsedCartId;
                         });
                         if (matchedVariant) {
-                            return matchedVariant.id || matchedVariant.variation_id || matchedVariant.ID;
+                            const result = matchedVariant.id || matchedVariant.variation_id || matchedVariant.ID;
+                            if (isValidVariantId(result)) {
+                                return result;
+                            }
                         }
-                        // If cartId doesn't match, it might be the variation ID itself
-                        if (!isNaN(parsedCartId) && parsedCartId > 0) {
+                        // If cartId is a valid variant ID, use it
+                        if (isValidVariantId(parsedCartId)) {
                             return parsedCartId;
                         }
                     }
@@ -778,12 +984,12 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
             }
             
             // Strategy 3: Check for hidden form inputs with variation_id
-            const form = document.querySelector('.fc-product-modal form, .fc-product-detail form, form[data-product-id]');
+            const form = searchRoot.querySelector('.fc-product-modal form, .fc-product-detail form, form[data-product-id]');
             if (form) {
                 const variationInput = form.querySelector('input[name="variation_id"], input[name="variant_id"], input[type="hidden"][name*="variation"], input[type="hidden"][name*="variant"]');
                 if (variationInput && variationInput.value) {
                     const parsedId = parseInt(variationInput.value, 10);
-                    if (!isNaN(parsedId) && parsedId > 0) {
+                    if (isValidVariantId(parsedId)) {
                         return parsedId;
                     }
                 }
@@ -792,7 +998,7 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
                 const variationSelect = form.querySelector('select[name*="variation"], select[name*="variant"]');
                 if (variationSelect && variationSelect.value) {
                     const parsedId = parseInt(variationSelect.value, 10);
-                    if (!isNaN(parsedId) && parsedId > 0) {
+                    if (isValidVariantId(parsedId)) {
                         return parsedId;
                     }
                 }
@@ -800,17 +1006,17 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
                 const checkedRadio = form.querySelector('input[type="radio"][name*="variation"]:checked, input[type="radio"][name*="variant"]:checked');
                 if (checkedRadio && checkedRadio.value) {
                     const parsedId = parseInt(checkedRadio.value, 10);
-                    if (!isNaN(parsedId) && parsedId > 0) {
+                    if (isValidVariantId(parsedId)) {
                         return parsedId;
                     }
                 }
             }
             
             // Strategy 4: Look for elements with border/active styling that might indicate selection
-            const modal = document.querySelector('.fc-product-modal, .fc-product-detail');
-            if (modal) {
+            const modalForSearch = modal || searchRoot;
+            if (modalForSearch) {
                 // Look for buttons with specific active classes or styles
-                const allVariantButtons = modal.querySelectorAll('[data-variant-id], [data-variation-id]');
+                const allVariantButtons = modalForSearch.querySelectorAll('[data-variant-id], [data-variation-id]');
                 for (const btn of allVariantButtons) {
                     // PRIORITY: Check for .selected class first, then other indicators
                     if (btn.classList.contains('selected')) {
@@ -819,7 +1025,7 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
                                          btn.getAttribute('data-variation-id');
                         if (variantId) {
                             const parsedId = parseInt(variantId, 10);
-                            if (!isNaN(parsedId) && parsedId > 0) {
+                            if (isValidVariantId(parsedId)) {
                                 return parsedId;
                             }
                         }
@@ -831,7 +1037,7 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
                                          btn.getAttribute('data-variation-id');
                         if (variantId) {
                             const parsedId = parseInt(variantId, 10);
-                            if (!isNaN(parsedId) && parsedId > 0) {
+                            if (isValidVariantId(parsedId)) {
                                 return parsedId;
                             }
                         }
@@ -846,7 +1052,7 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
                                          btn.getAttribute('data-variation-id');
                         if (variantId) {
                             const parsedId = parseInt(variantId, 10);
-                            if (!isNaN(parsedId) && parsedId > 0) {
+                            if (isValidVariantId(parsedId)) {
                                 return parsedId;
                             }
                         }
@@ -857,29 +1063,32 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
             // Strategy 5: Check FluentCart's internal state if accessible
             if (window.FluentCart && window.FluentCart.selectedVariation) {
                 const parsedId = parseInt(window.FluentCart.selectedVariation, 10);
-                if (!isNaN(parsedId) && parsedId > 0) {
+                if (isValidVariantId(parsedId)) {
                     return parsedId;
                 }
             }
             
             // Strategy 6: Default to first variant if nothing found, but only if no selection has been made yet
-            // If user has made a selection recently, prioritize that
+            // If user has made a selection recently, prioritize that (but validate it first)
             if (userSelectedVariantId !== null) {
                 const timeSinceSelection = Date.now() - lastUserSelectionTime;
-                if (timeSinceSelection < USER_SELECTION_COOLDOWN) {
+                if (timeSinceSelection < USER_SELECTION_COOLDOWN && isValidVariantId(userSelectedVariantId)) {
                     return userSelectedVariantId;
                 }
             }
             
-            // If currentActiveId is set, maintain it instead of defaulting to first variant
-            if (currentActiveId !== null) {
+            // If currentActiveId is set and valid, maintain it instead of defaulting to first variant
+            if (currentActiveId !== null && isValidVariantId(currentActiveId)) {
                 return currentActiveId;
             }
             
             // Only default to first variant if no selection has been made yet
             if (variants.length > 0) {
                 const firstVariantId = variants[0].id || variants[0].variation_id || variants[0].ID;
-                return firstVariantId;
+                // First variant is always valid, but validate anyway for consistency
+                if (isValidVariantId(firstVariantId)) {
+                    return firstVariantId;
+                }
             }
             
             return null;
@@ -912,7 +1121,8 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
                     return;
                 }
                 
-                const detectedId = detectSelectedVariation();
+                const modal = getModalContext();
+                const detectedId = detectSelectedVariation(modal);
                 if (detectedId !== null && detectedId !== currentActiveId) {
                     // Only update if detected ID matches user selection or cooldown has expired
                     if (userSelectedVariantId === null || detectedId === userSelectedVariantId || timeSinceUserSelection >= USER_SELECTION_COOLDOWN) {
@@ -932,8 +1142,9 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
                 return;
             }
             
-            const detectedId = detectSelectedVariation();
-            if (detectedId !== null) {
+            const modal = getModalContext();
+            const detectedId = detectSelectedVariation(modal);
+            if (detectedId !== null && isValidVariantId(detectedId)) {
                 // Only update if detected ID matches user selection or cooldown has expired
                 if (userSelectedVariantId === null || detectedId === userSelectedVariantId || timeSinceUserSelection >= USER_SELECTION_COOLDOWN) {
                     if (detectedId !== currentActiveId) {
@@ -944,15 +1155,6 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
             }
         };
 
-        // Check if we're in a modal context
-        const isInModalContext = () => {
-            const button = document.querySelector(`[data-product-id="${productId}"]`);
-            if (!button) return false;
-            
-            const modal = button.closest('.fc-product-modal, .fc-product-detail, [class*="product-modal"], [class*="quick-view"]');
-            return !!modal;
-        };
-        
         // Initial detection with retry mechanism for dynamically loaded content
         let retryCount = 0;
         const maxRetries = isInModalContext() ? 25 : 15; // More retries for modals
@@ -971,20 +1173,23 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
                 }
             }
             
-            const detected = detectSelectedVariation();
+            const modal = getModalContext();
+            const detected = detectSelectedVariation(modal);
             
-            if (detected !== null) {
+            if (detected !== null && isValidVariantId(detected)) {
                 currentActiveId = detected;
                 setActiveVariantId(detected);
             } else if (retryCount < maxRetries) {
                 retryCount++;
                 setTimeout(tryDetect, retryDelay);
             } else {
-                // After max retries, default to first variant
+                // After max retries, default to first variant (fallback)
                 if (variants.length > 0) {
                     const firstVariantId = variants[0].id || variants[0].variation_id || variants[0].ID;
-                    currentActiveId = firstVariantId;
-                    setActiveVariantId(firstVariantId);
+                    if (isValidVariantId(firstVariantId)) {
+                        currentActiveId = firstVariantId;
+                        setActiveVariantId(firstVariantId);
+                    }
                 }
             }
         };
@@ -1099,17 +1304,19 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
                             if (selectedElement) {
                                 const variantId = mapCartIdToVariantId(cartId);
                                 if (variantId) {
-                                    // Track user selection
-                                    userSelectedVariantId = variantId;
-                                    lastUserSelectionTime = Date.now();
-                                    // Update immediately
-                                    currentActiveId = variantId;
-                                    setActiveVariantId(variantId);
+                                    // Track user selection (validate first)
+                                    if (isValidVariantId(variantId)) {
+                                        userSelectedVariantId = variantId;
+                                        lastUserSelectionTime = Date.now();
+                                        // Update immediately
+                                        currentActiveId = variantId;
+                                        setActiveVariantId(variantId);
+                                    }
                                 }
                             } else {
                                 // Fallback: use cartId directly if .selected class not found yet
                                 const variantId = mapCartIdToVariantId(cartId);
-                                if (variantId) {
+                                if (variantId && isValidVariantId(variantId)) {
                                     userSelectedVariantId = variantId;
                                     lastUserSelectionTime = Date.now();
                                     currentActiveId = variantId;
@@ -1136,7 +1343,7 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
                     
                     if (cartId) {
                         const mappedId = mapCartIdToVariantId(cartId);
-                        if (mappedId) {
+                        if (mappedId && isValidVariantId(mappedId)) {
                             // Track user selection
                             userSelectedVariantId = mappedId;
                             lastUserSelectionTime = Date.now();
@@ -1151,7 +1358,7 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
                     
                     if (variantId) {
                         const parsedId = parseInt(variantId, 10);
-                        if (!isNaN(parsedId) && parsedId > 0) {
+                        if (isValidVariantId(parsedId)) {
                             // Track user selection
                             userSelectedVariantId = parsedId;
                             lastUserSelectionTime = Date.now();
@@ -1177,7 +1384,7 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
                 
                 if (variantId) {
                     const parsedId = parseInt(variantId, 10);
-                    if (!isNaN(parsedId) && parsedId > 0) {
+                    if (isValidVariantId(parsedId)) {
                         // Update immediately
                         // Track user selection
                         userSelectedVariantId = parsedId;
@@ -1209,7 +1416,7 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
             if (target.name && (target.name.includes('variation') || target.name.includes('variant'))) {
                 if (target.value) {
                     const parsedId = parseInt(target.value, 10);
-                    if (!isNaN(parsedId) && parsedId > 0) {
+                    if (isValidVariantId(parsedId)) {
                         currentActiveId = parsedId;
                         setActiveVariantId(parsedId);
                     }
@@ -1223,7 +1430,7 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
         const handleFluentCartEvent = (event) => {
             if (event.detail && event.detail.variation_id) {
                 const parsedId = parseInt(event.detail.variation_id, 10);
-                if (!isNaN(parsedId) && parsedId > 0) {
+                if (isValidVariantId(parsedId)) {
                     currentActiveId = parsedId;
                     setActiveVariantId(parsedId);
                 }
@@ -1249,7 +1456,7 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
                         const selectedElement = fctVariants.querySelector('.selected[data-cart-id="' + cartId + '"]');
                         if (selectedElement) {
                             const variantId = mapCartIdToVariantId(cartId);
-                            if (variantId) {
+                            if (variantId && isValidVariantId(variantId)) {
                                 // Track user selection
                                 userSelectedVariantId = variantId;
                                 lastUserSelectionTime = Date.now();
@@ -1260,7 +1467,7 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
                         } else {
                             // Fallback: use cartId directly if .selected class not found yet
                             const variantId = mapCartIdToVariantId(cartId);
-                            if (variantId) {
+                            if (variantId && isValidVariantId(variantId)) {
                                 userSelectedVariantId = variantId;
                                 lastUserSelectionTime = Date.now();
                                 currentActiveId = variantId;
@@ -1290,7 +1497,7 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
                 const cartId = focusedElement.getAttribute('data-cart-id');
                 if (cartId) {
                     const variantId = mapCartIdToVariantId(cartId);
-                    if (variantId) {
+                    if (variantId && isValidVariantId(variantId)) {
                         currentActiveId = variantId;
                         setActiveVariantId(variantId);
                     }
@@ -1365,7 +1572,7 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
                                 const cartId = target.getAttribute('data-cart-id');
                                 if (cartId) {
                                     const variantId = mapCartIdToVariantId(cartId);
-                                    if (variantId) {
+                                    if (variantId && isValidVariantId(variantId)) {
                                         currentActiveId = variantId;
                                         setActiveVariantId(variantId);
                                     }
@@ -1402,7 +1609,7 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
                                              target.getAttribute('data-variation-id');
                             if (variantId) {
                                 const parsedId = parseInt(variantId, 10);
-                                if (!isNaN(parsedId) && parsedId > 0) {
+                                if (isValidVariantId(parsedId)) {
                                     currentActiveId = parsedId;
                                     setActiveVariantId(parsedId);
                                 }
@@ -1620,12 +1827,22 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
                 return;
             }
             
-            const detected = detectSelectedVariation();
-            if (detected !== null && detected !== currentActiveId) {
+            const modal = getModalContext();
+            const detected = detectSelectedVariation(modal);
+            if (detected !== null && isValidVariantId(detected) && detected !== currentActiveId) {
                 // Only update if detected ID matches user selection or cooldown expired
                 if (userSelectedVariantId === null || detected === userSelectedVariantId || !shouldRespectUserSelection()) {
                     currentActiveId = detected;
                     setActiveVariantId(detected);
+                }
+            } else if (detected === null || !isValidVariantId(detected)) {
+                // Fallback: if detection failed or ID is invalid, show first variant
+                if (variants.length > 0 && currentActiveId === null) {
+                    const firstVariantId = variants[0].id || variants[0].variation_id || variants[0].ID;
+                    if (isValidVariantId(firstVariantId)) {
+                        currentActiveId = firstVariantId;
+                        setActiveVariantId(firstVariantId);
+                    }
                 }
             }
         }, 500); // Check every 500ms for faster updates
@@ -1671,15 +1888,37 @@ const VariantWishlistButtons = ({ productId, variants, className, customStyles, 
         };
     }, [variants, productId]);
 
+    // Determine which variant button(s) to show
+    // If activeVariantId is null or invalid, show first variant as fallback (instead of hiding all)
+    const getVisibleVariantId = () => {
+        if (activeVariantId !== null) {
+            const activeIdNum = Number(activeVariantId);
+            // Validate that the active variant ID exists in our variants array
+            const isValid = variants.some(v => {
+                const vId = v.id || v.variation_id || v.ID;
+                return Number(vId) === activeIdNum;
+            });
+            if (isValid) {
+                return activeIdNum;
+            }
+        }
+        // Fallback: show first variant if no valid active variant is set
+        if (variants.length > 0) {
+            const firstVariantId = variants[0].id || variants[0].variation_id || variants[0].ID;
+            return Number(firstVariantId);
+        }
+        return null;
+    };
+    
+    const visibleVariantId = getVisibleVariantId();
+
     return (
         <div className={cn("wishcart-variant-wishlist-buttons", className)} data-position={position}>
             {variants.map((variant) => {
                 const variantId = variant.id || variant.variation_id || variant.ID;
-                // Ensure both IDs are numbers for proper comparison
-                const activeIdNum = activeVariantId !== null ? Number(activeVariantId) : null;
                 const variantIdNum = Number(variantId);
-                // Button is visible if activeVariantId is null (initial state) or matches this variant's ID
-                const isVisible = activeIdNum === null || activeIdNum === variantIdNum;
+                // Button is visible if it matches the visible variant ID
+                const isVisible = visibleVariantId !== null && variantIdNum === visibleVariantId;
                 
                 return (
                     <VariantWishlistButton
