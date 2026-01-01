@@ -112,6 +112,10 @@ const applyPlacementLayout = (container, position) => {
     if (position === 'left' || position === 'right') {
         parent.classList.add('wishcart-button-wrapper--horizontal');
     }
+
+    // Add button style class to wrapper
+    const buttonStyle = window.wishcartWishlist?.buttonCustomization?.buttonStyle || 'button';
+    parent.classList.add(`wishcart-button-wrapper--${buttonStyle}`);
 };
 
 // Detect if product has variants
