@@ -11,10 +11,17 @@
         align-items: center;
     }
 
-    &.wishcart-button-wrapper--top .wishcart-wishlist-button-container {
-        grid-column: 1;
-        grid-row: 4;
-        margin-top: 1rem;
+    &.wishcart-button-wrapper--top {
+
+        .wishcart-wishlist-button-container {
+            grid-column: 1;
+            grid-row: 4;
+            margin-top: 1rem;
+        }
+
+        &:has(p) .wishcart-wishlist-button-container {
+            grid-row: 6;
+        }
     }
 }
 

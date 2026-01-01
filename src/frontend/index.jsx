@@ -101,21 +101,26 @@ const applyPlacementLayout = (container, position) => {
     container.classList.add(`wishcart-position-${position}`);
     container.dataset.position = position;
 
-    const parent = container.parentElement;
-    if (!parent) {
+    // Find the product card element if the container is inside one
+    // This ensures wrapper classes are applied to fct-product-card instead of p tags
+    const productCard = container.closest('.fct-product-card, .fc-product-card');
+    
+    // Use product card as wrapper if found, otherwise fall back to immediate parent
+    const wrapper = productCard || container.parentElement;
+    if (!wrapper) {
         return;
     }
 
-    parent.classList.add('wishcart-button-wrapper');
-    parent.classList.add(`wishcart-button-wrapper--${position}`);
+    wrapper.classList.add('wishcart-button-wrapper');
+    wrapper.classList.add(`wishcart-button-wrapper--${position}`);
 
     if (position === 'left' || position === 'right') {
-        parent.classList.add('wishcart-button-wrapper--horizontal');
+        wrapper.classList.add('wishcart-button-wrapper--horizontal');
     }
 
     // Add button style class to wrapper
     const buttonStyle = window.wishcartWishlist?.buttonCustomization?.buttonStyle || 'button';
-    parent.classList.add(`wishcart-button-wrapper--${buttonStyle}`);
+    wrapper.classList.add(`wishcart-button-wrapper--${buttonStyle}`);
 };
 
 // Detect if product has variants
@@ -386,8 +391,21 @@ const injectWishlistIntoProductCards = () => {
         const viewOptionsButton = findViewOptionsButton(card);
         
         if (viewOptionsButton && viewOptionsButton.parentElement) {
-            // Insert after "View Options" button
-            viewOptionsButton.parentElement.insertBefore(container, viewOptionsButton.nextSibling);
+            const buttonParent = viewOptionsButton.parentElement;
+            
+            // If button's parent is a <p> tag, insert container after the <p> tag (outside it)
+            // Otherwise, insert after the button (existing behavior)
+            if (buttonParent.tagName === 'P') {
+                // Insert container as a sibling to the <p> tag (after it)
+                if (buttonParent.nextSibling) {
+                    buttonParent.parentElement.insertBefore(container, buttonParent.nextSibling);
+                } else {
+                    buttonParent.parentElement.appendChild(container);
+                }
+            } else {
+                // Insert after "View Options" button
+                buttonParent.insertBefore(container, viewOptionsButton.nextSibling);
+            }
         } else {
             // Fallback to existing placement logic
             const content =
