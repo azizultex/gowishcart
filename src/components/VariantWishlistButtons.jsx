@@ -121,6 +121,43 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
         checkWishlist();
     }, [productId, variantId]);
 
+    // Listen for wishlist item added/removed events to sync state across components
+    useEffect(() => {
+        const handleItemAdded = (event) => {
+            const { productId: eventProductId, variationId: eventVariationId } = event.detail || {};
+            
+            // Normalize variation IDs (handle undefined/null as 0)
+            const eventVarId = eventVariationId ?? 0;
+            const currentVarId = variantId || 0;
+            
+            // Only update if this event is for the same product and variant
+            if (eventProductId === productId && eventVarId === currentVarId) {
+                setIsInWishlist(true);
+            }
+        };
+
+        const handleItemRemoved = (event) => {
+            const { productId: eventProductId, variationId: eventVariationId } = event.detail || {};
+            
+            // Normalize variation IDs (handle undefined/null as 0)
+            const eventVarId = eventVariationId ?? 0;
+            const currentVarId = variantId || 0;
+            
+            // Only update if this event is for the same product and variant
+            if (eventProductId === productId && eventVarId === currentVarId) {
+                setIsInWishlist(false);
+            }
+        };
+
+        window.addEventListener('wishcart:item-added', handleItemAdded);
+        window.addEventListener('wishcart:item-removed', handleItemRemoved);
+
+        return () => {
+            window.removeEventListener('wishcart:item-added', handleItemAdded);
+            window.removeEventListener('wishcart:item-removed', handleItemRemoved);
+        };
+    }, [productId, variantId]);
+
     // Add product directly to default wishlist
     const addToDefaultWishlist = async (skipEmailCheck = false) => {
         if (!skipEmailCheck && !window.wishcartWishlist?.isLoggedIn) {
