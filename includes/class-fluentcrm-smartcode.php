@@ -311,7 +311,7 @@ class WishCart_FluentCRM_SmartCode {
 
         // Get wishlist handler
         $handler = new WishCart_Wishlist_Handler();
-        $wishlists = $handler->get_wishlists( $user_id, $session_id );
+        $wishlists = $handler->get_user_wishlists( $user_id, $session_id );
 
         if ( empty( $wishlists ) ) {
             return '0';

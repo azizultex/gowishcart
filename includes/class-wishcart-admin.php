@@ -1254,10 +1254,6 @@ JS;
             }
         }
         
-        // Check for share_code first (highest priority)
-        $share_code = $request->get_param( 'share_code' );
-        $share_code = is_string( $share_code ) ? sanitize_text_field( $share_code ) : null;
-        
         // Check for wishlist_id
         $wishlist_id = $request->get_param( 'wishlist_id' );
         $wishlist_id = ! empty( $wishlist_id ) ? intval( $wishlist_id ) : null;
@@ -1268,14 +1264,6 @@ JS;
         
         $wishlist_items = array();
         $current_wishlist = null;
-        
-        // If share_code is provided, get wishlist by share code
-        if ( ! empty( $share_code ) ) {
-            $current_wishlist = $handler->get_wishlist_by_share_code( $share_code );
-            if ( $current_wishlist ) {
-                $wishlist_id = $current_wishlist['id'];
-            }
-        }
         
         // If wishlist_id is provided, fetch that wishlist's items
         if ( $wishlist_id ) {
@@ -1299,10 +1287,8 @@ JS;
                 }
             }
             
-            // Get wishlist info if not already retrieved
-            if ( ! $current_wishlist ) {
-                $current_wishlist = $handler->get_wishlist( $wishlist_id );
-            }
+            // Get wishlist info
+            $current_wishlist = $handler->get_wishlist( $wishlist_id );
         } elseif ( $requested_user_id ) {
             // If user_id is provided, get that user's default wishlist and fetch its items
             $user_default_wishlist = $handler->get_default_wishlist( $requested_user_id, null );

@@ -261,31 +261,6 @@ class WishCart_Wishlist_Handler {
         );
     }
 
-    /**
-     * Get wishlist by token
-     *
-     * @param string $token Wishlist token
-     * @return array|null Wishlist data or null
-     */
-    public function get_wishlist_by_token($token) {
-        return $this->wpdb->get_row(
-            $this->wpdb->prepare(
-                "SELECT * FROM {$this->wishlists_table} WHERE wishlist_token = %s AND status = 'active'",
-                $token
-            ),
-            ARRAY_A
-        );
-    }
-
-    /**
-     * Get wishlist by share code
-     *
-     * @param string $share_code Share code (wishlist token)
-     * @return array|null Wishlist data or null
-     */
-    public function get_wishlist_by_share_code($share_code) {
-        return $this->get_wishlist_by_token($share_code);
-    }
 
     /**
      * Get wishlist by slug
@@ -362,11 +337,11 @@ class WishCart_Wishlist_Handler {
     }
 
     /**
-     * Get all wishlists for user
+     * Get default wishlist for user (free version - only returns default wishlist)
      *
      * @param int|null $user_id User ID
      * @param string|null $session_id Session ID
-     * @return array Array of wishlists
+     * @return array Array containing only the default wishlist
      */
     public function get_user_wishlists($user_id = null, $session_id = null) {
         if ( is_user_logged_in() ) {
@@ -379,25 +354,26 @@ class WishCart_Wishlist_Handler {
             $user_id = null;
         }
 
+        // Free version: Only return the default wishlist
         if ( $user_id ) {
-            $wishlists = $this->wpdb->get_results(
+            $wishlist = $this->wpdb->get_row(
                 $this->wpdb->prepare(
-                    "SELECT * FROM {$this->wishlists_table} WHERE user_id = %d AND status = 'active' ORDER BY is_default DESC, dateadded DESC",
+                    "SELECT * FROM {$this->wishlists_table} WHERE user_id = %d AND is_default = 1 AND status = 'active' LIMIT 1",
                     $user_id
                 ),
                 ARRAY_A
             );
         } else {
-            $wishlists = $this->wpdb->get_results(
+            $wishlist = $this->wpdb->get_row(
                 $this->wpdb->prepare(
-                    "SELECT * FROM {$this->wishlists_table} WHERE session_id = %s AND status = 'active' ORDER BY is_default DESC, dateadded DESC",
+                    "SELECT * FROM {$this->wishlists_table} WHERE session_id = %s AND is_default = 1 AND status = 'active' LIMIT 1",
                     $session_id
                 ),
                 ARRAY_A
             );
         }
 
-        return $wishlists ? $wishlists : array();
+        return $wishlist ? array($wishlist) : array();
     }
 
     /**
@@ -756,9 +732,6 @@ class WishCart_Wishlist_Handler {
         // Log activity
         $this->log_activity($wishlist_id, 'added_item', $product_id, 'product');
 
-        // Update analytics
-        $this->update_analytics($product_id, $variation_id, 'add');
-
         // Clear cache
         $this->clear_wishlist_cache($user_id, $session_id);
 
@@ -945,9 +918,6 @@ class WishCart_Wishlist_Handler {
 
         // Log activity
         $this->log_activity($wishlist_id, 'removed_item', $product_id, 'product');
-
-        // Update analytics
-        $this->update_analytics($product_id, $variation_id, 'remove');
 
         // Clear cache
         $this->clear_wishlist_cache($user_id, $session_id);
@@ -1201,21 +1171,6 @@ class WishCart_Wishlist_Handler {
         }
     }
 
-    /**
-     * Update analytics
-     *
-     * @param int $product_id Product ID
-     * @param int $variation_id Variation ID
-     * @param string $action Action type (add, remove, view, cart, purchase)
-     * @return void
-     */
-    private function update_analytics($product_id, $variation_id, $action) {
-        // Use analytics handler if available
-        if (class_exists('WishCart_Analytics_Handler')) {
-            $analytics = new WishCart_Analytics_Handler();
-            $analytics->track_event($product_id, $variation_id, $action);
-        }
-    }
 
     /**
      * Update guest user tracking
