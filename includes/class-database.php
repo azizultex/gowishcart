@@ -106,55 +106,7 @@ class WishCart_Database {
             KEY status_idx (status)
         ) ENGINE=InnoDB $charset_collate;";
 
-        // 3. Wishlist Shares Table (fc_wishlist_shares)
-        $sql_wishlist_shares = "CREATE TABLE IF NOT EXISTS {$this->table_prefix}fc_wishlist_shares (
-            share_id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-            wishlist_id bigint(20) UNSIGNED NOT NULL,
-            share_token varchar(64) UNIQUE,
-            share_type enum('link', 'email', 'facebook', 'twitter', 'pinterest', 'whatsapp', 'instagram', 'other') NOT NULL,
-            shared_by_user_id bigint(20) UNSIGNED NULL,
-            shared_with_email varchar(255) NULL,
-            share_key varchar(255) NULL,
-            share_title varchar(255) NULL,
-            share_message text NULL,
-            click_count int(11) DEFAULT 0,
-            conversion_count int(11) DEFAULT 0,
-            date_created datetime DEFAULT CURRENT_TIMESTAMP,
-            date_expires datetime NULL,
-            last_clicked datetime NULL,
-            status varchar(20) DEFAULT 'active',
-            PRIMARY KEY (share_id),
-            KEY wishlist_id_idx (wishlist_id),
-            KEY share_token_idx (share_token),
-            KEY share_type_idx (share_type),
-            KEY shared_by_user_idx (shared_by_user_id),
-            KEY status_idx (status)
-        ) ENGINE=InnoDB $charset_collate;";
-
-        // 4. Wishlist Analytics Table (fc_wishlist_analytics)
-        $sql_wishlist_analytics = "CREATE TABLE IF NOT EXISTS {$this->table_prefix}fc_wishlist_analytics (
-            analytics_id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-            product_id bigint(20) UNSIGNED NOT NULL,
-            variation_id bigint(20) UNSIGNED NULL DEFAULT 0,
-            wishlist_count int(11) DEFAULT 0,
-            click_count int(11) DEFAULT 0,
-            add_to_cart_count int(11) DEFAULT 0,
-            purchase_count int(11) DEFAULT 0,
-            share_count int(11) DEFAULT 0,
-            first_added_date datetime NULL,
-            last_added_date datetime NULL,
-            last_purchased_date datetime NULL,
-            average_days_in_wishlist decimal(10,2) DEFAULT 0,
-            conversion_rate decimal(5,2) DEFAULT 0,
-            date_updated datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            PRIMARY KEY (analytics_id),
-            UNIQUE KEY product_variation_unique (product_id, variation_id),
-            KEY product_id_idx (product_id),
-            KEY wishlist_count_idx (wishlist_count),
-            KEY conversion_rate_idx (conversion_rate)
-        ) ENGINE=InnoDB $charset_collate;";
-
-        // 5. Wishlist Notifications Table (fc_wishlist_notifications)
+        // 3. Wishlist Notifications Table (fc_wishlist_notifications)
         $sql_wishlist_notifications = "CREATE TABLE IF NOT EXISTS {$this->table_prefix}fc_wishlist_notifications (
             notification_id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
             user_id bigint(20) UNSIGNED NULL,
@@ -256,8 +208,6 @@ class WishCart_Database {
 
         dbDelta($sql_wishlists);
         dbDelta($sql_wishlist_items);
-        dbDelta($sql_wishlist_shares);
-        dbDelta($sql_wishlist_analytics);
         dbDelta($sql_wishlist_notifications);
         dbDelta($sql_wishlist_activities);
         dbDelta($sql_wishlist_guest_users);

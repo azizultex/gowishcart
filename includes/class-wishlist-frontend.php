@@ -114,7 +114,6 @@ class WishCart_Wishlist_Frontend {
                 'enabled' => ! empty( $wishlist_settings['enabled'] ),
                 'showOnProduct' => ! empty( $wishlist_settings['product_page_button'] ),
                 'showOnShop' => ! empty( $wishlist_settings['shop_page_button'] ),
-                'enableMultipleWishlists' => ! empty( $wishlist_settings['enable_multiple_wishlists'] ),
                 'buttonCustomization' => array(
                     'product_page' => isset( $button_customization['product_page'] ) ? $button_customization['product_page'] : array(),
                     'product_listing' => isset( $button_customization['product_listing'] ) ? $button_customization['product_listing'] : array(),

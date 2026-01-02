@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Heart, Trash2, ShoppingCart, Share2, Lock, Globe, Users, Edit2, Save, X } from 'lucide-react';
+import { Heart, Trash2, ShoppingCart, Lock, Globe, Users, Share2, Edit2, Save, X, Facebook, Twitter, MessageCircle, Link2, Mail } from 'lucide-react';
 import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
 import { Checkbox } from './ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { ShareWishlistModal } from './ShareWishlistModal';
-import { WishlistSelector } from './WishlistSelector';
 import { useWishlist } from '../hooks/useWishlist';
 import { cn } from '../lib/utils';
 import '../styles/WishlistPage.scss';
@@ -28,15 +26,14 @@ const WishlistPage = () => {
     const [removingIds, setRemovingIds] = useState(new Set());
     const [addingToCartIds, setAddingToCartIds] = useState(new Set());
     const [bulkAction, setBulkAction] = useState('');
-    const [isShareModalOpen, setIsShareModalOpen] = useState(false);
     const [isEditingName, setIsEditingName] = useState(false);
     const [editedName, setEditedName] = useState('');
     const [privacyStatus, setPrivacyStatus] = useState('private');
 
-    // Update privacy status when wishlist changes
+    // Update privacy status when wishlist changes (always private in free version)
     useEffect(() => {
         if (currentWishlist) {
-            setPrivacyStatus(currentWishlist.privacy_status || 'private');
+            setPrivacyStatus('private');
             setEditedName(currentWishlist.wishlist_name || currentWishlist.name || '');
         }
     }, [currentWishlist]);
@@ -93,17 +90,7 @@ const WishlistPage = () => {
         }
     };
 
-    const handlePrivacyChange = async (newPrivacy) => {
-        if (!currentWishlist) return;
-
-        const result = await updateWishlist(currentWishlist.id, {
-            privacy_status: newPrivacy,
-        });
-
-        if (result.success) {
-            setPrivacyStatus(newPrivacy);
-        }
-    };
+    // Privacy is always private in free version - no change handler needed
 
     const handleSaveName = async () => {
         if (!currentWishlist || !editedName.trim()) return;
@@ -228,43 +215,54 @@ const WishlistPage = () => {
                     </div>
 
                     <div className="wishlist-actions">
-                        {/* Wishlist Selector - Only show if multiple wishlists are enabled */}
-                        {window.wishcartWishlist?.enableMultipleWishlists && (
-                            <WishlistSelector
-                                wishlists={wishlists}
-                                currentWishlist={currentWishlist}
-                                onSelect={setCurrentWishlist}
-                                onCreate={createWishlist}
-                            />
-                        )}
-
-                        {/* Privacy Control */}
+                        {/* Privacy Control - Only Private available in free version */}
                         <div className="privacy-control">
                             <select
-                                value={privacyStatus}
-                                onChange={(e) => handlePrivacyChange(e.target.value)}
+                                value="private"
+                                onChange={() => {}}
                                 className="privacy-select"
+                                disabled={true}
+                                style={{opacity: 0.8, cursor: 'not-allowed'}}
                             >
                                 <option value="private">
                                     🔒 Private
                                 </option>
-                                <option value="shared">
-                                    👥 Shared
-                                </option>
-                                <option value="public">
-                                    🌐 Public
-                                </option>
                             </select>
                         </div>
 
-                        {/* Share Button */}
+                        {/* Share & Privacy Options - Pro Feature Notice */}
+                        <div className="wishcart-notice wishcart-notice-info" style={{
+                            marginTop: '12px',
+                            padding: '12px',
+                            backgroundColor: '#fef3c7',
+                            border: '1px solid #fbbf24',
+                            borderRadius: '6px',
+                            fontSize: '13px'
+                        }}>
+                            <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px'}}>
+                                <Lock size={16} style={{flexShrink: 0}} />
+                                <div style={{flex: 1}}>
+                                    <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px'}}>
+                                        <strong>{__('Shared Wishlist & Privacy Options', 'wishcart')}</strong>
+                                        <span className="wishcart-badge wishcart-badge-warning">{__('PRO', 'wishcart')}</span>
+                                    </div>
+                                    <p style={{fontSize: '13px', margin: '0'}}>{__('This feature is available in WishCart Pro', 'wishcart')}</p>
+                                    <p style={{fontSize: '13px', margin: '4px 0 0', color: 'var(--wishcart-text-muted)'}}>{__('Please upgrade to share your wishlist and set privacy options (Shared/Public).', 'wishcart')}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Share Button - Pro Feature */}
                         <Button
-                            onClick={() => setIsShareModalOpen(true)}
+                            onClick={() => {}}
                             className="share-button"
                             variant="outline"
+                            disabled={true}
+                            style={{opacity: 0.6, cursor: 'not-allowed', position: 'relative', marginTop: '12px'}}
                         >
                             <Share2 size={16} />
                             Share
+                            <span className="wishcart-badge wishcart-badge-warning" style={{fontSize: '10px', padding: '2px 6px', marginLeft: '8px'}}>PRO</span>
                         </Button>
                     </div>
                 </div>
@@ -378,15 +376,138 @@ const WishlistPage = () => {
                         ))}
                     </div>
                 )}
+
+                {/* Share Wishlist Section - Pro Feature */}
+                {products.length > 0 && (
+                    <div className="wishlist-share-section" style={{
+                        marginTop: '32px',
+                        padding: '20px',
+                        border: '1px solid #e5e7eb',
+                        borderRadius: '8px',
+                        backgroundColor: '#f9fafb',
+                        position: 'relative'
+                    }}>
+                        <div style={{display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px'}}>
+                            <span style={{fontSize: '14px', fontWeight: 500}}>Wishlist Share on</span>
+                            <span className="wishcart-badge wishcart-badge-warning" style={{fontSize: '10px', padding: '2px 6px'}}>PRO</span>
+                        </div>
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '12px',
+                            flexWrap: 'wrap',
+                            opacity: 0.6,
+                            pointerEvents: 'none'
+                        }}>
+                            <button
+                                disabled={true}
+                                style={{
+                                    padding: '8px',
+                                    border: '1px solid #d1d5db',
+                                    borderRadius: '6px',
+                                    backgroundColor: '#fff',
+                                    cursor: 'not-allowed',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                }}
+                                title="Facebook (Pro Feature)"
+                            >
+                                <Facebook size={20} />
+                            </button>
+                            <button
+                                disabled={true}
+                                style={{
+                                    padding: '8px',
+                                    border: '1px solid #d1d5db',
+                                    borderRadius: '6px',
+                                    backgroundColor: '#fff',
+                                    cursor: 'not-allowed',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                }}
+                                title="Twitter (Pro Feature)"
+                            >
+                                <Twitter size={20} />
+                            </button>
+                            <button
+                                disabled={true}
+                                style={{
+                                    padding: '8px',
+                                    border: '1px solid #d1d5db',
+                                    borderRadius: '6px',
+                                    backgroundColor: '#fff',
+                                    cursor: 'not-allowed',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                }}
+                                title="Pinterest (Pro Feature)"
+                            >
+                                <span style={{fontSize: '20px', fontWeight: 'bold'}}>P</span>
+                            </button>
+                            <button
+                                disabled={true}
+                                style={{
+                                    padding: '8px',
+                                    border: '1px solid #d1d5db',
+                                    borderRadius: '6px',
+                                    backgroundColor: '#fff',
+                                    cursor: 'not-allowed',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                }}
+                                title="Message (Pro Feature)"
+                            >
+                                <MessageCircle size={20} />
+                            </button>
+                            <button
+                                disabled={true}
+                                style={{
+                                    padding: '8px',
+                                    border: '1px solid #d1d5db',
+                                    borderRadius: '6px',
+                                    backgroundColor: '#fff',
+                                    cursor: 'not-allowed',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                }}
+                                title="Copy Link (Pro Feature)"
+                            >
+                                <Link2 size={20} />
+                            </button>
+                            <button
+                                disabled={true}
+                                style={{
+                                    padding: '8px',
+                                    border: '1px solid #d1d5db',
+                                    borderRadius: '6px',
+                                    backgroundColor: '#fff',
+                                    cursor: 'not-allowed',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                }}
+                                title="Email (Pro Feature)"
+                            >
+                                <Mail size={20} />
+                            </button>
+                        </div>
+                        <p style={{
+                            fontSize: '12px',
+                            color: '#6b7280',
+                            marginTop: '8px',
+                            marginBottom: 0
+                        }}>
+                            This feature is available in WishCart Pro. Please upgrade to share your wishlist.
+                        </p>
+                    </div>
+                )}
             </div>
 
-            {/* Share Modal */}
-            <ShareWishlistModal
-                wishlist={currentWishlist}
-                isOpen={isShareModalOpen}
-                onClose={() => setIsShareModalOpen(false)}
-                onPrivacyChange={handlePrivacyChange}
-            />
         </div>
     );
 };

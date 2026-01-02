@@ -90,19 +90,24 @@ const CustomSelect = ({
         }),
         option: (base, state) => ({
             ...base,
-            backgroundColor: state.isSelected 
-                ? '#f3f4f6' 
-                : state.isFocused 
-                    ? '#f9fafb' 
-                    : '#ffffff',
-            color: state.isSelected ? '#111827' : '#374151',
-            cursor: 'pointer',
+            backgroundColor: state.isDisabled
+                ? '#f9fafb'
+                : state.isSelected 
+                    ? '#f3f4f6' 
+                    : state.isFocused 
+                        ? '#f9fafb' 
+                        : '#ffffff',
+            color: state.isDisabled 
+                ? '#9ca3af'
+                : state.isSelected ? '#111827' : '#374151',
+            cursor: state.isDisabled ? 'not-allowed' : 'pointer',
             fontSize: '14px',
             fontWeight: state.isSelected ? '600' : '400',
             padding: '12px 16px',
             transition: 'background-color 0.15s ease',
+            opacity: state.isDisabled ? 0.6 : 1,
             '&:active': {
-                backgroundColor: '#f3f4f6',
+                backgroundColor: state.isDisabled ? '#f9fafb' : '#f3f4f6',
             },
         }),
         noOptionsMessage: (base) => ({

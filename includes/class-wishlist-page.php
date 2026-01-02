@@ -238,7 +238,6 @@ class WishCart_Wishlist_Page {
             'custom_css'           => '',
             'wishlist_page_id'     => intval( $page_id ),
             'guest_cookie_expiry'  => 30,
-            'enable_multiple_wishlists' => false,
             'button_customization' => array(
                 'product_page' => array(
                     'backgroundColor'        => 'linear-gradient(180deg, #ffffff29, #fff0), #253241',

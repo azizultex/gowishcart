@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Heart, Trash2, ShoppingCart, Check, X, Twitter, Mail, MessageCircle, Link2 } from 'lucide-react';
+import { Heart, Trash2, ShoppingCart, Check, X, Twitter, Mail, MessageCircle, Link2, Lock } from 'lucide-react';
 import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
 import { Checkbox } from './ui/checkbox';
@@ -83,83 +83,11 @@ const WishlistPage = () => {
                 return;
             }
 
-            const shareCode = window.wishcartWishlist?.shareCode;
-            
-            // If viewing a shared wishlist, load it directly
-            if (shareCode) {
-                // Debug: Log share code extraction
-                console.log('wishcart: Loading shared wishlist with share code:', shareCode);
-                // Mark as loading immediately to prevent second useEffect from running
-                hasLoadedRef.current = true;
-                setIsLoadingWishlists(true);
-                setError(null); // Clear any previous errors
-                try {
-                    const url = `${window.wishcartWishlist.apiUrl}wishlist/share/${shareCode}`;
-                    
-                    // Build headers - make nonce optional for public endpoints
-                    const headers = {};
-                    if (window.wishcartWishlist.nonce) {
-                        headers['X-WP-Nonce'] = window.wishcartWishlist.nonce;
-                    }
-                    
-                    const response = await fetch(url, {
-                        headers: headers,
-                    });
-
-                    if (response.ok) {
-                        const data = await response.json();
-                        if (data.wishlist) {
-                            setCurrentWishlist(data.wishlist);
-                            setProducts(data.products || []);
-                            setError(null); // Clear error on success
-                            // Mark as loaded to prevent second useEffect from running
-                            hasLoadedRef.current = true;
-                            loadedWishlistIdRef.current = data.wishlist.id || data.wishlist.share_code;
-                        } else {
-                            // Wishlist not found or invalid response
-                            setError('Wishlist not found or invalid.');
-                            setProducts([]);
-                        }
-                    } else {
-                        // Handle non-OK responses
-                        let errorMessage = 'Failed to load wishlist.';
-                        try {
-                            const errorData = await response.json();
-                            if (errorData.message) {
-                                errorMessage = errorData.message;
-                            } else if (errorData.code === 'not_found') {
-                                errorMessage = 'Wishlist not found.';
-                            }
-                        } catch (parseError) {
-                            // If response is not JSON, use status text
-                            if (response.status === 404) {
-                                errorMessage = 'Wishlist not found.';
-                            } else if (response.status === 403) {
-                                errorMessage = 'Access denied.';
-                            } else {
-                                errorMessage = `Failed to load wishlist (${response.status}).`;
-                            }
-                        }
-                        setError(errorMessage);
-                        setProducts([]);
-                        console.error('Error loading shared wishlist:', response.status, errorMessage);
-                    }
-                } catch (error) {
-                    console.error('Error loading shared wishlist:', error);
-                    setError('Network error. Please check your connection and try again.');
-                    setProducts([]);
-                } finally {
-                    setIsLoadingWishlists(false);
-                    setIsLoading(false);
-                }
-                return;
-            }
-
-            // Load user's own wishlists (including guest users)
+            // Load user's default wishlist (free version supports single wishlist only)
             setIsLoadingWishlists(true);
             try {
                 const sessionId = getSessionId();
-                const url = `${window.wishcartWishlist.apiUrl}wishlists${sessionId ? `?session_id=${sessionId}` : ''}`;
+                const url = `${window.wishcartWishlist.apiUrl}wishlist${sessionId ? `?session_id=${sessionId}` : ''}`;
                 const response = await fetch(url, {
                     headers: {
                         'X-WP-Nonce': window.wishcartWishlist.nonce,
@@ -168,18 +96,13 @@ const WishlistPage = () => {
 
                 if (response.ok) {
                     const data = await response.json();
-                    setWishlists(data.wishlists || []);
-                    
-                    // Set default wishlist
-                    const defaultWishlist = data.wishlists?.find(w => w.is_default === 1 || w.is_default === '1');
-                    if (defaultWishlist) {
-                        setCurrentWishlist(defaultWishlist);
-                    } else if (data.wishlists?.length > 0) {
-                        setCurrentWishlist(data.wishlists[0]);
+                    if (data.wishlist) {
+                        setCurrentWishlist(data.wishlist);
+                        setWishlists([data.wishlist]); // Single wishlist in free version
                     }
                 }
             } catch (error) {
-                console.error('Error loading wishlists:', error);
+                console.error('Error loading wishlist:', error);
             } finally {
                 setIsLoadingWishlists(false);
             }
@@ -193,15 +116,6 @@ const WishlistPage = () => {
         async (wishlistOverride = null, { forceReload = false } = {}) => {
             if (!window.wishcartWishlist) {
                 setIsLoading(false);
-                return;
-            }
-
-            // Skip if viewing shared wishlist (already loaded in first effect)
-            // IMPORTANT: If shareCode exists, completely skip this loader to prevent session_id fallback
-            const shareCode = window.wishcartWishlist?.shareCode;
-            if (shareCode) {
-                // Share code exists - first useEffect will handle loading
-                // Don't make any session_id requests when viewing a shared wishlist
                 return;
             }
 
@@ -279,10 +193,8 @@ const WishlistPage = () => {
                 let url = `${window.wishcartWishlist.apiUrl}wishlist`;
                 const params = new URLSearchParams();
                 
-                // Use share_code if available, otherwise use wishlist_id
-                if (activeWishlist.share_code) {
-                    params.append('share_code', activeWishlist.share_code);
-                } else if (activeWishlist.id) {
+                // Use wishlist_id or session_id
+                if (activeWishlist.id) {
                     params.append('wishlist_id', activeWishlist.id);
                 } else if (sessionId) {
                     params.append('session_id', sessionId);
@@ -472,17 +384,6 @@ const WishlistPage = () => {
 
     // Remove product from wishlist
     const removeProduct = async (productId, variationId = null) => {
-        // Check if viewing a shared wishlist (not owned by current user)
-        const shareCode = window.wishcartWishlist?.shareCode;
-        const isViewingShared = shareCode && currentWishlist && 
-            (currentWishlist.user_id !== window.wishcartWishlist?.userId || 
-             (currentWishlist.user_id && !window.wishcartWishlist?.isLoggedIn));
-        
-        if (isViewingShared) {
-            alert('You can only remove items from your own wishlist');
-            return;
-        }
-
         if (removingIds.has(productId) || !window.wishcartWishlist) {
             return;
         }
@@ -1227,45 +1128,8 @@ const copyWishlistLink = async () => {
 
     // Handle privacy change
     const handlePrivacyChange = async (newPrivacy) => {
-        if (!currentWishlist || !currentWishlist.id) {
-            return;
-        }
-
-        try {
-            const response = await fetch(`${window.wishcartWishlist.apiUrl}wishlists/${currentWishlist.id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-WP-Nonce': window.wishcartWishlist.nonce,
-                },
-                body: JSON.stringify({
-                    privacy_status: newPrivacy,
-                }),
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                // Update current wishlist with new privacy
-                setCurrentWishlist({
-                    ...currentWishlist,
-                    privacy_status: newPrivacy,
-                });
-                
-                // Clear cached share link so it regenerates
-                setShareLink('');
-
-                // Show success message in modal
-                setSuccessMessage('Privacy updated to: ' + newPrivacy);
-                setIsSuccessModalOpen(true);
-                console.log('Privacy updated to:', newPrivacy);
-            } else {
-                const errorData = await response.json();
-                alert(errorData.message || 'Failed to update privacy. Please try again.');
-            }
-        } catch (err) {
-            console.error('Error updating privacy:', err);
-            alert('Failed to update privacy. Please try again.');
-        }
+        // Privacy options are a Pro feature - not available in free version
+        return;
     };
 
     // Create new wishlist
@@ -1279,49 +1143,9 @@ const copyWishlistLink = async () => {
             return;
         }
 
-        try {
-            const response = await fetch(`${window.wishcartWishlist.apiUrl}wishlists`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-WP-Nonce': window.wishcartWishlist.nonce,
-                },
-                body: JSON.stringify({
-                    name: name,
-                    is_default: false,
-                }),
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                // Reload wishlists
-                const wishlistsResponse = await fetch(`${window.wishcartWishlist.apiUrl}wishlists`, {
-                    headers: {
-                        'X-WP-Nonce': window.wishcartWishlist.nonce,
-                    },
-                });
-                if (wishlistsResponse.ok) {
-                    const wishlistsData = await wishlistsResponse.json();
-                    setWishlists(wishlistsData.wishlists || []);
-                    if (data.wishlist) {
-                        // Reset refs for new wishlist
-                        hasLoadedRef.current = false;
-                        loadedWishlistIdRef.current = null;
-                        setCurrentWishlist(data.wishlist);
-                    }
-                }
-            }
-        } catch (error) {
-            console.error('Error creating wishlist:', error);
-            alert('Failed to create wishlist');
-        }
+        // Multiple wishlists is a Pro feature - not available in free version
+        alert('Multiple wishlists is a Pro feature. Please upgrade to create multiple wishlists.');
     };
-
-    // Check if viewing shared wishlist
-    const shareCode = window.wishcartWishlist?.shareCode;
-    const isViewingShared = shareCode && currentWishlist && 
-        (currentWishlist.user_id !== window.wishcartWishlist?.userId || 
-         (currentWishlist.user_id && !window.wishcartWishlist?.isLoggedIn));
 
     return (
         <div className="wishcart-wishlist-page">
@@ -1331,46 +1155,33 @@ const copyWishlistLink = async () => {
                 onClose={() => setIsSuccessModalOpen(false)}
             />
 
-            {wishlists.length > 0 && !isViewingShared && (
-                <div className="wishlist-selector">
-                    <CustomSelect
-                        options={wishlists.map(wishlist => ({
-                            value: wishlist.id.toString(),
-                            label: `${wishlist.wishlist_name}${wishlist.is_default ? ' (Default)' : ''}`
-                        }))}
-                        value={currentWishlist ? {
-                            value: currentWishlist.id.toString(),
-                            label: `${currentWishlist.wishlist_name}${currentWishlist.is_default ? ' (Default)' : ''}`
-                        } : null}
-                        onChange={(selectedOption) => handleWishlistSelect(selectedOption.value)}
-                        placeholder="Select Wishlist"
-                        className="wishlist-select-trigger"
-                    />
-                    {window.wishcartWishlist?.enableMultipleWishlists && (
-                        <Button
-                            onClick={createNewWishlist}
-                            className="create-wishlist-btn"
-                            variant="outline"
-                        >
-                            Create New
-                        </Button>
-                    )}
-                    
-                    {/* Privacy Control */}
-                    {currentWishlist && !isViewingShared && (
+            {/* Multiple Wishlists Selector - Pro Feature (removed from free version) */}
+            
+            {/* Privacy Control - Only Private in free version */}
+            {currentWishlist && (
+                <div className="wishlist-selector" style={{marginBottom: '16px'}}>
+                    <div style={{position: 'relative'}}>
                         <CustomSelect
                             options={[
                                 { value: 'private', label: '🔒 Private' },
-                                { value: 'shared', label: '👥 Shared' }
+                                { value: 'shared', label: '👥 Shared (PRO)', isDisabled: true }
                             ]}
                             value={{
-                                value: currentWishlist.privacy_status || 'private',
-                                label: currentWishlist.privacy_status === 'shared' ? '👥 Shared' : '🔒 Private'
+                                value: 'private',
+                                label: '🔒 Private'
                             }}
-                            onChange={(selectedOption) => handlePrivacyChange(selectedOption.value)}
+                            onChange={(selectedOption) => {
+                                if (selectedOption && (selectedOption.value === 'shared' || selectedOption.value === 'public')) {
+                                    // Show Pro feature message
+                                    setSuccessMessage('Shared/Public privacy options are available in WishCart Pro. Please upgrade to use this feature.');
+                                    setIsSuccessModalOpen(true);
+                                    return; // Don't change the selection
+                                }
+                            }}
                             className="privacy-select-trigger"
+                            isDisabled={false}
                         />
-                    )}
+                    </div>
                 </div>
             )}
             
@@ -1410,8 +1221,7 @@ const copyWishlistLink = async () => {
             ) : (
                 <>
                     {/* Bulk Actions Bar */}
-                    {!isViewingShared && (
-                        <div className="bulk-actions-bar">
+                    <div className="bulk-actions-bar">
                             <div className="bulk-select">
                                 <Checkbox
                                     checked={allSelected}
@@ -1452,22 +1262,19 @@ const copyWishlistLink = async () => {
                                     Add All To Cart
                                 </Button>
                             </div>
-                        </div>
-                    )}
+                    </div>
 
                     {/* Product List - FluentCart Style */}
                     <div className="wishlist-items-container">
                         {products.map((product) => (
                             <div key={product.id} className="wishlist-item">
                                 {/* Checkbox */}
-                                {!isViewingShared && (
-                                    <div className="item-checkbox">
-                                        <Checkbox
-                                            checked={selectedIds.has(product.id)}
-                                            onCheckedChange={(checked) => toggleSelection(product.id, checked)}
-                                        />
-                                    </div>
-                                )}
+                                <div className="item-checkbox">
+                                    <Checkbox
+                                        checked={selectedIds.has(product.id)}
+                                        onCheckedChange={(checked) => toggleSelection(product.id, checked)}
+                                    />
+                                </div>
 
                                 {/* Product Thumbnail */}
                                 <div className="item-image">
@@ -1529,83 +1336,81 @@ const copyWishlistLink = async () => {
                                 </Button>
 
                                 {/* Remove Button */}
-                                {!isViewingShared && (
-                                    <button
-                                        onClick={() => removeProduct(product.id)}
-                                        disabled={removingIds.has(product.id)}
-                                        className="item-remove"
-                                        aria-label="Remove from wishlist"
-                                    >
-                                        <Trash2 className="w-4 h-4" />
-                                    </button>
-                                )}
+                                <button
+                                    onClick={() => removeProduct(product.id)}
+                                    disabled={removingIds.has(product.id)}
+                                    className="item-remove"
+                                    aria-label="Remove from wishlist"
+                                >
+                                    <Trash2 className="w-4 h-4" />
+                                </button>
                             </div>
                         ))}
                     </div>
 
-                    {/* Share Section */}
-                    {!isViewingShared && (
-                        <div className="share-section">
+                    {/* Share Section - Pro Feature */}
+                    <div className="share-section" style={{position: 'relative', opacity: 0.6, pointerEvents: 'none'}}>
+                        <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px'}}>
                             <span className="share-label">Wishlist Share on</span>
-                            <div className="share-icons">
-                                <button
-                                    onClick={shareOnFacebook}
-                                    className="share-icon"
-                                    aria-label="Share on Facebook"
-                                    title="Share on Facebook"
-                                >
-                                    <span className="share-icon-text">f</span>
-                                </button>
-                                <button
-                                    onClick={shareOnTwitter}
-                                    className="share-icon"
-                                    aria-label="Share on Twitter"
-                                    title="Share on Twitter"
-                                >
-                                    <Twitter className="share-icon-svg" />
-                                </button>
-                                <button
-                                    onClick={shareOnPinterest}
-                                    className="share-icon"
-                                    aria-label="Share on Pinterest"
-                                    title="Share on Pinterest"
-                                >
-                                    <span className="share-icon-text">P</span>
-                                </button>
-                                <button
-                                    onClick={shareOnWhatsApp}
-                                    className="share-icon"
-                                    aria-label="Share on WhatsApp"
-                                    title="Share on WhatsApp"
-                                >
-                                    <MessageCircle className="share-icon-svg" />
-                                </button>
-                                <button
-                                    onClick={copyWishlistLink}
-                                    className="share-icon"
-                                    aria-label="Copy link"
-                                    title="Copy link"
-                                    disabled={isGeneratingShare}
-                                >
-                                    {isGeneratingShare ? (
-                                        <span className="spinner-small">⏳</span>
-                                    ) : linkCopied ? (
-                                        <Check className="share-icon-svg" />
-                                    ) : (
-                                        <Link2 className="share-icon-svg" />
-                                    )}
-                                </button>
-                                <button
-                                    onClick={shareViaEmail}
-                                    className="share-icon"
-                                    aria-label="Share via Email"
-                                    title="Share via Email"
-                                >
-                                    <Mail className="share-icon-svg" />
-                                </button>
-                            </div>
+                            <span className="wishcart-badge wishcart-badge-warning" style={{fontSize: '10px', padding: '2px 6px'}}>PRO</span>
                         </div>
-                    )}
+                        <div className="share-icons">
+                            <button
+                                onClick={() => {}}
+                                className="share-icon"
+                                aria-label="Share on Facebook (Pro Feature)"
+                                title="Share on Facebook (Pro Feature)"
+                                disabled={true}
+                            >
+                                <span className="share-icon-text">f</span>
+                            </button>
+                            <button
+                                onClick={() => {}}
+                                className="share-icon"
+                                aria-label="Share on Twitter (Pro Feature)"
+                                title="Share on Twitter (Pro Feature)"
+                                disabled={true}
+                            >
+                                <Twitter className="share-icon-svg" />
+                            </button>
+                            <button
+                                onClick={() => {}}
+                                className="share-icon"
+                                aria-label="Share on Pinterest (Pro Feature)"
+                                title="Share on Pinterest (Pro Feature)"
+                                disabled={true}
+                            >
+                                <span className="share-icon-text">P</span>
+                            </button>
+                            <button
+                                onClick={() => {}}
+                                className="share-icon"
+                                aria-label="Share on WhatsApp (Pro Feature)"
+                                title="Share on WhatsApp (Pro Feature)"
+                                disabled={true}
+                            >
+                                <MessageCircle className="share-icon-svg" />
+                            </button>
+                            <button
+                                onClick={() => {}}
+                                className="share-icon"
+                                aria-label="Copy link (Pro Feature)"
+                                title="Copy link (Pro Feature)"
+                                disabled={true}
+                            >
+                                <Link2 className="share-icon-svg" />
+                            </button>
+                            <button
+                                onClick={() => {}}
+                                className="share-icon"
+                                aria-label="Share via Email (Pro Feature)"
+                                title="Share via Email (Pro Feature)"
+                                disabled={true}
+                            >
+                                <Mail className="share-icon-svg" />
+                            </button>
+                        </div>
+                    </div>
                 </>
             )}
         </div>

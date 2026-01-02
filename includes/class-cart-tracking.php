@@ -26,7 +26,8 @@ class WishCart_Cart_Tracking {
     public function __construct() {
         global $wpdb;
         $this->wpdb = $wpdb;
-        $this->analytics_handler = new WishCart_Analytics_Handler();
+        // Analytics handler is a Pro feature - set to null in free version
+        $this->analytics_handler = class_exists('WishCart_Analytics_Handler') ? new WishCart_Analytics_Handler() : null;
         $this->items_table = $wpdb->prefix . 'fc_wishlist_items';
         $this->wishlists_table = $wpdb->prefix . 'fc_wishlists';
         $this->guest_users_table = $wpdb->prefix . 'fc_wishlist_guest_users';
@@ -233,10 +234,12 @@ class WishCart_Cart_Tracking {
                 error_log( '[WishCart] track_order_items: Product ' . $product_id . ' (variation_id=' . $variation_id . ') has add-to-cart for email ' . $order_email . ' - tracking purchase for specific variation' );
             }
 
-            // Track analytics event for the specific variation_id
-            $track_result = $this->analytics_handler->track_event( $product_id, $variation_id, 'purchase' );
-            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                error_log( '[WishCart] track_order_items: Purchase tracking result for product ' . $product_id . ' variation_id=' . $variation_id . ': ' . ( $track_result ? 'success' : 'failed' ) );
+            // Track analytics event for the specific variation_id (Pro feature)
+            if ( $this->analytics_handler ) {
+                $track_result = $this->analytics_handler->track_event( $product_id, $variation_id, 'purchase' );
+                if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+                    error_log( '[WishCart] track_order_items: Purchase tracking result for product ' . $product_id . ' variation_id=' . $variation_id . ': ' . ( $track_result ? 'success' : 'failed' ) );
+                }
             }
 
             // Update wishlist items status if they exist

@@ -230,8 +230,8 @@ class WishCart_Wishlist {
         
         // Handler classes
         include_once WishCart_PLUGIN_DIR . 'includes/class-wishlist-handler.php';
-        include_once WishCart_PLUGIN_DIR . 'includes/class-analytics-handler.php';
-        include_once WishCart_PLUGIN_DIR . 'includes/class-sharing-handler.php';
+        // Analytics handler is a Pro feature - removed from free version
+        // Sharing handler is a Pro feature - removed from free version
         include_once WishCart_PLUGIN_DIR . 'includes/class-notifications-handler.php';
         include_once WishCart_PLUGIN_DIR . 'includes/class-activity-logger.php';
         include_once WishCart_PLUGIN_DIR . 'includes/class-guest-handler.php';
@@ -255,10 +255,10 @@ class WishCart_Wishlist {
         // Frontend classes
         include_once WishCart_PLUGIN_DIR . 'includes/class-wishlist-frontend.php';
         include_once WishCart_PLUGIN_DIR . 'includes/class-wishlist-page.php';
-        include_once WishCart_PLUGIN_DIR . 'includes/class-shared-wishlist-page.php';
-        include_once WishCart_PLUGIN_DIR . 'includes/class-share-page-handler.php';
+        // Shared wishlist page is a Pro feature - removed from free version
+        // Share page handler is a Pro feature - removed from free version
         include_once WishCart_PLUGIN_DIR . 'includes/shortcodes/class-wishlist-shortcode.php';
-        include_once WishCart_PLUGIN_DIR . 'includes/shortcodes/class-shared-wishlist-shortcode.php';
+        // Shared wishlist shortcode is a Pro feature - removed from free version
         include_once WishCart_PLUGIN_DIR . 'includes/shortcodes/class-wishlist-button-shortcode.php';
         
         // Admin class

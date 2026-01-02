@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { Heart } from 'lucide-react';
 import { __ } from '@wordpress/i18n';
 import { cn } from '../lib/utils';
-import WishlistSelectorModal from './WishlistSelectorModal';
 import GuestEmailModal from './GuestEmailModal';
 import VariantWishlistButtons from './VariantWishlistButtons';
 import * as LucideIcons from 'lucide-react';
@@ -11,7 +10,6 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
     const [isInWishlist, setIsInWishlist] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [isAdding, setIsAdding] = useState(false);
-    const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
     const [guestHasEmail, setGuestHasEmail] = useState(null); // null = not checked, true/false = checked
     const [pendingAddAction, setPendingAddAction] = useState(null); // Store pending add action
@@ -999,16 +997,8 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
                 }
             }
 
-            // Check if multiple wishlists are enabled
-            const enableMultipleWishlists = window.wishcartWishlist?.enableMultipleWishlists || false;
-            
-            if (enableMultipleWishlists) {
-                // If multiple wishlists enabled, open modal to select wishlist
-                setIsModalOpen(true);
-            } else {
-                // If multiple wishlists disabled, add directly to default wishlist
-                await addToDefaultWishlist(true); // Skip email check since we just did it
-            }
+            // Always add to default wishlist (multiple wishlists is a pro feature)
+            await addToDefaultWishlist(true); // Skip email check since we just did it
         }
     };
 
@@ -1017,18 +1007,9 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
         // Mark guest as having email
         setGuestHasEmail(true);
         
-        // Execute the pending action
-        if (pendingAddAction === 'default') {
+        // Execute the pending action - always add to default wishlist
+        if (pendingAddAction === 'default' || pendingAddAction === 'toggle') {
             await addToDefaultWishlist(true); // Skip email check since we just got it
-        } else if (pendingAddAction === 'toggle') {
-            // Re-run the toggle logic but skip email check
-            const enableMultipleWishlists = window.wishcartWishlist?.enableMultipleWishlists || false;
-            
-            if (enableMultipleWishlists) {
-                setIsModalOpen(true);
-            } else {
-                await addToDefaultWishlist(true);
-            }
         }
         
         // Clear pending action
@@ -1336,13 +1317,6 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
                 isOpen={isEmailModalOpen}
                 onClose={handleEmailModalClose}
                 onEmailSubmitted={handleEmailSubmitted}
-            />
-            <WishlistSelectorModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                productId={productId}
-                variationId={currentVariationId || 0}
-                onSuccess={handleModalSuccess}
             />
             <button
                 type="button"

@@ -24,7 +24,6 @@ const WishlistSettings = ({ settings, updateSettings }) => {
         custom_css: '',
         wishlist_page_id: 0,
         guest_cookie_expiry: 30,
-        enable_multiple_wishlists: false,
         button_customization: {
             colors: {
                 background: '#ffffff',
@@ -219,18 +218,22 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                 </div>
             </div>
 
-            {/* Enable Multiple Wishlists */}
+            {/* Enable Multiple Wishlists - Pro Feature */}
             <div className="wishcart-toggle-row">
                 <div className="toggle-info">
-                    <h4>{__('Enable Multiple Wishlists', 'wishcart')}</h4>
+                    <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px'}}>
+                        <h4>{__('Enable Multiple Wishlists', 'wishcart')}</h4>
+                        <span className="wishcart-badge wishcart-badge-warning">{__('PRO', 'wishcart')}</span>
+                    </div>
                     <p>{__('Allow users to create and manage multiple wishlists. When disabled, products are added directly to the default wishlist.', 'wishcart')}</p>
+                    <p style={{fontSize: '13px', margin: '4px 0 0', color: 'var(--wishcart-text-muted)'}}>{__('This feature is available in WishCart Pro. Please upgrade to get all the advanced features.', 'wishcart')}</p>
                 </div>
                 <div className="toggle-control">
                     <Switch
                         id="enable_multiple_wishlists"
-                        checked={wishlistSettings.enable_multiple_wishlists || false}
-                        onCheckedChange={(checked) => updateWishlistSetting('enable_multiple_wishlists', checked)}
-                        disabled={!wishlistSettings.enabled}
+                        checked={false}
+                        onCheckedChange={() => {}}
+                        disabled={true}
                     />
                 </div>
             </div>

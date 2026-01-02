@@ -18,7 +18,7 @@ import ButtonCustomizationSettings from './ButtonCustomizationSettings';
 import IntegrationsSettings from './IntegrationsSettings';
 import SupportResources from './SupportResources';
 import UpgradePrompt from './UpgradePrompt';
-import { AnalyticsDashboard } from '../AnalyticsDashboard';
+import AnalyticsProMessage from './AnalyticsProMessage';
 
 const localizedTabPageMap = (typeof window !== 'undefined' && window.wishcartSettings && window.wishcartSettings.tabPageMap) || {};
 
@@ -42,8 +42,8 @@ const SettingsApp = () => {
     const fallbackTabPageMap = useMemo(() => ({
         settings: `${baseMenuSlug}-settings`,
         customization: `${baseMenuSlug}-customization`,
-        analytics: `${baseMenuSlug}-analytics`,
         integrations: `${baseMenuSlug}-integrations`,
+        analytics: `${baseMenuSlug}-analytics`,
         support: `${baseMenuSlug}-support`,
         'get-pro': `${baseMenuSlug}-get-pro`,
     }), [baseMenuSlug]);
@@ -182,8 +182,8 @@ const SettingsApp = () => {
     const tabs = useMemo(() => ([
         { id: 'settings', label: __('Settings', 'wishcart'), icon: Settings },
         { id: 'customization', label: __('Customization', 'wishcart'), icon: Palette },
-        { id: 'analytics', label: __('Analytics', 'wishcart'), icon: BarChart3 },
         { id: 'integrations', label: __('Integrations', 'wishcart'), icon: Plug },
+        { id: 'analytics', label: __('Analytics', 'wishcart'), icon: BarChart3 },
         { id: 'support', label: __('Support', 'wishcart'), icon: LifeBuoy },
         { id: 'get-pro', label: __('Get Pro', 'wishcart'), icon: Sparkles },
     ]), []);
@@ -258,14 +258,14 @@ const SettingsApp = () => {
                             />
                         )}
 
-                        {/* Analytics Tab */}
-                        {activeTab === 'analytics' && (
-                            <AnalyticsDashboard />
-                        )}
-
                         {/* Integrations Tab */}
                         {activeTab === 'integrations' && (
                             <IntegrationsSettings />
+                        )}
+
+                        {/* Analytics Tab */}
+                        {activeTab === 'analytics' && (
+                            <AnalyticsProMessage />
                         )}
 
                         {/* Support Tab */}

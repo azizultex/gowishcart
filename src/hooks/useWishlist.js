@@ -218,44 +218,6 @@ export const useWishlist = (wishlistId = null) => {
         }
     }, [apiUrl, nonce, fetchWishlists, currentWishlist]);
 
-    // Fetch shared wishlist (public, no authentication required)
-    const fetchSharedWishlist = useCallback(async (shareToken) => {
-        if (!shareToken) {
-            setError('Share token is required');
-            return { success: false, error: 'Share token is required' };
-        }
-
-        setIsLoading(true);
-        setError(null);
-
-        try {
-            const response = await fetch(`${apiUrl}share/${shareToken}/view`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                setCurrentWishlist(data.wishlist || null);
-                setProducts(data.products || []);
-                return { success: true, wishlist: data.wishlist, products: data.products };
-            } else {
-                const data = await response.json();
-                const errorMessage = data.message || 'Failed to load shared wishlist';
-                setError(errorMessage);
-                return { success: false, error: errorMessage };
-            }
-        } catch (err) {
-            console.error('Error fetching shared wishlist:', err);
-            setError(err.message);
-            return { success: false, error: err.message };
-        } finally {
-            setIsLoading(false);
-        }
-    }, [apiUrl]);
-
     // Initial load
     useEffect(() => {
         fetchWishlists();
@@ -281,7 +243,6 @@ export const useWishlist = (wishlistId = null) => {
         deleteWishlist,
         refreshWishlists: fetchWishlists,
         refreshProducts: fetchProducts,
-        fetchSharedWishlist,
     };
 };
 

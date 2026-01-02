@@ -203,11 +203,16 @@ class WishCart_Cron_Handler {
     }
 
     /**
-     * Cleanup expired shares
+     * Cleanup expired shares (Pro feature)
      *
      * @return void
      */
     public function cleanup_expired_shares() {
+        // Sharing handler is a Pro feature - skip in free version
+        if ( ! class_exists('WishCart_Sharing_Handler') ) {
+            return;
+        }
+        
         $this->log_debug('Cleaning up expired shares...');
         
         $sharing = new WishCart_Sharing_Handler();
@@ -222,11 +227,16 @@ class WishCart_Cron_Handler {
     }
 
     /**
-     * Recalculate analytics
+     * Recalculate analytics (Pro feature)
      *
      * @return void
      */
     public function recalculate_analytics() {
+        // Analytics handler is a Pro feature - skip in free version
+        if ( ! class_exists('WishCart_Analytics_Handler') ) {
+            return;
+        }
+        
         $this->log_debug('Recalculating analytics...');
         
         $analytics = new WishCart_Analytics_Handler();
@@ -262,9 +272,12 @@ class WishCart_Cron_Handler {
         $notifications = new WishCart_Notifications_Handler();
         $notification_result = $notifications->cleanup_old_notifications($notification_retention_days);
         
-        // Cleanup analytics
-        $analytics = new WishCart_Analytics_Handler();
-        $analytics_result = $analytics->cleanup_old_analytics($analytics_retention_days);
+        // Cleanup analytics (Pro feature)
+        $analytics_result = array('deleted' => 0);
+        if ( class_exists('WishCart_Analytics_Handler') ) {
+            $analytics = new WishCart_Analytics_Handler();
+            $analytics_result = $analytics->cleanup_old_analytics($analytics_retention_days);
+        }
         
         // Anonymize old guest data
         $guest_handler = new WishCart_Guest_Handler();

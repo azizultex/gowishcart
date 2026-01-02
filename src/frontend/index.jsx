@@ -3,11 +3,9 @@ import { createRoot } from 'react-dom/client';
 import WishlistButton from '../components/WishlistButton';
 import VariantWishlistButtons from '../components/VariantWishlistButtons';
 import WishlistPage from '../components/WishlistPage';
-import SharedWishlistView from '../components/SharedWishlistView';
 import '../styles/WishlistButton.scss';
 import '../styles/VariantWishlistButtons.scss';
 import '../styles/WishlistPage.scss';
-import '../styles/SharedWishlistView.scss';
 
 // Wrapper component that falls back to single button if variants not detected
 const VariantWishlistButtonsWrapper = ({ productId, fallbackVariantId, fallbackPosition }) => {
@@ -608,18 +606,7 @@ const mountWishlistPage = () => {
     }
 };
 
-// Mount shared wishlist view
-const mountSharedWishlistView = () => {
-    const container = document.getElementById('shared-wishlist-app');
-    
-    if (container) {
-        const shareToken = container.getAttribute('data-share-token') || window.wishcartShared?.shareToken;
-        if (shareToken) {
-            const root = createRoot(container);
-            root.render(<SharedWishlistView shareToken={shareToken} />);
-        }
-    }
-};
+// Shared wishlist view is a Pro feature - removed from free version
 
 // Initialize when DOM is ready
 if (document.readyState === 'loading') {
@@ -627,14 +614,12 @@ if (document.readyState === 'loading') {
         initializeSessionId();
         mountWishlistButtons();
         mountWishlistPage();
-        mountSharedWishlistView();
         setupAddToCartTracking();
     });
 } else {
     initializeSessionId();
     mountWishlistButtons();
     mountWishlistPage();
-    mountSharedWishlistView();
     setupAddToCartTracking();
 }
 

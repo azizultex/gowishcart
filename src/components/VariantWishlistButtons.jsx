@@ -2,7 +2,6 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Heart } from 'lucide-react';
 import { __ } from '@wordpress/i18n';
 import { cn } from '../lib/utils';
-import WishlistSelectorModal from './WishlistSelectorModal';
 import GuestEmailModal from './GuestEmailModal';
 import * as LucideIcons from 'lucide-react';
 import '../styles/VariantWishlistButtons.scss';
@@ -11,7 +10,6 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
     const [isInWishlist, setIsInWishlist] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [isAdding, setIsAdding] = useState(false);
-    const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
     const [guestHasEmail, setGuestHasEmail] = useState(null);
     const [pendingAddAction, setPendingAddAction] = useState(null);
@@ -286,16 +284,9 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
     const handleEmailSubmitted = async (email) => {
         setGuestHasEmail(true);
         
-        if (pendingAddAction === 'default') {
+        // Always add to default wishlist (multiple wishlists is a pro feature)
+        if (pendingAddAction === 'default' || pendingAddAction === 'toggle') {
             await addToDefaultWishlist(true);
-        } else if (pendingAddAction === 'toggle') {
-            const enableMultipleWishlists = window.wishcartWishlist?.enableMultipleWishlists || false;
-            
-            if (enableMultipleWishlists) {
-                setIsModalOpen(true);
-            } else {
-                await addToDefaultWishlist(true);
-            }
         }
         
         setPendingAddAction(null);
@@ -660,13 +651,6 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
                 isOpen={isEmailModalOpen}
                 onClose={handleEmailModalClose}
                 onEmailSubmitted={handleEmailSubmitted}
-            />
-            <WishlistSelectorModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                productId={productId}
-                variationId={variantId}
-                onSuccess={handleModalSuccess}
             />
             <button
                 type="button"
