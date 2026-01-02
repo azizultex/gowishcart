@@ -236,7 +236,6 @@ class WishCart_Wishlist {
         include_once WishCart_PLUGIN_DIR . 'includes/class-activity-logger.php';
         include_once WishCart_PLUGIN_DIR . 'includes/class-guest-handler.php';
         include_once WishCart_PLUGIN_DIR . 'includes/class-cron-handler.php';
-        include_once WishCart_PLUGIN_DIR . 'includes/class-cart-tracking.php';
         
         // FluentCRM integration classes
         include_once WishCart_PLUGIN_DIR . 'includes/class-fluentcrm-integration.php';

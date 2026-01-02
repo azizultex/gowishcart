@@ -143,26 +143,7 @@ class WishCart_Database {
             KEY crm_campaign_id_idx (crm_campaign_id)
         ) ENGINE=InnoDB $charset_collate;";
 
-        // 6. Wishlist Activities Table (fc_wishlist_activities)
-        $sql_wishlist_activities = "CREATE TABLE IF NOT EXISTS {$this->table_prefix}fc_wishlist_activities (
-            activity_id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-            wishlist_id bigint(20) UNSIGNED NULL,
-            user_id bigint(20) UNSIGNED NULL,
-            session_id varchar(255) NULL,
-            activity_type enum('created', 'added_item', 'removed_item', 'moved_item', 'shared', 'viewed', 'renamed', 'deleted', 'purchased', 'updated') NOT NULL,
-            object_id bigint(20) UNSIGNED NULL,
-            object_type varchar(50) NULL,
-            activity_data text NULL,
-            ip_address varchar(45) NULL,
-            user_agent text NULL,
-            referrer_url text NULL,
-            date_created datetime DEFAULT CURRENT_TIMESTAMP,
-            PRIMARY KEY (activity_id),
-            KEY wishlist_id_idx (wishlist_id),
-            KEY user_id_idx (user_id),
-            KEY activity_type_idx (activity_type),
-            KEY date_created_idx (date_created)
-        ) ENGINE=InnoDB $charset_collate;";
+   
 
         // 7. Guest Users Table (fc_wishlist_guest_users)
         $sql_wishlist_guest_users = "CREATE TABLE IF NOT EXISTS {$this->table_prefix}fc_wishlist_guest_users (
