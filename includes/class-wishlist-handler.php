@@ -557,8 +557,7 @@ class WishCart_Wishlist_Handler {
                                     }
                                 }
                             } catch (Exception $e) {
-                                // Log error but don't block wishlist addition
-                                error_log('[wishcart] FluentCRM sync error: ' . $e->getMessage());
+                                // Error handled silently to not block wishlist addition
                             }
                         }
                     }
@@ -768,10 +767,7 @@ class WishCart_Wishlist_Handler {
                                         }
                                     }
                                 } catch (Exception $e) {
-                                    // Log error but don't block wishlist addition
-                                    if (defined('WP_DEBUG') && WP_DEBUG) {
-                                        error_log('[wishcart] FluentCRM sync error for logged-in user: ' . $e->getMessage());
-                                    }
+                                    // Error handled silently to not block wishlist addition
                                 }
                             }
                         }
@@ -813,24 +809,11 @@ class WishCart_Wishlist_Handler {
         if (!empty($contact_email)) {
             $item_data['email'] = $contact_email;
         }
-        
-        // Debug logging
-        if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-            error_log( '[wishcart] Item added to wishlist - Firing wishcart_item_added action' );
-            error_log( '[wishcart] Item data: ' . print_r( $item_data, true ) );
-        }
 
         // Fire FluentCRM automation trigger (contact should exist by now)
         // Note: fire_trigger() internally calls do_action() so we don't call it separately
         if ( class_exists( 'WishCart_FluentCRM_Triggers' ) ) {
-            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                error_log( '[wishcart] Firing FluentCRM trigger for wishcart_item_added' );
-            }
             WishCart_FluentCRM_Triggers::fire_trigger( 'wishcart_item_added', $item_data );
-        } else {
-            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                error_log( '[wishcart] Warning: WishCart_FluentCRM_Triggers class not found. FluentCRM trigger not fired.' );
-            }
         }
 
         return true;
@@ -937,24 +920,11 @@ class WishCart_Wishlist_Handler {
         if (!empty($contact_email)) {
             $item_data['email'] = $contact_email;
         }
-        
-        // Debug logging
-        if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-            error_log( '[wishcart] Item removed from wishlist - Firing wishcart_item_removed action' );
-            error_log( '[wishcart] Item data: ' . print_r( $item_data, true ) );
-        }
 
         // Fire FluentCRM automation trigger (contact should exist by now)
         // Note: fire_trigger() internally calls do_action() so we don't call it separately
         if ( class_exists( 'WishCart_FluentCRM_Triggers' ) ) {
-            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                error_log( '[wishcart] Firing FluentCRM trigger for wishcart_item_removed' );
-            }
             WishCart_FluentCRM_Triggers::fire_trigger( 'wishcart_item_removed', $item_data );
-        } else {
-            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                error_log( '[wishcart] Warning: WishCart_FluentCRM_Triggers class not found. FluentCRM trigger not fired.' );
-            }
         }
 
         return true;

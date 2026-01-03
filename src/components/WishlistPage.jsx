@@ -102,7 +102,7 @@ const WishlistPage = () => {
                     }
                 }
             } catch (error) {
-                console.error('Error loading wishlist:', error);
+                // Error handled silently
             } finally {
                 setIsLoadingWishlists(false);
             }
@@ -132,12 +132,6 @@ const WishlistPage = () => {
                 try {
                     const sessionId = getSessionId();
                     
-                    // Debug logging
-                    console.log('[WishCart] Loading wishlist (no wishlists exist):', {
-                        sessionId: sessionId ? 'present' : 'none',
-                        isLoggedIn: window.wishcartWishlist?.isLoggedIn || false
-                    });
-                    
                     const url = `${window.wishcartWishlist.apiUrl}wishlist${sessionId ? `?session_id=${sessionId}` : ''}`;
                     
                     const response = await fetch(url, {
@@ -148,18 +142,6 @@ const WishlistPage = () => {
 
                     if (response.ok) {
                         const data = await response.json();
-                        
-                        // Debug logging
-                        console.log('[WishCart] Wishlist loaded (no wishlists exist):', {
-                            productCount: data.products?.length || 0,
-                            wishlistId: data.wishlist?.id || 'default',
-                            wishlistName: data.wishlist?.name || 'default',
-                            products: data.products?.map(p => ({
-                                id: p.id,
-                                variationId: p.variation_id,
-                                name: p.name
-                            })) || []
-                        });
                         
                         setProducts(data.products || []);
                         if (data.wishlist) {
@@ -213,21 +195,6 @@ const WishlistPage = () => {
                 if (response.ok) {
                     const data = await response.json();
                     
-                    // Debug logging
-                    const sessionId = getSessionId();
-                    console.log('[WishCart] Wishlist loaded:', {
-                        wishlistId: data.wishlist?.id || currentWishlistId,
-                        wishlistName: data.wishlist?.name || 'default',
-                        productCount: data.products?.length || 0,
-                        sessionId: sessionId ? 'present' : 'none',
-                        isLoggedIn: window.wishcartWishlist?.isLoggedIn || false,
-                        products: data.products?.map(p => ({
-                            id: p.id,
-                            variationId: p.variation_id,
-                            name: p.name
-                        })) || []
-                    });
-                    
                     setProducts(data.products || []);
                     if (data.wishlist) {
                         // Only update currentWishlist if the wishlist ID actually changed
@@ -246,7 +213,7 @@ const WishlistPage = () => {
                     hasLoadedRef.current = true;
                 }
             } catch (error) {
-                console.error('Error loading wishlist:', error);
+                // Error handled silently
             } finally {
                 setIsLoading(false);
             }
@@ -303,20 +270,8 @@ const WishlistPage = () => {
             const currentWishlist = currentWishlistRef.current;
             const loadWishlist = loadWishlistRef.current;
             
-            // Debug logging
-            console.log('[WishCart] Item added event received:', {
-                productId,
-                variationId,
-                wishlistId,
-                currentWishlistId: currentWishlist?.id,
-                currentWishlistName: currentWishlist?.name,
-                sessionId: getSessionId() ? 'present' : 'none',
-                isLoggedIn: window.wishcartWishlist?.isLoggedIn || false
-            });
-            
             // Always refresh when item is added (items might be added to default wishlist)
             // Use a small delay to ensure the database has been updated
-            console.log('[WishCart] Refreshing wishlist after item added');
             setTimeout(() => {
                 if (loadWishlist) {
                     loadWishlist(null, { forceReload: true });
@@ -328,15 +283,7 @@ const WishlistPage = () => {
             const { productId, variationId } = event.detail || {};
             const loadWishlist = loadWishlistRef.current;
             
-            // Debug logging
-            console.log('[WishCart] Item removed event received:', {
-                productId,
-                variationId,
-                currentWishlistId: currentWishlistRef.current?.id
-            });
-            
             // Always refresh when item is removed
-            console.log('[WishCart] Refreshing wishlist after item removed');
             setTimeout(() => {
                 if (loadWishlist) {
                     loadWishlist(null, { forceReload: true });
@@ -352,7 +299,6 @@ const WishlistPage = () => {
             if (document.visibilityState === 'visible') {
                 const loadWishlist = loadWishlistRef.current;
                 if (loadWishlist) {
-                    console.log('[WishCart] Page became visible, refreshing wishlist as fallback');
                     // loadWishlist(null, { forceReload: true });
                 }
             }
@@ -365,7 +311,6 @@ const WishlistPage = () => {
             
             // Only run fallback if we have a wishlist but no products
             if (loadWishlist && currentWishlist && products.length === 0 && !isLoading) {
-                console.log('[WishCart] Fallback: No products found, refreshing wishlist');
                 loadWishlist(null, { forceReload: true });
             }
         }, 5000); // Check every 5 seconds
@@ -427,11 +372,9 @@ const WishlistPage = () => {
                 });
             } else {
                 const error = await response.json();
-                console.error('Error removing product:', error);
                 alert('Failed to remove product from wishlist');
             }
         } catch (error) {
-            console.error('Error removing product:', error);
             alert('Failed to remove product from wishlist');
         } finally {
             setRemovingIds(prev => {
@@ -516,7 +459,6 @@ const WishlistPage = () => {
     // Add product to cart
     const addToCart = async (product) => {
         if (!product) {
-            console.error('Product not found');
             setCartMessage({ type: 'error', text: 'Product not found' });
             return;
         }
@@ -559,7 +501,7 @@ const WishlistPage = () => {
                 },
                 body: JSON.stringify(trackBody),
             }).catch(trackError => {
-                console.error('Error tracking cart event:', trackError);
+                // Error tracked silently
             });
 
             // Add to cart via AJAX
@@ -583,7 +525,6 @@ const WishlistPage = () => {
                 }, 3000);
             } else {
                 // If AJAX fails, fallback to navigation
-                console.warn('AJAX add to cart failed, redirecting to product page:', result.error);
                 setCartMessage({
                     type: 'info',
                     text: 'Redirecting to product page...',
@@ -595,7 +536,6 @@ const WishlistPage = () => {
                 }, 500);
             }
         } catch (error) {
-            console.error('Error adding to cart:', error);
             setCartMessage({
                 type: 'error',
                 text: 'Failed to add product to cart. Please try again.',
@@ -683,7 +623,6 @@ const WishlistPage = () => {
                 // Small delay between additions to avoid overwhelming the server
                 await new Promise(resolve => setTimeout(resolve, 300));
             } catch (error) {
-                console.error(`Error adding ${product.name} to cart:`, error);
                 failCount++;
             } finally {
                 setAddingToCartIds(prev => {
@@ -782,7 +721,6 @@ const WishlistPage = () => {
                 // Small delay between additions
                 await new Promise(resolve => setTimeout(resolve, 300));
             } catch (error) {
-                console.error(`Error adding ${product.name} to cart:`, error);
                 failCount++;
             } finally {
                 setAddingToCartIds(prev => {

@@ -76,7 +76,6 @@ class WishCart_Database_Migration {
                         'old' => $full_table_name,
                         'new' => $backup_table_name,
                     );
-                    $this->log_debug("Archived table: {$full_table_name} to {$backup_table_name}");
                 } else {
                     $results['errors'][] = "Failed to archive table: {$full_table_name}";
                     $results['success'] = false;
@@ -88,7 +87,6 @@ class WishCart_Database_Migration {
         if ($results['success']) {
             try {
                 $database = new WishCart_Database();
-                $this->log_debug('New 7-table structure created successfully');
             } catch (Exception $e) {
                 $results['errors'][] = 'Failed to create new tables: ' . $e->getMessage();
                 $results['success'] = false;
@@ -318,18 +316,6 @@ class WishCart_Database_Migration {
         }
 
         return $status;
-    }
-
-    /**
-     * Lightweight debug logger
-     *
-     * @param string $message
-     * @return void
-     */
-    private function log_debug($message) {
-        if (defined('WP_DEBUG') && WP_DEBUG) {
-            error_log('[WishCart Migration] ' . $message);
-        }
     }
 }
 

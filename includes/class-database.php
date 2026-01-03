@@ -34,9 +34,7 @@ class WishCart_Database {
         $this->wpdb = $wpdb;
         $this->table_prefix = $wpdb->prefix;
 		
-		$this->log_debug('WishCart_Database::__construct start');
 		$this->create_tables();
-		$this->log_debug('WishCart_Database::__construct end');
     }
 
     /**
@@ -48,7 +46,6 @@ class WishCart_Database {
      */
     public function create_tables() {
 		$charset_collate = $this->wpdb->get_charset_collate();
-		$this->log_debug('create_tables: start');
 
         // 1. Main Wishlists Table (fc_wishlists)
         $sql_wishlists = "CREATE TABLE IF NOT EXISTS {$this->table_prefix}fc_wishlists (
@@ -196,8 +193,6 @@ class WishCart_Database {
 		
 		// Migrate existing notifications table if needed
 		$this->migrate_notifications_table();
-		
-		$this->log_debug('create_tables: end');
     }
 
     /**
@@ -232,17 +227,4 @@ class WishCart_Database {
             }
         }
     }
-
-	/**
-	 * Lightweight debug logger
-	 *
-	 * @param string $message
-	 * @return void
-	 */
-	private function log_debug($message) {
-		if (defined('WP_DEBUG') && WP_DEBUG) {
-			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Debug logging is properly guarded
-			error_log('[WishCart DB] ' . $message);
-		}
-	}
 }

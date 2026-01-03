@@ -36,7 +36,6 @@ export const useWishlist = (wishlistId = null) => {
                 return data.wishlists;
             }
         } catch (err) {
-            console.error('Error fetching wishlists:', err);
             setError(err.message);
         }
     }, [apiUrl, nonce, currentWishlist]);
@@ -63,7 +62,6 @@ export const useWishlist = (wishlistId = null) => {
                 setError(null);
             }
         } catch (err) {
-            console.error('Error fetching products:', err);
             setError(err.message);
         } finally {
             setIsLoading(false);
@@ -96,7 +94,6 @@ export const useWishlist = (wishlistId = null) => {
                 throw new Error(data.message || 'Failed to add product');
             }
         } catch (err) {
-            console.error('Error adding product:', err);
             setError(err.message);
             return { success: false, error: err.message };
         }
@@ -125,7 +122,6 @@ export const useWishlist = (wishlistId = null) => {
                 throw new Error(data.message || 'Failed to remove product');
             }
         } catch (err) {
-            console.error('Error removing product:', err);
             setError(err.message);
             return { success: false, error: err.message };
         }
@@ -155,7 +151,6 @@ export const useWishlist = (wishlistId = null) => {
                 throw new Error(data.message || 'Failed to create wishlist');
             }
         } catch (err) {
-            console.error('Error creating wishlist:', err);
             setError(err.message);
             return { success: false, error: err.message };
         }
@@ -185,7 +180,6 @@ export const useWishlist = (wishlistId = null) => {
                 throw new Error(data.message || 'Failed to update wishlist');
             }
         } catch (err) {
-            console.error('Error updating wishlist:', err);
             setError(err.message);
             return { success: false, error: err.message };
         }
@@ -212,7 +206,6 @@ export const useWishlist = (wishlistId = null) => {
                 throw new Error(data.message || 'Failed to delete wishlist');
             }
         } catch (err) {
-            console.error('Error deleting wishlist:', err);
             setError(err.message);
             return { success: false, error: err.message };
         }

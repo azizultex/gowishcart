@@ -78,7 +78,7 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
                 return hasEmail;
             }
         } catch (error) {
-            console.error('Error checking guest email:', error);
+            // Error handled silently
         }
         
         setGuestHasEmail(false);
@@ -147,9 +147,6 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
             }
         } catch (error) {
             // Ignore abort errors
-            if (error.name !== 'AbortError') {
-                console.error('Error fetching variants from API:', error);
-            }
         } finally {
             isFetchingRef.current = false;
             abortControllerRef.current = null;
@@ -537,7 +534,6 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
                         return;
                     } else {
                         // Variants found but IDs are not unique/valid - try API as last resort
-                        console.warn('Variants detected but IDs are not unique or valid, trying API fallback');
                         const apiVariants = await fetchVariantsFromAPI();
                         if (apiVariants.length > 1) {
                             setVariants(apiVariants);
@@ -565,7 +561,6 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
                     }
                 }
             } catch (error) {
-                console.error('Error detecting variants:', error);
                 // On error, try API fallback
                 if (checkCount < maxChecks) {
                     checkCount++;
@@ -659,7 +654,7 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
                                 }
                             }
                         } catch (error) {
-                            console.error('Error in MutationObserver variant detection:', error);
+                            // Error handled silently
                         }
                     }, 300); // Debounce for 300ms
                 });
@@ -762,7 +757,7 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
                     setIsInWishlist(data.in_wishlist || false);
                 }
             } catch (error) {
-                console.error('Error checking wishlist:', error);
+                // Error handled silently
             } finally {
                 setIsLoading(false);
             }
@@ -936,12 +931,9 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
                 if (data && data.message) {
                     // Message logged by server
                 }
-            } else {
-                const error = await response.json();
-                console.error('Error adding to wishlist:', error);
             }
         } catch (error) {
-            console.error('Error adding to wishlist:', error);
+            // Error handled silently
         } finally {
             setIsAdding(false);
         }
@@ -976,12 +968,9 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
 
                 if (response.ok) {
                     setIsInWishlist(false);
-                } else {
-                    const error = await response.json();
-                    console.error('Error removing from wishlist:', error);
                 }
             } catch (error) {
-                console.error('Error removing from wishlist:', error);
+                // Error handled silently
             } finally {
                 setIsAdding(false);
             }
@@ -1171,8 +1160,6 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
         if (settings.backgroundColor) {
             applyBackgroundToStyles(dynamicStyles, settings.backgroundColor);
         }
-        console.log('settings.backgroundColor______xxxxxxx', settings);
-        console.log('dynamicStyles______xxxxxxx', dynamicStyles);
         if (settings.buttonTextColor) {
             dynamicStyles.color = settings.buttonTextColor;
         }

@@ -28,14 +28,7 @@ class WishCart_FluentCRM_Triggers {
     public function __construct() {
         // Only register if FluentCRM is available
         if ( ! $this->is_fluentcrm_available() ) {
-            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                error_log( '[wishcart] FluentCRM not available. Triggers will not be registered.' );
-            }
             return;
-        }
-
-        if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-            error_log( '[wishcart] FluentCRM detected. Initializing trigger registration...' );
         }
 
         // Register triggers via filter early (before FluentCRM queries for triggers)
@@ -73,17 +66,11 @@ class WishCart_FluentCRM_Triggers {
     public function register_triggers() {
         // Prevent duplicate registration (method is called on multiple hooks)
         if ( self::$triggers_registered ) {
-            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                error_log( '[wishcart] Triggers already registered, skipping duplicate registration.' );
-            }
             return;
         }
 
         // Check if BaseTrigger class exists
         if ( ! class_exists( '\FluentCrm\App\Services\Funnel\BaseTrigger' ) ) {
-            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                error_log( '[wishcart] FluentCRM BaseTrigger class not found. Triggers cannot be registered.' );
-            }
             return;
         }
 
@@ -96,34 +83,18 @@ class WishCart_FluentCRM_Triggers {
         // FluentCRM will automatically detect and register triggers that extend BaseTrigger
         if ( class_exists( 'wishcart_Item_Added_Trigger' ) ) {
             new wishcart_Item_Added_Trigger();
-            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                error_log( '[wishcart] wishcart_Item_Added_Trigger instantiated' );
-            }
         }
 
         if ( class_exists( 'wishcart_Item_Removed_Trigger' ) ) {
             new wishcart_Item_Removed_Trigger();
-            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                error_log( '[wishcart] wishcart_Item_Removed_Trigger instantiated' );
-            }
         }
 
         if ( class_exists( 'wishcart_Price_Drop_Trigger' ) ) {
             new wishcart_Price_Drop_Trigger();
-            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                error_log( '[wishcart] wishcart_Price_Drop_Trigger instantiated' );
-            }
         }
 
         if ( class_exists( 'wishcart_Back_In_Stock_Trigger' ) ) {
             new wishcart_Back_In_Stock_Trigger();
-            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                error_log( '[wishcart] wishcart_Back_In_Stock_Trigger instantiated' );
-            }
-        }
-
-        if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-            error_log( '[wishcart] All triggers registered with FluentCRM' );
         }
     }
 
@@ -141,30 +112,18 @@ class WishCart_FluentCRM_Triggers {
         // Register each trigger with its key and class name
         if ( class_exists( 'wishcart_Item_Added_Trigger' ) ) {
             $triggers['wishcart_item_added'] = 'wishcart_Item_Added_Trigger';
-            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                error_log( '[wishcart] Registered trigger: wishcart_item_added' );
-            }
         }
 
         if ( class_exists( 'wishcart_Item_Removed_Trigger' ) ) {
             $triggers['wishcart_item_removed'] = 'wishcart_Item_Removed_Trigger';
-            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                error_log( '[wishcart] Registered trigger: wishcart_item_removed' );
-            }
         }
 
         if ( class_exists( 'wishcart_Price_Drop_Trigger' ) ) {
             $triggers['wishcart_price_drop'] = 'wishcart_Price_Drop_Trigger';
-            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                error_log( '[wishcart] Registered trigger: wishcart_price_drop' );
-            }
         }
 
         if ( class_exists( 'wishcart_Back_In_Stock_Trigger' ) ) {
             $triggers['wishcart_back_in_stock'] = 'wishcart_Back_In_Stock_Trigger';
-            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                error_log( '[wishcart] Registered trigger: wishcart_back_in_stock' );
-            }
         }
 
         return $triggers;
@@ -178,14 +137,6 @@ class WishCart_FluentCRM_Triggers {
      * @return void
      */
     public static function fire_trigger( $trigger_key, $data = array() ) {
-        // Debug logging
-        if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-            error_log( '[wishcart] ========================================' );
-            error_log( '[wishcart] Firing trigger: ' . $trigger_key );
-            error_log( '[wishcart] Trigger data received: ' . print_r( $data, true ) );
-            error_log( '[wishcart] ========================================' );
-        }
-
         // Get user email from data if available
         $user_email = null;
         $contact_id = null;
@@ -211,11 +162,8 @@ class WishCart_FluentCRM_Triggers {
             $user_email = $data['email'];
         }
 
-        // If no email found, log and return early
+        // If no email found, return early
         if ( empty( $user_email ) ) {
-            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                error_log( '[wishcart] Cannot fire trigger: No email found for trigger ' . $trigger_key );
-            }
             return;
         }
 
@@ -230,10 +178,6 @@ class WishCart_FluentCRM_Triggers {
                     
                     // If contact doesn't exist, create it
                     if ( ! $subscriber ) {
-                        if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                            error_log( '[wishcart] Contact not found, creating: ' . $user_email );
-                        }
-                        
                         // Get user_id if available for contact creation
                         $user_id_for_contact = isset( $data['user_id'] ) ? $data['user_id'] : null;
                         
@@ -249,17 +193,10 @@ class WishCart_FluentCRM_Triggers {
                             if ( ! is_wp_error( $default_list_id ) ) {
                                 $fluentcrm->attach_lists( $contact_id, array( $default_list_id ) );
                             }
-                        } else {
-                            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                                error_log( '[wishcart] Failed to create contact: ' . ( is_wp_error( $contact_id ) ? $contact_id->get_error_message() : 'Unknown error' ) );
-                            }
                         }
                     } else {
                         // Contact exists, get contact ID
                         $contact_id = is_object( $subscriber ) ? $subscriber->id : ( isset( $subscriber['id'] ) ? $subscriber['id'] : null );
-                        if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                            error_log( '[wishcart] Contact found: ' . $user_email . ' (ID: ' . $contact_id . ')' );
-                        }
                     }
                 }
             }
@@ -267,9 +204,6 @@ class WishCart_FluentCRM_Triggers {
 
         // If still no subscriber, cannot proceed
         if ( ! $subscriber ) {
-            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                error_log( '[wishcart] Cannot fire trigger: No subscriber found for ' . $user_email );
-            }
             return;
         }
 
@@ -297,11 +231,6 @@ class WishCart_FluentCRM_Triggers {
         // BaseTrigger's parent constructor sets up listeners for these hooks
         // The handle() method in the trigger class will process the funnel using FunnelProcessor
         if ( $subscriber ) {
-            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                error_log( '[wishcart] Preparing to fire trigger: ' . $trigger_key );
-                error_log( '[wishcart] Subscriber email: ' . $user_email );
-            }
-            
             // Fire the action hook that FluentCRM BaseTrigger listens to
             // BaseTrigger listens to the triggerName directly (like fluent-booking does)
             // The action hook should match the triggerName: 'wishcart_item_added'
@@ -315,22 +244,9 @@ class WishCart_FluentCRM_Triggers {
             $trigger_data = $data;
             $trigger_data['email'] = $user_email; // Ensure email is in data
             
-            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                error_log( '[wishcart] Firing FluentCRM trigger action hook: ' . $action_hook );
-                error_log( '[wishcart] Trigger data: ' . print_r( $trigger_data, true ) );
-            }
-            
             // Fire the action hook - BaseTrigger will catch this and call handle() for each active funnel
             // This matches the pattern used by fluent-booking: do_action('fluent_booking/after_booking_scheduled', $booking)
             do_action( $action_hook, $trigger_data );
-            
-            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                error_log( '[wishcart] Trigger action hook fired successfully: ' . $action_hook );
-            }
-        } else {
-            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                error_log( '[wishcart] Cannot fire trigger: No subscriber object available' );
-            }
         }
 
         // Fire custom hook for extensions (does not trigger FluentCRM funnels)

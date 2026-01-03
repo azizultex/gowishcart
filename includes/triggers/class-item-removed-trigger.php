@@ -22,16 +22,7 @@ class wishcart_Item_Removed_Trigger extends \FluentCrm\App\Services\Funnel\BaseT
         $this->priority = 20;
         $this->actionArgNum = 1;
         
-        if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-            error_log( '[wishcart] wishcart_Item_Removed_Trigger constructor called' );
-            error_log( '[wishcart] Trigger name: ' . $this->triggerName );
-        }
-        
         parent::__construct();
-        
-        if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-            error_log( '[wishcart] wishcart_Item_Removed_Trigger initialized successfully' );
-        }
     }
 
     /**
@@ -79,17 +70,8 @@ class wishcart_Item_Removed_Trigger extends \FluentCrm\App\Services\Funnel\BaseT
         // The data structure: $originalArgs[0] contains the trigger data array
         $item_data = isset( $originalArgs[0] ) && is_array( $originalArgs[0] ) ? $originalArgs[0] : array();
         
-        if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-            error_log( '[wishcart] Item Removed Trigger - handle() method called' );
-            error_log( '[wishcart] Funnel ID: ' . ( isset( $funnel->id ) ? $funnel->id : 'N/A' ) );
-            error_log( '[wishcart] Item data: ' . print_r( $item_data, true ) );
-        }
-        
         // Validate that we have the required data
         if ( empty( $item_data ) || ! is_array( $item_data ) ) {
-            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                error_log( '[wishcart] Warning: Item data is empty or not an array' );
-            }
             return;
         }
         
@@ -100,9 +82,6 @@ class wishcart_Item_Removed_Trigger extends \FluentCrm\App\Services\Funnel\BaseT
         $willProcess = apply_filters( 'fluentcrm_funnel_will_process_' . $this->triggerName, $willProcess, $funnel, $originalArgs );
         
         if ( ! $willProcess ) {
-            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                error_log( '[wishcart] Funnel will not process this trigger' );
-            }
             return;
         }
         
@@ -127,9 +106,6 @@ class wishcart_Item_Removed_Trigger extends \FluentCrm\App\Services\Funnel\BaseT
         }
         
         if ( empty( $email ) || ! is_email( $email ) ) {
-            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                error_log( '[wishcart] Cannot process trigger: No valid email found' );
-            }
             return;
         }
         
@@ -148,10 +124,6 @@ class wishcart_Item_Removed_Trigger extends \FluentCrm\App\Services\Funnel\BaseT
             'status'     => 'subscribed', // Default status
         ) );
         
-        if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-            error_log( '[wishcart] Subscriber data: ' . print_r( $subscriberData, true ) );
-        }
-        
         // Use FunnelProcessor to start the funnel sequence (same as fluent-booking)
         // IMPORTANT: Only pass simple scalar values in the third parameter to avoid database serialization errors
         if ( class_exists( '\FluentCrm\App\Services\Funnel\FunnelProcessor' ) ) {
@@ -167,19 +139,8 @@ class wishcart_Item_Removed_Trigger extends \FluentCrm\App\Services\Funnel\BaseT
                     'source_trigger_name' => $this->triggerName,
                     'source_ref_id'       => $source_ref_id,
                 ) );
-                
-                if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                    error_log( '[wishcart] FunnelProcessor->startFunnelSequence() called successfully' );
-                }
             } catch ( Exception $e ) {
-                if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                    error_log( '[wishcart] Error in FunnelProcessor: ' . $e->getMessage() );
-                    error_log( '[wishcart] Error trace: ' . $e->getTraceAsString() );
-                }
-            }
-        } else {
-            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                error_log( '[wishcart] FunnelProcessor class not found' );
+                // Error handled silently
             }
         }
     }

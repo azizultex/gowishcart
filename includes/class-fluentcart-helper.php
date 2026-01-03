@@ -441,7 +441,6 @@ class WishCart_FluentCart_Order {
                             }
                         }
                     }
-                    error_log( '[WishCart] FluentCart order item attributes: ' . print_r( $item_attributes, true ) );
                 }
                 
                 // Check multiple possible field names for variation_id
@@ -493,12 +492,6 @@ class WishCart_FluentCart_Order {
                     } elseif ( isset( $fc_item->attributes['variant_id'] ) && $fc_item->attributes['variant_id'] > 0 ) {
                         $variation_id = intval( $fc_item->attributes['variant_id'] );
                     }
-                }
-                
-                // Debug: Log extracted variation_id
-                if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                    $post_id = isset( $fc_item->post_id ) ? $fc_item->post_id : ( method_exists( $fc_item, 'getAttribute' ) ? $fc_item->getAttribute( 'post_id' ) : 'N/A' );
-                    error_log( '[WishCart] FluentCart order item: post_id=' . $post_id . ', extracted variation_id=' . $variation_id );
                 }
                 
                 $items[] = new WishCart_FluentCart_Order_Item( [

@@ -44,11 +44,6 @@ if ( ! defined('ABSPATH') ) {
 // Load Composer autoloader if available
 if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
     require_once __DIR__ . '/vendor/autoload.php';
-} else {
-    // Log error but don't stop plugin execution
-    if ( defined('WP_DEBUG') && WP_DEBUG ) {
-        // error_log('WishCart: Composer autoloader not found. Some features may not work properly.');
-    }
 }
 
 /**
