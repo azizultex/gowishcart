@@ -77,5 +77,5 @@ class WishCart_Uninstaller {
 }
 
 // Execute the uninstallation
-$uninstaller = new WishCart_Uninstaller();
-$uninstaller->uninstall();
+$wishcart_uninstaller = new WishCart_Uninstaller();
+$wishcart_uninstaller->uninstall();

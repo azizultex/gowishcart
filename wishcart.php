@@ -9,7 +9,7 @@
  * Author:      WishCart Team <support@gowishcart.com>
  * Author URI:  https://gowishcart.com/
  * Contributors: wishcart, zrshishir, sabbirxprt
- * Text Domain:  wish-car
+ * Text Domain:  wishcart
  * Domain Path: /languages/
  * License: GPL2
  * License URI: http://www.gnu.org/licenses/gpl-2.0.txt

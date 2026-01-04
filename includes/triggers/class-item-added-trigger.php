@@ -79,6 +79,7 @@ class wishcart_Item_Added_Trigger extends \FluentCrm\App\Services\Funnel\BaseTri
         $willProcess = $this->isProcessable( $funnel, $item_data );
         
         // Allow filtering
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Calling FluentCRM filter, not creating new hook
         $willProcess = apply_filters( 'fluentcrm_funnel_will_process_' . $this->triggerName, $willProcess, $funnel, $originalArgs );
         
         if ( ! $willProcess ) {

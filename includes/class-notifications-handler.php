@@ -101,9 +101,11 @@ class wishcart_Notifications_Handler {
                 $new_price = isset($data['new_price']) ? $data['new_price'] : '';
                 $product_url = isset($data['product_url']) ? $data['product_url'] : '';
 
-                $subject = sprintf(__('Price Drop Alert: %s', 'wishcart'), $product_name);
+                /* translators: %1$s: Product name */
+                $subject = sprintf(__('Price Drop Alert: %1$s', 'wishcart'), $product_name);
                 $content = sprintf(
-                    __('Good news! A product in your wishlist has dropped in price.%s%sProduct: %s%sOld Price: %s%sNew Price: %s%s%sView Product: %s', 'wishcart'),
+                    /* translators: %1$s: Newline, %2$s: Newline, %3$s: Product name, %4$s: Newline, %5$s: Old price, %6$s: Newline, %7$s: New price, %8$s: Newlines, %9$s: Newline, %10$s: Product URL */
+                    __('Good news! A product in your wishlist has dropped in price.%1$s%2$sProduct: %3$s%4$sOld Price: %5$s%6$sNew Price: %7$s%8$s%9$sView Product: %10$s', 'wishcart'),
                     "\n\n",
                     "\n",
                     $product_name,
@@ -121,9 +123,11 @@ class wishcart_Notifications_Handler {
                 $product_name = isset($data['product_name']) ? $data['product_name'] : __('Product', 'wishcart');
                 $product_url = isset($data['product_url']) ? $data['product_url'] : '';
 
-                $subject = sprintf(__('Back in Stock: %s', 'wishcart'), $product_name);
+                /* translators: %1$s: Product name */
+                $subject = sprintf(__('Back in Stock: %1$s', 'wishcart'), $product_name);
                 $content = sprintf(
-                    __('Great news! A product in your wishlist is back in stock.%s%sProduct: %s%s%sView Product: %s', 'wishcart'),
+                    /* translators: %1$s: Newline, %2$s: Newline, %3$s: Product name, %4$s: Newlines, %5$s: Newline, %6$s: Product URL */
+                    __('Great news! A product in your wishlist is back in stock.%1$s%2$sProduct: %3$s%4$s%5$sView Product: %6$s', 'wishcart'),
                     "\n\n",
                     "\n",
                     $product_name,
@@ -143,9 +147,11 @@ class wishcart_Notifications_Handler {
                 $wishlist_url = isset($data['wishlist_url']) ? $data['wishlist_url'] : '';
                 $item_count = isset($data['item_count']) ? intval($data['item_count']) : 0;
 
-                $subject = sprintf(__('Reminder: You have %d items in your wishlist', 'wishcart'), $item_count);
+                /* translators: %1$d: Item count */
+                $subject = sprintf(__('Reminder: You have %1$d items in your wishlist', 'wishcart'), $item_count);
                 $content = sprintf(
-                    __('Hi there,%s%sJust a friendly reminder that you have %d items waiting in your wishlist "%s".%s%sView Your Wishlist: %s', 'wishcart'),
+                    /* translators: %1$s: Newline, %2$s: Newline, %3$d: Item count, %4$s: Wishlist name, %5$s: Newlines, %6$s: Newline, %7$s: Wishlist URL */
+                    __('Hi there,%1$s%2$sJust a friendly reminder that you have %3$d items waiting in your wishlist "%4$s".%5$s%6$sView Your Wishlist: %7$s', 'wishcart'),
                     "\n\n",
                     "\n\n",
                     $item_count,
@@ -162,9 +168,11 @@ class wishcart_Notifications_Handler {
                 $wishlist_url = isset($data['wishlist_url']) ? $data['wishlist_url'] : '';
                 $message = isset($data['message']) ? $data['message'] : '';
 
-                $subject = sprintf(__('%s shared %s with you', 'wishcart'), $shared_by, $wishlist_name);
+                /* translators: %1$s: Shared by name, %2$s: Wishlist name */
+                $subject = sprintf(__('%1$s shared %2$s with you', 'wishcart'), $shared_by, $wishlist_name);
                 $content = sprintf(
-                    __('Hi,%s%s%s has shared a wishlist with you: "%s"', 'wishcart'),
+                    /* translators: %1$s: Newline, %2$s: Newline, %3$s: Shared by name, %4$s: Wishlist name */
+                    __('Hi,%1$s%2$s%3$s has shared a wishlist with you: "%4$s"', 'wishcart'),
                     "\n\n",
                     "\n\n",
                     $shared_by,
@@ -189,7 +197,8 @@ class wishcart_Notifications_Handler {
         }
 
         // Add footer
-        $content .= "\n\n---\n" . sprintf(__('This email was sent by %s', 'wishcart'), $site_name);
+        /* translators: %1$s: Site name */
+        $content .= "\n\n---\n" . sprintf(__('This email was sent by %1$s', 'wishcart'), $site_name);
 
         return array(
             'subject' => $subject,
@@ -212,9 +221,10 @@ class wishcart_Notifications_Handler {
         );
 
         // Get pending notifications
+        // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         $notifications = $this->wpdb->get_results(
             $this->wpdb->prepare(
-                "SELECT * FROM {$this->notifications_table}
+                "SELECT * FROM " . esc_sql($this->notifications_table) . "
                 WHERE status = 'pending'
                     AND scheduled_date <= NOW()
                     AND attempts < 3
@@ -224,6 +234,7 @@ class wishcart_Notifications_Handler {
             ),
             ARRAY_A
         );
+        // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
         foreach ($notifications as $notification) {
             $send_result = $this->send_notification($notification['notification_id']);
@@ -421,13 +432,15 @@ class wishcart_Notifications_Handler {
      * @return array|null Notification data
      */
     public function get_notification($notification_id) {
+        // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         return $this->wpdb->get_row(
             $this->wpdb->prepare(
-                "SELECT * FROM {$this->notifications_table} WHERE notification_id = %d",
+                "SELECT * FROM " . esc_sql($this->notifications_table) . " WHERE notification_id = %d",
                 $notification_id
             ),
             ARRAY_A
         );
+        // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
     }
 
     /**
@@ -438,20 +451,28 @@ class wishcart_Notifications_Handler {
      * @return array Array of notifications
      */
     public function get_user_notifications($user_id, $status = null) {
-        $where = "user_id = %d";
         $params = array($user_id);
+        $query = "SELECT * FROM " . esc_sql($this->notifications_table) . " WHERE user_id = %d";
 
         if ($status) {
-            $where .= " AND status = %s";
-            $params[] = $status;
+            // Validate status against whitelist
+            $allowed_statuses = array('pending', 'sent', 'failed', 'cancelled');
+            
+            if (in_array($status, $allowed_statuses, true)) {
+                $query .= " AND status = %s";
+                $params[] = $status;
+            }
         }
 
-        $query = "SELECT * FROM {$this->notifications_table} WHERE {$where} ORDER BY date_created DESC LIMIT 100";
+        $query .= " ORDER BY date_created DESC LIMIT 100";
 
+        // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter -- Status is validated against whitelist and $wpdb->prepare() handles escaping
         return $this->wpdb->get_results(
             $this->wpdb->prepare($query, $params),
             ARRAY_A
         );
+        // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
     }
 
     /**
@@ -528,15 +549,17 @@ class wishcart_Notifications_Handler {
         $items_table = $this->wpdb->prefix . 'fc_wishlist_items';
         $wishlists_table = $this->wpdb->prefix . 'fc_wishlists';
 
+        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         $items = $this->wpdb->get_results(
             "SELECT wi.*, w.user_id, w.wishlist_token
-            FROM {$items_table} wi
-            JOIN {$wishlists_table} w ON wi.wishlist_id = w.id
+            FROM " . esc_sql($items_table) . " wi
+            JOIN " . esc_sql($wishlists_table) . " w ON wi.wishlist_id = w.id
             WHERE wi.status = 'active'
                 AND wi.original_price IS NOT NULL
                 AND w.status = 'active'",
             ARRAY_A
         );
+        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
         foreach ($items as $item) {
             $product = WishCart_FluentCart_Helper::get_product($item['product_id']);
@@ -620,14 +643,16 @@ class wishcart_Notifications_Handler {
         $items_table = $this->wpdb->prefix . 'fc_wishlist_items';
         $wishlists_table = $this->wpdb->prefix . 'fc_wishlists';
 
+        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         $items = $this->wpdb->get_results(
             "SELECT wi.*, w.user_id
-            FROM {$items_table} wi
-            JOIN {$wishlists_table} w ON wi.wishlist_id = w.id
+            FROM " . esc_sql($items_table) . " wi
+            JOIN " . esc_sql($wishlists_table) . " w ON wi.wishlist_id = w.id
             WHERE wi.status = 'active'
                 AND w.status = 'active'",
             ARRAY_A
         );
+        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
         foreach ($items as $item) {
             $product = WishCart_FluentCart_Helper::get_product($item['product_id']);
@@ -644,9 +669,10 @@ class wishcart_Notifications_Handler {
                     $user = get_userdata($item['user_id']);
                     if ($user && $user->user_email) {
                         // Check if we already sent a notification recently (avoid spam)
+                        // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
                         $recent_notification = $this->wpdb->get_var(
                             $this->wpdb->prepare(
-                                "SELECT COUNT(*) FROM {$this->notifications_table}
+                                "SELECT COUNT(*) FROM " . esc_sql($this->notifications_table) . "
                                 WHERE user_id = %d
                                     AND product_id = %d
                                     AND notification_type = 'back_in_stock'
@@ -655,6 +681,7 @@ class wishcart_Notifications_Handler {
                                 $item['product_id']
                             )
                         );
+                        // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
                         if ($recent_notification > 0) {
                             continue; // Skip if already notified recently
@@ -703,6 +730,7 @@ class wishcart_Notifications_Handler {
      * @return array Statistics
      */
     public function get_statistics() {
+        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         $stats = $this->wpdb->get_row(
             "SELECT 
                 COUNT(*) as total_notifications,
@@ -711,9 +739,10 @@ class wishcart_Notifications_Handler {
                 SUM(CASE WHEN status = 'failed' THEN 1 ELSE 0 END) as failed_count,
                 SUM(CASE WHEN opened_date IS NOT NULL THEN 1 ELSE 0 END) as opened_count,
                 SUM(CASE WHEN clicked_date IS NOT NULL THEN 1 ELSE 0 END) as clicked_count
-            FROM {$this->notifications_table}",
+            FROM " . esc_sql($this->notifications_table),
             ARRAY_A
         );
+        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
         // Calculate rates
         $sent_count = intval($stats['sent_count']);
@@ -736,14 +765,16 @@ class wishcart_Notifications_Handler {
         );
 
         // Delete old sent/failed notifications
+        // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         $result = $this->wpdb->query(
             $this->wpdb->prepare(
-                "DELETE FROM {$this->notifications_table}
+                "DELETE FROM " . esc_sql($this->notifications_table) . "
                 WHERE status IN ('sent', 'failed', 'cancelled')
                     AND date_created < DATE_SUB(NOW(), INTERVAL %d DAY)",
                 $days
             )
         );
+        // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
         $results['deleted'] = $result !== false ? $result : 0;
 

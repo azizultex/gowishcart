@@ -204,7 +204,10 @@ class WishCart_Database {
         $table_name = $this->table_prefix . 'fc_wishlist_notifications';
         
         // Check if CRM columns exist
+        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table name is an identifier, not user-supplied data, and cannot be escaped.
         $columns = $this->wpdb->get_col("DESCRIBE {$table_name}");
+        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         
         $crm_columns = array(
             'crm_contact_id' => "ALTER TABLE {$table_name} ADD COLUMN crm_contact_id bigint(20) UNSIGNED NULL AFTER error_message",
@@ -218,11 +221,17 @@ class WishCart_Database {
         
         foreach ($crm_columns as $column => $sql) {
             if (!in_array($column, $columns)) {
+                // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared
+                // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter -- ALTER TABLE DDL statement contains table/column identifiers that cannot be escaped.
                 $this->wpdb->query($sql);
+                // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
                 // Add indexes if needed
                 if (in_array($column, array('crm_contact_id', 'crm_campaign_id'))) {
                     $index_name = $column . '_idx';
+                    // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+                    // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table, index, and column names are identifiers, not user-supplied data, and cannot be escaped.
                     $this->wpdb->query("ALTER TABLE {$table_name} ADD INDEX {$index_name} ({$column})");
+                    // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
                 }
             }
         }

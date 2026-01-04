@@ -164,6 +164,7 @@ class wishcart_Admin {
         );
         wp_enqueue_script('wishcart-admin');
 
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Reading query parameter, not processing form data
         $requested_page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : $this->plugin_slug . '-settings';
         $page_to_tab = array(
             $this->plugin_slug                     => 'settings',
@@ -199,16 +200,15 @@ class wishcart_Admin {
             ]
         );
 
-        $submenu_navigation_js = <<<JS
-(function(){
-    if (typeof window === 'undefined') {
+        $submenu_navigation_js = '(function(){
+    if (typeof window === \'undefined\') {
         return;
     }
-    window.addEventListener('DOMContentLoaded', function(){
+    window.addEventListener(\'DOMContentLoaded\', function(){
         if (!window.wishcartSettings || !window.wishcartSettings.menuTabMap) {
             return;
         }
-        var submenu = document.querySelector('#toplevel_page_{$this->plugin_slug} .wp-submenu');
+        var submenu = document.querySelector(\'#toplevel_page_' . esc_js( $this->plugin_slug ) . ' .wp-submenu\');
         if (!submenu) {
             return;
         }
@@ -216,19 +216,19 @@ class wishcart_Admin {
             if (!submenu) {
                 return;
             }
-            var items = submenu.querySelectorAll('li');
+            var items = submenu.querySelectorAll(\'li\');
             if (items && items.forEach) {
-                items.forEach(function(item){ item.classList.remove('current'); });
+                items.forEach(function(item){ item.classList.remove(\'current\'); });
             }
-            var links = submenu.querySelectorAll('a');
+            var links = submenu.querySelectorAll(\'a\');
             for (var i = 0; i < links.length; i++) {
                 var link = links[i];
                 try {
                     var url = new URL(link.href, window.location.origin);
-                    var linkPage = url.searchParams.get('page') || '{$this->plugin_slug}-settings';
+                    var linkPage = url.searchParams.get(\'page\') || \'' . esc_js( $this->plugin_slug ) . '-settings\';
                     if (linkPage === pageSlug) {
                         if (link.parentElement) {
-                            link.parentElement.classList.add('current');
+                            link.parentElement.classList.add(\'current\');
                         }
                         break;
                     }
@@ -244,17 +244,17 @@ class wishcart_Admin {
         }
         window.wishcartSetActiveMenu = setActiveMenuByTab;
         setActiveMenuByTab(window.wishcartSettings.defaultTab);
-        submenu.addEventListener('click', function(event){
-            if (typeof window.wishcartNavigateToTab !== 'function') {
+        submenu.addEventListener(\'click\', function(event){
+            if (typeof window.wishcartNavigateToTab !== \'function\') {
                 return;
             }
-            var link = event.target.closest('a');
+            var link = event.target.closest(\'a\');
             if (!link) {
                 return;
             }
             try {
                 var url = new URL(link.href, window.location.origin);
-                var page = url.searchParams.get('page') || '{$this->plugin_slug}-settings';
+                var page = url.searchParams.get(\'page\') || \'' . esc_js( $this->plugin_slug ) . '-settings\';
                 var tab = window.wishcartSettings.menuTabMap[page];
                 if (!tab) {
                     return;
@@ -267,8 +267,7 @@ class wishcart_Admin {
             }
         });
     });
-})();
-JS;
+})();';
         wp_add_inline_script( 'wishcart-admin', $submenu_navigation_js );
         wp_set_script_translations('wishcart-admin', 'wishcart');
     }
@@ -1217,6 +1216,7 @@ JS;
             
             $where_sql = implode( ' AND ', $where_clauses );
             
+            // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
             $query = $wpdb->prepare(
                 "UPDATE {$items_table} wi
                 INNER JOIN {$wishlists_table} w ON wi.wishlist_id = w.id
@@ -1224,7 +1224,9 @@ JS;
                 WHERE {$where_sql}",
                 $where_values
             );
+            // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
             
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.NotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
             $wpdb->query( $query );
         }
         
@@ -1269,13 +1271,27 @@ JS;
         if ( $wishlist_id ) {
             $items_table = $wpdb->prefix . 'fc_wishlist_items';
             
-            $results = $wpdb->get_results(
-                $wpdb->prepare(
-                    "SELECT product_id, variation_id, date_added FROM {$items_table} WHERE wishlist_id = %d AND status = 'active' ORDER BY position ASC, date_added DESC",
-                    $wishlist_id
-                ),
-                ARRAY_A
-            );
+            // Check cache first
+            $cache_key = 'wishcart_items_' . $wishlist_id;
+            $cached = wp_cache_get( $cache_key, 'wishcart_wishlist' );
+            
+            if ( false !== $cached ) {
+                $results = $cached;
+            } else {
+                // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+                $results = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+                    $wpdb->prepare(
+                        "SELECT product_id, variation_id, date_added FROM {$items_table} WHERE wishlist_id = %d AND status = 'active' ORDER BY position ASC, date_added DESC",
+                        $wishlist_id
+                    ),
+                    ARRAY_A
+                );
+                // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
+                
+                // Cache for 5 minutes
+                wp_cache_set( $cache_key, $results, 'wishcart_wishlist', 300 );
+            }
             
             if ( $results ) {
                 foreach ( $results as $row ) {
@@ -1295,13 +1311,27 @@ JS;
             if ( $user_default_wishlist && isset( $user_default_wishlist['id'] ) ) {
                 $items_table = $wpdb->prefix . 'fc_wishlist_items';
                 
-                $results = $wpdb->get_results(
-                    $wpdb->prepare(
-                        "SELECT product_id, variation_id, date_added FROM {$items_table} WHERE wishlist_id = %d AND status = 'active' ORDER BY position ASC, date_added DESC",
-                        $user_default_wishlist['id']
-                    ),
-                    ARRAY_A
-                );
+                // Check cache first
+                $cache_key = 'wishcart_items_user_' . $requested_user_id;
+                $cached = wp_cache_get( $cache_key, 'wishcart_wishlist' );
+                
+                if ( false !== $cached ) {
+                    $results = $cached;
+                } else {
+                    // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
+                    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+                    $results = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+                        $wpdb->prepare(
+                            "SELECT product_id, variation_id, date_added FROM {$items_table} WHERE wishlist_id = %d AND status = 'active' ORDER BY position ASC, date_added DESC",
+                            $user_default_wishlist['id']
+                        ),
+                        ARRAY_A
+                    );
+                    // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
+                    
+                    // Cache for 5 minutes
+                    wp_cache_set( $cache_key, $results, 'wishcart_wishlist', 300 );
+                }
                 
                 if ( $results ) {
                     foreach ( $results as $row ) {
@@ -1326,13 +1356,35 @@ JS;
                 $current_wishlist = $default_wishlist;
                 
                 $items_table = $wpdb->prefix . 'fc_wishlist_items';
-                $results = $wpdb->get_results(
-                    $wpdb->prepare(
-                        "SELECT product_id, variation_id, date_added FROM {$items_table} WHERE wishlist_id = %d AND status = 'active' ORDER BY position ASC, date_added DESC",
-                        $wishlist_id
-                    ),
-                    ARRAY_A
-                );
+                
+                // Determine cache key based on user or session
+                $user_id = is_user_logged_in() ? get_current_user_id() : null;
+                if ( $user_id ) {
+                    $cache_key = 'wishcart_items_user_' . $user_id;
+                } else {
+                    $cache_key = 'wishcart_items_session_' . md5( $session_id );
+                }
+                
+                // Check cache first
+                $cached = wp_cache_get( $cache_key, 'wishcart_wishlist' );
+                
+                if ( false !== $cached ) {
+                    $results = $cached;
+                } else {
+                    // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
+                    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+                    $results = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+                        $wpdb->prepare(
+                            "SELECT product_id, variation_id, date_added FROM {$items_table} WHERE wishlist_id = %d AND status = 'active' ORDER BY position ASC, date_added DESC",
+                            $wishlist_id
+                        ),
+                        ARRAY_A
+                    );
+                    // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
+                    
+                    // Cache for 5 minutes
+                    wp_cache_set( $cache_key, $results, 'wishcart_wishlist', 300 );
+                }
                 
                 if ( $results ) {
                     foreach ( $results as $row ) {
@@ -1393,14 +1445,40 @@ JS;
                     // Try to get variants using reflection or helper
                     global $wpdb;
                     $variants_table = $wpdb->prefix . 'fct_product_variations';
-                    if ( $wpdb->get_var( "SHOW TABLES LIKE '$variants_table'" ) === $variants_table ) {
-                        $variants_data = $wpdb->get_results(
-                            $wpdb->prepare(
-                                "SELECT id, item_price, compare_price, stock_status FROM {$variants_table} WHERE post_id = %d ORDER BY serial_index ASC",
-                                $product_id
-                            ),
-                            ARRAY_A
-                        );
+                    
+                    // Check cache for table existence
+                    $table_cache_key = 'wishcart_table_exists_' . $variants_table;
+                    $table_exists = wp_cache_get( $table_cache_key, 'wishcart_system' );
+                    
+                    if ( false === $table_exists ) {
+                        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+                        $table_exists = ( $wpdb->get_var( "SHOW TABLES LIKE '" . esc_sql( $variants_table ) . "'" ) === $variants_table );
+                        // Cache for 1 hour (table structure rarely changes)
+                        wp_cache_set( $table_cache_key, $table_exists, 'wishcart_system', 3600 );
+                    }
+                    
+                    if ( $table_exists ) {
+                        // Check cache first
+                        $variants_cache_key = 'wishcart_variants_' . $product_id;
+                        $cached_variants = wp_cache_get( $variants_cache_key, 'wishcart_variants' );
+                        
+                        if ( false !== $cached_variants ) {
+                            $variants_data = $cached_variants;
+                        } else {
+                            // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
+                            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+                            $variants_data = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+                                $wpdb->prepare(
+                                    "SELECT id, item_price, compare_price, stock_status FROM {$variants_table} WHERE post_id = %d ORDER BY serial_index ASC",
+                                    $product_id
+                                ),
+                                ARRAY_A
+                            );
+                            // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
+                            
+                            // Cache for 5 minutes
+                            wp_cache_set( $variants_cache_key, $variants_data, 'wishcart_variants', 300 );
+                        }
                         
                         foreach ( $variants_data as $variant_data ) {
                             $variant_price = isset( $variant_data['item_price'] ) ? $variant_data['item_price'] / 100 : 0;
@@ -1613,15 +1691,28 @@ JS;
         global $wpdb;
         $table_name = $wpdb->prefix . 'WishCart_Wishlist';
         
-        // Get distinct user IDs that have wishlist items (excluding NULL and session-based entries)
-        $user_ids = $wpdb->get_results(
-            "SELECT DISTINCT user_id, COUNT(*) as wishlist_count 
-             FROM {$table_name} 
-             WHERE user_id IS NOT NULL 
-             GROUP BY user_id 
-             ORDER BY wishlist_count DESC",
-            ARRAY_A
-        );
+        // Check cache first
+        $cache_key = 'wishcart_users_list';
+        $cached = wp_cache_get( $cache_key, 'wishcart_users' );
+        
+        if ( false !== $cached ) {
+            $user_ids = $cached;
+        } else {
+            // Get distinct user IDs that have wishlist items (excluding NULL and session-based entries)
+            // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
+            $user_ids = $wpdb->get_results(
+                "SELECT DISTINCT user_id, COUNT(*) as wishlist_count 
+                 FROM {$table_name} 
+                 WHERE user_id IS NOT NULL 
+                 GROUP BY user_id 
+                 ORDER BY wishlist_count DESC",
+                ARRAY_A
+            );
+            // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
+            
+            // Cache for 15 minutes
+            wp_cache_set( $cache_key, $user_ids, 'wishcart_users', 900 );
+        }
 
         $users = array();
         foreach ( $user_ids as $row ) {
@@ -1872,25 +1963,41 @@ JS;
         } else {
             global $wpdb;
             $table = $wpdb->prefix . 'fc_wishlist_crm_campaigns';
-            $where = '1=1';
-            $params = array();
+            
+            // Determine cache key based on status
+            $cache_key = $status ? 'wishcart_campaigns_' . $status : 'wishcart_campaigns_all';
+            $cached = wp_cache_get( $cache_key, 'wishcart_campaigns' );
+            
+            if ( false !== $cached ) {
+                $campaigns = $cached;
+            } else {
+                $where = '1=1';
+                $params = array();
 
-            if ($status) {
-                $where .= ' AND status = %s';
-                $params[] = $status;
-            }
+                if ($status) {
+                    $where .= ' AND status = %s';
+                    $params[] = $status;
+                }
 
-            $query = "SELECT * FROM {$table} WHERE {$where} ORDER BY date_created DESC";
-            $campaigns = $wpdb->get_results(
-                $wpdb->prepare($query, $params),
-                ARRAY_A
-            );
+                // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name cannot be prepared.
+                $query = "SELECT * FROM {$table} WHERE {$where} ORDER BY date_created DESC";
+                // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.PreparedSQL.NotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
+                $campaigns = $wpdb->get_results(
+                    // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Query is prepared on next line, table name must be interpolated.
+                    $wpdb->prepare($query, $params),
+                    ARRAY_A
+                );
+                // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.PreparedSQL.NotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
 
-            foreach ($campaigns as &$campaign) {
-                $campaign['trigger_conditions'] = json_decode($campaign['trigger_conditions'], true);
-                $campaign['email_sequence'] = json_decode($campaign['email_sequence'], true);
-                $campaign['target_segment'] = json_decode($campaign['target_segment'], true);
-                $campaign['stats'] = json_decode($campaign['stats'], true);
+                foreach ($campaigns as &$campaign) {
+                    $campaign['trigger_conditions'] = json_decode($campaign['trigger_conditions'], true);
+                    $campaign['email_sequence'] = json_decode($campaign['email_sequence'], true);
+                    $campaign['target_segment'] = json_decode($campaign['target_segment'], true);
+                    $campaign['stats'] = json_decode($campaign['stats'], true);
+                }
+                
+                // Cache for 5 minutes
+                wp_cache_set( $cache_key, $campaigns, 'wishcart_campaigns', 300 );
             }
         }
 
@@ -2004,11 +2111,18 @@ JS;
         global $wpdb;
         $table = $wpdb->prefix . 'fc_wishlist_crm_campaigns';
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
         $result = $wpdb->delete($table, array('campaign_id' => $campaign_id), array('%d'));
 
         if (false === $result) {
             return new WP_Error('delete_failed', __('Failed to delete campaign', 'wishcart'), array('status' => 500));
         }
+        
+        // Clear campaign cache after deletion
+        wp_cache_delete('wishcart_campaigns_all', 'wishcart_campaigns');
+        wp_cache_delete('wishcart_campaigns_active', 'wishcart_campaigns');
+        wp_cache_delete('wishcart_campaigns_paused', 'wishcart_campaigns');
+        wp_cache_delete('wishcart_campaigns_completed', 'wishcart_campaigns');
 
         return rest_ensure_response(array(
             'success' => true,

@@ -251,7 +251,7 @@ class WishCart_Cron_Handler {
                 'hook' => $hook,
                 'label' => $label,
                 'scheduled' => (bool) $timestamp,
-                'next_run' => $timestamp ? date('Y-m-d H:i:s', $timestamp) : null,
+                'next_run' => $timestamp ? gmdate('Y-m-d H:i:s', $timestamp) : null,
                 'next_run_relative' => $timestamp ? human_time_diff($timestamp, time()) : null,
             );
         }
@@ -285,11 +285,13 @@ class WishCart_Cron_Handler {
         }
 
         // Trigger the action
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
         do_action($hook);
 
         return array(
             'success' => true,
-            'message' => sprintf(__('Cron job %s triggered successfully', 'WishCart'), $hook),
+            /* translators: %s: cron job hook name */
+            'message' => sprintf(__('Cron job %s triggered successfully', 'wishcart'), $hook),
         );
     }
 

@@ -41,12 +41,14 @@ class WishCart_Wishlist_Handler {
         
         do {
             $token = bin2hex(random_bytes(32)); // 64 character hex string
+            // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
             $exists = $this->wpdb->get_var(
                 $this->wpdb->prepare(
-                    "SELECT COUNT(*) FROM {$this->wishlists_table} WHERE wishlist_token = %s",
+                    "SELECT COUNT(*) FROM " . esc_sql($this->wishlists_table) . " WHERE wishlist_token = %s",
                     $token
                 )
             );
+            // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
             $attempt++;
         } while ( $exists > 0 && $attempt < $max_attempts );
         
@@ -88,20 +90,24 @@ class WishCart_Wishlist_Handler {
      */
     private function slug_exists($slug, $user_id = null) {
         if ($user_id) {
+            // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
             $exists = $this->wpdb->get_var(
                 $this->wpdb->prepare(
-                    "SELECT COUNT(*) FROM {$this->wishlists_table} WHERE wishlist_slug = %s AND user_id = %d",
+                    "SELECT COUNT(*) FROM " . esc_sql($this->wishlists_table) . " WHERE wishlist_slug = %s AND user_id = %d",
                     $slug,
                     $user_id
                 )
             );
+            // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         } else {
+            // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
             $exists = $this->wpdb->get_var(
                 $this->wpdb->prepare(
-                    "SELECT COUNT(*) FROM {$this->wishlists_table} WHERE wishlist_slug = %s",
+                    "SELECT COUNT(*) FROM " . esc_sql($this->wishlists_table) . " WHERE wishlist_slug = %s",
                     $slug
                 )
             );
+            // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         }
         
         return $exists > 0;
@@ -252,13 +258,15 @@ class WishCart_Wishlist_Handler {
      * @return array|null Wishlist data or null
      */
     public function get_wishlist($wishlist_id) {
+        // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         return $this->wpdb->get_row(
             $this->wpdb->prepare(
-                "SELECT * FROM {$this->wishlists_table} WHERE id = %d AND status = 'active'",
+                "SELECT * FROM " . esc_sql($this->wishlists_table) . " WHERE id = %d AND status = 'active'",
                 $wishlist_id
             ),
             ARRAY_A
         );
+        // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
     }
 
 
@@ -271,22 +279,26 @@ class WishCart_Wishlist_Handler {
      */
     public function get_wishlist_by_slug($slug, $user_id = null) {
         if ($user_id) {
+            // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
             return $this->wpdb->get_row(
                 $this->wpdb->prepare(
-                    "SELECT * FROM {$this->wishlists_table} WHERE wishlist_slug = %s AND user_id = %d AND status = 'active'",
+                    "SELECT * FROM " . esc_sql($this->wishlists_table) . " WHERE wishlist_slug = %s AND user_id = %d AND status = 'active'",
                     $slug,
                     $user_id
                 ),
                 ARRAY_A
             );
+            // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         } else {
+            // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
             return $this->wpdb->get_row(
                 $this->wpdb->prepare(
-                    "SELECT * FROM {$this->wishlists_table} WHERE wishlist_slug = %s AND status = 'active'",
+                    "SELECT * FROM " . esc_sql($this->wishlists_table) . " WHERE wishlist_slug = %s AND status = 'active'",
                     $slug
                 ),
                 ARRAY_A
             );
+            // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         }
     }
 
@@ -311,21 +323,25 @@ class WishCart_Wishlist_Handler {
         $wishlist = null;
 
         if ( $user_id ) {
+            // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
             $wishlist = $this->wpdb->get_row(
                 $this->wpdb->prepare(
-                    "SELECT * FROM {$this->wishlists_table} WHERE user_id = %d AND is_default = 1 AND status = 'active' LIMIT 1",
+                    "SELECT * FROM " . esc_sql($this->wishlists_table) . " WHERE user_id = %d AND is_default = 1 AND status = 'active' LIMIT 1",
                     $user_id
                 ),
                 ARRAY_A
             );
+            // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         } else {
+            // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
             $wishlist = $this->wpdb->get_row(
                 $this->wpdb->prepare(
-                    "SELECT * FROM {$this->wishlists_table} WHERE session_id = %s AND is_default = 1 AND status = 'active' LIMIT 1",
+                    "SELECT * FROM " . esc_sql($this->wishlists_table) . " WHERE session_id = %s AND is_default = 1 AND status = 'active' LIMIT 1",
                     $session_id
                 ),
                 ARRAY_A
             );
+            // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         }
 
         // Create default wishlist if it doesn't exist
@@ -356,21 +372,25 @@ class WishCart_Wishlist_Handler {
 
         // Free version: Only return the default wishlist
         if ( $user_id ) {
+            // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
             $wishlist = $this->wpdb->get_row(
                 $this->wpdb->prepare(
-                    "SELECT * FROM {$this->wishlists_table} WHERE user_id = %d AND is_default = 1 AND status = 'active' LIMIT 1",
+                    "SELECT * FROM " . esc_sql($this->wishlists_table) . " WHERE user_id = %d AND is_default = 1 AND status = 'active' LIMIT 1",
                     $user_id
                 ),
                 ARRAY_A
             );
+            // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         } else {
+            // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
             $wishlist = $this->wpdb->get_row(
                 $this->wpdb->prepare(
-                    "SELECT * FROM {$this->wishlists_table} WHERE session_id = %s AND is_default = 1 AND status = 'active' LIMIT 1",
+                    "SELECT * FROM " . esc_sql($this->wishlists_table) . " WHERE session_id = %s AND is_default = 1 AND status = 'active' LIMIT 1",
                     $session_id
                 ),
                 ARRAY_A
             );
+            // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         }
 
         return $wishlist ? array($wishlist) : array();
@@ -579,15 +599,17 @@ class WishCart_Wishlist_Handler {
 
         // Check for ANY existing row (not just active ones) to handle unique constraint properly
         // This prevents duplicate entry errors from race conditions or inactive rows
+        // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         $existing_item = $this->wpdb->get_row(
             $this->wpdb->prepare(
-                "SELECT item_id, status FROM {$this->items_table} WHERE wishlist_id = %d AND product_id = %d AND variation_id = %d LIMIT 1",
+                "SELECT item_id, status FROM " . esc_sql($this->items_table) . " WHERE wishlist_id = %d AND product_id = %d AND variation_id = %d LIMIT 1",
                 $wishlist_id,
                 $product_id,
                 $variation_id
             ),
             ARRAY_A
         );
+        // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
         // Get product price for tracking
         $original_price = $product->get_price();
@@ -602,12 +624,14 @@ class WishCart_Wishlist_Handler {
             }
 
             // If inactive, reactivate it and update product data
+            // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
             $max_position = $this->wpdb->get_var(
                 $this->wpdb->prepare(
-                    "SELECT MAX(position) FROM {$this->items_table} WHERE wishlist_id = %d",
+                    "SELECT MAX(position) FROM " . esc_sql($this->items_table) . " WHERE wishlist_id = %d",
                     $wishlist_id
                 )
             );
+            // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
             $position = ($max_position !== null) ? $max_position + 1 : 0;
 
             $update_data = array(
@@ -664,12 +688,14 @@ class WishCart_Wishlist_Handler {
         } else {
             // No existing row, insert new one
             // Get highest position for ordering
+            // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
             $max_position = $this->wpdb->get_var(
                 $this->wpdb->prepare(
-                    "SELECT MAX(position) FROM {$this->items_table} WHERE wishlist_id = %d",
+                    "SELECT MAX(position) FROM " . esc_sql($this->items_table) . " WHERE wishlist_id = %d",
                     $wishlist_id
                 )
             );
+            // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
             $position = ($max_position !== null) ? $max_position + 1 : 0;
 
             $data = array(
@@ -698,15 +724,17 @@ class WishCart_Wishlist_Handler {
                 if (strpos($last_error, 'Duplicate entry') !== false) {
                     // Race condition occurred - item was added between check and insert
                     // Query again to get the item_id
+                    // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
                     $existing_item = $this->wpdb->get_row(
                         $this->wpdb->prepare(
-                            "SELECT item_id FROM {$this->items_table} WHERE wishlist_id = %d AND product_id = %d AND variation_id = %d LIMIT 1",
+                            "SELECT item_id FROM " . esc_sql($this->items_table) . " WHERE wishlist_id = %d AND product_id = %d AND variation_id = %d LIMIT 1",
                             $wishlist_id,
                             $product_id,
                             $variation_id
                         ),
                         ARRAY_A
                     );
+                    // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
                     if ($existing_item) {
                         // Item exists now, update it to active if needed
                         $this->wpdb->update(
@@ -937,13 +965,15 @@ class WishCart_Wishlist_Handler {
      * @return array Array of items
      */
     public function get_wishlist_items($wishlist_id) {
+        // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         $items = $this->wpdb->get_results(
             $this->wpdb->prepare(
-                "SELECT * FROM {$this->items_table} WHERE wishlist_id = %d AND status = 'active' ORDER BY position ASC, date_added DESC",
+                "SELECT * FROM " . esc_sql($this->items_table) . " WHERE wishlist_id = %d AND status = 'active' ORDER BY position ASC, date_added DESC",
                 $wishlist_id
             ),
             ARRAY_A
         );
+        // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
         return $items ? $items : array();
     }
@@ -1027,14 +1057,16 @@ class WishCart_Wishlist_Handler {
             return false;
         }
 
+        // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         $count = $this->wpdb->get_var(
             $this->wpdb->prepare(
-                "SELECT COUNT(*) FROM {$this->items_table} WHERE wishlist_id = %d AND product_id = %d AND variation_id = %d AND status = 'active'",
+                "SELECT COUNT(*) FROM " . esc_sql($this->items_table) . " WHERE wishlist_id = %d AND product_id = %d AND variation_id = %d AND status = 'active'",
                 $default_wishlist['id'],
                 $product_id,
                 $variation_id
             )
         );
+        // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
         return ($count > 0);
     }
@@ -1052,13 +1084,15 @@ class WishCart_Wishlist_Handler {
         }
 
         // Get guest's default wishlist
+        // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         $guest_wishlist = $this->wpdb->get_row(
             $this->wpdb->prepare(
-                "SELECT * FROM {$this->wishlists_table} WHERE session_id = %s AND is_default = 1 AND status = 'active'",
+                "SELECT * FROM " . esc_sql($this->wishlists_table) . " WHERE session_id = %s AND is_default = 1 AND status = 'active'",
                 $session_id
             ),
             ARRAY_A
         );
+        // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
         if (!$guest_wishlist) {
             return true; // Nothing to sync

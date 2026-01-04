@@ -246,6 +246,7 @@ class WishCart_FluentCRM_Triggers {
             
             // Fire the action hook - BaseTrigger will catch this and call handle() for each active funnel
             // This matches the pattern used by fluent-booking: do_action('fluent_booking/after_booking_scheduled', $booking)
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is dynamically constructed from $trigger_key which is always prefixed with 'wishcart_'
             do_action( $action_hook, $trigger_data );
         }
 

@@ -564,7 +564,7 @@ class WishCart_FluentCRM_Integration {
 
             // Convert plain text body to HTML if needed
             $html_body = $body;
-            if (strip_tags($body) === $body) {
+            if (wp_strip_all_tags($body) === $body) {
                 // Plain text, convert to HTML
                 $html_body = '<html><body>' . nl2br(esc_html($body)) . '</body></html>';
             }
@@ -648,7 +648,7 @@ class WishCart_FluentCRM_Integration {
             // Method 5: Use FluentCRM action hook
             if (!$email_sent) {
                 try {
-                    do_action('fluentcrm_send_custom_email', array(
+                    do_action('wishcart_fluentcrm_send_custom_email', array(
                         'contact_id' => $contact_id,
                         'to' => $email_address,
                         'subject' => $subject,
@@ -708,17 +708,29 @@ class WishCart_FluentCRM_Integration {
         $wishlists_table = $wpdb->prefix . 'fc_wishlists';
         $items_table = $wpdb->prefix . 'fc_wishlist_items';
         
-        $wishlist_count = $wpdb->get_var($wpdb->prepare(
-            "SELECT COUNT(*) FROM {$wishlists_table} WHERE user_id = %d AND status = 'active'",
-            $user_id
-        ));
+        // Get wishlist count with caching
+        $wishlist_cache_key = 'wishcart_fluentcrm_wishlist_count_' . $user_id;
+        $wishlist_count = wp_cache_get($wishlist_cache_key, 'wishcart_fluentcrm');
         
-        $items_count = $wpdb->get_var($wpdb->prepare(
-            "SELECT COUNT(*) FROM {$items_table} wi
-            JOIN {$wishlists_table} w ON wi.wishlist_id = w.id
-            WHERE w.user_id = %d AND wi.status = 'active' AND w.status = 'active'",
-            $user_id
-        ));
+        if (false === $wishlist_count) {
+            $wishlist_query = "SELECT COUNT(*) FROM {$wishlists_table} WHERE user_id = %d AND status = 'active'";
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Query is prepared on next line, table name must be interpolated.
+            $wishlist_count = $wpdb->get_var($wpdb->prepare($wishlist_query, $user_id)); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,PluginCheck.Security.DirectDB.UnescapedDBParameter
+            wp_cache_set($wishlist_cache_key, $wishlist_count, 'wishcart_fluentcrm', 300);
+        }
+        
+        // Get items count with caching
+        $items_cache_key = 'wishcart_fluentcrm_items_count_' . $user_id;
+        $items_count = wp_cache_get($items_cache_key, 'wishcart_fluentcrm');
+        
+        if (false === $items_count) {
+            $items_query = "SELECT COUNT(*) FROM {$items_table} wi
+                JOIN {$wishlists_table} w ON wi.wishlist_id = w.id
+                WHERE w.user_id = %d AND wi.status = 'active' AND w.status = 'active'";
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Query is prepared on next line, table names must be interpolated.
+            $items_count = $wpdb->get_var($wpdb->prepare($items_query, $user_id)); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,PluginCheck.Security.DirectDB.UnescapedDBParameter
+            wp_cache_set($items_cache_key, $items_count, 'wishcart_fluentcrm', 300);
+        }
 
         // Prepare contact data
         $contact_data = array(

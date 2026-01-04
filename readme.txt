@@ -1,8 +1,8 @@
 === WishCart - Wishlist for FluentCart ===
-Contributors: wishcart, zrshishir, sabbirxprt
+Contributors: wishcart, sabbirxprt
 Tags: chatbot, live chat, customer support, live support, fluentcart
 Requires at least: 5.0
-Tested up to: 6.8
+Tested up to: 6.9
 Stable tag: 1.0.0
 Requires PHP: 7.4
 License: GPLv2 or later
@@ -162,13 +162,4 @@ This plugin uses modern development tools and follows WordPress coding standards
 == Support ==
 
 Visit [gowishcart.com](https://gowishcart.com) for documentation and support.
-
-## Privacy Policy 
-WishCart - Wishlist for FluentCart uses [Appsero](https://appsero.com) SDK to collect some telemetry data upon user's confirmation. This helps us to troubleshoot problems faster & make product improvements.
-
-Appsero SDK **does not gather any data by default.** The SDK only starts gathering basic telemetry data **when a user allows it via the admin notice**. We collect the data to ensure a great user experience for all our users. 
-
-Integrating Appsero SDK **DOES NOT IMMEDIATELY** start gathering data, **without confirmation from users in any case.**
-
-Learn more about how [Appsero collects and uses this data](https://appsero.com/privacy-policy/).
 

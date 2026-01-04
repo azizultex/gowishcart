@@ -373,14 +373,14 @@ class WishCart_Wishlist_Frontend {
         // Output generated CSS
         if ( ! empty( $css_parts ) ) {
             echo '<style id="wishcart-wishlist-generated-css">' . "\n";
-            echo implode( "\n", $css_parts ) . "\n";
+            echo esc_html( implode( "\n", $css_parts ) ) . "\n";
             echo '</style>' . "\n";
         }
         
         // Output custom CSS from text field
         $custom_css = isset( $wishlist_settings['custom_css'] ) ? $wishlist_settings['custom_css'] : '';
         if ( ! empty( $custom_css ) ) {
-            echo '<style id="wishcart-wishlist-custom-css">' . wp_strip_all_tags( $custom_css ) . '</style>' . "\n";
+            echo '<style id="wishcart-wishlist-custom-css">' . esc_html( wp_strip_all_tags( $custom_css ) ) . '</style>' . "\n";
         }
     }
 

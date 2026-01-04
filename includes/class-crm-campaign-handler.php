@@ -48,6 +48,7 @@ class WishCart_CRM_Campaign_Handler {
         $required_fields = array('wishlist_trigger_type', 'status');
         foreach ($required_fields as $field) {
             if (!isset($data[$field])) {
+                /* translators: %s: field name */
                 return new WP_Error('missing_field', sprintf(__('Missing required field: %s', 'wishcart'), $field));
             }
         }
@@ -153,11 +154,11 @@ class WishCart_CRM_Campaign_Handler {
      * @return array|null Campaign data or null
      */
     public function get_campaign($campaign_id) {
-        $campaign = $this->wpdb->get_row(
-            $this->wpdb->prepare(
-                "SELECT * FROM {$this->campaigns_table} WHERE campaign_id = %d",
-                $campaign_id
-            ),
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table name cannot be prepared.
+        $query = "SELECT * FROM {$this->campaigns_table} WHERE campaign_id = %d";
+        $campaign = $this->wpdb->get_row( // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Query is prepared on next line, table name must be interpolated.
+            $this->wpdb->prepare($query, $campaign_id),
             ARRAY_A
         );
 
@@ -187,9 +188,11 @@ class WishCart_CRM_Campaign_Handler {
             $params[] = $status;
         }
 
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table name cannot be prepared.
         $query = "SELECT * FROM {$this->campaigns_table} WHERE {$where} ORDER BY date_created DESC";
         
-        $campaigns = $this->wpdb->get_results(
+        $campaigns = $this->wpdb->get_results( // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Query is prepared on next line, table name must be interpolated.
             $this->wpdb->prepare($query, $params),
             ARRAY_A
         );
@@ -565,7 +568,7 @@ class WishCart_CRM_Campaign_Handler {
                 // Format price properly
                 if (function_exists('wc_price')) {
                     $formatted_price = wc_price($price);
-                    $price_text = strip_tags($formatted_price);
+                    $price_text = wp_strip_all_tags($formatted_price);
                 } else {
                     // Fallback formatting
                     $price_text = '$' . number_format($price, 2);
@@ -686,7 +689,7 @@ class WishCart_CRM_Campaign_Handler {
             if (!empty($price) && $price > 0) {
                 if (function_exists('wc_price')) {
                     $formatted_price = wc_price($price);
-                    $data['price'] = strip_tags($formatted_price);
+                    $data['price'] = wp_strip_all_tags($formatted_price);
                 } else {
                     $data['price'] = '$' . number_format($price, 2);
                 }
@@ -953,9 +956,11 @@ class WishCart_CRM_Campaign_Handler {
                     $product_url = isset($item_data['product_url']) ? $item_data['product_url'] : '';
                     $site_name = get_bloginfo('name');
                     
+                    /* translators: %s: product name */
                     $subject = sprintf(__('You added %s to your wishlist!', 'wishcart'), $product_name);
                     $body = sprintf(
-                        __('Hi there,%s%sGreat news! You just added "%s" to your wishlist.%s%sView Product: %s%s%sThank you for using %s!', 'wishcart'),
+                        /* translators: %1$s: newline after greeting, %2$s: newline before message, %3$s: product name, %4$s: newline after product message, %5$s: newline before link, %6$s: product URL, %7$s: newline after link, %8$s: newline before closing, %9$s: site name */
+                        __('Hi there,%1$s%2$sGreat news! You just added "%3$s" to your wishlist.%4$s%5$sView Product: %6$s%7$s%8$sThank you for using %9$s!', 'wishcart'),
                         "\n\n",
                         "\n",
                         $product_name,
@@ -1080,19 +1085,20 @@ class WishCart_CRM_Campaign_Handler {
         $items_table = $this->wpdb->prefix . 'fc_wishlist_items';
         $wishlists_table = $this->wpdb->prefix . 'fc_wishlists';
         
-        $query = $this->wpdb->prepare(
-            "SELECT wi.user_id, wi.wishlist_id, w.wishlist_name, DATEDIFF(NOW(), wi.date_added) as days_since_added
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table names cannot be prepared.
+        $query = "SELECT wi.user_id, wi.wishlist_id, w.wishlist_name, DATEDIFF(NOW(), wi.date_added) as days_since_added
             FROM {$items_table} wi
             JOIN {$wishlists_table} w ON wi.wishlist_id = w.id
             WHERE wi.status = 'active'
                 AND w.status = 'active'
                 AND wi.user_id IS NOT NULL
                 AND DATEDIFF(NOW(), wi.date_added) = %d
-            GROUP BY wi.user_id, wi.wishlist_id",
-            $days
-        );
+            GROUP BY wi.user_id, wi.wishlist_id";
 
-        return $this->wpdb->get_results($query, ARRAY_A);
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Query is prepared on next line, table names must be interpolated.
+        $prepared_query = $this->wpdb->prepare($query, $days);
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Query was prepared above.
+        return $this->wpdb->get_results($prepared_query, ARRAY_A); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
     }
 }
 

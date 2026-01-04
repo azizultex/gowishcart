@@ -99,15 +99,14 @@ class WishCart_Activity_Logger {
         $ip = null;
 
         if (isset($_SERVER['HTTP_CLIENT_IP']) && !empty($_SERVER['HTTP_CLIENT_IP'])) {
-            $ip = $_SERVER['HTTP_CLIENT_IP'];
+            $ip = sanitize_text_field(wp_unslash($_SERVER['HTTP_CLIENT_IP']));
         } elseif (isset($_SERVER['HTTP_X_FORWARDED_FOR']) && !empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+            $ip = sanitize_text_field(wp_unslash($_SERVER['HTTP_X_FORWARDED_FOR']));
         } elseif (isset($_SERVER['REMOTE_ADDR']) && !empty($_SERVER['REMOTE_ADDR'])) {
-            $ip = $_SERVER['REMOTE_ADDR'];
+            $ip = sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR']));
         }
 
         if ($ip) {
-            $ip = sanitize_text_field(wp_unslash($ip));
             // For IPv4, limit to 45 characters (IPv6 max length)
             $ip = substr($ip, 0, 45);
         }
@@ -124,9 +123,10 @@ class WishCart_Activity_Logger {
      * @return array Array of activities
      */
     public function get_wishlist_activities($wishlist_id, $limit = 50, $offset = 0) {
+        // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         $activities = $this->wpdb->get_results(
             $this->wpdb->prepare(
-                "SELECT * FROM {$this->activities_table}
+                "SELECT * FROM " . esc_sql($this->activities_table) . "
                 WHERE wishlist_id = %d
                 ORDER BY date_created DESC
                 LIMIT %d OFFSET %d",
@@ -136,6 +136,7 @@ class WishCart_Activity_Logger {
             ),
             ARRAY_A
         );
+        // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
         // Enrich activities with additional data
         $enriched_activities = array();
@@ -179,9 +180,10 @@ class WishCart_Activity_Logger {
      * @return array Array of activities
      */
     public function get_user_activities($user_id, $limit = 50, $offset = 0) {
+        // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         $activities = $this->wpdb->get_results(
             $this->wpdb->prepare(
-                "SELECT * FROM {$this->activities_table}
+                "SELECT * FROM " . esc_sql($this->activities_table) . "
                 WHERE user_id = %d
                 ORDER BY date_created DESC
                 LIMIT %d OFFSET %d",
@@ -191,6 +193,7 @@ class WishCart_Activity_Logger {
             ),
             ARRAY_A
         );
+        // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
         return $this->enrich_activities($activities);
     }
@@ -213,16 +216,19 @@ class WishCart_Activity_Logger {
 
         $params[] = $limit;
 
-        $activities = $this->wpdb->get_results(
+        // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter -- WHERE clause contains only hardcoded SQL fragments with placeholders, values are escaped via $wpdb->prepare()
+        $activities = $this->wpdb->get_results( // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter
             $this->wpdb->prepare(
-                "SELECT * FROM {$this->activities_table}
-                {$where}
+                "SELECT * FROM " . esc_sql($this->activities_table) . "
+                " . $where . "
                 ORDER BY date_created DESC
                 LIMIT %d",
                 ...$params
             ),
             ARRAY_A
         );
+        // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
         return $this->enrich_activities($activities);
     }
@@ -250,13 +256,15 @@ class WishCart_Activity_Logger {
             // Add wishlist name
             if ($activity['wishlist_id']) {
                 $wishlists_table = $this->wpdb->prefix . 'fc_wishlists';
+                // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
                 $wishlist = $this->wpdb->get_row(
                     $this->wpdb->prepare(
-                        "SELECT wishlist_name FROM {$wishlists_table} WHERE id = %d",
+                        "SELECT wishlist_name FROM " . esc_sql($wishlists_table) . " WHERE id = %d",
                         $activity['wishlist_id']
                     ),
                     ARRAY_A
                 );
+                // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
                 $enriched['wishlist_name'] = $wishlist ? $wishlist['wishlist_name'] : __('Unknown Wishlist', 'wishcart');
             }
 
@@ -311,16 +319,22 @@ class WishCart_Activity_Logger {
             SUM(CASE WHEN activity_type = 'shared' THEN 1 ELSE 0 END) as shared_count,
             SUM(CASE WHEN activity_type = 'viewed' THEN 1 ELSE 0 END) as viewed_count,
             SUM(CASE WHEN activity_type = 'purchased' THEN 1 ELSE 0 END) as purchased_count
-        FROM {$this->activities_table}
-        {$where}";
+        FROM " . esc_sql($this->activities_table) . "
+        " . $where;
 
         if (!empty($params)) {
-            $stats = $this->wpdb->get_row(
+            // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+            // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter -- WHERE clause contains only hardcoded SQL fragments with placeholders, values are escaped via $wpdb->prepare()
+            $stats = $this->wpdb->get_row( // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter
                 $this->wpdb->prepare($query, ...$params),
                 ARRAY_A
             );
+            // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         } else {
-            $stats = $this->wpdb->get_row($query, ARRAY_A);
+            // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+            // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter -- WHERE clause contains only hardcoded SQL fragments with placeholders, values are escaped via $wpdb->prepare()
+            $stats = $this->wpdb->get_row($query, ARRAY_A); // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter
+            // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         }
 
         return $stats ? $stats : array(
@@ -354,16 +368,19 @@ class WishCart_Activity_Logger {
             DATE(date_created) as activity_date,
             activity_type,
             COUNT(*) as count
-        FROM {$this->activities_table}
+        FROM " . esc_sql($this->activities_table) . "
         WHERE date_created >= DATE_SUB(NOW(), INTERVAL %d DAY)
-        {$where}
+        " . $where . "
         GROUP BY DATE(date_created), activity_type
         ORDER BY activity_date DESC, activity_type";
 
-        $results = $this->wpdb->get_results(
+        // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter -- WHERE clause contains only hardcoded SQL fragments with placeholders, values are escaped via $wpdb->prepare()
+        $results = $this->wpdb->get_results( // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter
             $this->wpdb->prepare($query, ...$params),
             ARRAY_A
         );
+        // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
         // Group by date
         $timeline = array();
@@ -399,9 +416,10 @@ class WishCart_Activity_Logger {
 
         if ($anonymize) {
             // Anonymize old activities (remove personal data)
+            // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
             $result = $this->wpdb->query(
                 $this->wpdb->prepare(
-                    "UPDATE {$this->activities_table}
+                    "UPDATE " . esc_sql($this->activities_table) . "
                     SET ip_address = NULL,
                         user_agent = NULL,
                         referrer_url = NULL
@@ -410,15 +428,18 @@ class WishCart_Activity_Logger {
                     $days
                 )
             );
+            // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         } else {
             // Delete old activities
+            // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
             $result = $this->wpdb->query(
                 $this->wpdb->prepare(
-                    "DELETE FROM {$this->activities_table}
+                    "DELETE FROM " . esc_sql($this->activities_table) . "
                     WHERE date_created < DATE_SUB(NOW(), INTERVAL %d DAY)",
                     $days
                 )
             );
+            // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         }
 
         $results['processed'] = $result !== false ? $result : 0;
@@ -453,6 +474,7 @@ class WishCart_Activity_Logger {
      * @return array User's activities
      */
     public function export_user_activities($user_id) {
+        // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         $activities = $this->wpdb->get_results(
             $this->wpdb->prepare(
                 "SELECT 
@@ -460,13 +482,14 @@ class WishCart_Activity_Logger {
                     object_type,
                     activity_data,
                     date_created
-                FROM {$this->activities_table}
+                FROM " . esc_sql($this->activities_table) . "
                 WHERE user_id = %d
                 ORDER BY date_created DESC",
                 $user_id
             ),
             ARRAY_A
         );
+        // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
         return $activities ? $activities : array();
     }

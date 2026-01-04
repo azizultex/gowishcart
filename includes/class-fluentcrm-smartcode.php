@@ -294,18 +294,22 @@ class WishCart_FluentCRM_SmartCode {
         $session_id = null;
 
         // If no user, try to find guest session
-        if ( ! $user_id && class_exists( 'wishcart_Guest_Handler' ) ) {
-            global $wpdb;
-            $guests_table = $wpdb->prefix . 'wishcart_guests';
-            $guest = $wpdb->get_row(
-                $wpdb->prepare(
-                    "SELECT session_id FROM {$guests_table} WHERE guest_email = %s ORDER BY created_at DESC LIMIT 1",
-                    $email
-                ),
-                ARRAY_A
-            );
-            if ( $guest ) {
-                $session_id = $guest['session_id'];
+        if ( ! $user_id && class_exists( 'WishCart_Guest_Handler' ) ) {
+            // Use cache to avoid repeated database queries
+            $cache_key = 'wishcart_guest_session_' . md5( $email );
+            $cached_session_id = wp_cache_get( $cache_key, 'wishcart_cache' );
+            
+            if ( false !== $cached_session_id ) {
+                $session_id = $cached_session_id;
+            } else {
+                $guest_handler = new WishCart_Guest_Handler();
+                $guest = $guest_handler->get_guest_by_email( $email );
+                
+                if ( $guest && isset( $guest['session_id'] ) ) {
+                    $session_id = $guest['session_id'];
+                    // Cache for 5 minutes
+                    wp_cache_set( $cache_key, $session_id, 'wishcart_cache', 300 );
+                }
             }
         }
 
@@ -353,7 +357,7 @@ class WishCart_FluentCRM_SmartCode {
         }
 
         if ( function_exists( 'wc_price' ) ) {
-            return strip_tags( wc_price( $price ) );
+            return wp_strip_all_tags( wc_price( $price ) );
         }
 
         return number_format( floatval( $price ), 2 );

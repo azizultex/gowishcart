@@ -2,7 +2,7 @@
 Contributors: aisk, zrshishir, sabbirxprt
 Tags: chatbot, live chat, customer support, live support, fluentcart
 Requires at least: 5.0
-Tested up to: 6.8
+Tested up to: 6.9
 Stable tag: 1.0.0
 Requires PHP: 7.4
 License: GPLv2 or later
@@ -171,5 +171,6 @@ Integrating Appsero SDK **DOES NOT IMMEDIATELY** start gathering data, **without
 
 Learn more about how [Appsero collects and uses this data](https://appsero.com/privacy-policy/).
 
-#   a i s k - a i - c h a t - f l u e n t c a r t  
+#   a i s k - a i - c h a t - f l u e n t c a r t 
+ 
  

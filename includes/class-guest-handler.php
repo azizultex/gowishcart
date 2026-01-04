@@ -44,7 +44,7 @@ class WishCart_Guest_Handler {
         // Get expiration date
         $settings = get_option('wishcart_settings', array());
         $expiry_days = isset($settings['wishlist']['guest_cookie_expiry']) ? intval($settings['wishlist']['guest_cookie_expiry']) : 30;
-        $date_expires = date('Y-m-d H:i:s', strtotime('+' . $expiry_days . ' days'));
+        $date_expires = gmdate('Y-m-d H:i:s', strtotime('+' . $expiry_days . ' days'));
 
         // Get IP address
         $ip_address = $this->get_client_ip();
@@ -118,15 +118,14 @@ class WishCart_Guest_Handler {
         $ip = null;
 
         if (isset($_SERVER['HTTP_CLIENT_IP']) && !empty($_SERVER['HTTP_CLIENT_IP'])) {
-            $ip = $_SERVER['HTTP_CLIENT_IP'];
+            $ip = sanitize_text_field(wp_unslash($_SERVER['HTTP_CLIENT_IP']));
         } elseif (isset($_SERVER['HTTP_X_FORWARDED_FOR']) && !empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+            $ip = sanitize_text_field(wp_unslash($_SERVER['HTTP_X_FORWARDED_FOR']));
         } elseif (isset($_SERVER['REMOTE_ADDR']) && !empty($_SERVER['REMOTE_ADDR'])) {
-            $ip = $_SERVER['REMOTE_ADDR'];
+            $ip = sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR']));
         }
 
         if ($ip) {
-            $ip = sanitize_text_field(wp_unslash($ip));
             $ip = substr($ip, 0, 45);
         }
 
@@ -140,13 +139,15 @@ class WishCart_Guest_Handler {
      * @return array|null Guest data or null
      */
     public function get_guest_by_session($session_id) {
+        // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared
         return $this->wpdb->get_row(
             $this->wpdb->prepare(
-                "SELECT * FROM {$this->guest_users_table} WHERE session_id = %s",
+                "SELECT * FROM " . esc_sql($this->guest_users_table) . " WHERE session_id = %s",
                 $session_id
             ),
             ARRAY_A
         );
+        // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
     }
 
     /**
@@ -156,13 +157,15 @@ class WishCart_Guest_Handler {
      * @return array|null Guest data or null
      */
     public function get_guest($guest_id) {
+        // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared
         return $this->wpdb->get_row(
             $this->wpdb->prepare(
-                "SELECT * FROM {$this->guest_users_table} WHERE guest_id = %d",
+                "SELECT * FROM " . esc_sql($this->guest_users_table) . " WHERE guest_id = %d",
                 $guest_id
             ),
             ARRAY_A
         );
+        // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
     }
 
     /**
@@ -172,13 +175,15 @@ class WishCart_Guest_Handler {
      * @return array|null Guest data or null
      */
     public function get_guest_by_email($email) {
+        // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared
         return $this->wpdb->get_row(
             $this->wpdb->prepare(
-                "SELECT * FROM {$this->guest_users_table} WHERE guest_email = %s ORDER BY date_created DESC LIMIT 1",
+                "SELECT * FROM " . esc_sql($this->guest_users_table) . " WHERE guest_email = %s ORDER BY date_created DESC LIMIT 1",
                 $email
             ),
             ARRAY_A
         );
+        // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
     }
 
     /**
@@ -194,13 +199,15 @@ class WishCart_Guest_Handler {
 
         $wishlists_table = $this->wpdb->prefix . 'fc_wishlists';
         
+        // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared
         $wishlists = $this->wpdb->get_results(
             $this->wpdb->prepare(
-                "SELECT * FROM {$wishlists_table} WHERE session_id = %s AND status = 'active' ORDER BY is_default DESC, dateadded DESC",
+                "SELECT * FROM " . esc_sql($wishlists_table) . " WHERE session_id = %s AND status = 'active' ORDER BY is_default DESC, dateadded DESC",
                 $session_id
             ),
             ARRAY_A
         );
+        // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
 
         return $wishlists ? $wishlists : array();
     }
@@ -374,7 +381,7 @@ class WishCart_Guest_Handler {
                 AVG(CASE WHEN conversion_user_id IS NOT NULL 
                     THEN TIMESTAMPDIFF(HOUR, date_created, NOW()) 
                     ELSE NULL END) as avg_hours_to_conversion
-            FROM {$this->guest_users_table}",
+            FROM " . esc_sql($this->guest_users_table),
             ARRAY_A
         );
 
@@ -396,9 +403,10 @@ class WishCart_Guest_Handler {
      * @return array Array of guests
      */
     public function get_active_guests($limit = 100) {
+        // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared
         $guests = $this->wpdb->get_results(
             $this->wpdb->prepare(
-                "SELECT * FROM {$this->guest_users_table}
+                "SELECT * FROM " . esc_sql($this->guest_users_table) . "
                 WHERE conversion_user_id IS NULL
                     AND (date_expires IS NULL OR date_expires > NOW())
                 ORDER BY last_activity DESC
@@ -407,6 +415,7 @@ class WishCart_Guest_Handler {
             ),
             ARRAY_A
         );
+        // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
 
         return $guests ? $guests : array();
     }
@@ -419,9 +428,10 @@ class WishCart_Guest_Handler {
      * @return array Array of converted guests
      */
     public function get_converted_guests($days = 30, $limit = 100) {
+        // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared
         $guests = $this->wpdb->get_results(
             $this->wpdb->prepare(
-                "SELECT * FROM {$this->guest_users_table}
+                "SELECT * FROM " . esc_sql($this->guest_users_table) . "
                 WHERE conversion_user_id IS NOT NULL
                     AND date_created >= DATE_SUB(NOW(), INTERVAL %d DAY)
                 ORDER BY date_created DESC
@@ -431,6 +441,7 @@ class WishCart_Guest_Handler {
             ),
             ARRAY_A
         );
+        // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
 
         return $guests ? $guests : array();
     }
@@ -450,7 +461,7 @@ class WishCart_Guest_Handler {
         if ($delete_data) {
             // Delete expired guest records and their wishlists
             $expired_sessions = $this->wpdb->get_col(
-                "SELECT session_id FROM {$this->guest_users_table}
+                "SELECT session_id FROM " . esc_sql($this->guest_users_table) . "
                 WHERE date_expires < NOW()
                     AND conversion_user_id IS NULL"
             );
@@ -469,7 +480,7 @@ class WishCart_Guest_Handler {
 
             // Delete guest records
             $result = $this->wpdb->query(
-                "DELETE FROM {$this->guest_users_table}
+                "DELETE FROM " . esc_sql($this->guest_users_table) . "
                 WHERE date_expires < NOW()
                     AND conversion_user_id IS NULL"
             );
@@ -504,9 +515,10 @@ class WishCart_Guest_Handler {
         );
 
         // Anonymize guest data (remove email, name, IP, user agent)
+        // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared
         $result = $this->wpdb->query(
             $this->wpdb->prepare(
-                "UPDATE {$this->guest_users_table}
+                "UPDATE " . esc_sql($this->guest_users_table) . "
                 SET guest_email = NULL,
                     guest_name = NULL,
                     ip_address = NULL,
@@ -516,6 +528,7 @@ class WishCart_Guest_Handler {
                 $days
             )
         );
+        // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
 
         $results['anonymized'] = $result !== false ? $result : 0;
 
@@ -529,34 +542,37 @@ class WishCart_Guest_Handler {
      * @return array Metrics
      */
     public function get_engagement_metrics($days = 30) {
+        // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared
         $metrics = $this->wpdb->get_row(
             $this->wpdb->prepare(
                 "SELECT 
                     COUNT(DISTINCT session_id) as unique_guests,
                     AVG(TIMESTAMPDIFF(MINUTE, date_created, last_activity)) as avg_session_duration_minutes,
                     COUNT(DISTINCT CASE WHEN wishlist_data IS NOT NULL THEN session_id END) as guests_with_items
-                FROM {$this->guest_users_table}
+                FROM " . esc_sql($this->guest_users_table) . "
                 WHERE date_created >= DATE_SUB(NOW(), INTERVAL %d DAY)",
                 $days
             ),
             ARRAY_A
         );
+        // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
 
         // Get wishlist statistics for guests
         $wishlists_table = $this->wpdb->prefix . 'fc_wishlists';
         $items_table = $this->wpdb->prefix . 'fc_wishlist_items';
 
+        // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared
         $wishlist_stats = $this->wpdb->get_row(
             $this->wpdb->prepare(
                 "SELECT 
                     COUNT(DISTINCT w.id) as guest_wishlists,
                     COUNT(wi.item_id) as total_items,
                     AVG(item_counts.item_count) as avg_items_per_wishlist
-                FROM {$wishlists_table} w
-                LEFT JOIN {$items_table} wi ON w.id = wi.wishlist_id
+                FROM " . esc_sql($wishlists_table) . " w
+                LEFT JOIN " . esc_sql($items_table) . " wi ON w.id = wi.wishlist_id
                 LEFT JOIN (
                     SELECT wishlist_id, COUNT(*) as item_count
-                    FROM {$items_table}
+                    FROM " . esc_sql($items_table) . "
                     WHERE status = 'active'
                     GROUP BY wishlist_id
                 ) item_counts ON w.id = item_counts.wishlist_id
@@ -568,6 +584,7 @@ class WishCart_Guest_Handler {
             ),
             ARRAY_A
         );
+        // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
 
         return array(
             'unique_guests' => intval($metrics['unique_guests']),
