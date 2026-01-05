@@ -24,7 +24,7 @@ class wishcart_Notifications_Handler {
     public function __construct() {
         global $wpdb;
         $this->wpdb = $wpdb;
-        $this->notifications_table = $wpdb->prefix . 'fc_wishlist_notifications';
+        $this->notifications_table = $wpdb->prefix . 'wc_wishlist_notifications';
         
         // Initialize FluentCRM integration if available
         if (class_exists('WishCart_FluentCRM_Integration')) {
@@ -546,8 +546,8 @@ class wishcart_Notifications_Handler {
         );
 
         // Get all active wishlist items with prices
-        $items_table = $this->wpdb->prefix . 'fc_wishlist_items';
-        $wishlists_table = $this->wpdb->prefix . 'fc_wishlists';
+        $items_table = $this->wpdb->prefix . 'wc_wishlist_items';
+        $wishlists_table = $this->wpdb->prefix . 'wc_wishlists';
 
         // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         $items = $this->wpdb->get_results(
@@ -640,8 +640,8 @@ class wishcart_Notifications_Handler {
         );
 
         // Get all wishlist items
-        $items_table = $this->wpdb->prefix . 'fc_wishlist_items';
-        $wishlists_table = $this->wpdb->prefix . 'fc_wishlists';
+        $items_table = $this->wpdb->prefix . 'wc_wishlist_items';
+        $wishlists_table = $this->wpdb->prefix . 'wc_wishlists';
 
         // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         $items = $this->wpdb->get_results(

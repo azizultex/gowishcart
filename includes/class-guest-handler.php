@@ -23,7 +23,7 @@ class WishCart_Guest_Handler {
     public function __construct() {
         global $wpdb;
         $this->wpdb = $wpdb;
-        $this->guest_users_table = $wpdb->prefix . 'fc_wishlist_guest_users';
+        $this->guest_users_table = $wpdb->prefix . 'wc_wishlist_guest_users';
     }
 
     /**
@@ -197,7 +197,7 @@ class WishCart_Guest_Handler {
             return array();
         }
 
-        $wishlists_table = $this->wpdb->prefix . 'fc_wishlists';
+        $wishlists_table = $this->wpdb->prefix . 'wc_wishlists';
         
         // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared
         $wishlists = $this->wpdb->get_results(
@@ -335,7 +335,7 @@ class WishCart_Guest_Handler {
         }
 
         // Update wishlists to use user_id instead of session_id
-        $wishlists_table = $this->wpdb->prefix . 'fc_wishlists';
+        $wishlists_table = $this->wpdb->prefix . 'wc_wishlists';
         $this->wpdb->update(
             $wishlists_table,
             array(
@@ -468,7 +468,7 @@ class WishCart_Guest_Handler {
 
             foreach ($expired_sessions as $session_id) {
                 // Delete guest wishlists
-                $wishlists_table = $this->wpdb->prefix . 'fc_wishlists';
+                $wishlists_table = $this->wpdb->prefix . 'wc_wishlists';
                 $this->wpdb->update(
                     $wishlists_table,
                     array('status' => 'deleted'),
@@ -558,8 +558,8 @@ class WishCart_Guest_Handler {
         // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
 
         // Get wishlist statistics for guests
-        $wishlists_table = $this->wpdb->prefix . 'fc_wishlists';
-        $items_table = $this->wpdb->prefix . 'fc_wishlist_items';
+        $wishlists_table = $this->wpdb->prefix . 'wc_wishlists';
+        $items_table = $this->wpdb->prefix . 'wc_wishlist_items';
 
         // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared
         $wishlist_stats = $this->wpdb->get_row(
@@ -630,7 +630,7 @@ class WishCart_Guest_Handler {
      */
     public function delete_guest_data($session_id) {
         // Delete guest wishlists
-        $wishlists_table = $this->wpdb->prefix . 'fc_wishlists';
+        $wishlists_table = $this->wpdb->prefix . 'wc_wishlists';
         $this->wpdb->update(
             $wishlists_table,
             array('status' => 'deleted'),

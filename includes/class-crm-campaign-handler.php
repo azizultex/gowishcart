@@ -24,7 +24,7 @@ class WishCart_CRM_Campaign_Handler {
     public function __construct() {
         global $wpdb;
         $this->wpdb = $wpdb;
-        $this->campaigns_table = $wpdb->prefix . 'fc_wishlist_crm_campaigns';
+        $this->campaigns_table = $wpdb->prefix . 'wc_wishlist_crm_campaigns';
         
         // Initialize FluentCRM integration
         if (class_exists('WishCart_FluentCRM_Integration')) {
@@ -1082,8 +1082,8 @@ class WishCart_CRM_Campaign_Handler {
             }
         }
 
-        $items_table = $this->wpdb->prefix . 'fc_wishlist_items';
-        $wishlists_table = $this->wpdb->prefix . 'fc_wishlists';
+        $items_table = $this->wpdb->prefix . 'wc_wishlist_items';
+        $wishlists_table = $this->wpdb->prefix . 'wc_wishlists';
         
         // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table names cannot be prepared.
         $query = "SELECT wi.user_id, wi.wishlist_id, w.wishlist_name, DATEDIFF(NOW(), wi.date_added) as days_since_added

@@ -158,13 +158,13 @@ class WishCart_Database_Migration {
 
         // Drop new tables
         $new_tables = array(
-            'fc_wishlists',
-            'fc_wishlist_items',
-            'fc_wishlist_shares',
-            'fc_wishlist_analytics',
-            'fc_wishlist_notifications',
-            'fc_wishlist_activities',
-            'fc_wishlist_guest_users',
+            'wc_wishlists',
+            'wc_wishlist_items',
+            'wc_wishlist_shares',
+            'wc_wishlist_analytics',
+            'wc_wishlist_notifications',
+            'wc_wishlist_activities',
+            'wc_wishlist_guest_users',
         );
 
         foreach ($new_tables as $new_table) {

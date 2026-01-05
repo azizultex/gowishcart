@@ -26,8 +26,8 @@ class WishCart_Wishlist_Handler {
     public function __construct() {
         global $wpdb;
         $this->wpdb = $wpdb;
-        $this->wishlists_table = $wpdb->prefix . 'fc_wishlists';
-        $this->items_table = $wpdb->prefix . 'fc_wishlist_items';
+        $this->wishlists_table = $wpdb->prefix . 'wc_wishlists';
+        $this->items_table = $wpdb->prefix . 'wc_wishlist_items';
     }
 
     /**
@@ -1178,7 +1178,7 @@ class WishCart_Wishlist_Handler {
 
     /**
      * Update guest user tracking
-     * Creates or updates guest record in wp_fc_wishlist_guest_users table
+     * Creates or updates guest record in wp_wc_wishlist_guest_users table
      *
      * @param string $session_id Session ID
      * @param int $wishlist_id Wishlist ID to add to guest tracking

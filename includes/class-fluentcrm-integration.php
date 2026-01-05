@@ -705,8 +705,8 @@ class WishCart_FluentCRM_Integration {
 
         // Get wishlist stats
         global $wpdb;
-        $wishlists_table = $wpdb->prefix . 'fc_wishlists';
-        $items_table = $wpdb->prefix . 'fc_wishlist_items';
+        $wishlists_table = $wpdb->prefix . 'wc_wishlists';
+        $items_table = $wpdb->prefix . 'wc_wishlist_items';
         
         // Get wishlist count with caching
         $wishlist_cache_key = 'wishcart_fluentcrm_wishlist_count_' . $user_id;

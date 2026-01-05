@@ -228,7 +228,6 @@ class WishCart_Wishlist {
         // Analytics handler is a Pro feature - removed from free version
         // Sharing handler is a Pro feature - removed from free version
         include_once WishCart_PLUGIN_DIR . 'includes/class-notifications-handler.php';
-        include_once WishCart_PLUGIN_DIR . 'includes/class-activity-logger.php';
         include_once WishCart_PLUGIN_DIR . 'includes/class-guest-handler.php';
         include_once WishCart_PLUGIN_DIR . 'includes/class-cron-handler.php';
         
