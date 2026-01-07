@@ -55,7 +55,7 @@ WishCart is built from the ground up for FluentCart stores:
 * **Analytics tracking** - Track wishlist performance and conversion metrics (Pro feature)
 
 = 📞 Support =
-If you have any questions or need assistance, please visit our [support forum](https://wordpress.org/support/plugin/wishcart/) or [contact us directly](https://gowishcart.com/support/).
+For free plugin support, please visit the [WordPress.org support forum](https://wordpress.org/support/plugin/wishcart/). Commercial support for WishCart Pro is available at [gowishcart.com](https://gowishcart.com).
 = 📝 License =
 This project is licensed under the GPL-2.0+ License - see the LICENSE file for details.
 
@@ -117,6 +117,23 @@ This plugin uses modern development tools and follows WordPress coding standards
 12. Wishlist shortcode usage
 13. FluentCRM automation triggers
 
+== Third-Party Services ==
+
+This plugin uses the following third-party libraries and services:
+
+* **Smalot/PdfParser** - PDF text extraction library
+  * License: LGPL-3.0
+  * Repository: https://github.com/smalot/pdfparser
+  * Terms: https://github.com/smalot/pdfparser/blob/master/LICENSE
+
+* **FluentCRM** - Email marketing automation (optional integration)
+  * Plugin: https://wordpress.org/plugins/fluent-crm/
+  * Terms of Service: https://fluentcrm.com/terms/
+
+* **FluentCart** - Ecommerce platform (required dependency)
+  * Plugin: https://wordpress.org/plugins/fluent-cart/
+  * Terms of Service: https://fluentcart.com/terms/
+
 == Installation ==
 
 1. Upload the plugin files to the `/wp-content/plugins/wishcart` directory, or install the plugin through the WordPress plugins screen directly.
@@ -133,5 +150,5 @@ This plugin uses modern development tools and follows WordPress coding standards
 
 == Support ==
 
-Visit [gowishcart.com](https://gowishcart.com) for documentation and support.
+For free plugin support, please visit the [WordPress.org support forum](https://wordpress.org/support/plugin/wishcart/). Commercial support for WishCart Pro is available at [gowishcart.com](https://gowishcart.com).
 
