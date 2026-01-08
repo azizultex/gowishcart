@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
 /**
  * Trait Cache_Handler
  * Provides common caching functionality for database queries

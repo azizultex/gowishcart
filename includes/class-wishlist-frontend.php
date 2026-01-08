@@ -25,8 +25,8 @@ class WishCart_Wishlist_Frontend {
         // Enqueue scripts and styles
         add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
         
-        // Output custom CSS
-        add_action( 'wp_head', array( $this, 'output_custom_css' ) );
+        // Output custom CSS (after styles are enqueued)
+        add_action( 'wp_enqueue_scripts', array( $this, 'output_custom_css' ), 20 );
         
         // Hook into FluentCart product display
         $this->add_product_hooks();
@@ -370,17 +370,25 @@ class WishCart_Wishlist_Frontend {
             }
         }
         
-        // Output generated CSS
+        // Ensure the style is enqueued first
+        wp_enqueue_style(
+            'wishcart-wishlist-frontend',
+            WishCart_PLUGIN_URL . 'build/wishlist-frontend.css',
+            array(),
+            WishCart_VERSION
+        );
+        
+        // Output generated CSS using wp_add_inline_style
         if ( ! empty( $css_parts ) ) {
-            echo '<style id="wishcart-wishlist-generated-css">' . "\n";
-            echo esc_html( implode( "\n", $css_parts ) ) . "\n";
-            echo '</style>' . "\n";
+            $generated_css = implode( "\n", $css_parts );
+            wp_add_inline_style( 'wishcart-wishlist-frontend', $generated_css );
         }
         
-        // Output custom CSS from text field
+        // Output custom CSS from text field using wp_add_inline_style
         $custom_css = isset( $wishlist_settings['custom_css'] ) ? $wishlist_settings['custom_css'] : '';
         if ( ! empty( $custom_css ) ) {
-            echo '<style id="wishcart-wishlist-custom-css">' . esc_html( wp_strip_all_tags( $custom_css ) ) . '</style>' . "\n";
+            $sanitized_css = wp_strip_all_tags( $custom_css );
+            wp_add_inline_style( 'wishcart-wishlist-frontend', $sanitized_css );
         }
     }
 

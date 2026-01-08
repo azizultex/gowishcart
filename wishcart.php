@@ -3,7 +3,7 @@
 /**
  * Plugin Name:  WishCart - Wishlist for FluentCart
  * Plugin URI:  https://gowishcart.com
- * Description: Advanced wishlist plugin for FluentCart with multiple wishlists, social sharing, analytics tracking, price drop alerts, FluentCRM integration, and guest support. Boost sales with smart notifications and conversion tracking.
+ * Description: Wishlist plugin for FluentCart with guest support, product variations, price drop alerts, and FluentCRM integration.
  * Version:     1.0.0
  * Requires PHP: 7.4
  * Author:      WishCart Team <support@gowishcart.com>
@@ -26,16 +26,6 @@
  */
 
 
-if (defined('WP_DEBUG') && WP_DEBUG) {
-    ob_start();
-    register_activation_hook(__FILE__, function() {
-        $output = ob_get_contents();
-        if (!empty($output)) {
-            // Silent handling of activation output in production
-            return;
-        }
-    });
-}
 
 if ( ! defined('ABSPATH') ) {
 	exit;

@@ -2,10 +2,21 @@ import React from 'react';
 import { __ } from '@wordpress/i18n';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { LifeBuoy, MessageCircle, BookOpen, Mail } from 'lucide-react';
+import { LifeBuoy, MessageCircle, BookOpen, Mail, HelpCircle } from 'lucide-react';
 
 const SupportResources = () => {
-    const resources = [
+    // WordPress.org forum support - PRIMARY option for free users
+    const wordpressForumResource = {
+        icon: HelpCircle,
+        title: __('WordPress.org Support Forum', 'wishcart'),
+        description: __('Get free support from the community. Post your questions and get help from other users and our team.', 'wishcart'),
+        actionLabel: __('Visit Support Forum', 'wishcart'),
+        href: 'https://wordpress.org/support/plugin/wishcart/',
+        isPrimary: true,
+    };
+
+    // Commercial/Pro support resources
+    const commercialResources = [
         {
             icon: BookOpen,
             title: __('Documentation', 'wishcart'),
@@ -22,58 +33,88 @@ const SupportResources = () => {
         },
         {
             icon: LifeBuoy,
-            title: __('Priority Support', 'wishcart'),
-            description: __('Need help? Start a live chat and our team will assist you.', 'wishcart'),
-            actionLabel: __('Chat With Us', 'wishcart'),
+            title: __('Commercial Support (Pro)', 'wishcart'),
+            description: __('Priority support for WishCart Pro users. Start a live chat and our team will assist you.', 'wishcart'),
+            actionLabel: __('Get Pro Support', 'wishcart'),
             href: 'https://gowishcart.com/support',
         },
     ];
 
+    const WordPressIcon = wordpressForumResource.icon;
+    
     return (
-        <div className="grid gap-6 md:grid-cols-2">
-            {resources.map((resource) => {
-                const Icon = resource.icon;
-                return (
-                    <Card key={resource.title}>
-                        <CardHeader className="flex flex-row items-center gap-3">
-                            <span className="rounded-full bg-blue-50 p-2 text-blue-600">
-                                <Icon className="h-5 w-5" />
-                            </span>
-                            <div>
-                                <CardTitle>{resource.title}</CardTitle>
-                                <CardDescription>{resource.description}</CardDescription>
-                            </div>
-                        </CardHeader>
-                        <CardContent>
-                            <Button asChild variant="outline">
-                                <a href={resource.href} target="_blank" rel="noopener noreferrer">
-                                    {resource.actionLabel}
-                                </a>
-                            </Button>
-                        </CardContent>
-                    </Card>
-                );
-            })}
-
-            <Card className="md:col-span-2">
-                <CardHeader>
-                    <CardTitle>{__('Email Support', 'wishcart')}</CardTitle>
-                    <CardDescription>{__('Prefer email? Send us a message and we will respond within one business day.', 'wishcart')}</CardDescription>
-                </CardHeader>
-                <CardContent className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                    <div className="flex items-center gap-2">
-                        <Mail className="h-5 w-5 text-blue-500" />
-                        <a className="text-lg font-medium" href="mailto:support@gowishcart.com">
-                            support@gowishcart.com
-                        </a>
+        <div className="grid gap-6">
+            {/* WordPress.org Support Forum - PRIMARY and most prominent */}
+            <Card className="border-2 border-blue-200 bg-blue-50">
+                <CardHeader className="flex flex-row items-center gap-3">
+                    <span className="rounded-full bg-blue-600 p-2 text-white">
+                        <WordPressIcon className="h-5 w-5" />
+                    </span>
+                    <div className="flex-1">
+                        <CardTitle className="text-lg">{wordpressForumResource.title}</CardTitle>
+                        <CardDescription>{wordpressForumResource.description}</CardDescription>
                     </div>
-                    <Button asChild>
-                        <a href="mailto:support@gowishcart.com">
-                            {__('Send Email', 'wishcart')}
+                </CardHeader>
+                <CardContent>
+                    <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
+                        <a href={wordpressForumResource.href} target="_blank" rel="noopener noreferrer">
+                            {wordpressForumResource.actionLabel}
                         </a>
                     </Button>
                 </CardContent>
             </Card>
+
+            {/* Commercial Support Section - Clearly labeled as Pro/Commercial */}
+            <div className="mt-4">
+                <h3 className="text-sm font-semibold text-gray-700 mb-4">
+                    {__('Commercial Support (WishCart Pro Users)', 'wishcart')}
+                </h3>
+                <div className="grid gap-6 md:grid-cols-2">
+                    {commercialResources.map((resource) => {
+                        const Icon = resource.icon;
+                        return (
+                            <Card key={resource.title}>
+                                <CardHeader className="flex flex-row items-center gap-3">
+                                    <span className="rounded-full bg-gray-50 p-2 text-gray-600">
+                                        <Icon className="h-5 w-5" />
+                                    </span>
+                                    <div>
+                                        <CardTitle>{resource.title}</CardTitle>
+                                        <CardDescription>{resource.description}</CardDescription>
+                                    </div>
+                                </CardHeader>
+                                <CardContent>
+                                    <Button asChild variant="outline">
+                                        <a href={resource.href} target="_blank" rel="noopener noreferrer">
+                                            {resource.actionLabel}
+                                        </a>
+                                    </Button>
+                                </CardContent>
+                            </Card>
+                        );
+                    })}
+
+                    <Card className="md:col-span-2">
+                        <CardHeader>
+                            <CardTitle>{__('Email Support (Pro Users)', 'wishcart')}</CardTitle>
+                            <CardDescription>{__('Commercial email support for WishCart Pro users. We will respond within one business day.', 'wishcart')}</CardDescription>
+                        </CardHeader>
+                        <CardContent className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                            <div className="flex items-center gap-2">
+                                <Mail className="h-5 w-5 text-gray-500" />
+                                <a className="text-lg font-medium" href="mailto:support@gowishcart.com">
+                                    support@gowishcart.com
+                                </a>
+                            </div>
+                            <Button asChild variant="outline">
+                                <a href="mailto:support@gowishcart.com">
+                                    {__('Send Email', 'wishcart')}
+                                </a>
+                            </Button>
+                        </CardContent>
+                    </Card>
+                </div>
+            </div>
         </div>
     );
 };

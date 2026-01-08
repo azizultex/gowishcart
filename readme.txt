@@ -7,17 +7,17 @@ Stable tag: 1.0.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
-Advanced wishlist plugin for FluentCart with guest support, product variations, FluentCRM integration, price drop alerts, and smart notifications to boost sales.
+Wishlist plugin for FluentCart with guest support, product variations, FluentCRM integration, price drop alerts, and notifications.
 == Description ==
-The wishlist is one of the most powerful and popular tools in an ecommerce shop. Thanks to the wishlist, users can:
+Wishlists are popular tools in ecommerce shops. Thanks to the wishlist, users can:
 
 * Save their favourite products, find them quickly and easily at a later time and buy them.
 * Share the wishlist with relatives and friends for Christmas, birthdays and similar occasions so they can buy them one of the products from the list.
 * Share the wishlist on social networks and get indirect advertising for your store.
 
-This means that you'll be able to loyalise customers, push them to buy and attract new customers any time a wishlist is shared. Not bad for one plugin only, don't you think?
+This means that you'll be able to loyalise customers, push them to buy and attract new customers any time a wishlist is shared.
 
-**WishCart** is a powerful wishlist plugin built specifically for **FluentCart** stores. With seamless integration, advanced features, and smart automation, WishCart helps you increase customer engagement and boost sales.
+**WishCart** is a wishlist plugin built specifically for **FluentCart** stores. With seamless integration and automation features, WishCart helps you increase customer engagement.
 
 == Why Choose WishCart? ==
 * 💯 **WishCart is FREE!** - Core features available at no cost
