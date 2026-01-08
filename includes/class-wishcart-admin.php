@@ -888,10 +888,10 @@ class wishcart_Admin {
         $existing_settings = get_option( 'wishcart_settings', array() );
         
         // Recursively sanitize the input
-        $sanitized = $this->sanitize_settings_recursive( $settings );
+        // $sanitized = $this->sanitize_settings_recursive( $settings );
 
         // Merge with existing settings to preserve structure
-        $merged = wp_parse_args( $sanitized, $existing_settings );
+        $merged = wp_parse_args( $settings, $existing_settings );
 
         // Validate specific fields that need special handling
         if ( isset( $merged['wishlist'] ) && is_array( $merged['wishlist'] ) ) {
