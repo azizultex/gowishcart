@@ -12,7 +12,6 @@
 .distignore export-ignore
 .babelrc export-ignore
 package-lock.json export-ignore
-package.json export-ignore
 phpcs.xml export-ignore
 tsconfig.json export-ignore
 report.txt export-ignore

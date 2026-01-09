@@ -25,7 +25,11 @@ class WishCart_Uninstaller {
      */
     public function __construct() {
         $this->tables = [
-            'WishCart_Wishlist',
+            'wc_wishlists',
+            'wc_wishlist_items',
+            'wc_wishlist_notifications',
+            'wc_wishlist_guest_users',
+            'wc_wishlist_crm_campaigns',
         ];
 
         $this->options = [

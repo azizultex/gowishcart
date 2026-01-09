@@ -6,6 +6,7 @@
  * Description: Wishlist plugin for FluentCart with guest support, product variations, price drop alerts, and FluentCRM integration.
  * Version:     1.0.0
  * Requires PHP: 7.4
+ * Requires Plugins: fluent-cart
  * Author:      WishCart Team <support@gowishcart.com>
  * Author URI:  https://gowishcart.com/
  * Contributors: wishcart, zrshishir, sabbirxprt
@@ -20,9 +21,6 @@
  * @license  GPL-2.0+ http://www.gnu.org/licenses/gpl-2.0.txt
  * @link     https://gowishcart.com
  *
- * Third-party Libraries:
- * - Smalot/PdfParser: Required for PDF text extraction and processing
- 
  */
 
 
@@ -157,7 +155,7 @@ class WishCart_Wishlist {
         );
 
         // Check if plugin is installed but not active
-        $is_installed = file_exists( WP_PLUGIN_DIR . '/' . $plugin_file );
+        $is_installed = file_exists( trailingslashit( WP_PLUGIN_DIR ) . $plugin_file );
         
         ?>
         <div class="notice notice-error">

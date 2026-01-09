@@ -666,134 +666,75 @@ class wishcart_Admin {
     }
 
     public function install_fluentcart() {
-        if ( ! WishCart_FluentCart_Helper::is_fluentcart_active() ) {
+        // Include plugin.php for is_plugin_active() checks
+        if ( ! function_exists( 'is_plugin_active' ) ) {
             require_once ABSPATH . 'wp-admin/includes/plugin.php';
-            require_once ABSPATH . 'wp-admin/includes/plugin-install.php';
-            require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
-            require_once ABSPATH . 'wp-admin/includes/class-plugin-upgrader.php';
-            require_once ABSPATH . 'wp-admin/includes/file.php';
+        }
 
-            try {
-                // First, check if FluentCart might already be installed in various locations
-                // Note: WordPress.org plugin uses 'fluent-cart' slug, so the directory is likely 'fluent-cart'
-                $possible_paths = [
-                    'fluent-cart/fluent-cart.php', // WordPress.org version
-                    'fluentcart/fluentcart.php',
-                    'fluentcart-pro/fluentcart-pro.php',
-                ];
-                
-                $found_path = null;
-                foreach ( $possible_paths as $path ) {
-                    if ( file_exists( WP_PLUGIN_DIR . '/' . $path ) ) {
-                        $found_path = $path;
-                        break;
-                    }
-                }
-                
-                // If FluentCart is not found, try to install it
-                if ( ! $found_path ) {
-                    // Get FluentCart download URL from WordPress repository
-                    // Note: The WordPress.org slug is 'fluent-cart' (with hyphen)
-                    $api = plugins_api('plugin_information', array(
-                        'slug' => 'fluent-cart',
-                        'fields' => array( 'download_link' => true ),
-                    ));
+        // Clear detection cache to ensure we get the latest status
+        WishCart_FluentCart_Helper::clear_detection_cache();
+        
+        // Check current status
+        $is_active = WishCart_FluentCart_Helper::is_fluentcart_active();
 
-                    if ( is_wp_error($api) ) {
-                        // If primary slug fails, try alternative slug
-                        $api = plugins_api('plugin_information', array(
-                            'slug' => 'fluentcart',
-                            'fields' => array( 'download_link' => true ),
-                        ));
-                    }
-
-                    if ( is_wp_error($api) ) {
-                        // Both slugs failed - provide helpful error message with manual installation instructions
-                        $error_message = sprintf(
-                            // translators: %s: URL to the FluentCart plugin page on WordPress.org
-                            __(
-                                'FluentCart could not be automatically installed from the WordPress repository. Please install FluentCart manually: 1. Go to %s and download FluentCart. 2. Go to WordPress Admin > Plugins > Add New > Upload Plugin. 3. Upload the FluentCart zip file. 4. Activate the plugin. 5. Click the "Refresh" button here to detect it. Alternatively, if FluentCart is already installed but not detected, click "Refresh" to re-check.',
-                                'wishcart'
-                            ),
-                            'https://wordpress.org/plugins/fluent-cart/'
-                        );
-                        return new WP_Error( 'api_error', $error_message );
-                    }
-
-                    // Install FluentCart
-                    $skin = new WP_Ajax_Upgrader_Skin();
-                    $upgrader = new Plugin_Upgrader($skin);
-                    $result = $upgrader->install($api->download_link);
-
-                    if ( is_wp_error($result) ) {
-                        return new WP_Error('installation_failed', $result->get_error_message());
-                    }
-                    
-                    // After installation, try to find the installed path
-                    foreach ( $possible_paths as $path ) {
-                        if ( file_exists( WP_PLUGIN_DIR . '/' . $path ) ) {
-                            $found_path = $path;
-                            break;
-                        }
-                    }
-                    
-                    if ( ! $found_path ) {
-                        return new WP_Error(
-                            'installation_failed',
-                            __(
-                                'FluentCart was installed but could not be found. Please check the plugins directory and activate it manually, then click "Refresh".',
-                                'wishcart'
-                            )
-                        );
-                    }
-                }
-                
-                // Note: We cannot automatically activate plugins per WordPress guidelines
-                // The plugin has been installed, but the user must activate it manually
-                if ( ! is_plugin_active($found_path) ) {
-                    return new WP_Error(
-                        'activation_required',
-                        sprintf(
-                            // translators: %s: Plugin activation URL
-                            __(
-                                'FluentCart has been installed successfully. Please <a href="%s">activate it manually</a>, then click "Refresh" to continue.',
-                                'wishcart'
-                            ),
-                            esc_url( wp_nonce_url(
-                                admin_url( 'plugins.php?action=activate&plugin=' . urlencode( $found_path ) ),
-                                'activate-plugin_' . $found_path
-                            ) )
-                        )
-                    );
-                }
-
-                // Clear detection cache after installation
-                WishCart_FluentCart_Helper::clear_detection_cache();
-                
-                // Force reload of plugin cache if needed
-                wp_cache_flush();
-                
-                // Re-check status after activation
-                $is_active = WishCart_FluentCart_Helper::is_fluentcart_active();
-
-                return array(
-                    'success' => true,
-                    'message' => $is_active ? 'FluentCart installed and activated successfully' : 'FluentCart installed. Please click "Refresh" to update status.',
-                    'isActive' => $is_active,
-                );
-
-            } catch ( Exception $e ) {
-                return new WP_Error('installation_error', $e->getMessage());
+        // Check if FluentCart is installed but not active
+        $possible_paths = [
+            'fluent-cart/fluent-cart.php', // WordPress.org version
+            'fluentcart/fluentcart.php',
+            'fluentcart-pro/fluentcart-pro.php',
+        ];
+        
+        $found_path = null;
+        foreach ( $possible_paths as $path ) {
+            if ( file_exists( trailingslashit( WP_PLUGIN_DIR ) . $path ) ) {
+                $found_path = $path;
+                break;
             }
         }
 
-        // Clear cache and return current status
-        WishCart_FluentCart_Helper::clear_detection_cache();
+        // If FluentCart is installed but not active, provide activation link
+        if ( $found_path && ! $is_active ) {
+            return new WP_Error(
+                'activation_required',
+                sprintf(
+                    // translators: %s: Plugin activation URL
+                    __(
+                        'FluentCart is installed but not activated. Please <a href="%s">activate it</a>, then click "Refresh" to continue.',
+                        'wishcart'
+                    ),
+                    esc_url( wp_nonce_url(
+                        admin_url( 'plugins.php?action=activate&plugin=' . urlencode( $found_path ) ),
+                        'activate-plugin_' . $found_path
+                    ) )
+                )
+            );
+        }
 
+        // If FluentCart is not found, provide installation instructions
+        if ( ! $found_path ) {
+            $install_url = wp_nonce_url(
+                self_admin_url( 'update.php?action=install-plugin&plugin=fluent-cart' ),
+                'install-plugin_fluent-cart'
+            );
+            
+            return new WP_Error(
+                'not_installed',
+                sprintf(
+                    // translators: %s: Plugin installation URL
+                    __(
+                        'FluentCart is not installed. Please <a href="%s">install FluentCart</a> first. WordPress will handle the installation automatically when you activate WishCart if you have the "Requires Plugins" feature enabled.',
+                        'wishcart'
+                    ),
+                    esc_url( $install_url )
+                )
+            );
+        }
+
+        // FluentCart is installed and active
         return array(
             'success' => true,
-            'message' => 'FluentCart is already installed and activated',
-            'isActive' => WishCart_FluentCart_Helper::is_fluentcart_active(),
+            'message' => 'FluentCart is installed and activated',
+            'isActive' => true,
         );
     }
 
