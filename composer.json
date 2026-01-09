@@ -1,6 +1,6 @@
 {
     "name": "wishcart/wishcart",
-    "description": "AI chatbot for WordPress with messaging platform integration",
+    "description": "Wishlist plugin for FluentCart with guest support, product variations, price drop alerts, and FluentCRM integration.",
     "type": "wordpress-plugin",
     "license": "GPL-2.0-or-later",
     "authors": [

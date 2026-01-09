@@ -1,9 +1,9 @@
 <?php
 /**
- * AISK Admin Class
+ * WishCart Admin Class
  *
  * @category WordPress
- * @package  AISK
+ * @package  WishCart
  * @author   WishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ http://www.gnu.org/licenses/gpl-2.0.txt
  * @link     https://wishcart.com
@@ -14,10 +14,10 @@ if ( ! defined('ABSPATH') ) {
 }
 
 /**
- * AISK Admin Class handles all admin-related functionality
+ * WishCart Admin Class handles all admin-related functionality
  *
  * @category Class
- * @package  AISK
+ * @package  WishCart
  * @author   WishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ http://www.gnu.org/licenses/gpl-2.0.txt
  * @link     https://wishcart.com
@@ -993,58 +993,6 @@ class wishcart_Admin {
 
         update_option( 'wishcart_settings', $settings );
         return rest_ensure_response( array( 'success' => true ) );
-    }
-
-    /**
-     * Get analytics overview data - REMOVED (chat-related)
-     *
-     * @param WP_REST_Request $request Request object
-     *
-     * @since 1.0.0
-     *
-     * @return WP_REST_Response
-     */
-    public function get_analytics_overview( $request ) {
-        return rest_ensure_response([]);
-    }
-
-    /**
-     * Get analytics usage data - REMOVED (chat-related)
-     *
-     * @param WP_REST_Request $request Request object
-     *
-     * @since 1.0.0
-     *
-     * @return WP_REST_Response
-     */
-    public function get_analytics_usage( $request ) {
-        return rest_ensure_response([]);
-    }
-
-    /**
-     * Get analytics errors data - REMOVED (chat-related)
-     *
-     * @param WP_REST_Request $request Request object
-     *
-     * @since 1.0.0
-     *
-     * @return WP_REST_Response
-     */
-    public function get_analytics_errors( $request ) {
-        return rest_ensure_response([]);
-    }
-
-    /**
-     * Get analytics costs data - REMOVED (chat-related)
-     *
-     * @param WP_REST_Request $request Request object
-     *
-     * @since 1.0.0
-     *
-     * @return WP_REST_Response
-     */
-    public function get_analytics_costs( $request ) {
-        return rest_ensure_response([]);
     }
 
     /**

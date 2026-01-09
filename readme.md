@@ -121,10 +121,6 @@ This plugin uses modern development tools and follows WordPress coding standards
 
 This plugin uses the following third-party libraries and services:
 
-* **Smalot/PdfParser** - PDF text extraction library
-  * License: LGPL-3.0
-  * Repository: https://github.com/smalot/pdfparser
-  * Terms: https://github.com/smalot/pdfparser/blob/master/LICENSE
 
 * **FluentCRM** - Email marketing automation (optional integration)
   * Plugin: https://wordpress.org/plugins/fluent-crm/

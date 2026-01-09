@@ -24,18 +24,18 @@ const MiscSettings = ({ settings, updateSettings }) => {
                     <div className="mt-2 text-sm text-muted-foreground">
                         <p>{__('Available CSS classes for customization:', 'wishcart')}</p>
                         <ul className="mt-2 list-disc pl-4 space-y-1">
-                            <li><code>.support-buddy-widget</code> - {__('Main widget container', 'wishcart')}</li>
-                            <li><code>.support-buddy-container</code> - {__('Chat container', 'wishcart')}</li>
-                            <li><code>.support-buddy-header</code> - {__('Header section', 'wishcart')}</li>
-                            <li><code>.support-buddy-messages</code> - {__('Messages container', 'wishcart')}</li>
-                            <li><code>.support-buddy-message.user</code> - {__('User message bubbles', 'wishcart')}</li>
-                            <li><code>.support-buddy-message.bot</code> - {__('Bot message bubbles', 'wishcart')}</li>
-                            <li><code>.support-buddy-input</code> - {__('Input section', 'wishcart')}</li>
-                            <li><code>.support-buddy-footer</code> - {__('Footer section', 'wishcart')}</li>
+                            <li><code>.wishcart-wishlist-button</code> - {__('Main wishlist button', 'wishcart')}</li>
+                            <li><code>.wishcart-wishlist-button--active</code> - {__('Active state (item in wishlist)', 'wishcart')}</li>
+                            <li><code>.wishcart-wishlist-button__icon</code> - {__('Button icon', 'wishcart')}</li>
+                            <li><code>.wishcart-wishlist-button__label</code> - {__('Button text label', 'wishcart')}</li>
+                            <li><code>.wishcart-placement-top</code> - {__('Top positioned button', 'wishcart')}</li>
+                            <li><code>.wishcart-placement-bottom</code> - {__('Bottom positioned button', 'wishcart')}</li>
+                            <li><code>.wishcart-wishlist-page</code> - {__('Wishlist page container', 'wishcart')}</li>
+                            <li><code>.wishcart-variant-wishlist-button</code> - {__('Variant wishlist button', 'wishcart')}</li>
                         </ul>
                     </div>
                     <p className="mt-4 text-sm text-muted-foreground">
-                        {__('Add custom CSS to modify the chat widget appearance. Changes will be applied to the frontend chat widget.', 'wishcart')}
+                        {__('Add custom CSS to modify the wishlist button and page appearance. Changes will be applied to the frontend wishlist components.', 'wishcart')}
                     </p>
                 </div>
             </CardContent>

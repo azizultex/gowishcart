@@ -160,10 +160,7 @@ class WishCart_Database_Migration {
         $new_tables = array(
             'wc_wishlists',
             'wc_wishlist_items',
-            'wc_wishlist_shares',
-            'wc_wishlist_analytics',
             'wc_wishlist_notifications',
-            'wc_wishlist_activities',
             'wc_wishlist_guest_users',
         );
 

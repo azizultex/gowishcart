@@ -97,10 +97,6 @@ You can use the `[wishcart_wishlist]` shortcode on any page, or WishCart will au
 = 1.0.0 =
 Initial release of WishCart - start building customer loyalty and boosting sales with wishlists today!
 
-== Development ==
-
-This plugin uses modern development tools and follows WordPress coding standards. Here's how to set up the development environment:
-
 == Screenshots ==
 
 1. Wishlist page with products
@@ -120,11 +116,6 @@ This plugin uses modern development tools and follows WordPress coding standards
 == Third-Party Services ==
 
 This plugin uses the following third-party libraries and services:
-
-* **Smalot/PdfParser** - PDF text extraction library
-  * License: LGPL-3.0
-  * Repository: https://github.com/smalot/pdfparser
-  * Terms: https://github.com/smalot/pdfparser/blob/master/LICENSE
 
 * **FluentCRM** - Email marketing automation (optional integration)
   * Plugin: https://wordpress.org/plugins/fluent-crm/

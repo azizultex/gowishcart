@@ -9,14 +9,14 @@
  * Requires Plugins: fluent-cart
  * Author:      WishCart Team <support@gowishcart.com>
  * Author URI:  https://gowishcart.com/
- * Contributors: wishcart, zrshishir, sabbirxprt
+ * Contributors: wishcart, sabbirxprt
  * Text Domain:  wishcart
  * Domain Path: /languages/
  * License: GPL2
  * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
  *
  * @category WordPress
- * @package  AISK
+ * @package  WishCart
  * @author   WishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ http://www.gnu.org/licenses/gpl-2.0.txt
  * @link     https://gowishcart.com
@@ -272,11 +272,6 @@ class WishCart_Wishlist {
         // Initialize CRM campaign handler
         if (class_exists('WishCart_CRM_Campaign_Handler')) {
             new WishCart_CRM_Campaign_Handler();
-        }
-
-        // Initialize cart and purchase tracking
-        if (class_exists('WishCart_Cart_Tracking')) {
-            new WishCart_Cart_Tracking();
         }
 
         // Ensure database tables exist even after updates (without reactivation)

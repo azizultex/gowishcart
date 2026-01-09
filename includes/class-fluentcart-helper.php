@@ -7,14 +7,14 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * Provides FluentCart compatibility functions to replace WooCommerce functions
  *
  * @category Functionality
- * @package  AISK
+ * @package  WishCart
  * @author   WishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://gowishcart.com
  */
 
 /**
- * AISK FluentCart Product Wrapper Class
+ * WishCart FluentCart Product Wrapper Class
  */
 class WishCart_FluentCart_Product {
     private $post_id;
@@ -240,7 +240,7 @@ class WishCart_FluentCart_Product {
 }
 
 /**
- * AISK FluentCart Order Wrapper Class
+ * WishCart FluentCart Order Wrapper Class
  */
 class WishCart_FluentCart_Order {
     private $fc_order;
@@ -550,7 +550,7 @@ class WishCart_FluentCart_Order {
 }
 
 /**
- * AISK FluentCart Order Item Wrapper Class
+ * WishCart FluentCart Order Item Wrapper Class
  */
 class WishCart_FluentCart_Order_Item {
     private $item_data;
@@ -587,7 +587,7 @@ class WishCart_FluentCart_Order_Item {
 }
 
 /**
- * AISK FluentCart DateTime Wrapper Class
+ * WishCart FluentCart DateTime Wrapper Class
  */
 class WishCart_FluentCart_DateTime {
     private $datetime;
@@ -607,7 +607,7 @@ class WishCart_FluentCart_DateTime {
  * Handles FluentCart-specific operations for products and orders
  *
  * @category Class
- * @package  AISK
+ * @package  WishCart
  * @author   WishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://gowishcart.com

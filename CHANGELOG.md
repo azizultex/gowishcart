@@ -1,27 +1,22 @@
 # Changelog
 
-All notable changes to the WishCart AI Chatbot plugin will be documented in this file.
+All notable changes to the WishCart Wishlist plugin will be documented in this file.
 
 
 ## [1.0.0] - 2025-11-04
 
 ### Added
-- Initial release of WishCart AI Chatbot
-- AI-powered customer support system
-- WooCommerce integration
-- WhatsApp and Telegram integration
-- Product search and recommendations
-- Order management features
-- Contact form integration
-- Support for multiple languages
-- PDF file processing for knowledge base
-- Geolocation-based features
-- Customizable chat widget appearance
-- Admin dashboard for configuration
-- Real-time chat analytics
-- Automated response system
-- Integration with OpenAI API
-- Support for Twilio WhatsApp API
-- Telegram bot integration
-- IP-based geolocation services
-- PDF content extraction capabilities
+- Initial release of WishCart Wishlist for FluentCart
+- Guest user wishlist support with email tracking
+- Product variation support in wishlists
+- Price drop alerts and notifications
+- Back in stock notifications
+- FluentCRM integration with triggers
+- FluentCRM SmartCode support for email campaigns
+- Wishlist page with customizable URL
+- Shortcode support for wishlist button and wishlist display
+- Admin dashboard for wishlist management
+- Analytics and reporting features
+- Customizable button appearance and positioning
+- Multiple wishlist support per user
+- Product sharing capabilities
