@@ -1273,7 +1273,9 @@ class wishcart_Admin {
         }
 
         global $wpdb;
-        // Analytics handler is a Pro feature - only use if available
+        // Pro Feature: Analytics handler tracks wishlist-to-cart conversions and engagement
+        // Available in WishCart Pro - provides insights into customer behavior and popular products
+        // Gracefully skipped in free version without errors
         $analytics_handler = class_exists('WishCart_Analytics_Handler') ? new WishCart_Analytics_Handler() : null;
         $handler = new WishCart_Wishlist_Handler();
         
@@ -1289,10 +1291,12 @@ class wishcart_Admin {
             );
         }
         
-        // Track analytics event (Pro feature - only if analytics handler is available)
+        // Pro Feature: Track analytics event for wishlist-to-cart conversions
+        // Available in WishCart Pro - provides valuable insights into conversion rates
+        // Gracefully skipped in free version without affecting functionality
         if ( $analytics_handler ) {
             $track_result = $analytics_handler->track_event( $product_id, $variation_id, 'cart' );
-            // Don't fail if tracking is not available (Pro feature)
+            // Silently skip if tracking fails - no errors to user (Pro feature)
         }
         
         // Update wishlist item's date_added_to_cart if item exists in wishlist

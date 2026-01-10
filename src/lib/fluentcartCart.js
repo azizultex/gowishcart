@@ -38,7 +38,6 @@ const updateCartFromFragments = (fragments) => {
                     document.body.appendChild(cartContainer);
                     element = cartContainer;
                     elementWasCreated = true;
-                    console.log('Cart drawer container created from fragment');
                 }
             }
             
@@ -203,7 +202,6 @@ export const addToCartViaAJAX = async ({ productId, variationId = 0, quantity = 
             }
         } catch (apiError) {
             // API method failed, continue to fallbacks
-            console.debug('FluentCart API method failed, trying fallbacks:', apiError);
         }
 
         // If API method fails, fall back to other methods
@@ -349,7 +347,7 @@ const clickFluentCartButton = ({ productId, variationId }) => {
                     resolve({ success: true });
                     return;
                 } catch (e) {
-                    console.debug('Button click failed:', e);
+                    // Button click failed, continue to next method
                 }
             }
 
@@ -683,10 +681,9 @@ export const openCartSidebar = () => {
             if (cartButton.tagName !== 'A' || !cartButton.hasAttribute('href')) {
                 try {
                     cartButton.click();
-                    console.log('Cart sidebar opened via button click');
                     return;
                 } catch (e) {
-                    console.debug('Button click failed:', e);
+                    // Button click failed
                 }
             }
         }

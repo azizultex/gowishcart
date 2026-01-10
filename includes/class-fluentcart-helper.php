@@ -412,37 +412,6 @@ class WishCart_FluentCart_Order {
                 // Get variation_id if available (FluentCart may store it in various fields)
                 $variation_id = 0;
                 
-                // Debug: Log all available attributes on the Eloquent model
-                if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                    $item_attributes = array();
-                    if ( is_object( $fc_item ) ) {
-                        // For Laravel Eloquent models, use getAttributes() or access attributes directly
-                        if ( method_exists( $fc_item, 'getAttributes' ) ) {
-                            $item_attributes = $fc_item->getAttributes();
-                        } elseif ( method_exists( $fc_item, 'getAttribute' ) ) {
-                            // Try to get common fields
-                            $common_fields = array( 'id', 'post_id', 'variation_id', 'variant_id', 'product_variation_id', 'variation', 'item_id', 'product_id' );
-                            foreach ( $common_fields as $field ) {
-                                try {
-                                    $value = $fc_item->getAttribute( $field );
-                                    if ( $value !== null ) {
-                                        $item_attributes[ $field ] = is_scalar( $value ) ? $value : gettype( $value );
-                                    }
-                                } catch ( Exception $e ) {
-                                    // Ignore
-                                }
-                            }
-                        }
-                        // Also try direct property access (Laravel magic methods)
-                        $direct_properties = array( 'id', 'post_id', 'variation_id', 'variant_id', 'product_variation_id', 'variation', 'item_id', 'product_id' );
-                        foreach ( $direct_properties as $prop ) {
-                            if ( isset( $fc_item->$prop ) ) {
-                                $item_attributes[ $prop ] = is_scalar( $fc_item->$prop ) ? $fc_item->$prop : gettype( $fc_item->$prop );
-                            }
-                        }
-                    }
-                }
-                
                 // Check multiple possible field names for variation_id
                 // FluentCart stores variation_id in object_id field!
                 // Try direct property access first (Laravel magic methods)
