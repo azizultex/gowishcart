@@ -303,33 +303,5 @@ class WishCart_Wishlist_Page {
             ),
         );
     }
-
-    /**
-     * Default integration settings for admin UI
-     *
-     * @return array
-     */
-    public static function get_default_integrations_settings() {
-        return array(
-            'whatsapp' => array(
-                'enabled' => false,
-                'account_sid' => '',
-                'auth_token' => '',
-                'phone_number' => '',
-                'welcome_message' => '',
-                'enable_template_messages' => false,
-            ),
-            'telegram' => array(
-                'enabled' => false,
-                'bot_token' => '',
-                'bot_username' => '',
-                'welcome_message' => '',
-            ),
-            'contact_form' => array(
-                'enabled' => false,
-                'shortcode' => '',
-            ),
-        );
-    }
 }
 

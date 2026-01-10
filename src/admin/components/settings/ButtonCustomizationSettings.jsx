@@ -109,7 +109,52 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
     const labels = localButtonCustomization.labels || { add: '', saved: '' };
     const buttonStyle = localButtonCustomization.buttonStyle || 'button';
 
+    // Helper to detect if a value is a gradient
+    const isGradientValue = (value) => {
+        if (!value || typeof value !== 'string') return false;
+        return value.toLowerCase().includes('gradient(');
+    };
+
+    // Helper to extract a fallback HEX color from gradient for color picker display
+    const extractHexFromGradient = (gradientValue, fallback = '#ffffff') => {
+        if (!gradientValue || typeof gradientValue !== 'string') {
+            return fallback;
+        }
+
+        // Try to extract all rgb/rgba values from gradient
+        // Match rgb/rgba patterns: rgb(37, 50, 65) or rgba(255, 255, 255, 0.16)
+        const rgbMatches = gradientValue.matchAll(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*[\d.]+)?\)/g);
+        const rgbColors = Array.from(rgbMatches);
+        
+        if (rgbColors.length > 0) {
+            // Prefer the last match (usually the fallback/base color after the gradient)
+            // For gradients like: linear-gradient(...), rgb(37, 50, 65), the last rgb is the base
+            const lastMatch = rgbColors[rgbColors.length - 1];
+            const r = parseInt(lastMatch[1], 10).toString(16).padStart(2, '0');
+            const g = parseInt(lastMatch[2], 10).toString(16).padStart(2, '0');
+            const b = parseInt(lastMatch[3], 10).toString(16).padStart(2, '0');
+            return `#${r}${g}${b}`;
+        }
+
+        // Try to extract hex values: #253241 or #fff
+        const hexMatches = Array.from(gradientValue.matchAll(/#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})\b/g));
+        if (hexMatches.length > 0) {
+            // Prefer the last hex match as well
+            const lastHexMatch = hexMatches[hexMatches.length - 1];
+            let hex = lastHexMatch[1];
+            if (hex.length === 3) {
+                // Expand short hex to full hex
+                const [r, g, b] = hex.split('');
+                hex = `${r}${r}${g}${g}${b}${b}`;
+            }
+            return `#${hex.toLowerCase()}`;
+        }
+
+        return fallback;
+    };
+
     // Helper to normalize color values to a safe HEX value for the HTML5 color input
+    // This function preserves gradients and only normalizes HEX colors
     const normalizeHexColor = (value, fallback = '#ffffff') => {
         if (!value || typeof value !== 'string') {
             return fallback;
@@ -117,7 +162,12 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
 
         let color = value.trim();
 
-        // If the value looks like a gradient or anything non-hex, fall back
+        // If it's a gradient, preserve it as-is
+        if (isGradientValue(color)) {
+            return color;
+        }
+
+        // If the value doesn't start with '#', it's not a valid HEX color
         if (!color.startsWith('#')) {
             return fallback;
         }
@@ -581,6 +631,7 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
     };
 
     // Color input component using HTML5 input type="color" plus a HEX text field
+    // Now supports both HEX colors and gradient values
     const ColorInput = ({ label, value, onChange, colorPickerId, section, settingKey }) => {
         const inputRef = useRef(null);
         const colorInputRef = useRef(null);
@@ -604,6 +655,9 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
             };
         }, [inputId]);
 
+        // Check if current value is a gradient
+        const isGradient = isGradientValue(localValue || value);
+
         const handleTextChange = (e) => {
             const newValue = e.target.value;
             setLocalValue(newValue);
@@ -616,7 +670,8 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
         const handleTextBlur = () => {
             isAnyInputFocused.current = false;
 
-            // Normalize to a valid HEX color for storage
+            // Preserve gradients, normalize only HEX colors
+            // normalizeHexColor already preserves gradients, so this is safe
             const normalized = normalizeHexColor(localValue, '#ffffff');
             setLocalValue(normalized);
 
@@ -630,12 +685,14 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
         };
 
         const handleColorInputChange = (e) => {
+            // When user picks a color from the picker, it's always a HEX color
             const hexColor = e.target.value;
             setLocalValue(hexColor); // Update local component state
         };
 
         const handleColorInputBlur = () => {
             // Update parent state when color picker closes (user clicks outside)
+            // normalizeHexColor already preserves gradients, so this is safe
             const normalized = normalizeHexColor(localValue, '#ffffff');
             setLocalValue(normalized);
 
@@ -646,21 +703,36 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
             }
         };
 
-        const colorPickerValue = normalizeHexColor(localValue || value, '#ffffff');
+        // For color picker display: use extracted HEX from gradient or normalized HEX
+        const colorPickerValue = isGradient 
+            ? extractHexFromGradient(localValue || value, '#ffffff')
+            : normalizeHexColor(localValue || value, '#ffffff');
 
         return (
             <div className="space-y-2">
                 <Label className="text-sm">{label}</Label>
                 <div className="flex items-center gap-2">
-                    <input
-                        ref={colorInputRef}
-                        type="color"
-                        value={colorPickerValue}
-                        onChange={handleColorInputChange}
-                        onBlur={handleColorInputBlur}
-                        className="w-10 h-10 rounded border-2 border-gray-200 cursor-pointer bg-transparent p-0"
-                        aria-label={label}
-                    />
+                    {!isGradient && (
+                        <input
+                            ref={colorInputRef}
+                            type="color"
+                            value={colorPickerValue}
+                            onChange={handleColorInputChange}
+                            onBlur={handleColorInputBlur}
+                            className="w-10 h-10 rounded border-2 border-gray-200 cursor-pointer bg-transparent p-0"
+                            aria-label={label}
+                        />
+                    )}
+                    {isGradient && (
+                        <div 
+                            className="w-10 h-10 rounded border-2 border-gray-200 flex items-center justify-center cursor-not-allowed"
+                            style={{ 
+                                background: localValue || value || '#ffffff'
+                            }}
+                            title={__('Color picker not available for gradients. Use text input to edit.', 'wishcart')}
+                        >
+                        </div>
+                    )}
                     <Input
                         ref={inputRef}
                         type="text"
@@ -668,7 +740,7 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
                         onChange={handleTextChange}
                         onFocus={handleTextFocus}
                         onBlur={handleTextBlur}
-                        placeholder="#ffffff"
+                        placeholder={isGradient ? 'linear-gradient(...)' : '#ffffff'}
                         className="flex-1 font-mono text-sm"
                     />
                 </div>

@@ -912,29 +912,6 @@ class wishcart_Admin {
             $changed               = true;
         }
 
-        $integration_defaults = WishCart_Wishlist_Page::get_default_integrations_settings();
-        if ( ! isset( $settings['integrations'] ) || ! is_array( $settings['integrations'] ) ) {
-            $settings['integrations'] = $integration_defaults;
-            $changed = true;
-        } else {
-            $merged_integrations = $settings['integrations'];
-            foreach ( $integration_defaults as $key => $default_values ) {
-                if ( ! isset( $merged_integrations[ $key ] ) || ! is_array( $merged_integrations[ $key ] ) ) {
-                    $merged_integrations[ $key ] = $default_values;
-                    $changed = true;
-                } else {
-                    $parsed = wp_parse_args( $merged_integrations[ $key ], $default_values );
-                    if ( $parsed !== $merged_integrations[ $key ] ) {
-                        $merged_integrations[ $key ] = $parsed;
-                        $changed = true;
-                    } else {
-                        $merged_integrations[ $key ] = $parsed;
-                    }
-                }
-            }
-            $settings['integrations'] = $merged_integrations;
-        }
-
         if ( $changed ) {
             update_option( 'wishcart_settings', $settings );
         }

@@ -37,11 +37,6 @@ const UpgradePrompt = () => {
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                    <div>
-                        <p className="text-sm text-muted-foreground">
-                            {__('Starting at $9/month · Includes priority support and white-glove onboarding.', 'wishcart')}
-                        </p>
-                    </div>
                     <div className="flex gap-3">
                         <Button asChild variant="outline">
                             <a href="https://gowishcart.com/demo" target="_blank" rel="noopener noreferrer">
