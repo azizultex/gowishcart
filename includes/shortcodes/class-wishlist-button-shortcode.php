@@ -143,6 +143,7 @@ class WishCart_Wishlist_Button_Shortcode {
                 'wishcartWishlist',
                 array(
                     'apiUrl' => trailingslashit( rest_url( 'wishcart/v1' ) ),
+                    'ajaxUrl' => admin_url( 'admin-ajax.php' ),
                     'nonce' => wp_create_nonce( 'wp_rest' ),
                     'sessionId' => $session_id,
                     'isLoggedIn' => is_user_logged_in(),

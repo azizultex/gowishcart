@@ -118,7 +118,8 @@ const addToCartViaFluentCartAPI = async (params) => {
             urlParams.append('open_cart', 'true');
             urlParams.append('is_admin_bar_enabled', isAdminBarEnabled().toString());
 
-            const url = window.location.origin + '/wp-admin/admin-ajax.php?' + urlParams.toString();
+            const ajaxUrl = window.wishcartWishlist?.ajaxUrl || window.location.origin + '/wp-admin/admin-ajax.php';
+            const url = ajaxUrl + '?' + urlParams.toString();
 
             const response = await fetch(url, {
                 method: 'GET',
@@ -590,7 +591,8 @@ const tryWordPressAjax = ({ productId, variationId, quantity }) => {
                 formData.append('variation_id', variationId);
             }
 
-            fetch(`${window.location.origin}/wp-admin/admin-ajax.php`, {
+            const ajaxUrl = window.wishcartWishlist?.ajaxUrl || window.location.origin + '/wp-admin/admin-ajax.php';
+            fetch(ajaxUrl, {
                 method: 'POST',
                 body: formData,
                 credentials: 'same-origin',
