@@ -414,7 +414,9 @@ class wishcart_Admin {
         register_rest_route('wishcart/v1', '/wishlist/users', array(
             'methods' => 'GET',
             'callback' => array($this, 'wishlist_get_users'),
-            'permission_callback' => '__return_true', // Public endpoint
+            'permission_callback' => function () {
+                return current_user_can('manage_options');
+            },
         ));
 
         // Guest email endpoints
