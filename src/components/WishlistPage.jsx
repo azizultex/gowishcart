@@ -1122,7 +1122,7 @@ const ensureWishlistShareAllowed = () => {
                     <div className="share-section" style={{position: 'relative', opacity: 0.6, pointerEvents: 'none'}}>
                         <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px'}}>
                             <span className="share-label">Wishlist Share on</span>
-                            <span className="gowishcart-badge wishcart-badge-warning" style={{fontSize: '10px', padding: '2px 6px'}}>PRO</span>
+                            <span className="gowishcart-badge gowishcart-badge-warning" style={{fontSize: '10px', padding: '2px 6px'}}>PRO</span>
                         </div>
                         <div className="share-icons">
                             <button

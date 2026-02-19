@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://gowishcart.com
  */
-class WishCart_Guest_Handler {
+class GoWishCart_Guest_Handler {
 
     private $wpdb;
     private $guest_users_table;
@@ -325,8 +325,8 @@ class WishCart_Guest_Handler {
         }
 
         // Sync wishlists
-        if (class_exists('WishCart_Wishlist_Handler')) {
-            $wishlist_handler = new WishCart_Wishlist_Handler();
+        if (class_exists('GoWishCart_Wishlist_Handler')) {
+            $wishlist_handler = new GoWishCart_Wishlist_Handler();
             $sync_result = $wishlist_handler->sync_guest_wishlist_to_user($session_id, $user_id);
 
             if (is_wp_error($sync_result)) {

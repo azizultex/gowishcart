@@ -286,7 +286,7 @@ const injectFluentCartContainer = () => {
     const position = normalizePosition(null, window.wishcartWishlist?.buttonPosition);
 
     const container = document.createElement('div');
-    container.className = `wishcart-wishlist-button-container wishcart-position-${position}`;
+    container.className = `wishcart-wishlist-button-container gowishcart-position-${position}`;
     container.setAttribute('data-product-id', String(productId));
     container.setAttribute('data-position', position);
 
@@ -351,7 +351,7 @@ const injectWishlistIntoProductCards = () => {
 
         const position = normalizePosition(window.wishcartWishlist?.buttonPosition);
         const container = document.createElement('div');
-        container.className = `wishcart-wishlist-button-container wishcart-position-${position} wishcart-card-container`;
+        container.className = `wishcart-wishlist-button-container gowishcart-position-${position} gowishcart-card-container`;
         container.setAttribute('data-product-id', String(productId));
         container.setAttribute('data-position', position);
 
@@ -451,7 +451,7 @@ const injectWishlistIntoArchiveEntries = () => {
 
         const position = normalizePosition(window.wishcartWishlist?.buttonPosition);
         const container = document.createElement('div');
-        container.className = `wishcart-wishlist-button-container wishcart-position-${position} wishcart-archive-container`;
+        container.className = `wishcart-wishlist-button-container gowishcart-position-${position} gowishcart-archive-container`;
         container.setAttribute('data-product-id', String(productId));
         container.setAttribute('data-position', position);
 
@@ -498,7 +498,7 @@ const injectWishlistNearActionButtons = () => {
 
         if (!container) {
             container = document.createElement('div');
-            container.className = `wishcart-wishlist-button-container wishcart-position-${position}`;
+            container.className = `wishcart-wishlist-button-container gowishcart-position-${position}`;
             container.setAttribute('data-product-id', String(productId));
             container.setAttribute('data-position', position);
 

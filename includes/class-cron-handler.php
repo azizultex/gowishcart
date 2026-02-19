@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://gowishcart.com
  */
-class WishCart_Cron_Handler {
+class GoWishCart_Cron_Handler {
 
     /**
      * Constructor
@@ -126,7 +126,7 @@ class WishCart_Cron_Handler {
      * @return void
      */
     public function process_notifications() {
-        $notifications = new WishCart_Notifications_Handler();
+        $notifications = new GoWishCart_Notifications_Handler();
         $result = $notifications->process_queue(10); // Process up to 10 notifications per run
     }
 
@@ -136,7 +136,7 @@ class WishCart_Cron_Handler {
      * @return void
      */
     public function check_price_drops() {
-        $notifications = new WishCart_Notifications_Handler();
+        $notifications = new GoWishCart_Notifications_Handler();
         $result = $notifications->check_price_drops();
     }
 
@@ -146,7 +146,7 @@ class WishCart_Cron_Handler {
      * @return void
      */
     public function check_back_in_stock() {
-        $notifications = new WishCart_Notifications_Handler();
+        $notifications = new GoWishCart_Notifications_Handler();
         $result = $notifications->check_back_in_stock();
     }
 
@@ -156,7 +156,7 @@ class WishCart_Cron_Handler {
      * @return void
      */
     public function cleanup_expired_guests() {
-        $guest_handler = new WishCart_Guest_Handler();
+        $guest_handler = new GoWishCart_Guest_Handler();
         
         // Get settings
         $settings = get_option('gowishcart_settings', array());
@@ -172,11 +172,11 @@ class WishCart_Cron_Handler {
      */
     public function cleanup_expired_shares() {
         // Sharing handler is a Pro feature - skip in free version
-        if ( ! class_exists('WishCart_Sharing_Handler') ) {
+        if ( ! class_exists('GoWishCart_Sharing_Handler') ) {
             return;
         }
         
-        $sharing = new WishCart_Sharing_Handler();
+        $sharing = new GoWishCart_Sharing_Handler();
         $result = $sharing->cleanup_expired_shares();
     }
 
@@ -187,11 +187,11 @@ class WishCart_Cron_Handler {
      */
     public function recalculate_analytics() {
         // Analytics handler is a Pro feature - skip in free version
-        if ( ! class_exists('WishCart_Analytics_Handler') ) {
+        if ( ! class_exists('GoWishCart_Analytics_Handler') ) {
             return;
         }
         
-        $analytics = new WishCart_Analytics_Handler();
+        $analytics = new GoWishCart_Analytics_Handler();
         $result = $analytics->recalculate_all_analytics();
     }
 
@@ -208,22 +208,22 @@ class WishCart_Cron_Handler {
         $analytics_retention_days = isset($settings['wishlist']['analytics_retention_days']) ? intval($settings['wishlist']['analytics_retention_days']) : 365;
         
         // Cleanup activities (anonymize instead of delete for audit)
-        $activity_logger = new WishCart_Activity_Logger();
+        $activity_logger = new GoWishCart_Activity_Logger();
         $activity_result = $activity_logger->cleanup_old_activities($activity_retention_days, true);
         
         // Cleanup notifications
-        $notifications = new WishCart_Notifications_Handler();
+        $notifications = new GoWishCart_Notifications_Handler();
         $notification_result = $notifications->cleanup_old_notifications($notification_retention_days);
         
         // Cleanup analytics (Pro feature)
         $analytics_result = array('deleted' => 0);
-        if ( class_exists('WishCart_Analytics_Handler') ) {
-            $analytics = new WishCart_Analytics_Handler();
+        if ( class_exists('GoWishCart_Analytics_Handler') ) {
+            $analytics = new GoWishCart_Analytics_Handler();
             $analytics_result = $analytics->cleanup_old_analytics($analytics_retention_days);
         }
         
         // Anonymize old guest data
-        $guest_handler = new WishCart_Guest_Handler();
+        $guest_handler = new GoWishCart_Guest_Handler();
         $guest_result = $guest_handler->anonymize_old_guests(90);
     }
 
@@ -301,8 +301,8 @@ class WishCart_Cron_Handler {
      * @return void
      */
     public function process_time_based_campaigns() {
-        if (class_exists('WishCart_CRM_Campaign_Handler')) {
-            $campaign_handler = new WishCart_CRM_Campaign_Handler();
+        if (class_exists('GoWishCart_CRM_Campaign_Handler')) {
+            $campaign_handler = new GoWishCart_CRM_Campaign_Handler();
             $campaign_handler->process_time_based_campaigns();
         }
     }
@@ -317,8 +317,8 @@ class WishCart_Cron_Handler {
      * @return void
      */
     public function send_scheduled_email($contact_id, $subject, $body, $event_data) {
-        if (class_exists('WishCart_FluentCRM_Integration')) {
-            $fluentcrm = new WishCart_FluentCRM_Integration();
+        if (class_exists('GoWishCart_FluentCRM_Integration')) {
+            $fluentcrm = new GoWishCart_FluentCRM_Integration();
             $options = array();
             if (isset($event_data['campaign_id'])) {
                 $options['campaign_id'] = $event_data['campaign_id'];

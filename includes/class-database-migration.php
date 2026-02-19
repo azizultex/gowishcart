@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://gowishcart.com
  */
-class WishCart_Database_Migration {
+class GoWishCart_Database_Migration {
 
     private $wpdb;
     private $table_prefix;
@@ -48,7 +48,7 @@ class WishCart_Database_Migration {
         // Archive old tables
         $old_tables = array(
             'gowishcart_wishlists',
-            'WishCart_Wishlist',
+            'GoWishCart_Wishlist',
         );
 
         $timestamp = gmdate('Y_m_d_His');
@@ -89,7 +89,7 @@ class WishCart_Database_Migration {
         // Create new 7-table structure
         if ($results['success']) {
             try {
-                $database = new WishCart_Database();
+                $database = new GoWishCart_Database();
             } catch (Exception $e) {
                 $results['errors'][] = 'Failed to create new tables: ' . $e->getMessage();
                 $results['success'] = false;
@@ -173,7 +173,7 @@ class WishCart_Database_Migration {
         // Restore old tables
         $old_tables = array(
             'gowishcart_wishlists',
-            'WishCart_Wishlist',
+            'GoWishCart_Wishlist',
         );
 
         foreach ($old_tables as $old_table) {

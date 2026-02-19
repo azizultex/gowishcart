@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://gowishcart.com
  */
-class WishCart_FluentCRM_Integration {
+class GoWishCart_FluentCRM_Integration {
 
     private $wpdb;
     private $is_available = null;

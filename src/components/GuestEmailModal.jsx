@@ -108,7 +108,7 @@ const GuestEmailModal = ({ isOpen, onClose, onEmailSubmitted }) => {
 
     return (
         <div className="gowishcart-modal-overlay" onClick={onClose}>
-            <div className="gowishcart-modal wishcart-email-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="gowishcart-modal gowishcart-email-modal" onClick={(e) => e.stopPropagation()}>
                 <button 
                     className="gowishcart-modal-close" 
                     onClick={onClose}

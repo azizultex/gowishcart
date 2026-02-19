@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://gowishcart.com
  */
-class WishCart_Wishlist_Page {
+class GoWishCart_Wishlist_Page {
 
     /**
      * Constructor - Initialize rewrite rules

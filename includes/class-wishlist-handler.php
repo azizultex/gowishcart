@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://gowishcart.com
  */
-class WishCart_Wishlist_Handler {
+class GoWishCart_Wishlist_Handler {
 
     private $wpdb;
     private $wishlists_table;
@@ -535,7 +535,7 @@ class WishCart_Wishlist_Handler {
         }
 
         // Verify product exists
-        $product = WishCart_FluentCart_Helper::get_product($product_id);
+        $product = GoWishCart_FluentCart_Helper::get_product($product_id);
         if (!$product) {
             return new WP_Error('product_not_found', __('Product not found', 'gowishcart-wishlist-for-fluentcart'));
         }
@@ -561,8 +561,8 @@ class WishCart_Wishlist_Handler {
                 ));
 
                 // Sync to FluentCRM if available (don't block wishlist addition on failure)
-                if (!is_wp_error($guest_result) && class_exists('WishCart_FluentCRM_Integration')) {
-                    $fluentcrm = new WishCart_FluentCRM_Integration();
+                if (!is_wp_error($guest_result) && class_exists('GoWishCart_FluentCRM_Integration')) {
+                    $fluentcrm = new GoWishCart_FluentCRM_Integration();
                     if ($fluentcrm->is_available()) {
                         $settings = $fluentcrm->get_settings();
                         if ($settings['enabled']) {
@@ -776,8 +776,8 @@ class WishCart_Wishlist_Handler {
                 $contact_email = $user->user_email;
                 
                 // Ensure contact exists in FluentCRM for logged-in users
-                if (class_exists('WishCart_FluentCRM_Integration')) {
-                    $fluentcrm = new WishCart_FluentCRM_Integration();
+                if (class_exists('GoWishCart_FluentCRM_Integration')) {
+                    $fluentcrm = new GoWishCart_FluentCRM_Integration();
                     if ($fluentcrm->is_available()) {
                         $settings = $fluentcrm->get_settings();
                         if ($settings['enabled'] && $settings['auto_create_contacts']) {
@@ -840,8 +840,8 @@ class WishCart_Wishlist_Handler {
 
         // Fire FluentCRM automation trigger (contact should exist by now)
         // Note: fire_trigger() internally calls do_action() so we don't call it separately
-        if ( class_exists( 'WishCart_FluentCRM_Triggers' ) ) {
-            WishCart_FluentCRM_Triggers::fire_trigger( 'gowishcart_item_added', $item_data );
+        if ( class_exists( 'GoWishCart_FluentCRM_Triggers' ) ) {
+            GoWishCart_FluentCRM_Triggers::fire_trigger( 'gowishcart_item_added', $item_data );
         }
 
         return true;
@@ -888,7 +888,7 @@ class WishCart_Wishlist_Handler {
         }
 
         // Get product object before deletion (needed for trigger data)
-        $product = WishCart_FluentCart_Helper::get_product($product_id);
+        $product = GoWishCart_FluentCart_Helper::get_product($product_id);
         if (!$product) {
             return new WP_Error('product_not_found', __('Product not found', 'gowishcart-wishlist-for-fluentcart'));
         }
@@ -951,8 +951,8 @@ class WishCart_Wishlist_Handler {
 
         // Fire FluentCRM automation trigger (contact should exist by now)
         // Note: fire_trigger() internally calls do_action() so we don't call it separately
-        if ( class_exists( 'WishCart_FluentCRM_Triggers' ) ) {
-            WishCart_FluentCRM_Triggers::fire_trigger( 'gowishcart_item_removed', $item_data );
+        if ( class_exists( 'GoWishCart_FluentCRM_Triggers' ) ) {
+            GoWishCart_FluentCRM_Triggers::fire_trigger( 'gowishcart_item_removed', $item_data );
         }
 
         return true;
@@ -1224,6 +1224,6 @@ class WishCart_Wishlist_Handler {
      */
     private function clear_wishlist_cache($user_id, $session_id) {
         $cache_key = $this->get_cache_key($user_id, $session_id);
-        wp_cache_delete($cache_key, 'WishCart_Wishlist');
+        wp_cache_delete($cache_key, 'GoWishCart_Wishlist');
     }
 }

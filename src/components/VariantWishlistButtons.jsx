@@ -673,7 +673,7 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
                 {/* Conditionally render icon based on buttonStyle */}
                 {(buttonStyle !== 'text-only' && buttonStyle !== 'text-only-link') && (
                     isAdding ? (
-                        <Heart className="gowishcart-wishlist-button__icon wishcart-wishlist-button__icon--loading" />
+                        <Heart className="gowishcart-wishlist-button__icon gowishcart-wishlist-button__icon--loading" />
                     ) : (
                         getIconComponent()
                     )

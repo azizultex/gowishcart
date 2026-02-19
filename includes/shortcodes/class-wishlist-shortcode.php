@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://gowishcart.com
  */
-class WishCart_Wishlist_Shortcode {
+class GoWishCart_Wishlist_Shortcode {
 
     /**
      * Constructor
@@ -38,27 +38,27 @@ class WishCart_Wishlist_Shortcode {
         // Enqueue scripts and styles
         wp_enqueue_script(
             'gowishcart-wishlist-frontend',
-            WishCart_PLUGIN_URL . 'build/wishlist-frontend.js',
+            GoWishCart_PLUGIN_URL . 'build/wishlist-frontend.js',
             array( 'wp-element', 'wp-api-fetch' ),
-            WishCart_VERSION,
+            GoWishCart_VERSION,
             true
         );
 
         wp_enqueue_style(
             'gowishcart-wishlist-frontend',
-            WishCart_PLUGIN_URL . 'build/wishlist-frontend.css',
+            GoWishCart_PLUGIN_URL . 'build/wishlist-frontend.css',
             array(),
-            WishCart_VERSION
+            GoWishCart_VERSION
         );
 
         // Localize script
-        $handler = new WishCart_Wishlist_Handler();
+        $handler = new GoWishCart_Wishlist_Handler();
         $session_id = $handler->get_or_create_session_id();
         
         // Get settings for enableMultipleWishlists
         $settings = get_option( 'gowishcart_settings', array() );
         $wishlist_settings = isset( $settings['wishlist'] ) ? $settings['wishlist'] : array();
-        $default_settings = WishCart_Wishlist_Page::get_default_settings();
+        $default_settings = GoWishCart_Wishlist_Page::get_default_settings();
         $wishlist_settings = wp_parse_args( $wishlist_settings, $default_settings );
         
         wp_localize_script(
@@ -83,5 +83,5 @@ class WishCart_Wishlist_Shortcode {
  
 }
 
-new WishCart_Wishlist_Shortcode();
+new GoWishCart_Wishlist_Shortcode();
 

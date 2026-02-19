@@ -212,7 +212,7 @@ const SettingsApp = () => {
 
     return (
         <>
-            <div className="gowishcart-admin-shell wishcart-admin-page">
+            <div className="gowishcart-admin-shell gowishcart-admin-page">
                 {/* Navigation Tabs - WordPress/FluentCart Style */}
                 <nav className="gowishcart-nav-tabs">
                     {tabs.map((tab) => {
@@ -284,7 +284,7 @@ const SettingsApp = () => {
                                 <button
                                     onClick={saveSettings}
                                     disabled={isSaving}
-                                    className="gowishcart-button wishcart-button-primary"
+                                    className="gowishcart-button gowishcart-button-primary"
                                 >
                                     {isSaving ? __('Saving...', 'gowishcart-wishlist-for-fluentcart') : __('Save Settings', 'gowishcart-wishlist-for-fluentcart')}
                                 </button>

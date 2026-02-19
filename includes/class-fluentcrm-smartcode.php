@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://gowishcart.com
  */
-class WishCart_FluentCRM_SmartCode {
+class GoWishCart_FluentCRM_SmartCode {
 
     /**
      * Constructor
@@ -118,8 +118,8 @@ class WishCart_FluentCRM_SmartCode {
         $product_id = intval( $funnelSub->source_ref_id );
 
         // Get the product using FluentCart helper or WooCommerce
-        if ( class_exists( 'WishCart_FluentCart_Helper' ) ) {
-            return WishCart_FluentCart_Helper::get_product( $product_id );
+        if ( class_exists( 'GoWishCart_FluentCart_Helper' ) ) {
+            return GoWishCart_FluentCart_Helper::get_product( $product_id );
         }
 
         // Fallback to WooCommerce
@@ -278,7 +278,7 @@ class WishCart_FluentCRM_SmartCode {
      * @return string Item count
      */
     private function get_wishlist_item_count( $subscriber ) {
-        if ( ! $subscriber || ! class_exists( 'WishCart_Wishlist_Handler' ) ) {
+        if ( ! $subscriber || ! class_exists( 'GoWishCart_Wishlist_Handler' ) ) {
             return '0';
         }
 
@@ -294,7 +294,7 @@ class WishCart_FluentCRM_SmartCode {
         $session_id = null;
 
         // If no user, try to find guest session
-        if ( ! $user_id && class_exists( 'WishCart_Guest_Handler' ) ) {
+        if ( ! $user_id && class_exists( 'GoWishCart_Guest_Handler' ) ) {
             // Use cache to avoid repeated database queries
             $cache_key = 'gowishcart_guest_session_' . md5( $email );
             $cached_session_id = wp_cache_get( $cache_key, 'gowishcart_cache' );
@@ -302,7 +302,7 @@ class WishCart_FluentCRM_SmartCode {
             if ( false !== $cached_session_id ) {
                 $session_id = $cached_session_id;
             } else {
-                $guest_handler = new WishCart_Guest_Handler();
+                $guest_handler = new GoWishCart_Guest_Handler();
                 $guest = $guest_handler->get_guest_by_email( $email );
                 
                 if ( $guest && isset( $guest['session_id'] ) ) {
@@ -314,7 +314,7 @@ class WishCart_FluentCRM_SmartCode {
         }
 
         // Get wishlist handler
-        $handler = new WishCart_Wishlist_Handler();
+        $handler = new GoWishCart_Wishlist_Handler();
         $wishlists = $handler->get_user_wishlists( $user_id, $session_id );
 
         if ( empty( $wishlists ) ) {

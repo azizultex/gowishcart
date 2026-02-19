@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://gowishcart.com
  */
-class WishCart_Wishlist_Button_Shortcode {
+class GoWishCart_Wishlist_Button_Shortcode {
 
     /**
      * Constructor
@@ -40,7 +40,7 @@ class WishCart_Wishlist_Button_Shortcode {
         }
 
         // Validate product exists and is a valid product type
-        $product = WishCart_FluentCart_Helper::get_product( $product_id );
+        $product = GoWishCart_FluentCart_Helper::get_product( $product_id );
         if ( ! $product ) {
             return '';
         }
@@ -112,22 +112,22 @@ class WishCart_Wishlist_Button_Shortcode {
         // Enqueue wishlist frontend script
         wp_enqueue_script(
             'gowishcart-wishlist-frontend',
-            WishCart_PLUGIN_URL . 'build/wishlist-frontend.js',
+            GoWishCart_PLUGIN_URL . 'build/wishlist-frontend.js',
             array( 'wp-element', 'wp-api-fetch' ),
-            WishCart_VERSION,
+            GoWishCart_VERSION,
             true
         );
 
         wp_enqueue_style(
             'gowishcart-wishlist-frontend',
-            WishCart_PLUGIN_URL . 'build/wishlist-frontend.css',
+            GoWishCart_PLUGIN_URL . 'build/wishlist-frontend.css',
             array(),
-            WishCart_VERSION
+            GoWishCart_VERSION
         );
 
         // Localize script if not already localized
         if ( ! wp_script_is( 'gowishcart-wishlist-frontend', 'localized' ) ) {
-            $handler = new WishCart_Wishlist_Handler();
+            $handler = new GoWishCart_Wishlist_Handler();
             $session_id = $handler->get_or_create_session_id();
             
             $settings = get_option( 'gowishcart_settings', array() );
@@ -135,7 +135,7 @@ class WishCart_Wishlist_Button_Shortcode {
             
             // Get button customization settings
             $button_customization = isset( $wishlist_settings['button_customization'] ) ? $wishlist_settings['button_customization'] : array();
-            $default_customization = WishCart_Wishlist_Page::get_default_settings();
+            $default_customization = GoWishCart_Wishlist_Page::get_default_settings();
             $button_customization = wp_parse_args( $button_customization, isset( $default_customization['button_customization'] ) ? $default_customization['button_customization'] : array() );
             
             wp_localize_script(
@@ -169,5 +169,5 @@ class WishCart_Wishlist_Button_Shortcode {
     }
 }
 
-new WishCart_Wishlist_Button_Shortcode();
+new GoWishCart_Wishlist_Button_Shortcode();
 

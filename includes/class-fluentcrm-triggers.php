@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://gowishcart.com
  */
-class WishCart_FluentCRM_Triggers {
+class GoWishCart_FluentCRM_Triggers {
 
     /**
      * Flag to prevent duplicate trigger registration
@@ -168,8 +168,8 @@ class WishCart_FluentCRM_Triggers {
         }
 
         // Ensure contact exists in FluentCRM BEFORE firing trigger
-        if ( ! empty( $user_email ) && class_exists( 'WishCart_FluentCRM_Integration' ) ) {
-            $fluentcrm = new WishCart_FluentCRM_Integration();
+        if ( ! empty( $user_email ) && class_exists( 'GoWishCart_FluentCRM_Integration' ) ) {
+            $fluentcrm = new GoWishCart_FluentCRM_Integration();
             if ( $fluentcrm->is_available() ) {
                 $settings = $fluentcrm->get_settings();
                 if ( $settings['enabled'] ) {
@@ -269,7 +269,7 @@ class WishCart_FluentCRM_Triggers {
         // Enqueue jQuery if not already enqueued (it's usually available but ensure it)
         wp_enqueue_script( 'jquery' );
 
-        // Inline JavaScript to add wishcart-trigger-icon class to category icon
+        // Inline JavaScript to add gowishcart-trigger-icon class to category icon
         $script = "
         (function() {
             function addCategoryIconClass() {

@@ -27,14 +27,14 @@ const IntegrationsSettings = () => {
                 <h3 style={{ 
                     fontSize: '18px',
                     fontWeight: 600,
-                    color: 'var(--wishcart-gray-900)',
+                    color: 'var(--gowishcart-gray-900)',
                     marginBottom: '8px'
                 }}>
                     {__('Integrations', 'gowishcart-wishlist-for-fluentcart')}
                 </h3>
                 <p style={{
                     fontSize: '13px',
-                    color: 'var(--wishcart-text-secondary)',
+                    color: 'var(--gowishcart-text-secondary)',
                     lineHeight: '1.5',
                     margin: 0
                 }}>

@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  */
 
 /**
- * WishCart_Database Class
+ * GoWishCart_Database Class
  *
  * @category WordPress
  * @package  GoWishCart
@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://gowishcart.com
  */
-class WishCart_Database {
+class GoWishCart_Database {
 
     private $wpdb;
     private $table_prefix;

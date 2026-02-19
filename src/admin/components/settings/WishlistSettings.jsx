@@ -223,10 +223,10 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                 <div className="toggle-info">
                     <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px'}}>
                         <h4>{__('Enable Multiple Wishlists', 'gowishcart-wishlist-for-fluentcart')}</h4>
-                        <span className="gowishcart-badge wishcart-badge-warning">{__('PROgowishcart-wishlist-for-fluentcart')}</span>
+                        <span className="gowishcart-badge gowishcart-badge-warning">{__('PROgowishcart-wishlist-for-fluentcart')}</span>
                     </div>
                     <p>{__('Allow users to create and manage multiple wishlists. When disabled, products are added directly to the default wishlist.', 'gowishcart-wishlist-for-fluentcart')}</p>
-                    <p style={{fontSize: '13px', margin: '4px 0 0', color: 'var(--wishcart-text-muted)'}}>{__('This feature is available in GoWishCart Pro. Please upgrade to get all the advanced features.', 'gowishcart-wishlist-for-fluentcart')}</p>
+                    <p style={{fontSize: '13px', margin: '4px 0 0', color: 'var(--gowishcart-text-muted)'}}>{__('This feature is available in GoWishCart Pro. Please upgrade to get all the advanced features.', 'gowishcart-wishlist-for-fluentcart')}</p>
                 </div>
                 <div className="toggle-control">
                     <Switch
@@ -272,7 +272,7 @@ const WishlistSettings = ({ settings, updateSettings }) => {
 
             {/* Button Position */}
             {wishlistSettings.product_page_button && (
-                <div className="gowishcart-form-group" style={{borderTop: '1px solid var(--wishcart-gray-25)', paddingTop: '16px'}}>
+                <div className="gowishcart-form-group" style={{borderTop: '1px solid var(--gowishcart-gray-25)', paddingTop: '16px'}}>
                     <label className="gowishcart-label" htmlFor="button_position">
                         {__('Button Position', 'gowishcart-wishlist-for-fluentcart')}
                     </label>
@@ -306,7 +306,7 @@ const WishlistSettings = ({ settings, updateSettings }) => {
             )}
 
             {/* Shortcode */}
-            <div className="gowishcart-form-group" style={{borderTop: '1px solid var(--wishcart-gray-25)', paddingTop: '16px'}}>
+            <div className="gowishcart-form-group" style={{borderTop: '1px solid var(--gowishcart-gray-25)', paddingTop: '16px'}}>
                 <label className="gowishcart-label">
                     {__('Shortcode', 'gowishcart-wishlist-for-fluentcart')}
                 </label>
@@ -326,7 +326,7 @@ const WishlistSettings = ({ settings, updateSettings }) => {
             </div>
 
             {/* Wishlist Page */}
-            <div className="gowishcart-form-group" style={{borderTop: '1px solid var(--wishcart-gray-25)', paddingTop: '16px'}}>
+            <div className="gowishcart-form-group" style={{borderTop: '1px solid var(--gowishcart-gray-25)', paddingTop: '16px'}}>
                 <h4 style={{fontSize: '14px', fontWeight: '600', marginBottom: '4px'}}>
                     {__('Select Wishlist Page', 'gowishcart-wishlist-for-fluentcart')}
                 </h4>
@@ -486,7 +486,7 @@ const WishlistSettings = ({ settings, updateSettings }) => {
             </div>
 
             {/* Custom CSS */}
-            <div className="gowishcart-form-group wishcart-code-editor">
+            <div className="gowishcart-form-group gowishcart-code-editor">
                 <label className="gowishcart-label" htmlFor="custom_css">
                     {__('Custom CSSgowishcart-wishlist-for-fluentcart')}
                 </label>

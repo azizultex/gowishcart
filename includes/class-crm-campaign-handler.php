@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://gowishcart.com
  */
-class WishCart_CRM_Campaign_Handler {
+class GoWishCart_CRM_Campaign_Handler {
 
     private $wpdb;
     private $campaigns_table;
@@ -27,8 +27,8 @@ class WishCart_CRM_Campaign_Handler {
         $this->campaigns_table = $wpdb->prefix . 'wc_wishlist_crm_campaigns';
         
         // Initialize FluentCRM integration
-        if (class_exists('WishCart_FluentCRM_Integration')) {
-            $this->fluentcrm = new WishCart_FluentCRM_Integration();
+        if (class_exists('GoWishCart_FluentCRM_Integration')) {
+            $this->fluentcrm = new GoWishCart_FluentCRM_Integration();
         }
 
         // Hook into wishlist events
@@ -442,7 +442,7 @@ class WishCart_CRM_Campaign_Handler {
     /**
      * Build product tags from product object (supports both WooCommerce and FluentCart)
      *
-     * @param WC_Product|WishCart_FluentCart_Product $product Product object
+     * @param WC_Product|GoWishCart_FluentCart_Product $product Product object
      * @param string $format Tag format: 'detailed', 'simple', or 'prefixed'
      * @return array Array of formatted tag strings
      */
@@ -874,7 +874,7 @@ class WishCart_CRM_Campaign_Handler {
                 // Handle guest users with email addresses
                 else if (!empty($item_data['session_id'])) {
                     // Check if guest user has email in guest_users table
-                    $guest_handler = new WishCart_Guest_Handler();
+                    $guest_handler = new GoWishCart_Guest_Handler();
                     $guest = $guest_handler->get_guest_by_session($item_data['session_id']);
                     
                     if ($guest && !empty($guest['guest_email']) && is_email($guest['guest_email'])) {

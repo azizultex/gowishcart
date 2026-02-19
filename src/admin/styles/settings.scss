@@ -1,6 +1,6 @@
 /**
  * GoWishCart Settings Page Styles
- * wishcart-compatible design
+ * gowishcart-compatible design
  */
 
 /* Override any remaining modern styles with WordPress admin aesthetics */
@@ -8,39 +8,39 @@
   /* Settings page specific layout adjustments */
   .gowishcart-admin-content {
     > * + * {
-      margin-top: var(--wishcart-space-lg);
+      margin-top: var(--gowishcart-space-lg);
     }
   }
 }
 
 /* Form sections within settings */
 .gowishcart-settings-section {
-  background: var(--wishcart-bg-white);  
-  padding: var(--wishcart-space-xl);
-  margin-bottom: var(--wishcart-space-xl);
-  box-shadow: var(--wishcart-shadow-sm);
+  background: var(--gowishcart-bg-white);  
+  padding: var(--gowishcart-space-xl);
+  margin-bottom: var(--gowishcart-space-xl);
+  box-shadow: var(--gowishcart-shadow-sm);
 
   h3 {
     font-size: 16px;
     font-weight: 600;
-    color: var(--wishcart-gray-900);
-    margin: 0 0 var(--wishcart-space-md);
-    padding-bottom: var(--wishcart-space-md);
-    border-bottom: 1px solid var(--wishcart-border-light);
+    color: var(--gowishcart-gray-900);
+    margin: 0 0 var(--gowishcart-space-md);
+    padding-bottom: var(--gowishcart-space-md);
+    border-bottom: 1px solid var(--gowishcart-border-light);
   }
 
   h4 {
     font-size: 14px;
     font-weight: 600;
-    color: var(--wishcart-gray-800);
-    margin: var(--wishcart-space-lg) 0 var(--wishcart-space-sm);
+    color: var(--gowishcart-gray-800);
+    margin: var(--gowishcart-space-lg) 0 var(--gowishcart-space-sm);
   }
 
   .description {
     font-size: 13px;
-    color: var(--wishcart-text-secondary);
+    color: var(--gowishcart-text-secondary);
     line-height: 1.5;
-    margin-bottom: var(--wishcart-space-md);
+    margin-bottom: var(--gowishcart-space-md);
   }
 }
 
@@ -49,8 +49,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--wishcart-space-md) 0;
-  border-bottom: 1px solid var(--wishcart-gray-25);
+  padding: var(--gowishcart-space-md) 0;
+  border-bottom: 1px solid var(--gowishcart-gray-25);
 
   &:last-child {
     border-bottom: none;
@@ -62,13 +62,13 @@
     h4 {
       font-size: 14px;
       font-weight: 600;
-      color: var(--wishcart-gray-900);
+      color: var(--gowishcart-gray-900);
       margin: 0 0 4px;
     }
 
     p {
       font-size: 13px;
-      color: var(--wishcart-text-secondary);
+      color: var(--gowishcart-text-secondary);
       margin: 0;
       line-height: 1.4;
     }
@@ -76,7 +76,7 @@
 
   .toggle-control {
     flex-shrink: 0;
-    margin-left: var(--wishcart-space-lg);
+    margin-left: var(--gowishcart-space-lg);
   }
 }
 
@@ -96,38 +96,38 @@
 }
 
 .gowishcart-pro-field {
-  border: 1px solid var(--wishcart-border-light);
-  border-radius: var(--wishcart-radius);
-  padding: var(--wishcart-space-lg);
-  background: var(--wishcart-bg-white);
-  margin-bottom: var(--wishcart-space-lg);
+  border: 1px solid var(--gowishcart-border-light);
+  border-radius: var(--gowishcart-radius);
+  padding: var(--gowishcart-space-lg);
+  background: var(--gowishcart-bg-white);
+  margin-bottom: var(--gowishcart-space-lg);
 
   &.is-locked {
-    background: var(--wishcart-gray-5);
+    background: var(--gowishcart-gray-5);
   }
 
   &__header {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    gap: var(--wishcart-space-md);
-    margin-bottom: var(--wishcart-space-sm);
+    gap: var(--gowishcart-space-md);
+    margin-bottom: var(--gowishcart-space-sm);
   }
 
   &__badges {
     display: inline-flex;
     align-items: center;
-    gap: var(--wishcart-space-xs);
+    gap: var(--gowishcart-space-xs);
 
     svg {
-      color: var(--wishcart-text-muted);
+      color: var(--gowishcart-text-muted);
     }
   }
 
   &__upsell {
     font-size: 12px;
-    color: var(--wishcart-text-muted);
-    margin-top: var(--wishcart-space-sm);
+    color: var(--gowishcart-text-muted);
+    margin-top: var(--gowishcart-space-sm);
   }
 
   .gowishcart-select {
@@ -146,7 +146,7 @@
 
 /* Page selector */
 .gowishcart-page-selector {
-  margin-bottom: var(--wishcart-space-lg);
+  margin-bottom: var(--gowishcart-space-lg);
 
   label {
     @extend .gowishcart-label !optional;
@@ -167,21 +167,21 @@
 .gowishcart-settings-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: var(--wishcart-space-xl);
-  margin-top: var(--wishcart-space-lg);
+  gap: var(--gowishcart-space-xl);
+  margin-top: var(--gowishcart-space-lg);
 }
 
 /* Color picker integration */
 .gowishcart-color-picker {
   display: flex;
   align-items: center;
-  gap: var(--wishcart-space-sm);
+  gap: var(--gowishcart-space-sm);
 
   input[type="color"] {
     width: 50px;
     height: 32px;
-    border: 1px solid var(--wishcart-border-dark);
-    border-radius: var(--wishcart-radius);
+    border: 1px solid var(--gowishcart-border-dark);
+    border-radius: var(--gowishcart-radius);
     cursor: pointer;
   }
 
@@ -197,8 +197,8 @@
   .icon-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
-    gap: var(--wishcart-space-sm);
-    margin-top: var(--wishcart-space-md);
+    gap: var(--gowishcart-space-sm);
+    margin-top: var(--gowishcart-space-md);
   }
 
   .icon-option {
@@ -206,50 +206,50 @@
     align-items: center;
     justify-content: center;
     height: 50px;
-    border: 1px solid var(--wishcart-border);
-    border-radius: var(--wishcart-radius);
+    border: 1px solid var(--gowishcart-border);
+    border-radius: var(--gowishcart-radius);
     cursor: pointer;
     transition: all 0.15s ease-in-out;
-    background: var(--wishcart-bg-white);
+    background: var(--gowishcart-bg-white);
 
     &:hover {
-      border-color: var(--wishcart-primary);
+      border-color: var(--gowishcart-primary);
       background: rgba(30, 115, 190, 0.05);
     }
 
     &.selected {
-      border-color: var(--wishcart-primary);
+      border-color: var(--gowishcart-primary);
       background: rgba(30, 115, 190, 0.1);
-      box-shadow: 0 0 0 1px var(--wishcart-primary);
+      box-shadow: 0 0 0 1px var(--gowishcart-primary);
     }
 
     svg {
       width: 24px;
       height: 24px;
-      color: var(--wishcart-gray-700);
+      color: var(--gowishcart-gray-700);
     }
   }
 }
 
 /* Button preview section */
 .gowishcart-button-preview {
-  background: var(--wishcart-gray-10);
-  border: 1px solid var(--wishcart-border-light);
-  border-radius: var(--wishcart-radius);
-  padding: var(--wishcart-space-2xl);
+  background: var(--gowishcart-gray-10);
+  border: 1px solid var(--gowishcart-border-light);
+  border-radius: var(--gowishcart-radius);
+  padding: var(--gowishcart-space-2xl);
   text-align: center;
 
   .preview-label {
     font-size: 12px;
-    color: var(--wishcart-text-muted);
+    color: var(--gowishcart-text-muted);
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    margin-bottom: var(--wishcart-space-lg);
+    margin-bottom: var(--gowishcart-space-lg);
   }
 
   .preview-buttons {
     display: flex;
-    gap: var(--wishcart-space-lg);
+    gap: var(--gowishcart-space-lg);
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
@@ -258,23 +258,23 @@
 
 /* Live Preview Container */
 .gowishcart-button-preview-container {
-  background: var(--wishcart-bg-white);
-  border: 1px solid var(--wishcart-border-light);
-  border-radius: var(--wishcart-radius);
-  padding: var(--wishcart-space-xl);
+  background: var(--gowishcart-bg-white);
+  border: 1px solid var(--gowishcart-border-light);
+  border-radius: var(--gowishcart-radius);
+  padding: var(--gowishcart-space-xl);
   position: sticky;
-  top: var(--wishcart-space-lg);
+  top: var(--gowishcart-space-lg);
   max-height: calc(100vh - 2rem);
   overflow-y: auto;
 
   .gowishcart-button-preview-header {
-    border-bottom: 1px solid var(--wishcart-border-light);
-    padding-bottom: var(--wishcart-space-md);
-    margin-bottom: var(--wishcart-space-lg);
+    border-bottom: 1px solid var(--gowishcart-border-light);
+    padding-bottom: var(--gowishcart-space-md);
+    margin-bottom: var(--gowishcart-space-lg);
   }
 
   .gowishcart-preview-section {
-    margin-bottom: var(--wishcart-space-xl);
+    margin-bottom: var(--gowishcart-space-xl);
 
     &:last-child {
       margin-bottom: 0;
@@ -389,7 +389,7 @@
     grid-template-columns: 1fr !important;
     
     .gowishcart-preview-wrapper {
-      margin-top: var(--wishcart-space-xl);
+      margin-top: var(--gowishcart-space-xl);
     }
   }
 }
@@ -408,11 +408,11 @@
   .gowishcart-card-footer {
     position: sticky;
     bottom: 0;
-    background: var(--wishcart-bg-white);
-    border-top: 1px solid var(--wishcart-border);
+    background: var(--gowishcart-bg-white);
+    border-top: 1px solid var(--gowishcart-border);
     box-shadow: none;
     z-index: 9999;
-    margin-top: var(--wishcart-space-lg);
+    margin-top: var(--gowishcart-space-lg);
     margin-bottom: 0;
     margin-left: -24px;
     margin-right: -24px;
@@ -429,18 +429,18 @@
   .gowishcart-toggle-row {
     flex-direction: column;
     align-items: flex-start;
-    gap: var(--wishcart-space-md);
+    gap: var(--gowishcart-space-md);
 
     .toggle-control {
       margin-left: 0;
-      margin-top: var(--wishcart-space-md);
+      margin-top: var(--gowishcart-space-md);
     }
   }
 
   .gowishcart-admin-header-content {
     flex-direction: column;
     align-items: flex-start;
-    gap: var(--wishcart-space-md);
+    gap: var(--gowishcart-space-md);
   }
 
   .gowishcart-admin-header-right {
@@ -480,8 +480,8 @@
   input[class*="flex"] {
     height: 32px;
     font-size: 13px;
-    border-radius: var(--wishcart-radius);
-    border-color: var(--wishcart-border-dark);
+    border-radius: var(--gowishcart-radius);
+    border-color: var(--gowishcart-border-dark);
 
     &:focus {
       border-color: var(--wp-admin-blue);
@@ -493,13 +493,13 @@
   select {
     height: 32px;
     font-size: 13px;
-    border-radius: var(--wishcart-radius);
+    border-radius: var(--gowishcart-radius);
   }
 
   /* Override card styles if any remain */
   [class*="rounded-lg"],
   [class*="rounded-xl"] {
-    border-radius: var(--wishcart-radius) !important;
+    border-radius: var(--gowishcart-radius) !important;
   }
 }
 
@@ -511,15 +511,15 @@
   }
 
   [data-sonner-toast][data-type="success"] {
-    background: var(--wishcart-success-bg);
-    border-color: var(--wishcart-success);
-    color: var(--wishcart-success);
+    background: var(--gowishcart-success-bg);
+    border-color: var(--gowishcart-success);
+    color: var(--gowishcart-success);
   }
 
   [data-sonner-toast][data-type="error"] {
-    background: var(--wishcart-danger-bg);
-    border-color: var(--wishcart-danger);
-    color: var(--wishcart-danger);
+    background: var(--gowishcart-danger-bg);
+    border-color: var(--gowishcart-danger);
+    color: var(--gowishcart-danger);
   }
 }
 
