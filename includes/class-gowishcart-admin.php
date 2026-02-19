@@ -2537,4 +2537,4 @@ class gowishcart_Admin {
     }
 }
 
-wishcart_Admin::get_instance();
+gowishcart_Admin::get_instance();

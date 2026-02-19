@@ -208,7 +208,7 @@ class GoWishCart_Cron_Handler {
         $analytics_retention_days = isset($settings['wishlist']['analytics_retention_days']) ? intval($settings['wishlist']['analytics_retention_days']) : 365;
         
         // Cleanup activities (anonymize instead of delete for audit)
-        $activity_logger = new GoWishCart_Activity_Logger();
+        $activity_logger = new gowishcart_Activity_Logger();
         $activity_result = $activity_logger->cleanup_old_activities($activity_retention_days, true);
         
         // Cleanup notifications
