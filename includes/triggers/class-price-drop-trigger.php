@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * Triggers when a product in a wishlist has a price drop
  *
  * @category WordPress
- * @package  WishCart
+ * @package  GoWishCart
  * @author   GoWishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://gowishcart.com

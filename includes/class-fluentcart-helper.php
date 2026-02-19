@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * Provides FluentCart compatibility functions to replace WooCommerce functions
  *
  * @category Functionality
- * @package  WishCart
+ * @package  GoWishCart
  * @author   GoWishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://gowishcart.com
@@ -576,7 +576,7 @@ class WishCart_FluentCart_DateTime {
  * Handles FluentCart-specific operations for products and orders
  *
  * @category Class
- * @package  WishCart
+ * @package  GoWishCart
  * @author   GoWishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://gowishcart.com

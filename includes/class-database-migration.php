@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * Handles migration from old 2-table structure to new 7-table structure
  *
  * @category WordPress
- * @package  WishCart
+ * @package  GoWishCart
  * @author   GoWishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://gowishcart.com
