@@ -49,7 +49,7 @@ class WishCart_CRM_Campaign_Handler {
         foreach ($required_fields as $field) {
             if (!isset($data[$field])) {
                 /* translators: %s: field name */
-                return new WP_Error('missing_field', sprintf(__('Missing required field: %s', 'wishcart'), $field));
+                return new WP_Error('missing_field', sprintf(__('Missing required field: %s', 'gowishcart-wishlist-for-fluentcart'), $field));
             }
         }
 
@@ -73,7 +73,7 @@ class WishCart_CRM_Campaign_Handler {
         $result = $this->wpdb->insert($this->campaigns_table, $insert_data, $format);
 
         if (false === $result) {
-            return new WP_Error('db_error', __('Failed to create campaign', 'wishcart'));
+            return new WP_Error('db_error', __('Failed to create campaign', 'gowishcart-wishlist-for-fluentcart'));
         }
 
         return $this->wpdb->insert_id;
@@ -89,7 +89,7 @@ class WishCart_CRM_Campaign_Handler {
     public function update_campaign($campaign_id, $data) {
         $campaign = $this->get_campaign($campaign_id);
         if (!$campaign) {
-            return new WP_Error('not_found', __('Campaign not found', 'wishcart'));
+            return new WP_Error('not_found', __('Campaign not found', 'gowishcart-wishlist-for-fluentcart'));
         }
 
         $update_data = array();
@@ -281,11 +281,11 @@ class WishCart_CRM_Campaign_Handler {
     public function execute_campaign($campaign_id, $event_data) {
         $campaign = $this->get_campaign($campaign_id);
         if (!$campaign) {
-            return new WP_Error('campaign_not_found', __('Campaign not found', 'wishcart'));
+            return new WP_Error('campaign_not_found', __('Campaign not found', 'gowishcart-wishlist-for-fluentcart'));
         }
 
         if ($campaign['status'] !== 'active') {
-            return new WP_Error('campaign_inactive', __('Campaign is not active', 'wishcart'));
+            return new WP_Error('campaign_inactive', __('Campaign is not active', 'gowishcart-wishlist-for-fluentcart'));
         }
 
         // Evaluate conditions
@@ -319,7 +319,7 @@ class WishCart_CRM_Campaign_Handler {
         }
 
         if (!$contact_id) {
-            return new WP_Error('no_contact', __('No contact found for campaign execution', 'wishcart'));
+            return new WP_Error('no_contact', __('No contact found for campaign execution', 'gowishcart-wishlist-for-fluentcart'));
         }
 
         // Generate discount code if needed
@@ -952,15 +952,15 @@ class WishCart_CRM_Campaign_Handler {
                 
                 if ($settings['enabled'] && isset($settings['send_welcome_email']) && $settings['send_welcome_email']) {
                     // Send default welcome email
-                    $product_name = isset($item_data['product_name']) ? $item_data['product_name'] : __('Product', 'wishcart');
+                    $product_name = isset($item_data['product_name']) ? $item_data['product_name'] : __('Product', 'gowishcart-wishlist-for-fluentcart');
                     $product_url = isset($item_data['product_url']) ? $item_data['product_url'] : '';
                     $site_name = get_bloginfo('name');
                     
                     /* translators: %s: product name */
-                    $subject = sprintf(__('You added %s to your wishlist!', 'wishcart'), $product_name);
+                    $subject = sprintf(__('You added %s to your wishlist!', 'gowishcart-wishlist-for-fluentcart'), $product_name);
                     $body = sprintf(
                         /* translators: %1$s: newline after greeting, %2$s: newline before message, %3$s: product name, %4$s: newline after product message, %5$s: newline before link, %6$s: product URL, %7$s: newline after link, %8$s: newline before closing, %9$s: site name */
-                        __('Hi there,%1$s%2$sGreat news! You just added "%3$s" to your wishlist.%4$s%5$sView Product: %6$s%7$s%8$sThank you for using %9$s!', 'wishcart'),
+                        __('Hi there,%1$s%2$sGreat news! You just added "%3$s" to your wishlist.%4$s%5$sView Product: %6$s%7$s%8$sThank you for using %9$s!', 'gowishcart-wishlist-for-fluentcart'),
                         "\n\n",
                         "\n",
                         $product_name,

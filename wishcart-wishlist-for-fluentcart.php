@@ -1,23 +1,23 @@
 <?php
 
 /**
- * Plugin Name:  WishCart - Wishlist for FluentCart
+ * Plugin Name:  GoWishCart - Wishlist for FluentCart
  * Plugin URI:  https://gowishcart.com
  * Description: Wishlist plugin for FluentCart with guest support, product variations, price drop alerts, and FluentCRM integration.
  * Version:     1.0.0
  * Requires PHP: 7.4
  * Requires Plugins: fluent-cart
- * Author:      WishCart Team <support@gowishcart.com>
+ * Author:      GoWishCart Team <support@gowishcart.com>
  * Author URI:  https://gowishcart.com/
- * Contributors: wishcart, sabbirxprt
- * Text Domain:  wishcart
+ * Contributors: gowishcart, sabbirxprt
+ * Text Domain:  gowishcart-wishlist-for-fluentcart
  * Domain Path: /languages/
  * License: GPL2
  * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
  *
  * @category WordPress
- * @package  WishCart
- * @author   WishCart Team <support@gowishcart.com>
+ * @package  GoWishCart
+ * @author   GoWishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ http://www.gnu.org/licenses/gpl-2.0.txt
  * @link     https://gowishcart.com
  *
@@ -35,14 +35,14 @@ if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
 }
 
 /**
- * Main plugin class for WishCart Wishlist
+ * Main plugin class for GoWishCart Wishlist
  *
  * Handles initialization, dependencies loading, and core functionality
- * of the WishCart wishlist plugin for WordPress and FluentCart.
+ * of the GoWishCart wishlist plugin for WordPress and FluentCart.
  *
  * @category WordPress
- * @package  WishCart
- * @author   WishCart Team <support@gowishcart.com>
+ * @package  GoWishCart
+ * @author   GoWishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ http://www.gnu.org/licenses/gpl-2.0.txt
  * @link     https://gowishcart.com
  */
@@ -71,7 +71,7 @@ class WishCart_Wishlist {
         define('WishCart_VERSION', '1.0.0');
         define('WishCart_PLUGIN_DIR', plugin_dir_path(__FILE__));
         define('WishCart_PLUGIN_URL', plugin_dir_url(__FILE__));
-        define('WishCart_TEXT_DOMAIN', 'wishcart');
+        define('WishCart_TEXT_DOMAIN', 'gowishcart-wishlist-for-fluentcart');
 
         // Check for FluentCart dependency first (before loading other dependencies)
         if ( ! $this->check_fluentcart_dependency() ) {
@@ -160,23 +160,23 @@ class WishCart_Wishlist {
         ?>
         <div class="notice notice-error">
             <p>
-                <strong><?php esc_html_e( 'WishCart requires FluentCart', 'wishcart' ); ?></strong>
+                <strong><?php esc_html_e( 'GoWishCart requires FluentCart', 'gowishcart-wishlist-for-fluentcart' ); ?></strong>
             </p>
             <p>
-                <?php esc_html_e( 'WishCart plugin requires FluentCart to be installed and activated. Please install and activate FluentCart to use WishCart features.', 'wishcart' ); ?>
+                <?php esc_html_e( 'GoWishCart plugin requires FluentCart to be installed and activated. Please install and activate FluentCart to use GoWishCart features.', 'gowishcart-wishlist-for-fluentcart' ); ?>
             </p>
             <p>
                 <?php if ( $is_installed ) : ?>
                     <a href="<?php echo esc_url( $activate_url ); ?>" class="button button-primary">
-                        <?php esc_html_e( 'Activate FluentCart', 'wishcart' ); ?>
+                        <?php esc_html_e( 'Activate FluentCart', 'gowishcart-wishlist-for-fluentcart' ); ?>
                     </a>
                 <?php else : ?>
                     <a href="<?php echo esc_url( $install_url ); ?>" class="button button-primary">
-                        <?php esc_html_e( 'Install FluentCart', 'wishcart' ); ?>
+                        <?php esc_html_e( 'Install FluentCart', 'gowishcart-wishlist-for-fluentcart' ); ?>
                     </a>
                 <?php endif; ?>
                 <a href="<?php echo esc_url( admin_url( 'plugins.php' ) ); ?>" class="button">
-                    <?php esc_html_e( 'Go to Plugins', 'wishcart' ); ?>
+                    <?php esc_html_e( 'Go to Plugins', 'gowishcart-wishlist-for-fluentcart' ); ?>
                 </a>
             </p>
         </div>
@@ -193,7 +193,7 @@ class WishCart_Wishlist {
         // Clear cache if FluentCart or this plugin was activated/deactivated
         if ( strpos( $plugin, 'fluentcart' ) !== false || 
              strpos( $plugin, 'fluent-cart' ) !== false ||
-             strpos( $plugin, 'wishcart' ) !== false ) {
+             strpos( $plugin, 'gowishcart-wishlist-for-fluentcart' ) !== false ) {
             if ( class_exists( 'WishCart_FluentCart_Helper' ) ) {
                 WishCart_FluentCart_Helper::clear_detection_cache();
             }
@@ -294,12 +294,12 @@ class WishCart_Wishlist {
             wp_die(
                 sprintf(
                     '<h1>%s</h1><p>%s</p><p><a href="%s">%s</a></p>',
-                    esc_html__( 'WishCart Activation Failed', 'wishcart' ),
-                    esc_html__( 'WishCart requires FluentCart plugin to be installed and activated. Please install and activate FluentCart first, then try activating WishCart again.', 'wishcart' ),
+                    esc_html__( 'GoWishCart Activation Failed', 'gowishcart-wishlist-for-fluentcart' ),
+                    esc_html__( 'GoWishCart requires FluentCart plugin to be installed and activated. Please install and activate FluentCart first, then try activating GoWishCart again.', 'gowishcart-wishlist-for-fluentcart' ),
                     esc_url( admin_url( 'plugins.php' ) ),
-                    esc_html__( 'Return to Plugins', 'wishcart' )
+                    esc_html__( 'Return to Plugins', 'gowishcart-wishlist-for-fluentcart' )
                 ),
-                esc_html__( 'Plugin Activation Error', 'wishcart' ),
+                esc_html__( 'Plugin Activation Error', 'gowishcart-wishlist-for-fluentcart' ),
                 [ 'back_link' => true ]
             );
         }

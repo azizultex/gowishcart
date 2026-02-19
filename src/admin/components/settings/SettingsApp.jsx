@@ -38,7 +38,7 @@ const SettingsApp = () => {
 
     const [isSaving, setIsSaving] = useState(false);
     const [activeTab, setActiveTab] = useState(() => wishcartSettings?.defaultTab || 'settings');
-    const baseMenuSlug = wishcartSettings?.menuSlug || 'wishcart';
+    const baseMenuSlug = wishcartSettings?.menuSlug || 'gowishcart-wishlist-for-fluentcart';
     const fallbackTabPageMap = useMemo(() => ({
         settings: `${baseMenuSlug}-settings`,
         customization: `${baseMenuSlug}-customization`,
@@ -144,10 +144,10 @@ const SettingsApp = () => {
                     title: (
                         <div className="flex items-center gap-2">
                             <CheckCircle2 className="h-4 w-4 text-green-500" />
-                            <span>{__('Settings saved successfully!', 'wishcart')}</span>
+                            <span>{__('Settings saved successfully!gowishcart-wishlist-for-fluentcart')}</span>
                         </div>
                     ),
-                    description: __('Your changes have been applied.', 'wishcart'),
+                    description: __('Your changes have been applied.gowishcart-wishlist-for-fluentcart'),
                     className: "bg-green-50 border-green-200"
                 });
             } else {
@@ -158,10 +158,10 @@ const SettingsApp = () => {
                 title: (
                     <div className="flex items-center gap-2">
                         <XCircle className="h-4 w-4 text-red-500" />
-                        <span>{__('Failed to save settings', 'wishcart')}</span>
+                        <span>{__('Failed to save settingsgowishcart-wishlist-for-fluentcart')}</span>
                     </div>
                 ),
-                description: __('Please try again or contact support if the problem persists.', 'wishcart'),
+                description: __('Please try again or contact support if the problem persists.gowishcart-wishlist-for-fluentcart'),
                 className: "bg-red-50 border-red-200"
             });
         } finally {
@@ -180,12 +180,12 @@ const SettingsApp = () => {
     };
 
     const tabs = useMemo(() => ([
-        { id: 'settings', label: __('Settings', 'wishcart'), icon: Settings },
-        { id: 'customization', label: __('Customization', 'wishcart'), icon: Palette },
-        { id: 'integrations', label: __('Integrations', 'wishcart'), icon: Plug },
-        { id: 'analytics', label: __('Analytics', 'wishcart'), icon: BarChart3 },
-        { id: 'support', label: __('Support', 'wishcart'), icon: LifeBuoy },
-        { id: 'get-pro', label: __('Get Pro', 'wishcart'), icon: Sparkles },
+        { id: 'settings', label: __('Settingsgowishcart-wishlist-for-fluentcart'), icon: Settings },
+        { id: 'customization', label: __('Customizationgowishcart-wishlist-for-fluentcart'), icon: Palette },
+        { id: 'integrations', label: __('Integrationsgowishcart-wishlist-for-fluentcart'), icon: Plug },
+        { id: 'analytics', label: __('Analyticsgowishcart-wishlist-for-fluentcart'), icon: BarChart3 },
+        { id: 'support', label: __('Supportgowishcart-wishlist-for-fluentcart'), icon: LifeBuoy },
+        { id: 'get-pro', label: __('Get Progowishcart-wishlist-for-fluentcart'), icon: Sparkles },
     ]), []);
 
     const navigateToTab = useCallback((tabId) => {
@@ -286,7 +286,7 @@ const SettingsApp = () => {
                                     disabled={isSaving}
                                     className="wishcart-button wishcart-button-primary"
                                 >
-                                    {isSaving ? __('Saving...', 'wishcart') : __('Save Settings', 'wishcart')}
+                                    {isSaving ? __('Saving...gowishcart-wishlist-for-fluentcart') : __('Save Settingsgowishcart-wishlist-for-fluentcart')}
                                 </button>
                             </div>
                         )}

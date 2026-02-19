@@ -113,7 +113,7 @@ class WishCart_Cron_Handler {
         if (!isset($schedules['wishcart_5min'])) {
             $schedules['wishcart_5min'] = array(
                 'interval' => 300, // 5 minutes in seconds
-                'display' => __('Every 5 Minutes', 'wishcart'),
+                'display' => __('Every 5 Minutes', 'gowishcart-wishlist-for-fluentcart'),
             );
         }
 
@@ -234,14 +234,14 @@ class WishCart_Cron_Handler {
      */
     public static function get_cron_status() {
         $events = array(
-            'wishcart_process_notifications' => __('Process Notifications', 'wishcart'),
-            'wishcart_check_price_drops' => __('Check Price Drops', 'wishcart'),
-            'wishcart_check_back_in_stock' => __('Check Back in Stock', 'wishcart'),
-            'wishcart_cleanup_expired_guests' => __('Cleanup Expired Guests', 'wishcart'),
-            'wishcart_cleanup_expired_shares' => __('Cleanup Expired Shares', 'wishcart'),
-            'wishcart_recalculate_analytics' => __('Recalculate Analytics', 'wishcart'),
-            'wishcart_cleanup_old_data' => __('Cleanup Old Data', 'wishcart'),
-            'wishcart_process_time_based_campaigns' => __('Process Time-Based Campaigns', 'wishcart'),
+            'wishcart_process_notifications' => __('Process Notifications', 'gowishcart-wishlist-for-fluentcart'),
+            'wishcart_check_price_drops' => __('Check Price Drops', 'gowishcart-wishlist-for-fluentcart'),
+            'wishcart_check_back_in_stock' => __('Check Back in Stock', 'gowishcart-wishlist-for-fluentcart'),
+            'wishcart_cleanup_expired_guests' => __('Cleanup Expired Guests', 'gowishcart-wishlist-for-fluentcart'),
+            'wishcart_cleanup_expired_shares' => __('Cleanup Expired Shares', 'gowishcart-wishlist-for-fluentcart'),
+            'wishcart_recalculate_analytics' => __('Recalculate Analytics', 'gowishcart-wishlist-for-fluentcart'),
+            'wishcart_cleanup_old_data' => __('Cleanup Old Data', 'gowishcart-wishlist-for-fluentcart'),
+            'wishcart_process_time_based_campaigns' => __('Process Time-Based Campaigns', 'gowishcart-wishlist-for-fluentcart'),
         );
 
         $status = array();
@@ -280,7 +280,7 @@ class WishCart_Cron_Handler {
         if (!in_array($hook, $valid_hooks)) {
             return array(
                 'success' => false,
-                'message' => __('Invalid cron hook', 'wishcart'),
+                'message' => __('Invalid cron hook', 'gowishcart-wishlist-for-fluentcart'),
             );
         }
 
@@ -291,7 +291,7 @@ class WishCart_Cron_Handler {
         return array(
             'success' => true,
             /* translators: %s: cron job hook name */
-            'message' => sprintf(__('Cron job %s triggered successfully', 'wishcart'), $hook),
+            'message' => sprintf(__('Cron job %s triggered successfully', 'gowishcart-wishlist-for-fluentcart'), $hook),
         );
     }
 

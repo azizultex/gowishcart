@@ -1,5 +1,5 @@
 {
-  "name": "wishcart",
+  "name": "gowishcart-wishlist-for-fluentcart",
   "version": "1.0.0",
   "scripts": {
     "dev": "vite",
@@ -13,7 +13,7 @@
     "build:clean": "rimraf dist/",
     "build:copy": "mkdir -p dist && rsync -av --exclude-from='.gitignore' --exclude='node_modules' --exclude='.git' --exclude='.github' --exclude='tests' --exclude='.env*' --exclude='*.log' --exclude='*.tmp' --exclude='*.temp' --exclude='*.swp' . dist/",
     "build:composer": "cd dist && composer install --no-dev --optimize-autoloader",
-    "build:zip": "cd dist && zip -r ../wishcart.zip ."
+    "build:zip": "cd dist && zip -r ../gowishcart-wishlist-for-fluentcart.zip ."
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.3",

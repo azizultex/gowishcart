@@ -1,5 +1,5 @@
 {
-    "name": "wishcart/wishcart",
+    "name": "gowishcart-wishlist-for-fluentcart/gowishcart-wishlist-for-fluentcart",
     "description": "Wishlist plugin for FluentCart with guest support, product variations, price drop alerts, and FluentCRM integration.",
     "type": "wordpress-plugin",
     "license": "GPL-2.0-or-later",

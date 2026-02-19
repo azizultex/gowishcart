@@ -8,15 +8,15 @@ const IntegrationsSettings = () => {
     const integrations = [
         {
             id: 'fluentcrm',
-            name: __('FluentCRM', 'wishcart'),
-            description: __('Connect with FluentCRM to sync wishlist contacts, automate campaigns, and send targeted emails for price drops, back-in-stock alerts, and more.', 'wishcart'),
+            name: __('FluentCRMgowishcart-wishlist-for-fluentcart'),
+            description: __('Connect with FluentCRM to sync wishlist contacts, automate campaigns, and send targeted emails for price drops, back-in-stock alerts, and more.gowishcart-wishlist-for-fluentcart'),
             component: FluentCRMSettings,
         },
         // Future integrations can be added here:
         // {
         //     id: 'mailchimp',
-        //     name: __('Mailchimp', 'wishcart'),
-        //     description: __('Sync your wishlist with Mailchimp for email marketing campaigns.', 'wishcart'),
+        //     name: __('Mailchimpgowishcart-wishlist-for-fluentcart'),
+        //     description: __('Sync your wishlist with Mailchimp for email marketing campaigns.gowishcart-wishlist-for-fluentcart'),
         //     component: MailchimpSettings,
         // },
     ];
@@ -30,7 +30,7 @@ const IntegrationsSettings = () => {
                     color: 'var(--wishcart-gray-900)',
                     marginBottom: '8px'
                 }}>
-                    {__('Integrations', 'wishcart')}
+                    {__('Integrationsgowishcart-wishlist-for-fluentcart')}
                 </h3>
                 <p style={{
                     fontSize: '13px',
@@ -38,7 +38,7 @@ const IntegrationsSettings = () => {
                     lineHeight: '1.5',
                     margin: 0
                 }}>
-                    {__('Connect WishCart with your favorite marketing and CRM tools to automate your workflows and enhance customer engagement.', 'wishcart')}
+                    {__('Connect WishCart with your favorite marketing and CRM tools to automate your workflows and enhance customer engagement.gowishcart-wishlist-for-fluentcart')}
                 </p>
             </div>
 
