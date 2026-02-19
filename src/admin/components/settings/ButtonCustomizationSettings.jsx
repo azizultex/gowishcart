@@ -264,7 +264,7 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
                         placeholder={__('Add to Wishlistgowishcart-wishlist-for-fluentcart')}
                     />
                     <p className="text-sm text-muted-foreground">
-                        {__('Text displayed when product is not in wishlistgowishcart-wishlist-for-fluentcart')}
+                        {__('Text displayed when product is not in wishlist', 'gowishcart-wishlist-for-fluentcart')}
                     </p>
                 </div>
 
@@ -281,7 +281,7 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
                         placeholder={__('Saved to Wishlistgowishcart-wishlist-for-fluentcart')}
                     />
                     <p className="text-sm text-muted-foreground">
-                        {__('Text displayed when product is in wishlistgowishcart-wishlist-for-fluentcart')}
+                        {__('Text displayed when product is in wishlist', 'gowishcart-wishlist-for-fluentcart')}
                     </p>
                 </div>
             </div>

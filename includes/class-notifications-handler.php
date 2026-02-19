@@ -148,7 +148,7 @@ class wishcart_Notifications_Handler {
                 $item_count = isset($data['item_count']) ? intval($data['item_count']) : 0;
 
                 /* translators: %1$d: Item count */
-                $subject = sprintf(__('Reminder: You have %1$d items in your wishlistgowishcart-wishlist-for-fluentcart'), $item_count);
+                $subject = sprintf(__('Reminder: You have %1$d items in your wishlist', 'gowishcart-wishlist-for-fluentcart'), $item_count);
                 $content = sprintf(
                     /* translators: %1$s: Newline, %2$s: Newline, %3$d: Item count, %4$s: Wishlist name, %5$s: Newlines, %6$s: Newline, %7$s: Wishlist URL */
                     __('Hi there,%1$s%2$sJust a friendly reminder that you have %3$d items waiting in your wishlist "%4$s".%5$s%6$sView Your Wishlist: %7$sgowishcart-wishlist-for-fluentcart'),
@@ -164,7 +164,7 @@ class wishcart_Notifications_Handler {
 
             case 'share_notification':
                 $shared_by = isset($data['shared_by']) ? $data['shared_by'] : __('Someonegowishcart-wishlist-for-fluentcart');
-                $wishlist_name = isset($data['wishlist_name']) ? $data['wishlist_name'] : __('a wishlistgowishcart-wishlist-for-fluentcart');
+                $wishlist_name = isset($data['wishlist_name']) ? $data['wishlist_name'] : __('a wishlist', 'gowishcart-wishlist-for-fluentcart');
                 $wishlist_url = isset($data['wishlist_url']) ? $data['wishlist_url'] : '';
                 $message = isset($data['message']) ? $data['message'] : '';
 

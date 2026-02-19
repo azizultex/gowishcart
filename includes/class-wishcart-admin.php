@@ -1219,7 +1219,7 @@ class wishcart_Admin {
 
         return rest_ensure_response( array(
             'success' => true,
-            'message' => __( 'Product added to wishlistgowishcart-wishlist-for-fluentcart' ),
+            'message' => __( 'Product added to wishlist', 'gowishcart-wishlist-for-fluentcart' ),
             'wishlist' => $wishlist_info,
         ) );
     }
@@ -1257,7 +1257,7 @@ class wishcart_Admin {
 
         return rest_ensure_response( array(
             'success' => true,
-            'message' => __( 'Product removed from wishlistgowishcart-wishlist-for-fluentcart' ),
+            'message' => __( 'Product removed from wishlist', 'gowishcart-wishlist-for-fluentcart' ),
         ) );
     }
 

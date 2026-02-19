@@ -34,7 +34,7 @@ class wishcart_Item_Removed_Trigger extends \FluentCrm\App\Services\Funnel\BaseT
         return array(
             'category'    => __( 'WishCartgowishcart-wishlist-for-fluentcart' ),
             'label'       => __( 'Item Removed from WishCartgowishcart-wishlist-for-fluentcart' ),
-            'description' => __( 'This funnel will be initiated when a product is removed from a wishlistgowishcart-wishlist-for-fluentcart' ),
+            'description' => __( 'This funnel will be initiated when a product is removed from a wishlist', 'gowishcart-wishlist-for-fluentcart' ),
             // 'icon'        => 'fc-icon-heart',
         );
     }

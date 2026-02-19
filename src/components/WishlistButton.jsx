@@ -1092,7 +1092,7 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
     const buttonLabel = isInWishlist 
         ? (labels.saved || defaultSavedLabel)
         : (labels.add || defaultAddLabel);
-    const srLabel = isInWishlist ? __('Remove from wishlistgowishcart-wishlist-for-fluentcart') : __('Add to wishlistgowishcart-wishlist-for-fluentcart');
+    const srLabel = isInWishlist ? __('Remove from wishlist', 'gowishcart-wishlist-for-fluentcart') : __('Add to wishlist', 'gowishcart-wishlist-for-fluentcart');
 
     // Get icon component based on wishlist state
     const getIconComponent = () => {
