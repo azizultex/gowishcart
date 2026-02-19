@@ -69,7 +69,7 @@ class wishcart_Admin {
         // Add inline CSS with dynamic URL for trigger icon background image
         $icon_url = WishCart_PLUGIN_URL . 'assets/images/icons/menu-icon-short.svg';
         $inline_css = "
-        .wishcart-trigger-icon i {
+        .gowishcart-trigger-icon i {
             background-image: url('" . esc_url( $icon_url ) . "');
         }";
 
@@ -766,7 +766,7 @@ class wishcart_Admin {
      * @return void
      */
     public function render_settings_page() {
-        echo '<div id="wishcart-settings-app"></div>';
+        echo '<div id="gowishcart-settings-app"></div>';
     }
 
     /**

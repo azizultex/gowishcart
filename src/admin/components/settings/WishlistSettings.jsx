@@ -202,9 +202,9 @@ const WishlistSettings = ({ settings, updateSettings }) => {
     };
 
     return (
-        <div className="wishcart-settings-section">
+        <div className="gowishcart-settings-section">
             {/* Enable Wishlist */}
-            <div className="wishcart-toggle-row">
+            <div className="gowishcart-toggle-row">
                 <div className="toggle-info">
                     <h4>{__('Enable Wishlist', 'gowishcart-wishlist-for-fluentcart')}</h4>
                     <p>{__('Enable or disable wishlist functionality', 'gowishcart-wishlist-for-fluentcart')}</p>
@@ -219,11 +219,11 @@ const WishlistSettings = ({ settings, updateSettings }) => {
             </div>
 
             {/* Enable Multiple Wishlists - Pro Feature */}
-            <div className="wishcart-toggle-row">
+            <div className="gowishcart-toggle-row">
                 <div className="toggle-info">
                     <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px'}}>
                         <h4>{__('Enable Multiple Wishlists', 'gowishcart-wishlist-for-fluentcart')}</h4>
-                        <span className="wishcart-badge wishcart-badge-warning">{__('PROgowishcart-wishlist-for-fluentcart')}</span>
+                        <span className="gowishcart-badge wishcart-badge-warning">{__('PROgowishcart-wishlist-for-fluentcart')}</span>
                     </div>
                     <p>{__('Allow users to create and manage multiple wishlists. When disabled, products are added directly to the default wishlist.', 'gowishcart-wishlist-for-fluentcart')}</p>
                     <p style={{fontSize: '13px', margin: '4px 0 0', color: 'var(--wishcart-text-muted)'}}>{__('This feature is available in WishCart Pro. Please upgrade to get all the advanced features.', 'gowishcart-wishlist-for-fluentcart')}</p>
@@ -239,7 +239,7 @@ const WishlistSettings = ({ settings, updateSettings }) => {
             </div>
 
             {/* Shop Page Button */}
-            <div className="wishcart-toggle-row">
+            <div className="gowishcart-toggle-row">
                 <div className="toggle-info">
                     <h4>{__('Show Button on Shop Page', 'gowishcart-wishlist-for-fluentcart')}</h4>
                     <p>{__('Display wishlist button on product archive/shop pages', 'gowishcart-wishlist-for-fluentcart')}</p>
@@ -255,7 +255,7 @@ const WishlistSettings = ({ settings, updateSettings }) => {
             </div>
 
             {/* Button */}
-            <div className="wishcart-toggle-row">
+            <div className="gowishcart-toggle-row">
                 <div className="toggle-info">
                     <h4>{__('Show Button on Product Page', 'gowishcart-wishlist-for-fluentcart')}</h4>
                     <p>{__('Display wishlist button on single product pages', 'gowishcart-wishlist-for-fluentcart')}</p>
@@ -272,8 +272,8 @@ const WishlistSettings = ({ settings, updateSettings }) => {
 
             {/* Button Position */}
             {wishlistSettings.product_page_button && (
-                <div className="wishcart-form-group" style={{borderTop: '1px solid var(--wishcart-gray-25)', paddingTop: '16px'}}>
-                    <label className="wishcart-label" htmlFor="button_position">
+                <div className="gowishcart-form-group" style={{borderTop: '1px solid var(--wishcart-gray-25)', paddingTop: '16px'}}>
+                    <label className="gowishcart-label" htmlFor="button_position">
                         {__('Button Position', 'gowishcart-wishlist-for-fluentcart')}
                     </label>
                     <Select
@@ -281,7 +281,7 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                         onValueChange={(value) => updateWishlistSetting('button_position', value)}
                         disabled={!wishlistSettings.enabled}
                     >
-                        <SelectTrigger id="button_position" className="wishcart-select">
+                        <SelectTrigger id="button_position" className="gowishcart-select">
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -299,18 +299,18 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                             </SelectItem>
                         </SelectContent>
                     </Select>
-                    <p className="wishcart-form-helper">
+                    <p className="gowishcart-form-helper">
                         {__('Choose where to display the wishlist button relative to the purchase actions.', 'gowishcart-wishlist-for-fluentcart')}
                     </p>
                 </div>
             )}
 
             {/* Shortcode */}
-            <div className="wishcart-form-group" style={{borderTop: '1px solid var(--wishcart-gray-25)', paddingTop: '16px'}}>
-                <label className="wishcart-label">
+            <div className="gowishcart-form-group" style={{borderTop: '1px solid var(--wishcart-gray-25)', paddingTop: '16px'}}>
+                <label className="gowishcart-label">
                     {__('Shortcode', 'gowishcart-wishlist-for-fluentcart')}
                 </label>
-                <p className="wishcart-form-helper" style={{marginTop: '8px'}}>
+                <p className="gowishcart-form-helper" style={{marginTop: '8px'}}>
                     {__('You can add a button manually by using the shortcode', 'gowishcart-wishlist-for-fluentcart')}{' '}
                     <code style={{fontFamily: 'monospace', backgroundColor: '#f5f5f5', padding: '2px 6px', borderRadius: '3px'}}>
                         [wishcart_sc id="{'{'}product id{'}'}"]
@@ -326,7 +326,7 @@ const WishlistSettings = ({ settings, updateSettings }) => {
             </div>
 
             {/* Wishlist Page */}
-            <div className="wishcart-form-group" style={{borderTop: '1px solid var(--wishcart-gray-25)', paddingTop: '16px'}}>
+            <div className="gowishcart-form-group" style={{borderTop: '1px solid var(--wishcart-gray-25)', paddingTop: '16px'}}>
                 <h4 style={{fontSize: '14px', fontWeight: '600', marginBottom: '4px'}}>
                     {__('Select Wishlist Page', 'gowishcart-wishlist-for-fluentcart')}
                 </h4>
@@ -340,7 +340,7 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                             onValueChange={(value) => updateWishlistSetting('wishlist_page_id', parseInt(value, 10))}
                             disabled={!wishlistSettings.enabled || loadingPages}
                         >
-                            <SelectTrigger id="wishlist_page" className="wishcart-select">
+                            <SelectTrigger id="wishlist_page" className="gowishcart-select">
                                 <SelectValue>
                                     {getPageDisplayText()}
                                 </SelectValue>
@@ -465,8 +465,8 @@ const WishlistSettings = ({ settings, updateSettings }) => {
             </Dialog>
 
             {/* Guest Cookie Expiry */}
-            <div className="wishcart-form-group">
-                <label className="wishcart-label" htmlFor="guest_cookie_expiry">
+            <div className="gowishcart-form-group">
+                <label className="gowishcart-label" htmlFor="guest_cookie_expiry">
                     {__('Guest Wishlist Expiry (Days)gowishcart-wishlist-for-fluentcart')}
                 </label>
                 <Input
@@ -477,17 +477,17 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                     value={wishlistSettings.guest_cookie_expiry || 30}
                     onChange={(e) => updateWishlistSetting('guest_cookie_expiry', parseInt(e.target.value, 10))}
                     disabled={!wishlistSettings.enabled}
-                    className="wishcart-input"
+                    className="gowishcart-input"
                     style={{maxWidth: '200px'}}
                 />
-                <p className="wishcart-form-helper">
+                <p className="gowishcart-form-helper">
                     {__('Number of days guest wishlists are stored in cookies', 'gowishcart-wishlist-for-fluentcart')}
                 </p>
             </div>
 
             {/* Custom CSS */}
-            <div className="wishcart-form-group wishcart-code-editor">
-                <label className="wishcart-label" htmlFor="custom_css">
+            <div className="gowishcart-form-group wishcart-code-editor">
+                <label className="gowishcart-label" htmlFor="custom_css">
                     {__('Custom CSSgowishcart-wishlist-for-fluentcart')}
                 </label>
                 <Textarea
@@ -497,10 +497,10 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                     onChange={(e) => updateWishlistSetting('custom_css', e.target.value)}
                     placeholder={__('Add custom CSS for wishlist button styling...', 'gowishcart-wishlist-for-fluentcart')}
                     disabled={!wishlistSettings.enabled}
-                    className="wishcart-textarea"
+                    className="gowishcart-textarea"
                 />
-                <p className="wishcart-form-helper">
-                    {__('Add custom CSS to style the wishlist button. Use selector: .wishcart-wishlist-button', 'gowishcart-wishlist-for-fluentcart')}
+                <p className="gowishcart-form-helper">
+                    {__('Add custom CSS to style the wishlist button. Use selector: .gowishcart-wishlist-button', 'gowishcart-wishlist-for-fluentcart')}
                 </p>
             </div>
         </div>

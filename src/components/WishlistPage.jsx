@@ -865,7 +865,7 @@ const ensureWishlistShareAllowed = () => {
 
     if (isLoading) {
         return (
-            <div className="wishcart-wishlist-page container mx-auto px-4 py-8">
+            <div className="gowishcart-wishlist-page container mx-auto px-4 py-8">
                 <div className="flex items-center justify-center min-h-[400px]">
                     <div className="text-center">
                         <Heart className="w-12 h-12 mx-auto mb-4 animate-pulse text-gray-400" />
@@ -879,7 +879,7 @@ const ensureWishlistShareAllowed = () => {
     // Show error state if there's an error
     if (error) {
         return (
-            <div className="wishcart-wishlist-page container mx-auto px-4 py-8">
+            <div className="gowishcart-wishlist-page container mx-auto px-4 py-8">
                 <Card>
                     <CardContent className="flex flex-col items-center justify-center min-h-[400px] py-12">
                         <Heart className="w-16 h-16 mb-4 text-red-300" />
@@ -918,7 +918,7 @@ const ensureWishlistShareAllowed = () => {
     };
 
     return (
-        <div className="wishcart-wishlist-page">
+        <div className="gowishcart-wishlist-page">
             <SuccessModal
                 isOpen={isSuccessModalOpen}
                 message={successMessage}
@@ -1122,7 +1122,7 @@ const ensureWishlistShareAllowed = () => {
                     <div className="share-section" style={{position: 'relative', opacity: 0.6, pointerEvents: 'none'}}>
                         <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px'}}>
                             <span className="share-label">Wishlist Share on</span>
-                            <span className="wishcart-badge wishcart-badge-warning" style={{fontSize: '10px', padding: '2px 6px'}}>PRO</span>
+                            <span className="gowishcart-badge wishcart-badge-warning" style={{fontSize: '10px', padding: '2px 6px'}}>PRO</span>
                         </div>
                         <div className="share-icons">
                             <button

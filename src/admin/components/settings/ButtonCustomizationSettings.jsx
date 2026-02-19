@@ -910,9 +910,9 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
     ];
 
     return (
-        <div className="wishcart-button-customization-wrapper" style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: '2rem', alignItems: 'start' }}>
+        <div className="gowishcart-button-customization-wrapper" style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: '2rem', alignItems: 'start' }}>
                 {/* Settings Section */}
-            <div className="wishcart-settings-section">
+            <div className="gowishcart-settings-section">
                 {/* General Settings Section */}
                 <div className="space-y-4 pb-6 border-b">
                     <Label className="text-base font-semibold">{__('General Settings', 'gowishcart-wishlist-for-fluentcart')}</Label>
@@ -979,7 +979,7 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
             </div>
 
             {/* Live Preview Section */}
-            <div className="wishcart-preview-wrapper">
+            <div className="gowishcart-preview-wrapper">
                 <ButtonPreview buttonCustomization={localButtonCustomization} />
             </div>
         </div>

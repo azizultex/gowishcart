@@ -253,13 +253,13 @@ class WishCart_Wishlist_Frontend {
         $css_parts = array();
         
         // Generate CSS from product_page customization settings
-        // Note: Product listing styles come after and have higher specificity (.wishcart-card-container .wishcart-wishlist-button)
+        // Note: Product listing styles come after and have higher specificity (.gowishcart-card-container .gowishcart-wishlist-button)
         $product_page = isset( $button_customization['product_page'] ) ? $button_customization['product_page'] : array();
         if ( ! empty( $product_page ) ) {
             $css_parts[] = '/* Button Styles */';
-            // Buttons are those NOT inside .wishcart-card-container
+            // Buttons are those NOT inside .gowishcart-card-container
             // Since listing styles come after with higher specificity, they will override when applicable
-            $css_parts[] = '.wishcart-wishlist-button-container:not(.wishcart-card-container) .wishcart-wishlist-button {';
+            $css_parts[] = '.gowishcart-wishlist-button-container:not(.gowishcart-card-container) .gowishcart-wishlist-button {';
 
             if ( ! empty( $product_page['backgroundColor'] ) ) {
                 $background = $product_page['backgroundColor'];
@@ -287,7 +287,7 @@ class WishCart_Wishlist_Frontend {
             
             // Hover state
             if ( ! empty( $product_page['backgroundHoverColor'] ) || ! empty( $product_page['buttonTextHoverColor'] ) ) {
-                $css_parts[] = '.wishcart-wishlist-button-container:not(.wishcart-card-container) .wishcart-wishlist-button:hover:not(:disabled) {';
+                $css_parts[] = '.gowishcart-wishlist-button-container:not(.gowishcart-card-container) .gowishcart-wishlist-button:hover:not(:disabled) {';
                 if ( ! empty( $product_page['backgroundHoverColor'] ) ) {
                     $background_hover = $product_page['backgroundHoverColor'];
                     // Use background for gradients, background-color for solid colors
@@ -305,7 +305,7 @@ class WishCart_Wishlist_Frontend {
             
             // Icon size for product page
             if ( ! empty( $product_page['iconSize'] ) ) {
-                $css_parts[] = '.wishcart-wishlist-button-container:not(.wishcart-card-container) .wishcart-wishlist-button .wishcart-wishlist-button__icon {';
+                $css_parts[] = '.gowishcart-wishlist-button-container:not(.gowishcart-card-container) .gowishcart-wishlist-button .gowishcart-wishlist-button__icon {';
                 $css_parts[] = '  width: ' . esc_attr( $product_page['iconSize'] ) . ';';
                 $css_parts[] = '  height: ' . esc_attr( $product_page['iconSize'] ) . ';';
                 $css_parts[] = '}';
@@ -317,8 +317,8 @@ class WishCart_Wishlist_Frontend {
         $product_listing = isset( $button_customization['product_listing'] ) ? $button_customization['product_listing'] : array();
         if ( ! empty( $product_listing ) ) {
             $css_parts[] = '/* Product Listing Button Styles */';
-            // More specific selector will override product page styles when button is inside .wishcart-card-container
-            $css_parts[] = '.wishcart-card-container .wishcart-wishlist-button {';
+            // More specific selector will override product page styles when button is inside .gowishcart-card-container
+            $css_parts[] = '.gowishcart-card-container .gowishcart-wishlist-button {';
 
             if ( ! empty( $product_listing['backgroundColor'] ) ) {
                 $background = $product_listing['backgroundColor'];
@@ -346,7 +346,7 @@ class WishCart_Wishlist_Frontend {
             
             // Hover state for product listing
             if ( ! empty( $product_listing['backgroundHoverColor'] ) || ! empty( $product_listing['buttonTextHoverColor'] ) ) {
-                $css_parts[] = '.wishcart-card-container .wishcart-wishlist-button:hover:not(:disabled) {';
+                $css_parts[] = '.gowishcart-card-container .gowishcart-wishlist-button:hover:not(:disabled) {';
                 if ( ! empty( $product_listing['backgroundHoverColor'] ) ) {
                     $background_hover = $product_listing['backgroundHoverColor'];
                     // Use background for gradients, background-color for solid colors
@@ -364,7 +364,7 @@ class WishCart_Wishlist_Frontend {
             
             // Icon size for product listing
             if ( ! empty( $product_listing['iconSize'] ) ) {
-                $css_parts[] = '.wishcart-card-container .wishcart-wishlist-button .wishcart-wishlist-button__icon {';
+                $css_parts[] = '.gowishcart-card-container .gowishcart-wishlist-button .gowishcart-wishlist-button__icon {';
                 $css_parts[] = '  width: ' . esc_attr( $product_listing['iconSize'] ) . ';';
                 $css_parts[] = '  height: ' . esc_attr( $product_listing['iconSize'] ) . ';';
                 $css_parts[] = '}';

@@ -107,40 +107,40 @@ const GuestEmailModal = ({ isOpen, onClose, onEmailSubmitted }) => {
     if (!isOpen) return null;
 
     return (
-        <div className="wishcart-modal-overlay" onClick={onClose}>
-            <div className="wishcart-modal wishcart-email-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="gowishcart-modal-overlay" onClick={onClose}>
+            <div className="gowishcart-modal wishcart-email-modal" onClick={(e) => e.stopPropagation()}>
                 <button 
-                    className="wishcart-modal-close" 
+                    className="gowishcart-modal-close" 
                     onClick={onClose}
                     aria-label="Close"
                     disabled={isSubmitting}
                 >
                     <X size={18} />
                 </button>
-                <div className="wishcart-modal-header">
-                    <div className="wishcart-modal-header-content">
-                        <div className="wishcart-modal-icon">
+                <div className="gowishcart-modal-header">
+                    <div className="gowishcart-modal-header-content">
+                        <div className="gowishcart-modal-icon">
                             <Bell size={24} />
                         </div>
                         <h2>Get Notified About Your Wishlist</h2>
                     </div>
                 </div>
 
-                <div className="wishcart-modal-body">
-                    <div className="wishcart-email-description">
+                <div className="gowishcart-modal-body">
+                    <div className="gowishcart-email-description">
                         Enter your email to receive notifications about price drops, back-in-stock alerts, and more for items in your wishlist.
                     </div>
 
                     {error && (
-                        <div className="wishcart-modal-error">
+                        <div className="gowishcart-modal-error">
                             {error}
                         </div>
                     )}
 
-                    <form onSubmit={handleSubmit} className="wishcart-email-form">
-                        <div className="wishcart-email-input-wrapper">
+                    <form onSubmit={handleSubmit} className="gowishcart-email-form">
+                        <div className="gowishcart-email-input-wrapper">
                             <div className={`wishcart-input-container ${focused ? 'focused' : ''} ${error ? 'error' : ''}`}>
-                                <Mail size={18} className="wishcart-input-icon" />
+                                <Mail size={18} className="gowishcart-input-icon" />
                                 <input
                                     id="guest-email"
                                     type="email"
@@ -155,19 +155,19 @@ const GuestEmailModal = ({ isOpen, onClose, onEmailSubmitted }) => {
                                     autoFocus
                                     required
                                     disabled={isSubmitting}
-                                    className="wishcart-email-input"
+                                    className="gowishcart-email-input"
                                 />
                             </div>
-                            <p className="wishcart-email-hint">
+                            <p className="gowishcart-email-hint">
                                 We'll use this to notify you about your wishlist items
                             </p>
                         </div>
                     </form>
                 </div>
 
-                <div className="wishcart-modal-footer">
+                <div className="gowishcart-modal-footer">
                     <button
-                        className="wishcart-button-secondary"
+                        className="gowishcart-button-secondary"
                         onClick={onClose}
                         disabled={isSubmitting}
                         type="button"
@@ -175,14 +175,14 @@ const GuestEmailModal = ({ isOpen, onClose, onEmailSubmitted }) => {
                         Skip
                     </button>
                     <button
-                        className="wishcart-button-primary"
+                        className="gowishcart-button-primary"
                         onClick={handleSubmit}
                         disabled={isSubmitting || !email.trim()}
                         type="button"
                     >
                         {isSubmitting ? (
                             <>
-                                <div className="wishcart-button-spinner"></div>
+                                <div className="gowishcart-button-spinner"></div>
                                 <span>Saving...</span>
                             </>
                         ) : (

@@ -19,9 +19,9 @@
         }
 
         .refresh-button {
-            @extend .wishcart-button;
-            @extend .wishcart-button-secondary;
-            @extend .wishcart-button-sm;
+            @extend .gowishcart-button;
+            @extend .gowishcart-button-secondary;
+            @extend .gowishcart-button-sm;
         }
     }
 
@@ -71,7 +71,7 @@
     }
 
     .stat-card {
-        @extend .wishcart-card;
+        @extend .gowishcart-card;
         padding: var(--wishcart-space-lg);
 
         .stat-content {
@@ -132,7 +132,7 @@
     .funnel-card,
     .popular-products-card,
     .links-card {
-        @extend .wishcart-card;
+        @extend .gowishcart-card;
         margin-bottom: var(--wishcart-space-xl);
 
         h3 {
@@ -206,8 +206,8 @@
             }
 
             .total-links-badge {
-                @extend .wishcart-badge;
-                @extend .wishcart-badge-info;
+                @extend .gowishcart-badge;
+                @extend .gowishcart-badge-info;
             }
         }
 
@@ -328,13 +328,13 @@
                             max-width: 300px;
 
                             .product-tag {
-                                @extend .wishcart-badge;
-                                @extend .wishcart-badge-info;
+                                @extend .gowishcart-badge;
+                                @extend .gowishcart-badge-info;
                             }
 
                             .more-items {
-                                @extend .wishcart-badge;
-                                @extend .wishcart-badge-neutral;
+                                @extend .gowishcart-badge;
+                                @extend .gowishcart-badge-neutral;
                                 font-style: italic;
                             }
 
@@ -346,23 +346,23 @@
                         }
 
                         .click-count {
-                            @extend .wishcart-badge;
-                            @extend .wishcart-badge-neutral;
+                            @extend .gowishcart-badge;
+                            @extend .gowishcart-badge-neutral;
 
                             &.has-clicks {
-                                @extend .wishcart-badge-info;
+                                @extend .gowishcart-badge-info;
                             }
                         }
 
                         .share-type-badge {
-                            @extend .wishcart-badge;
-                            @extend .wishcart-badge-warning;
+                            @extend .gowishcart-badge;
+                            @extend .gowishcart-badge-warning;
                             text-transform: capitalize;
                         }
 
                         .badge {
-                            @extend .wishcart-badge;
-                            @extend .wishcart-badge-info;
+                            @extend .gowishcart-badge;
+                            @extend .gowishcart-badge-info;
                         }
                     }
                 }
@@ -513,16 +513,16 @@
                     }
 
                     .badge {
-                        @extend .wishcart-badge;
-                        @extend .wishcart-badge-info;
+                        @extend .gowishcart-badge;
+                        @extend .gowishcart-badge-info;
                     }
 
                     .conversion-badge {
-                        @extend .wishcart-badge;
-                        @extend .wishcart-badge-warning;
+                        @extend .gowishcart-badge;
+                        @extend .gowishcart-badge-warning;
 
                         &.high {
-                            @extend .wishcart-badge-success;
+                            @extend .gowishcart-badge-success;
                         }
                     }
 

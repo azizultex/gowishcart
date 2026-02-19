@@ -42,14 +42,14 @@ const IntegrationsSettings = () => {
                 </p>
             </div>
 
-            <div className="wishcart-integrations-list">
+            <div className="gowishcart-integrations-list">
                 {integrations.map((integration, index) => {
                     const IntegrationComponent = integration.component;
                     
                     return (
                         <div 
                             key={integration.id}
-                            className="wishcart-settings-section"
+                            className="gowishcart-settings-section"
                             style={{
                                 marginBottom: index < integrations.length - 1 ? '32px' : '0',
                             }}

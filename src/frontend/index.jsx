@@ -15,7 +15,7 @@ const VariantWishlistButtonsWrapper = ({ productId, fallbackVariantId, fallbackP
         // Give VariantWishlistButtons time to detect variants
         const timer = setTimeout(() => {
             // Check if variant buttons were rendered
-            const variantButtonsContainer = document.querySelector(`[data-product-id="${productId}"]`)?.closest('.wishcart-wishlist-button-container');
+            const variantButtonsContainer = document.querySelector(`[data-product-id="${productId}"]`)?.closest('.gowishcart-wishlist-button-container');
             const hasVariantButtons = variantButtonsContainer?.querySelector('.variant-wishlist-buttons');
             if (!hasVariantButtons) {
                 setShowFallback(true);
@@ -259,12 +259,12 @@ const mountWishlistButtonAtContainer = (container) => {
 const injectFluentCartContainer = () => {
     if (!isProductButtonEnabled()) {
         document
-            .querySelectorAll('.fc-product-buttons-wrap .wishcart-wishlist-button-container, .fluent-cart-add-to-cart-button .wishcart-wishlist-button-container')
+            .querySelectorAll('.fc-product-buttons-wrap .gowishcart-wishlist-button-container, .fluent-cart-add-to-cart-button .gowishcart-wishlist-button-container')
             .forEach((container) => container.remove());
         return null;
     }
 
-    if (document.querySelector('.wishcart-wishlist-button-container')) {
+    if (document.querySelector('.gowishcart-wishlist-button-container')) {
         return null;
     }
 
@@ -330,7 +330,7 @@ const extractProductId = (element) => {
 const injectWishlistIntoProductCards = () => {
     if (!isShopButtonEnabled()) {
         document
-            .querySelectorAll('.wishcart-wishlist-button-container.wishcart-card-container')
+            .querySelectorAll('.gowishcart-wishlist-button-container.gowishcart-card-container')
             .forEach((container) => container.remove());
         return;
     }
@@ -340,7 +340,7 @@ const injectWishlistIntoProductCards = () => {
     );
 
     cards.forEach((card) => {
-        if (!card || card.querySelector('.wishcart-wishlist-button-container')) {
+        if (!card || card.querySelector('.gowishcart-wishlist-button-container')) {
             return;
         }
 
@@ -426,7 +426,7 @@ const injectWishlistIntoProductCards = () => {
 const injectWishlistIntoArchiveEntries = () => {
     if (!isShopButtonEnabled()) {
         document
-            .querySelectorAll('.wishcart-wishlist-button-container.wishcart-archive-container')
+            .querySelectorAll('.gowishcart-wishlist-button-container.gowishcart-archive-container')
             .forEach((container) => container.remove());
         return;
     }
@@ -436,7 +436,7 @@ const injectWishlistIntoArchiveEntries = () => {
     );
 
     archiveEntries.forEach((entry) => {
-        if (!entry || entry.querySelector('.wishcart-wishlist-button-container')) {
+        if (!entry || entry.querySelector('.gowishcart-wishlist-button-container')) {
             return;
         }
 
@@ -474,7 +474,7 @@ const injectWishlistIntoArchiveEntries = () => {
 const injectWishlistNearActionButtons = () => {
     if (!isProductButtonEnabled()) {
         document
-            .querySelectorAll('.fc-product-buttons-wrap .wishcart-wishlist-button-container, .fluent-cart-add-to-cart-button .wishcart-wishlist-button-container')
+            .querySelectorAll('.fc-product-buttons-wrap .gowishcart-wishlist-button-container, .fluent-cart-add-to-cart-button .gowishcart-wishlist-button-container')
             .forEach((container) => container.remove());
         return;
     }
@@ -494,7 +494,7 @@ const injectWishlistNearActionButtons = () => {
             return;
         }
 
-        let container = wrapper.querySelector(`.wishcart-wishlist-button-container[data-product-id="${productId}"]`);
+        let container = wrapper.querySelector(`.gowishcart-wishlist-button-container[data-product-id="${productId}"]`);
 
         if (!container) {
             container = document.createElement('div');
@@ -550,7 +550,7 @@ const initializeSessionId = () => {
 // Mount wishlist buttons
 const mountWishlistButtons = () => {
     if (!isWishlistEnabled()) {
-        document.querySelectorAll('.wishcart-wishlist-button-container').forEach((container) => container.remove());
+        document.querySelectorAll('.gowishcart-wishlist-button-container').forEach((container) => container.remove());
         return;
     }
 
@@ -559,13 +559,13 @@ const mountWishlistButtons = () => {
 
     if (!showShop) {
         document
-            .querySelectorAll('.wishcart-wishlist-button-container.wishcart-card-container, .wishcart-wishlist-button-container.wishcart-archive-container')
+            .querySelectorAll('.gowishcart-wishlist-button-container.gowishcart-card-container, .gowishcart-wishlist-button-container.gowishcart-archive-container')
             .forEach((container) => container.remove());
     }
 
     if (!showProduct) {
         document
-            .querySelectorAll('.fc-product-buttons-wrap .wishcart-wishlist-button-container, .fluent-cart-add-to-cart-button .wishcart-wishlist-button-container')
+            .querySelectorAll('.fc-product-buttons-wrap .gowishcart-wishlist-button-container, .fluent-cart-add-to-cart-button .gowishcart-wishlist-button-container')
             .forEach((container) => container.remove());
     }
 
@@ -577,12 +577,12 @@ const mountWishlistButtons = () => {
     injectWishlistIntoArchiveEntries();
     injectWishlistNearActionButtons();
 
-    let containers = document.querySelectorAll('.wishcart-wishlist-button-container');
+    let containers = document.querySelectorAll('.gowishcart-wishlist-button-container');
 
     if (!containers.length) {
         const fallbackContainer = injectFluentCartContainer();
         if (fallbackContainer) {
-            containers = document.querySelectorAll('.wishcart-wishlist-button-container');
+            containers = document.querySelectorAll('.gowishcart-wishlist-button-container');
         }
     }
     
@@ -834,7 +834,7 @@ if (typeof MutationObserver !== 'undefined') {
         mutations.forEach((mutation) => {
             mutation.addedNodes.forEach((node) => {
                 if (node.nodeType === 1) { // Element node
-                    const containers = node.querySelectorAll ? node.querySelectorAll('.wishcart-wishlist-button-container') : [];
+                    const containers = node.querySelectorAll ? node.querySelectorAll('.gowishcart-wishlist-button-container') : [];
                     if (!containers.length) {
                         const fallbackContainer = injectFluentCartContainer();
                         if (fallbackContainer) {

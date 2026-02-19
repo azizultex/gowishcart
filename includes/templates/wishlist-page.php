@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 get_header(); ?>
 
-<div class="wishcart-wishlist-wrapper">
+<div class="gowishcart-wishlist-wrapper">
     <?php
     while ( have_posts() ) :
         the_post();

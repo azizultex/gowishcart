@@ -1053,7 +1053,7 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
         if (typeof document === 'undefined') return false;
         const container = document.querySelector(`[data-product-id="${productId}"]`);
         if (!container) return false;
-        return container.closest('.wishcart-card-container') !== null || 
+        return container.closest('.gowishcart-card-container') !== null || 
                container.closest('.fct-product-card, .fc-product-card') !== null ||
                container.classList.contains('gowishcart-card-container');
     }, [productId]);
@@ -1105,7 +1105,7 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
                 <img
                     src={currentIcon.customUrl}
                     alt=""
-                    className={cn("wishcart-wishlist-button__icon", isInWishlist && "wishcart-wishlist-button__icon--filled")}
+                    className={cn("gowishcart-wishlist-button__icon", isInWishlist && "gowishcart-wishlist-button__icon--filled")}
                     style={{ width: iconSize, height: iconSize }}
                 />
             );
@@ -1117,7 +1117,7 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
         
         return (
             <IconComponent 
-                className={cn("wishcart-wishlist-button__icon", isInWishlist && "wishcart-wishlist-button__icon--filled")}
+                className={cn("gowishcart-wishlist-button__icon", isInWishlist && "gowishcart-wishlist-button__icon--filled")}
                 style={{ width: iconSize, height: iconSize }}
             />
         );
@@ -1240,18 +1240,18 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
                     <img
                         src={currentIcon.customUrl}
                         alt=""
-                        className="wishcart-wishlist-button__icon wishcart-wishlist-button__icon--loading"
+                        className="gowishcart-wishlist-button__icon wishcart-wishlist-button__icon--loading"
                         style={{ width: iconSize, height: iconSize }}
                     />
                 );
             }
             const iconValue = currentIcon.value || 'Heart';
             const IconComponent = LucideIcons[iconValue] || Heart;
-            return <IconComponent className="wishcart-wishlist-button__icon wishcart-wishlist-button__icon--loading" style={{ width: iconSize, height: iconSize }} />;
+            return <IconComponent className="gowishcart-wishlist-button__icon wishcart-wishlist-button__icon--loading" style={{ width: iconSize, height: iconSize }} />;
         };
 
         return (
-            <div className={cn("wishcart-wishlist-button-loading", className)} style={buildButtonStyles()}>
+            <div className={cn("gowishcart-wishlist-button-loading", className)} style={buildButtonStyles()}>
                 {renderLoadingIcon()}
             </div>
         );
@@ -1281,18 +1281,18 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
                     <img
                         src={currentIcon.customUrl}
                         alt=""
-                        className="wishcart-wishlist-button__icon wishcart-wishlist-button__icon--loading"
+                        className="gowishcart-wishlist-button__icon wishcart-wishlist-button__icon--loading"
                         style={{ width: iconSize, height: iconSize }}
                     />
                 );
             }
             const iconValue = currentIcon.value || 'Heart';
             const IconComponent = LucideIcons[iconValue] || Heart;
-            return <IconComponent className="wishcart-wishlist-button__icon wishcart-wishlist-button__icon--loading" style={{ width: iconSize, height: iconSize }} />;
+            return <IconComponent className="gowishcart-wishlist-button__icon wishcart-wishlist-button__icon--loading" style={{ width: iconSize, height: iconSize }} />;
         };
 
         return (
-            <div className={cn("wishcart-wishlist-button-loading", className)} style={buildButtonStyles()}>
+            <div className={cn("gowishcart-wishlist-button-loading", className)} style={buildButtonStyles()}>
                 {renderLoadingIcon()}
             </div>
         );
@@ -1310,13 +1310,13 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
                 onClick={toggleWishlist}
                 disabled={isAdding}
                 className={cn(
-                    "wishcart-wishlist-button",
-                    isInWishlist && "wishcart-wishlist-button--active",
+                    "gowishcart-wishlist-button",
+                    isInWishlist && "gowishcart-wishlist-button--active",
                     position && `wishcart-placement-${position}`,
-                    buttonStyle === 'text-only' && "wishcart-wishlist-button--text-only",
-                    buttonStyle === 'text-only-link' && "wishcart-wishlist-button--text-only-link",
-                    buttonStyle === 'text-icon-link' && "wishcart-wishlist-button--text-icon-link",
-                    buttonStyle === 'icon-only' && "wishcart-wishlist-button--icon-only",
+                    buttonStyle === 'text-only' && "gowishcart-wishlist-button--text-only",
+                    buttonStyle === 'text-only-link' && "gowishcart-wishlist-button--text-only-link",
+                    buttonStyle === 'text-icon-link' && "gowishcart-wishlist-button--text-icon-link",
+                    buttonStyle === 'icon-only' && "gowishcart-wishlist-button--icon-only",
                     className
                 )}
                 style={buildButtonStyles()}
@@ -1443,14 +1443,14 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
                                 <img
                                     src={currentIcon.customUrl}
                                     alt=""
-                                    className="wishcart-wishlist-button__icon wishcart-wishlist-button__icon--loading"
+                                    className="gowishcart-wishlist-button__icon wishcart-wishlist-button__icon--loading"
                                     style={{ width: iconSize, height: iconSize }}
                                 />
                             );
                         }
                         const iconValue = currentIcon.value || 'Heart';
                         const IconComponent = LucideIcons[iconValue] || Heart;
-                        return <IconComponent className="wishcart-wishlist-button__icon wishcart-wishlist-button__icon--loading" style={{ width: iconSize, height: iconSize }} />;
+                        return <IconComponent className="gowishcart-wishlist-button__icon wishcart-wishlist-button__icon--loading" style={{ width: iconSize, height: iconSize }} />;
                     })()
                 ) : (
                     getIconComponent()
@@ -1458,7 +1458,7 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
             )}
             {/* Conditionally render text based on buttonStyle */}
             {(buttonStyle !== 'icon-only') && (
-                <span className="wishcart-wishlist-button__label">{buttonLabel}</span>
+                <span className="gowishcart-wishlist-button__label">{buttonLabel}</span>
             )}
             </button>
         </>

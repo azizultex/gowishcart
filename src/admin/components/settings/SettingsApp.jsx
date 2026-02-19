@@ -212,9 +212,9 @@ const SettingsApp = () => {
 
     return (
         <>
-            <div className="wishcart-admin-shell wishcart-admin-page">
+            <div className="gowishcart-admin-shell wishcart-admin-page">
                 {/* Navigation Tabs - WordPress/FluentCart Style */}
-                <nav className="wishcart-nav-tabs">
+                <nav className="gowishcart-nav-tabs">
                     {tabs.map((tab) => {
                         const Icon = tab.icon;
                         return (
@@ -231,17 +231,17 @@ const SettingsApp = () => {
                 </nav>
 
                 {/* Active Tab Header */}
-                <div className="wishcart-admin-page-header">
-                    <div className="wishcart-admin-page-header-content">
-                        <h1 className="wishcart-admin-page-title">
+                <div className="gowishcart-admin-page-header">
+                    <div className="gowishcart-admin-page-header-content">
+                        <h1 className="gowishcart-admin-page-title">
                             {activeTabData.label}
                         </h1>
                     </div>
                 </div>
 
                 {/* Main Content Area */}
-                <div className="wishcart-admin-body">
-                    <div className="wishcart-admin-content">
+                <div className="gowishcart-admin-body">
+                    <div className="gowishcart-admin-content">
                         {/* Settings Tab */}
                         {activeTab === 'settings' && (
                             <WishlistSettings
@@ -280,11 +280,11 @@ const SettingsApp = () => {
 
                         {/* Save Button - Only show for tabs that need it */}
                         {shouldShowSave && (
-                            <div className="wishcart-card-footer" style={{ marginTop: '24px' }}>
+                            <div className="gowishcart-card-footer" style={{ marginTop: '24px' }}>
                                 <button
                                     onClick={saveSettings}
                                     disabled={isSaving}
-                                    className="wishcart-button wishcart-button-primary"
+                                    className="gowishcart-button wishcart-button-primary"
                                 >
                                     {isSaving ? __('Saving...', 'gowishcart-wishlist-for-fluentcart') : __('Save Settings', 'gowishcart-wishlist-for-fluentcart')}
                                 </button>

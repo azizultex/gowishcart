@@ -77,7 +77,7 @@ class WishCart_Wishlist_Shortcode {
         );
 
         // Return container for React component
-        return '<div id="wishcart-wishlist-page"></div>';
+        return '<div id="gowishcart-wishlist-page"></div>';
     }
 
  
