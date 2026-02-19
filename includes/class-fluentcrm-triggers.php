@@ -82,19 +82,19 @@ class GoWishCart_FluentCRM_Triggers {
         // Also instantiate trigger classes so they can set up their hooks
         // FluentCRM will automatically detect and register triggers that extend BaseTrigger
         if ( class_exists( 'gowishcart_Item_Added_Trigger' ) ) {
-            new wishcart_Item_Added_Trigger();
+            new gowishcart_Item_Added_Trigger();
         }
 
         if ( class_exists( 'gowishcart_Item_Removed_Trigger' ) ) {
-            new wishcart_Item_Removed_Trigger();
+            new gowishcart_Item_Removed_Trigger();
         }
 
         if ( class_exists( 'gowishcart_Price_Drop_Trigger' ) ) {
-            new wishcart_Price_Drop_Trigger();
+            new gowishcart_Price_Drop_Trigger();
         }
 
         if ( class_exists( 'gowishcart_Back_In_Stock_Trigger' ) ) {
-            new wishcart_Back_In_Stock_Trigger();
+            new gowishcart_Back_In_Stock_Trigger();
         }
     }
 
@@ -151,7 +151,7 @@ class GoWishCart_FluentCRM_Triggers {
         }
         // For guest users, get email from session_id or email field
         elseif ( ! empty( $data['session_id'] ) && class_exists( 'gowishcart_Guest_Handler' ) ) {
-            $guest_handler = new wishcart_Guest_Handler();
+            $guest_handler = new gowishcart_Guest_Handler();
             $guest = $guest_handler->get_guest_by_session( $data['session_id'] );
             if ( $guest && ! empty( $guest['guest_email'] ) && is_email( $guest['guest_email'] ) ) {
                 $user_email = $guest['guest_email'];

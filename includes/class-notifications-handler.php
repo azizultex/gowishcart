@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://gowishcart.com
  */
-class wishcart_Notifications_Handler {
+class gowishcart_Notifications_Handler {
 
     private $wpdb;
     private $notifications_table;

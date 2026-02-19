@@ -48,7 +48,7 @@ GoWishCart is built from the ground up for FluentCart stores:
 * **Price drop alerts** - Automatically notify customers when wishlist items go on sale
 * **Back in stock notifications** - Alert customers when out-of-stock wishlist items become available
 * **Customizable button icons and text** - Customize the appearance of wishlist buttons with custom icons and text labels
-* **Wishlist page with shortcode support** - Display wishlist using shortcodes: `[wishcart_wishlist]` and `[wishcart_wishlist_button]`
+* **Wishlist page with shortcode support** - Display wishlist using shortcodes: `[gowishcart_wishlist]` and `[gowishcart_wishlist_button]`
 * **Privacy settings** - Control wishlist visibility (private by default, shared/public available in Pro)
 * **Multiple wishlists** - Create and manage multiple wishlists (Pro feature)
 * **Social sharing** - Share wishlists on Facebook, Twitter, Pinterest, WhatsApp, and via email (Pro feature)
@@ -85,7 +85,7 @@ GoWishCart supports price drop alerts and back-in-stock notifications. When a pr
 = Can I show the wishlist button on shop/archive pages? =
 Yes, you can enable the "Show Button on Shop Page" option in the GoWishCart settings. This will display the wishlist button on product archive pages, making it easy for customers to add products to their wishlist while browsing.
 = How do I display the wishlist page? =
-You can use the `[wishcart_wishlist]` shortcode on any page, or GoWishCart will automatically create a wishlist page. You can also use the `[wishcart_wishlist_button]` shortcode to display the add-to-wishlist button anywhere on your site.
+You can use the `[gowishcart_wishlist]` shortcode on any page, or GoWishCart will automatically create a wishlist page. You can also use the `[gowishcart_wishlist_button]` shortcode to display the add-to-wishlist button anywhere on your site.
 
 == Changelog ==
 

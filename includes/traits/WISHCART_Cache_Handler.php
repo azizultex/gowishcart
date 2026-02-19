@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Trait Cache_Handler
  * Provides common caching functionality for database queries
  */
-trait wishcart_Cache_Handler {
+trait gowishcart_Cache_Handler {
     /**
      * Get cached data or fetch from database
      *

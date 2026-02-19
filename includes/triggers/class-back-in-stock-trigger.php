@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://gowishcart.com
  */
-class wishcart_Back_In_Stock_Trigger extends \FluentCrm\App\Services\Funnel\BaseTrigger {
+class gowishcart_Back_In_Stock_Trigger extends \FluentCrm\App\Services\Funnel\BaseTrigger {
 
     /**
      * Constructor

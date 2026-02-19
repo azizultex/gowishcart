@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 /**
  * Wishlist Button Shortcode Handler
  *
- * Provides shortcode [wishcart_sc id="99"] to manually add wishlist buttons
+ * Provides shortcode [gowishcart_sc id="99"] to manually add wishlist buttons
  *
  * @category WordPress
  * @package  GoWishCart

@@ -313,12 +313,12 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                 <p className="gowishcart-form-helper" style={{marginTop: '8px'}}>
                     {__('You can add a button manually by using the shortcode', 'gowishcart-wishlist-for-fluentcart')}{' '}
                     <code style={{fontFamily: 'monospace', backgroundColor: '#f5f5f5', padding: '2px 6px', borderRadius: '3px'}}>
-                        [wishcart_sc id="{'{'}product id{'}'}"]
+                        [gowishcart_sc id="{'{'}product id{'}'}"]
                     </code>
                     {', '}
                     {__('e.g.', 'gowishcart-wishlist-for-fluentcart')}{' '}
                     <code style={{fontFamily: 'monospace', backgroundColor: '#f5f5f5', padding: '2px 6px', borderRadius: '3px'}}>
-                        [wishcart_sc id="99"]
+                        [gowishcart_sc id="99"]
                     </code>
                     {' '}
                     {__('for the product whose ID is 99.', 'gowishcart-wishlist-for-fluentcart')}
@@ -386,7 +386,7 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                     <div style={{ fontSize: '13px', color: '#666', marginTop: '8px' }}>
                         {__('Use', 'gowishcart-wishlist-for-fluentcart')}{' '}
                         <code style={{fontFamily: 'monospace', backgroundColor: '#f5f5f5', padding: '2px 6px', borderRadius: '3px'}}>
-                            [wishcart_wishlist]
+                            [gowishcart_wishlist]
                         </code>
                         {' '}
                         <a 

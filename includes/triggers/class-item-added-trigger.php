@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://gowishcart.com
  */
-class wishcart_Item_Added_Trigger extends \FluentCrm\App\Services\Funnel\BaseTrigger {
+class gowishcart_Item_Added_Trigger extends \FluentCrm\App\Services\Funnel\BaseTrigger {
 
     /**
      * Constructor
@@ -99,7 +99,7 @@ class wishcart_Item_Added_Trigger extends \FluentCrm\App\Services\Funnel\BaseTri
         
         // If still no email, try to get from session_id (guest)
         if ( empty( $email ) && ! empty( $item_data['session_id'] ) && class_exists( 'gowishcart_Guest_Handler' ) ) {
-            $guest_handler = new wishcart_Guest_Handler();
+            $guest_handler = new gowishcart_Guest_Handler();
             $guest = $guest_handler->get_guest_by_session( $item_data['session_id'] );
             if ( $guest && ! empty( $guest['guest_email'] ) && is_email( $guest['guest_email'] ) ) {
                 $email = $guest['guest_email'];
@@ -171,7 +171,7 @@ class wishcart_Item_Added_Trigger extends \FluentCrm\App\Services\Funnel\BaseTri
             
             // If still no email, try to get from session_id (guest)
             if ( empty( $email ) && ! empty( $item_data['session_id'] ) && class_exists( 'gowishcart_Guest_Handler' ) ) {
-                $guest_handler = new wishcart_Guest_Handler();
+                $guest_handler = new gowishcart_Guest_Handler();
                 $guest = $guest_handler->get_guest_by_session( $item_data['session_id'] );
                 if ( $guest && ! empty( $guest['guest_email'] ) && is_email( $guest['guest_email'] ) ) {
                     $email = $guest['guest_email'];

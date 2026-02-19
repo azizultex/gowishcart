@@ -555,7 +555,7 @@ class GoWishCart_Wishlist_Handler {
         if (empty($user_id) && !empty($session_id) && isset($options['guest_email']) && !empty($options['guest_email'])) {
             $guest_email = sanitize_email($options['guest_email']);
             if (is_email($guest_email)) {
-                $guest_handler = new wishcart_Guest_Handler();
+                $guest_handler = new gowishcart_Guest_Handler();
                 $guest_result = $guest_handler->create_or_update_guest($session_id, array(
                     'guest_email' => $guest_email,
                 ));
@@ -805,7 +805,7 @@ class GoWishCart_Wishlist_Handler {
         } elseif (!empty($session_id)) {
             // For guest users, try to get email from guest handler
             if (class_exists('gowishcart_Guest_Handler')) {
-                $guest_handler = new wishcart_Guest_Handler();
+                $guest_handler = new gowishcart_Guest_Handler();
                 $guest = $guest_handler->get_guest_by_session($session_id);
                 if ($guest && !empty($guest['guest_email']) && is_email($guest['guest_email'])) {
                     $contact_email = $guest['guest_email'];
@@ -904,7 +904,7 @@ class GoWishCart_Wishlist_Handler {
         } else if (!empty($session_id)) {
             // For guest users, try to get email from guest handler
             if (class_exists('gowishcart_Guest_Handler')) {
-                $guest_handler = new wishcart_Guest_Handler();
+                $guest_handler = new gowishcart_Guest_Handler();
                 $guest = $guest_handler->get_guest_by_session($session_id);
                 if ($guest && !empty($guest['guest_email']) && is_email($guest['guest_email'])) {
                     $contact_email = $guest['guest_email'];
@@ -1170,7 +1170,7 @@ class GoWishCart_Wishlist_Handler {
     private function log_activity($wishlist_id, $activity_type, $object_id = null, $object_type = null, $activity_data = null) {
         // Use activity logger if available
         if (class_exists('gowishcart_Activity_Logger')) {
-            $logger = new wishcart_Activity_Logger();
+            $logger = new gowishcart_Activity_Logger();
             $logger->log($wishlist_id, $activity_type, $object_id, $object_type, $activity_data);
         }
     }
@@ -1191,7 +1191,7 @@ class GoWishCart_Wishlist_Handler {
 
         // Use guest handler if available
         if (class_exists('gowishcart_Guest_Handler')) {
-            $guest_handler = new wishcart_Guest_Handler();
+            $guest_handler = new gowishcart_Guest_Handler();
             
             // Create or update guest record
             $guest_handler->create_or_update_guest($session_id);

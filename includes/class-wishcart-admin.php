@@ -22,7 +22,7 @@ if ( ! defined('ABSPATH') ) {
  * @license  GPL-2.0+ http://www.gnu.org/licenses/gpl-2.0.txt
  * @link     https://gowishcart.com
  */
-class wishcart_Admin {
+class gowishcart_Admin {
 
 
     private $plugin_slug = 'gowishcart-wishlist-for-fluentcart';
@@ -33,7 +33,7 @@ class wishcart_Admin {
      *
      * @since 1.0.0
      *
-     * @return wishcart_Admin Instance of the class
+     * @return gowishcart_Admin Instance of the class
      */
     public static function get_instance() {
         if ( null === self::$instance ) {
@@ -279,7 +279,7 @@ class wishcart_Admin {
      *
      * @return void
      */
-    public function wishcart_register_settings_endpoints() {
+    public function gowishcart_register_settings_endpoints() {
         register_rest_route(
             'gowishcart/v1', '/settings', [
 				[
@@ -881,7 +881,7 @@ class wishcart_Admin {
      *
      * @return WP_REST_Response
      */
-    public function wishcart_get_settings() {
+    public function gowishcart_get_settings() {
         $settings = get_option('gowishcart_settings', []);
         
         // Only create default page if no wishlist_page_id is set
@@ -954,7 +954,7 @@ class wishcart_Admin {
      *
      * @return WP_REST_Response
      */
-    public function wishcart_update_settings( $request ) {
+    public function gowishcart_update_settings( $request ) {
         // Verify nonce for CSRF protection.
         $nonce_check = $this->verify_rest_nonce( $request );
         if ( is_wp_error( $nonce_check ) ) {
@@ -1080,7 +1080,7 @@ class wishcart_Admin {
                     if ( function_exists( 'has_shortcode' ) ) {
                         $has_shortcode = has_shortcode( $content, 'gowishcart_wishlist' );
                     } else {
-                        $has_shortcode = ( false !== strpos( $content, '[wishcart_wishlist' ) );
+                        $has_shortcode = ( false !== strpos( $content, '[gowishcart_wishlist' ) );
                     }
                 }
 
@@ -1103,7 +1103,7 @@ class wishcart_Admin {
     /**
      * Create wishlist page endpoint
      *
-     * Creates a new WordPress page with the [wishcart_wishlist] shortcode
+     * Creates a new WordPress page with the [gowishcart_wishlist] shortcode
      *
      * @param WP_REST_Request $request Request object
      *
@@ -1121,7 +1121,7 @@ class wishcart_Admin {
         // Always create a new page (don't check for existing pages)
         $page_data = array(
             'post_title'   => $page_name,
-            'post_content' => '[wishcart_wishlist]',
+            'post_content' => '[gowishcart_wishlist]',
             'post_status'  => 'publish',
             'post_type'    => 'page',
             'post_name'    => sanitize_title( $page_name ),
@@ -1885,7 +1885,7 @@ class wishcart_Admin {
             return $nonce_check;
         }
 
-        $notifications = new wishcart_Notifications_Handler();
+        $notifications = new gowishcart_Notifications_Handler();
         $params = $request->get_json_params();
         
         $notification_type = isset($params['notification_type']) ? sanitize_text_field(wp_unslash($params['notification_type'])) : '';
@@ -1925,7 +1925,7 @@ class wishcart_Admin {
             return new WP_Error('not_logged_in', __('User must be logged in', 'gowishcart-wishlist-for-fluentcart'), array('status' => 401));
         }
         
-        $notifications = new wishcart_Notifications_Handler();
+        $notifications = new gowishcart_Notifications_Handler();
         $user_id = get_current_user_id();
         $status = $request->get_param('status');
         
@@ -1955,7 +1955,7 @@ class wishcart_Admin {
      * @return WP_REST_Response
      */
     public function notifications_get_stats($request) {
-        $notifications = new wishcart_Notifications_Handler();
+        $notifications = new gowishcart_Notifications_Handler();
         $stats = $notifications->get_statistics();
         
         return rest_ensure_response(array(
@@ -1971,7 +1971,7 @@ class wishcart_Admin {
      * @return WP_REST_Response
      */
     public function activity_get_wishlist($request) {
-        $logger = new wishcart_Activity_Logger();
+        $logger = new gowishcart_Activity_Logger();
         $wishlist_id = intval($request->get_param('wishlist_id'));
         $limit = $request->get_param('limit') ? intval($request->get_param('limit')) : 50;
         $offset = $request->get_param('offset') ? intval($request->get_param('offset')) : 0;
@@ -1992,7 +1992,7 @@ class wishcart_Admin {
      * @return WP_REST_Response
      */
     public function activity_get_recent($request) {
-        $logger = new wishcart_Activity_Logger();
+        $logger = new gowishcart_Activity_Logger();
         $limit = $request->get_param('limit') ? intval($request->get_param('limit')) : 20;
         $activity_type = $request->get_param('type');
         
@@ -2126,7 +2126,7 @@ class wishcart_Admin {
             return new WP_Error('not_available', __('Campaign handler not available', 'gowishcart-wishlist-for-fluentcart'), array('status' => 404));
         }
 
-        $campaign_handler = new wishcart_CRM_Campaign_Handler();
+        $campaign_handler = new gowishcart_CRM_Campaign_Handler();
         $trigger_type = $request->get_param('trigger_type');
         $status = $request->get_param('status');
 
@@ -2217,7 +2217,7 @@ class wishcart_Admin {
             return $nonce_check;
         }
 
-        $campaign_handler = new wishcart_CRM_Campaign_Handler();
+        $campaign_handler = new gowishcart_CRM_Campaign_Handler();
         $raw_params = $request->get_json_params();
 
         // Validate input structure
@@ -2277,7 +2277,7 @@ class wishcart_Admin {
             return new WP_Error('not_available', __('Campaign handler not available', 'gowishcart-wishlist-for-fluentcart'), array('status' => 404));
         }
 
-        $campaign_handler = new wishcart_CRM_Campaign_Handler();
+        $campaign_handler = new gowishcart_CRM_Campaign_Handler();
         $campaign_id = intval($request->get_param('id'));
 
         $campaign = $campaign_handler->get_campaign($campaign_id);
@@ -2309,7 +2309,7 @@ class wishcart_Admin {
             return $nonce_check;
         }
 
-        $campaign_handler = new wishcart_CRM_Campaign_Handler();
+        $campaign_handler = new gowishcart_CRM_Campaign_Handler();
         $campaign_id = intval($request->get_param('id'));
         $raw_params = $request->get_json_params();
 
@@ -2409,7 +2409,7 @@ class wishcart_Admin {
             return new WP_Error('not_available', __('Campaign handler not available', 'gowishcart-wishlist-for-fluentcart'), array('status' => 404));
         }
 
-        $campaign_handler = new wishcart_CRM_Campaign_Handler();
+        $campaign_handler = new gowishcart_CRM_Campaign_Handler();
         $campaign_id = intval($request->get_param('id'));
 
         $campaign = $campaign_handler->get_campaign($campaign_id);
@@ -2448,7 +2448,7 @@ class wishcart_Admin {
             ) );
         }
 
-        $guest_handler = new wishcart_Guest_Handler();
+        $guest_handler = new gowishcart_Guest_Handler();
         $guest = $guest_handler->get_guest_by_session( $session_id );
 
         if ( $guest && ! empty( $guest['guest_email'] ) ) {
@@ -2497,7 +2497,7 @@ class wishcart_Admin {
             );
         }
 
-        $guest_handler = new wishcart_Guest_Handler();
+        $guest_handler = new gowishcart_Guest_Handler();
         $result = $guest_handler->create_or_update_guest( $session_id, array(
             'guest_email' => $email,
         ) );
