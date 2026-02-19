@@ -163,7 +163,7 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                     setIsCreateModalOpen(false);
                     setPageName('Wishlist');
                     // Show success message
-                    alert(__('Wishlist page created successfully!gowishcart-wishlist-for-fluentcart'));
+                    alert(__('Wishlist page created successfully!', 'gowishcart-wishlist-for-fluentcart'));
                 } else {
                     alert(__('Failed to create wishlist page.', 'gowishcart-wishlist-for-fluentcart'));
                 }
@@ -404,7 +404,7 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                             rel="noopener noreferrer"
                             style={{ color: '#2271b1', textDecoration: 'none' }}
                         >
-                            {__('Previewgowishcart-wishlist-for-fluentcart')}
+                            {__('Preview', 'gowishcart-wishlist-for-fluentcart')}
                             <ExternalLink size={12} style={{ display: 'inline-block', marginLeft: '4px', verticalAlign: 'middle' }} />
                         </a>
                     </div>

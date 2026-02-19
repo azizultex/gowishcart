@@ -611,7 +611,7 @@ class wishcart_Admin {
             'permission_callback' => '__return_true',
             'args' => array(
                 'wishlist_id' => array(
-                    'description' => __('Wishlist IDgowishcart-wishlist-for-fluentcart'),
+                    'description' => __('Wishlist ID', 'gowishcart-wishlist-for-fluentcart'),
                     'type' => 'integer',
                     'required' => true,
                     'sanitize_callback' => 'absint',
@@ -1288,7 +1288,7 @@ class wishcart_Admin {
         if ( $product_id <= 0 ) {
             return new WP_Error(
                 'invalid_product',
-                __( 'Invalid product IDgowishcart-wishlist-for-fluentcart' ),
+                __( 'Invalid product ID', 'gowishcart-wishlist-for-fluentcart' ),
                 array( 'status' => 400 )
             );
         }
@@ -1698,7 +1698,7 @@ class wishcart_Admin {
         if ( $product_id <= 0 ) {
             return new WP_Error(
                 'invalid_product_id',
-                __( 'Invalid product IDgowishcart-wishlist-for-fluentcart' ),
+                __( 'Invalid product ID', 'gowishcart-wishlist-for-fluentcart' ),
                 array( 'status' => 400 )
             );
         }
@@ -2315,7 +2315,7 @@ class wishcart_Admin {
 
         // Validate campaign ID
         if ($campaign_id <= 0) {
-            return new WP_Error('invalid_id', __('Invalid campaign IDgowishcart-wishlist-for-fluentcart'), array('status' => 400));
+            return new WP_Error('invalid_id', __('Invalid campaign ID', 'gowishcart-wishlist-for-fluentcart'), array('status' => 400));
         }
 
         // Validate input structure

@@ -144,7 +144,7 @@ const SettingsApp = () => {
                     title: (
                         <div className="flex items-center gap-2">
                             <CheckCircle2 className="h-4 w-4 text-green-500" />
-                            <span>{__('Settings saved successfully!gowishcart-wishlist-for-fluentcart')}</span>
+                            <span>{__('Settings saved successfully!', 'gowishcart-wishlist-for-fluentcart')}</span>
                         </div>
                     ),
                     description: __('Your changes have been applied.', 'gowishcart-wishlist-for-fluentcart'),

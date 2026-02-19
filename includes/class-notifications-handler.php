@@ -169,10 +169,10 @@ class wishcart_Notifications_Handler {
                 $message = isset($data['message']) ? $data['message'] : '';
 
                 /* translators: %1$s: Shared by name, %2$s: Wishlist name */
-                $subject = sprintf(__('%1$s shared %2$s with yougowishcart-wishlist-for-fluentcart'), $shared_by, $wishlist_name);
+                $subject = sprintf(__('%1$s shared %2$s with you', 'gowishcart-wishlist-for-fluentcart'), $shared_by, $wishlist_name);
                 $content = sprintf(
                     /* translators: %1$s: Newline, %2$s: Newline, %3$s: Shared by name, %4$s: Wishlist name */
-                    __('Hi,%1$s%2$s%3$s has shared a wishlist with you: "%4$s"gowishcart-wishlist-for-fluentcart'),
+                    __('Hi,%1$s%2$s%3$s has shared a wishlist with you: "%4$s"', 'gowishcart-wishlist-for-fluentcart'),
                     "\n\n",
                     "\n\n",
                     $shared_by,
@@ -180,10 +180,10 @@ class wishcart_Notifications_Handler {
                 );
 
                 if (!empty($message)) {
-                    $content .= "\n\n" . __('Message:gowishcart-wishlist-for-fluentcart') . "\n" . $message;
+                    $content .= "\n\n" . __('Message:', 'gowishcart-wishlist-for-fluentcart') . "\n" . $message;
                 }
 
-                $content .= "\n\n" . __('View Wishlist:gowishcart-wishlist-for-fluentcart') . "\n" . $wishlist_url;
+                $content .= "\n\n" . __('View Wishlist:', 'gowishcart-wishlist-for-fluentcart') . "\n" . $wishlist_url;
                 break;
 
             case 'estimate_request':

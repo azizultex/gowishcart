@@ -167,7 +167,7 @@ const FluentCRMSettings = ({ embedded = false }) => {
             {saveMessage === 'success' && (
                 <div className="wishcart-notice wishcart-notice-success">
                     <CheckCircle2 style={{width: '18px', height: '18px', flexShrink: 0}} />
-                    <span>{__('Settings saved successfully!gowishcart-wishlist-for-fluentcart')}</span>
+                    <span>{__('Settings saved successfully!', 'gowishcart-wishlist-for-fluentcart')}</span>
                 </div>
             )}
 
@@ -290,17 +290,17 @@ const FluentCRMSettings = ({ embedded = false }) => {
                     </Select>
                     {settings.fluentcrm_tag_format === 'detailed' && (
                         <p style={{fontSize: '12px', color: 'var(--wishcart-text-muted)', marginTop: '8px', lineHeight: '1.5'}}>
-                            {__('Example tags:gowishcart-wishlist-for-fluentcart')} "Product: Cozy Fleece Hoodie", "Cozy Fleece Hoodie - Price: $4.00", "Cozy Fleece Hoodie - Stock: In Stock"
+                            {__('Example tags:', 'gowishcart-wishlist-for-fluentcart')} "Product: Cozy Fleece Hoodie", "Cozy Fleece Hoodie - Price: $4.00", "Cozy Fleece Hoodie - Stock: In Stock"
                         </p>
                     )}
                     {settings.fluentcrm_tag_format === 'simple' && (
                         <p style={{fontSize: '12px', color: 'var(--wishcart-text-muted)', marginTop: '8px', lineHeight: '1.5'}}>
-                            {__('Example tags:gowishcart-wishlist-for-fluentcart')} "Cozy Fleece Hoodie"
+                            {__('Example tags:', 'gowishcart-wishlist-for-fluentcart')} "Cozy Fleece Hoodie"
                         </p>
                     )}
                     {settings.fluentcrm_tag_format === 'prefixed' && (
                         <p style={{fontSize: '12px', color: 'var(--wishcart-text-muted)', marginTop: '8px', lineHeight: '1.5'}}>
-                            {__('Example tags:gowishcart-wishlist-for-fluentcart')} "Product: Cozy Fleece Hoodie", "Category: Clothing", "Price: $4.00", "Stock: In Stock"
+                            {__('Example tags:', 'gowishcart-wishlist-for-fluentcart')} "Product: Cozy Fleece Hoodie", "Category: Clothing", "Price: $4.00", "Stock: In Stock"
                         </p>
                     )}
                     {settings.fluentcrm_tag_format === 'custom' && (
@@ -312,13 +312,13 @@ const FluentCRMSettings = ({ embedded = false }) => {
                                 id="fluentcrm_custom_tag_format"
                                 className="wishcart-textarea"
                                 rows={4}
-                                placeholder={__('Example: {product_name} - {price}gowishcart-wishlist-for-fluentcart')}
+                                placeholder={__('Example: {product_name} - {price}', 'gowishcart-wishlist-for-fluentcart')}
                                 value={settings.fluentcrm_custom_tag_format || ''}
                                 onChange={(e) => updateSetting('fluentcrm_custom_tag_format', e.target.value)}
                                 style={{width: '100%', resize: 'vertical'}}
                             />
                             <p style={{fontSize: '12px', color: 'var(--wishcart-text-muted)', marginTop: '8px', lineHeight: '1.5'}}>
-                                {__('Available placeholders:gowishcart-wishlist-for-fluentcart')} {'{product_name}, {price}, {category}, {stock}, {sku}, {type}'}
+                                {__('Available placeholders:', 'gowishcart-wishlist-for-fluentcart')} {'{product_name}, {price}, {category}, {stock}, {sku}, {type}'}
                                 <br />
                                 {__('Enter one tag per line or separate multiple tags with commas.', 'gowishcart-wishlist-for-fluentcart')}
                             </p>

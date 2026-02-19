@@ -45,7 +45,7 @@ const UpgradePrompt = () => {
                         </Button>
                         <Button asChild>
                             <a href="https://gowishcart.com/pricing" target="_blank" rel="noopener noreferrer">
-                                {__('Upgrade Nowgowishcart-wishlist-for-fluentcart')}
+                                {__('Upgrade Now', 'gowishcart-wishlist-for-fluentcart')}
                             </a>
                         </Button>
                     </div>

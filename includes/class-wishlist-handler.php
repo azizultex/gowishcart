@@ -531,7 +531,7 @@ class WishCart_Wishlist_Handler {
         $product_id = intval($product_id);
         
         if ($product_id <= 0) {
-            return new WP_Error('invalid_product', __('Invalid product IDgowishcart-wishlist-for-fluentcart'));
+            return new WP_Error('invalid_product', __('Invalid product ID', 'gowishcart-wishlist-for-fluentcart'));
         }
 
         // Verify product exists
@@ -861,7 +861,7 @@ class WishCart_Wishlist_Handler {
         $product_id = intval($product_id);
         
         if ($product_id <= 0) {
-            return new WP_Error('invalid_product', __('Invalid product IDgowishcart-wishlist-for-fluentcart'));
+            return new WP_Error('invalid_product', __('Invalid product ID', 'gowishcart-wishlist-for-fluentcart'));
         }
 
         // Determine user_id or session_id

@@ -253,7 +253,7 @@ const ButtonPreview = ({ buttonCustomization }) => {
     return (
         <div className="wishcart-button-preview-container">
             <div className="wishcart-button-preview-header">
-                <h3 className="text-lg font-semibold mb-4">{__('Live Previewgowishcart-wishlist-for-fluentcart')}</h3>
+                <h3 className="text-lg font-semibold mb-4">{__('Live Preview', 'gowishcart-wishlist-for-fluentcart')}</h3>
                 <p className="text-sm text-muted-foreground mb-6">
                     {__('See how your buttons will look in real-time', 'gowishcart-wishlist-for-fluentcart')}
                 </p>

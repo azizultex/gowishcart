@@ -585,7 +585,7 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
                                     <div className="relative inline-block border-2 border-gray-300 rounded-lg p-4 bg-gray-50 hover:bg-gray-100 transition-colors">
                                         <img
                                             src={iconConfig.customUrl}
-                                            alt={__('Custom icon previewgowishcart-wishlist-for-fluentcart')}
+                                            alt={__('Custom icon preview', 'gowishcart-wishlist-for-fluentcart')}
                                             className="w-32 h-32 object-contain"
                                             onError={(e) => {
                                                 console.error('Failed to load image:', iconConfig.customUrl);
