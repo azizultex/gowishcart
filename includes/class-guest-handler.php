@@ -42,7 +42,7 @@ class WishCart_Guest_Handler {
         $existing_guest = $this->get_guest_by_session($session_id);
 
         // Get expiration date
-        $settings = get_option('wishcart_settings', array());
+        $settings = get_option('gowishcart_settings', array());
         $expiry_days = isset($settings['wishlist']['guest_cookie_expiry']) ? intval($settings['wishlist']['guest_cookie_expiry']) : 30;
         $date_expires = gmdate('Y-m-d H:i:s', strtotime('+' . $expiry_days . ' days'));
 

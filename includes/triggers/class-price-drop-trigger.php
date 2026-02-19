@@ -18,7 +18,7 @@ class wishcart_Price_Drop_Trigger extends \FluentCrm\App\Services\Funnel\BaseTri
      * Constructor
      */
     public function __construct() {
-        $this->triggerName = 'wishcart_price_drop';
+        $this->triggerName = 'gowishcart_price_drop';
         $this->priority = 20;
         $this->actionArgNum = 2;
         parent::__construct();

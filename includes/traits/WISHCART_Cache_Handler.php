@@ -17,12 +17,12 @@ trait wishcart_Cache_Handler {
      * @return mixed
      */
     protected function get_cached_data($cache_key, $callback, $expire = 300) {
-        $data = wp_cache_get($cache_key, 'wishcart_cache');
+        $data = wp_cache_get($cache_key, 'gowishcart_cache');
 
         if (false === $data) {
             $data = $callback();
             if ($data) {
-                wp_cache_set($cache_key, $data, 'wishcart_cache', $expire);
+                wp_cache_set($cache_key, $data, 'gowishcart_cache', $expire);
             }
         }
 
@@ -35,6 +35,6 @@ trait wishcart_Cache_Handler {
      * @param string $cache_key Cache key to delete
      */
     protected function delete_cache($cache_key) {
-        wp_cache_delete($cache_key, 'wishcart_cache');
+        wp_cache_delete($cache_key, 'gowishcart_cache');
     }
 }

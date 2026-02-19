@@ -18,7 +18,7 @@ class WishCart_Wishlist_Handler {
     private $wpdb;
     private $wishlists_table;
     private $items_table;
-    private $guest_cookie_name = 'wishcart_guest_wishlist';
+    private $guest_cookie_name = 'gowishcart_guest_wishlist';
 
     /**
      * Constructor
@@ -54,7 +54,7 @@ class WishCart_Wishlist_Handler {
         
         if ( $attempt >= $max_attempts ) {
             // Fallback: use hash-based token
-            $token = hash('sha256', uniqid('wishcart_', true) . wp_rand());
+            $token = hash('sha256', uniqid('gowishcart_', true) . wp_rand());
         }
         
         return $token;
@@ -119,7 +119,7 @@ class WishCart_Wishlist_Handler {
      * @return string Session ID
      */
     public function get_or_create_session_id() {
-        $cookie_name = 'wishcart_session_id';
+        $cookie_name = 'gowishcart_session_id';
         
         // Check if session ID exists in cookie (check multiple sources)
         if ( isset( $_COOKIE[ $cookie_name ] ) && ! empty( $_COOKIE[ $cookie_name ] ) ) {
@@ -159,7 +159,7 @@ class WishCart_Wishlist_Handler {
         
         // Set cookie (30 days expiry by default)
         // Note: HttpOnly set to false so JavaScript can read it for API requests
-        $settings = get_option( 'wishcart_settings', [] );
+        $settings = get_option( 'gowishcart_settings', [] );
         $expiry_days = isset( $settings['wishlist']['guest_cookie_expiry'] ) ? intval( $settings['wishlist']['guest_cookie_expiry'] ) : 30;
         $expiry = time() + ( $expiry_days * DAY_IN_SECONDS );
         
@@ -804,7 +804,7 @@ class WishCart_Wishlist_Handler {
             }
         } elseif (!empty($session_id)) {
             // For guest users, try to get email from guest handler
-            if (class_exists('wishcart_Guest_Handler')) {
+            if (class_exists('gowishcart_Guest_Handler')) {
                 $guest_handler = new wishcart_Guest_Handler();
                 $guest = $guest_handler->get_guest_by_session($session_id);
                 if ($guest && !empty($guest['guest_email']) && is_email($guest['guest_email'])) {
@@ -841,7 +841,7 @@ class WishCart_Wishlist_Handler {
         // Fire FluentCRM automation trigger (contact should exist by now)
         // Note: fire_trigger() internally calls do_action() so we don't call it separately
         if ( class_exists( 'WishCart_FluentCRM_Triggers' ) ) {
-            WishCart_FluentCRM_Triggers::fire_trigger( 'wishcart_item_added', $item_data );
+            WishCart_FluentCRM_Triggers::fire_trigger( 'gowishcart_item_added', $item_data );
         }
 
         return true;
@@ -903,7 +903,7 @@ class WishCart_Wishlist_Handler {
             }
         } else if (!empty($session_id)) {
             // For guest users, try to get email from guest handler
-            if (class_exists('wishcart_Guest_Handler')) {
+            if (class_exists('gowishcart_Guest_Handler')) {
                 $guest_handler = new wishcart_Guest_Handler();
                 $guest = $guest_handler->get_guest_by_session($session_id);
                 if ($guest && !empty($guest['guest_email']) && is_email($guest['guest_email'])) {
@@ -952,7 +952,7 @@ class WishCart_Wishlist_Handler {
         // Fire FluentCRM automation trigger (contact should exist by now)
         // Note: fire_trigger() internally calls do_action() so we don't call it separately
         if ( class_exists( 'WishCart_FluentCRM_Triggers' ) ) {
-            WishCart_FluentCRM_Triggers::fire_trigger( 'wishcart_item_removed', $item_data );
+            WishCart_FluentCRM_Triggers::fire_trigger( 'gowishcart_item_removed', $item_data );
         }
 
         return true;
@@ -1169,7 +1169,7 @@ class WishCart_Wishlist_Handler {
      */
     private function log_activity($wishlist_id, $activity_type, $object_id = null, $object_type = null, $activity_data = null) {
         // Use activity logger if available
-        if (class_exists('wishcart_Activity_Logger')) {
+        if (class_exists('gowishcart_Activity_Logger')) {
             $logger = new wishcart_Activity_Logger();
             $logger->log($wishlist_id, $activity_type, $object_id, $object_type, $activity_data);
         }
@@ -1190,7 +1190,7 @@ class WishCart_Wishlist_Handler {
         }
 
         // Use guest handler if available
-        if (class_exists('wishcart_Guest_Handler')) {
+        if (class_exists('gowishcart_Guest_Handler')) {
             $guest_handler = new wishcart_Guest_Handler();
             
             // Create or update guest record

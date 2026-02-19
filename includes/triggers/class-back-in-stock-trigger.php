@@ -18,7 +18,7 @@ class wishcart_Back_In_Stock_Trigger extends \FluentCrm\App\Services\Funnel\Base
      * Constructor
      */
     public function __construct() {
-        $this->triggerName = 'wishcart_back_in_stock';
+        $this->triggerName = 'gowishcart_back_in_stock';
         $this->priority = 20;
         $this->actionArgNum = 2;
         parent::__construct();

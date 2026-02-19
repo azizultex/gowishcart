@@ -81,19 +81,19 @@ class WishCart_FluentCRM_Triggers {
 
         // Also instantiate trigger classes so they can set up their hooks
         // FluentCRM will automatically detect and register triggers that extend BaseTrigger
-        if ( class_exists( 'wishcart_Item_Added_Trigger' ) ) {
+        if ( class_exists( 'gowishcart_Item_Added_Trigger' ) ) {
             new wishcart_Item_Added_Trigger();
         }
 
-        if ( class_exists( 'wishcart_Item_Removed_Trigger' ) ) {
+        if ( class_exists( 'gowishcart_Item_Removed_Trigger' ) ) {
             new wishcart_Item_Removed_Trigger();
         }
 
-        if ( class_exists( 'wishcart_Price_Drop_Trigger' ) ) {
+        if ( class_exists( 'gowishcart_Price_Drop_Trigger' ) ) {
             new wishcart_Price_Drop_Trigger();
         }
 
-        if ( class_exists( 'wishcart_Back_In_Stock_Trigger' ) ) {
+        if ( class_exists( 'gowishcart_Back_In_Stock_Trigger' ) ) {
             new wishcart_Back_In_Stock_Trigger();
         }
     }
@@ -110,20 +110,20 @@ class WishCart_FluentCRM_Triggers {
         }
 
         // Register each trigger with its key and class name
-        if ( class_exists( 'wishcart_Item_Added_Trigger' ) ) {
-            $triggers['wishcart_item_added'] = 'wishcart_Item_Added_Trigger';
+        if ( class_exists( 'gowishcart_Item_Added_Trigger' ) ) {
+            $triggers['gowishcart_item_added'] = 'gowishcart_Item_Added_Trigger';
         }
 
-        if ( class_exists( 'wishcart_Item_Removed_Trigger' ) ) {
-            $triggers['wishcart_item_removed'] = 'wishcart_Item_Removed_Trigger';
+        if ( class_exists( 'gowishcart_Item_Removed_Trigger' ) ) {
+            $triggers['gowishcart_item_removed'] = 'gowishcart_Item_Removed_Trigger';
         }
 
-        if ( class_exists( 'wishcart_Price_Drop_Trigger' ) ) {
-            $triggers['wishcart_price_drop'] = 'wishcart_Price_Drop_Trigger';
+        if ( class_exists( 'gowishcart_Price_Drop_Trigger' ) ) {
+            $triggers['gowishcart_price_drop'] = 'gowishcart_Price_Drop_Trigger';
         }
 
-        if ( class_exists( 'wishcart_Back_In_Stock_Trigger' ) ) {
-            $triggers['wishcart_back_in_stock'] = 'wishcart_Back_In_Stock_Trigger';
+        if ( class_exists( 'gowishcart_Back_In_Stock_Trigger' ) ) {
+            $triggers['gowishcart_back_in_stock'] = 'gowishcart_Back_In_Stock_Trigger';
         }
 
         return $triggers;
@@ -150,7 +150,7 @@ class WishCart_FluentCRM_Triggers {
             }
         }
         // For guest users, get email from session_id or email field
-        elseif ( ! empty( $data['session_id'] ) && class_exists( 'wishcart_Guest_Handler' ) ) {
+        elseif ( ! empty( $data['session_id'] ) && class_exists( 'gowishcart_Guest_Handler' ) ) {
             $guest_handler = new wishcart_Guest_Handler();
             $guest = $guest_handler->get_guest_by_session( $data['session_id'] );
             if ( $guest && ! empty( $guest['guest_email'] ) && is_email( $guest['guest_email'] ) ) {
@@ -233,7 +233,7 @@ class WishCart_FluentCRM_Triggers {
         if ( $subscriber ) {
             // Fire the action hook that FluentCRM BaseTrigger listens to
             // BaseTrigger listens to the triggerName directly (like fluent-booking does)
-            // The action hook should match the triggerName: 'wishcart_item_added'
+            // The action hook should match the triggerName: 'gowishcart_item_added'
             // BaseTrigger will catch this and call handle() for each active funnel
             // The handle() method receives ($funnel, $originalArgs) where $originalArgs[0] is the data
             $action_hook = $trigger_key;
@@ -246,12 +246,12 @@ class WishCart_FluentCRM_Triggers {
             
             // Fire the action hook - BaseTrigger will catch this and call handle() for each active funnel
             // This matches the pattern used by fluent-booking: do_action('fluent_booking/after_booking_scheduled', $booking)
-            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is dynamically constructed from $trigger_key which is always prefixed with 'wishcart_'
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is dynamically constructed from $trigger_key which is always prefixed with 'gowishcart_'
             do_action( $action_hook, $trigger_data );
         }
 
         // Fire custom hook for extensions (does not trigger FluentCRM funnels)
-        do_action( 'wishcart_trigger_' . $trigger_key, $data );
+        do_action( 'gowishcart_trigger_' . $trigger_key, $data );
     }
 
     /**
@@ -280,8 +280,8 @@ class WishCart_FluentCRM_Triggers {
                     if (textContent.indexOf('WishCart') !== -1) {
                         // Find icon element within this menu item
                         const iconElement = item.querySelector('.el-icon, .fc_trigger_icon, i');
-                        if (iconElement && !iconElement.classList.contains('wishcart-trigger-icon')) {
-                            iconElement.classList.add('wishcart-trigger-icon');
+                        if (iconElement && !iconElement.classList.contains('gowishcart-trigger-icon')) {
+                            iconElement.classList.add('gowishcart-trigger-icon');
                         }
                     }
                 });

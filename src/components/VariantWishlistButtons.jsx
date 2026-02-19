@@ -25,7 +25,7 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
         const cookies = document.cookie.split(';');
         for (let cookie of cookies) {
             const [name, value] = cookie.trim().split('=');
-            if (name === 'wishcart_session_id') {
+            if (name === 'gowishcart_session_id') {
                 return value;
             }
         }
@@ -147,12 +147,12 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
             }
         };
 
-        window.addEventListener('wishcart:item-added', handleItemAdded);
-        window.addEventListener('wishcart:item-removed', handleItemRemoved);
+        window.addEventListener('gowishcart:item-added', handleItemAdded);
+        window.addEventListener('gowishcart:item-removed', handleItemRemoved);
 
         return () => {
-            window.removeEventListener('wishcart:item-added', handleItemAdded);
-            window.removeEventListener('wishcart:item-removed', handleItemRemoved);
+            window.removeEventListener('gowishcart:item-added', handleItemAdded);
+            window.removeEventListener('gowishcart:item-removed', handleItemRemoved);
         };
     }, [productId, variantId]);
 
@@ -191,7 +191,7 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
                 
                 // Dispatch custom event to notify wishlist page to refresh
                 if (typeof window !== 'undefined') {
-                    window.dispatchEvent(new CustomEvent('wishcart:item-added', {
+                    window.dispatchEvent(new CustomEvent('gowishcart:item-added', {
                         detail: {
                             productId,
                             variationId: variantId,
@@ -244,7 +244,7 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
                     
                     // Dispatch custom event to notify wishlist page to refresh
                     if (typeof window !== 'undefined') {
-                        window.dispatchEvent(new CustomEvent('wishcart:item-removed', {
+                        window.dispatchEvent(new CustomEvent('gowishcart:item-removed', {
                             detail: {
                                 productId,
                                 variationId: variantId
@@ -302,7 +302,7 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
         
         // Dispatch custom event to notify wishlist page to refresh
         if (typeof window !== 'undefined') {
-            window.dispatchEvent(new CustomEvent('wishcart:item-added', {
+            window.dispatchEvent(new CustomEvent('gowishcart:item-added', {
                 detail: {
                     productId,
                     variationId: variantId,
@@ -496,7 +496,7 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
         if (!container) return false;
         return container.closest('.wishcart-card-container') !== null || 
                container.closest('.fct-product-card, .fc-product-card') !== null ||
-               container.classList.contains('wishcart-card-container');
+               container.classList.contains('gowishcart-card-container');
     }, [productId]);
 
     let addToWishlistIcon, savedWishlistIcon;
@@ -575,7 +575,7 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
 
     // Inject CSS styles via style tag
     useEffect(() => {
-        const styleId = 'wishcart-variant-button-styles';
+        const styleId = 'gowishcart-variant-button-styles';
         let styleElement = document.getElementById(styleId);
         
         if (!styleElement) {

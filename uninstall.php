@@ -33,7 +33,7 @@ class WishCart_Uninstaller {
         ];
 
         $this->options = [
-            'wishcart_settings',
+            'gowishcart_settings',
         ];
     }
 

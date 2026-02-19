@@ -64,7 +64,7 @@ const WishlistPage = () => {
         const cookies = document.cookie.split(';');
         for (let cookie of cookies) {
             const [name, value] = cookie.trim().split('=');
-            if (name === 'wishcart_session_id') {
+            if (name === 'gowishcart_session_id') {
                 return value;
             }
         }
@@ -291,8 +291,8 @@ const WishlistPage = () => {
             }, 300);
         };
 
-        window.addEventListener('wishcart:item-added', handleItemAdded);
-        window.addEventListener('wishcart:item-removed', handleItemRemoved);
+        window.addEventListener('gowishcart:item-added', handleItemAdded);
+        window.addEventListener('gowishcart:item-removed', handleItemRemoved);
 
         // Fallback: Refresh when page becomes visible (user might have added items in another tab)
         const handleVisibilityChange = () => {
@@ -316,14 +316,14 @@ const WishlistPage = () => {
         }, 5000); // Check every 5 seconds
 
         document.addEventListener('visibilitychange', handleVisibilityChange);
-        window.addEventListener('wishcart:item-added', handleItemAdded);
-        window.addEventListener('wishcart:item-removed', handleItemRemoved);
+        window.addEventListener('gowishcart:item-added', handleItemAdded);
+        window.addEventListener('gowishcart:item-removed', handleItemRemoved);
 
         return () => {
             clearInterval(fallbackInterval);
             document.removeEventListener('visibilitychange', handleVisibilityChange);
-            window.removeEventListener('wishcart:item-added', handleItemAdded);
-            window.removeEventListener('wishcart:item-removed', handleItemRemoved);
+            window.removeEventListener('gowishcart:item-added', handleItemAdded);
+            window.removeEventListener('gowishcart:item-removed', handleItemRemoved);
         };
     }, []); // Empty dependencies - use refs instead
 

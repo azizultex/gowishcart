@@ -109,11 +109,11 @@ const applyPlacementLayout = (container, position) => {
         return;
     }
 
-    wrapper.classList.add('wishcart-button-wrapper');
+    wrapper.classList.add('gowishcart-button-wrapper');
     wrapper.classList.add(`wishcart-button-wrapper--${position}`);
 
     if (position === 'left' || position === 'right') {
-        wrapper.classList.add('wishcart-button-wrapper--horizontal');
+        wrapper.classList.add('gowishcart-button-wrapper--horizontal');
     }
 
     // Add button style class to wrapper
@@ -526,7 +526,7 @@ const initializeSessionId = () => {
     
     for (let cookie of cookies) {
         const [name] = cookie.trim().split('=');
-        if (name === 'wishcart_session_id') {
+        if (name === 'gowishcart_session_id') {
             hasSessionId = true;
             break;
         }
@@ -598,7 +598,7 @@ const mountWishlistButtons = () => {
 
 // Mount wishlist page
 const mountWishlistPage = () => {
-    const container = document.getElementById('wishcart-wishlist-page');
+    const container = document.getElementById('gowishcart-wishlist-page');
     
     if (container) {
         const root = createRoot(container);
@@ -635,7 +635,7 @@ const getSessionIdForTracking = () => {
     const cookies = document.cookie.split(';');
     for (let cookie of cookies) {
         const [name, value] = cookie.trim().split('=');
-        if (name === 'wishcart_session_id') {
+        if (name === 'gowishcart_session_id') {
             return value;
         }
     }

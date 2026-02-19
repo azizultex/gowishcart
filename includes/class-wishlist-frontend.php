@@ -43,7 +43,7 @@ class WishCart_Wishlist_Frontend {
      */
     private function get_button_position( $wishlist_settings = null ) {
         if ( null === $wishlist_settings ) {
-            $settings = get_option( 'wishcart_settings', array() );
+            $settings = get_option( 'gowishcart_settings', array() );
             $wishlist_settings = isset( $settings['wishlist'] ) ? $settings['wishlist'] : array();
         }
 
@@ -70,7 +70,7 @@ class WishCart_Wishlist_Frontend {
      * @return void
      */
     public function enqueue_scripts() {
-        $settings = get_option( 'wishcart_settings', array() );
+        $settings = get_option( 'gowishcart_settings', array() );
         $wishlist_settings = isset( $settings['wishlist'] ) ? $settings['wishlist'] : array();
 
         if ( empty( $wishlist_settings['enabled'] ) ) {
@@ -79,7 +79,7 @@ class WishCart_Wishlist_Frontend {
 
         // Enqueue wishlist frontend script
         wp_enqueue_script(
-            'wishcart-wishlist-frontend',
+            'gowishcart-wishlist-frontend',
             WishCart_PLUGIN_URL . 'build/wishlist-frontend.js',
             array( 'wp-element', 'wp-api-fetch' ),
             WishCart_VERSION,
@@ -87,7 +87,7 @@ class WishCart_Wishlist_Frontend {
         );
 
         wp_enqueue_style(
-            'wishcart-wishlist-frontend',
+            'gowishcart-wishlist-frontend',
             WishCart_PLUGIN_URL . 'build/wishlist-frontend.css',
             array(),
             WishCart_VERSION
@@ -102,10 +102,10 @@ class WishCart_Wishlist_Frontend {
         $button_customization = wp_parse_args( $button_customization, isset( $default_customization['button_customization'] ) ? $default_customization['button_customization'] : array() );
         
         wp_localize_script(
-            'wishcart-wishlist-frontend',
-            'wishcartWishlist',
+            'gowishcart-wishlist-frontend',
+            'gowishcartWishlist',
             array(
-                'apiUrl' => trailingslashit( rest_url( 'wishcart/v1' ) ),
+                'apiUrl' => trailingslashit( rest_url( 'gowishcart/v1' ) ),
                 'ajaxUrl' => admin_url( 'admin-ajax.php' ),
                 'nonce' => wp_create_nonce( 'wp_rest' ),
                 'sessionId' => $session_id,
@@ -135,7 +135,7 @@ class WishCart_Wishlist_Frontend {
      * @return void
      */
     private function add_product_hooks() {
-        $settings = get_option( 'wishcart_settings', array() );
+        $settings = get_option( 'gowishcart_settings', array() );
         $wishlist_settings = isset( $settings['wishlist'] ) ? $settings['wishlist'] : array();
         
         if ( empty( $wishlist_settings['enabled'] ) ) {
@@ -212,8 +212,8 @@ class WishCart_Wishlist_Frontend {
 
         $position = $this->get_button_position();
         $classes = array(
-            'wishcart-wishlist-button-container',
-            'wishcart-position-' . $position,
+            'gowishcart-wishlist-button-container',
+            'gowishcart-position-' . $position,
         );
 
         // Render button container (React will mount here)
@@ -229,7 +229,7 @@ class WishCart_Wishlist_Frontend {
      */
     public function sync_on_login( $user_login, $user ) {
         // Get session ID from cookie
-        $cookie_name = 'wishcart_session_id';
+        $cookie_name = 'gowishcart_session_id';
         if ( ! isset( $_COOKIE[ $cookie_name ] ) || empty( $_COOKIE[ $cookie_name ] ) ) {
             return;
         }
@@ -246,7 +246,7 @@ class WishCart_Wishlist_Frontend {
      * @return void
      */
     public function output_custom_css() {
-        $settings = get_option( 'wishcart_settings', array() );
+        $settings = get_option( 'gowishcart_settings', array() );
         $wishlist_settings = isset( $settings['wishlist'] ) ? $settings['wishlist'] : array();
         $button_customization = isset( $wishlist_settings['button_customization'] ) ? $wishlist_settings['button_customization'] : array();
         
@@ -373,7 +373,7 @@ class WishCart_Wishlist_Frontend {
         
         // Ensure the style is enqueued first
         wp_enqueue_style(
-            'wishcart-wishlist-frontend',
+            'gowishcart-wishlist-frontend',
             WishCart_PLUGIN_URL . 'build/wishlist-frontend.css',
             array(),
             WishCart_VERSION
@@ -382,14 +382,14 @@ class WishCart_Wishlist_Frontend {
         // Output generated CSS using wp_add_inline_style
         if ( ! empty( $css_parts ) ) {
             $generated_css = implode( "\n", $css_parts );
-            wp_add_inline_style( 'wishcart-wishlist-frontend', $generated_css );
+            wp_add_inline_style( 'gowishcart-wishlist-frontend', $generated_css );
         }
         
         // Output custom CSS from text field using wp_add_inline_style
         $custom_css = isset( $wishlist_settings['custom_css'] ) ? $wishlist_settings['custom_css'] : '';
         if ( ! empty( $custom_css ) ) {
             $sanitized_css = wp_strip_all_tags( $custom_css );
-            wp_add_inline_style( 'wishcart-wishlist-frontend', $sanitized_css );
+            wp_add_inline_style( 'gowishcart-wishlist-frontend', $sanitized_css );
         }
     }
 

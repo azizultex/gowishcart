@@ -48,10 +48,10 @@ class WishCart_FluentCRM_SmartCode {
     public function push_context_codes( $codes, $context ) {
         // Only add our shortcodes for WishCart triggers
         $wishcart_triggers = array(
-            'wishcart_item_added',
-            'wishcart_item_removed',
-            'wishcart_price_drop',
-            'wishcart_back_in_stock',
+            'gowishcart_item_added',
+            'gowishcart_item_removed',
+            'gowishcart_price_drop',
+            'gowishcart_back_in_stock',
         );
 
         if ( ! in_array( $context, $wishcart_triggers, true ) ) {
@@ -74,7 +74,7 @@ class WishCart_FluentCRM_SmartCode {
      * This callback is triggered when FluentCRM encounters a {{wishcart.*}} shortcode
      *
      * @param string $code         The full shortcode
-     * @param string $valueKey     The key after 'wishcart.' (e.g., 'product.name')
+     * @param string $valueKey     The key after 'gowishcart.' (e.g., 'product.name')
      * @param string $defaultValue Default value if parsing fails
      * @param object $subscriber   The FluentCRM subscriber object
      * @return string Parsed value
@@ -296,8 +296,8 @@ class WishCart_FluentCRM_SmartCode {
         // If no user, try to find guest session
         if ( ! $user_id && class_exists( 'WishCart_Guest_Handler' ) ) {
             // Use cache to avoid repeated database queries
-            $cache_key = 'wishcart_guest_session_' . md5( $email );
-            $cached_session_id = wp_cache_get( $cache_key, 'wishcart_cache' );
+            $cache_key = 'gowishcart_guest_session_' . md5( $email );
+            $cached_session_id = wp_cache_get( $cache_key, 'gowishcart_cache' );
             
             if ( false !== $cached_session_id ) {
                 $session_id = $cached_session_id;
@@ -308,7 +308,7 @@ class WishCart_FluentCRM_SmartCode {
                 if ( $guest && isset( $guest['session_id'] ) ) {
                     $session_id = $guest['session_id'];
                     // Cache for 5 minutes
-                    wp_cache_set( $cache_key, $session_id, 'wishcart_cache', 300 );
+                    wp_cache_set( $cache_key, $session_id, 'gowishcart_cache', 300 );
                 }
             }
         }
@@ -335,7 +335,7 @@ class WishCart_FluentCRM_SmartCode {
      */
     private function get_wishlist_url() {
         // Get wishlist page ID from options
-        $page_id = get_option( 'wishcart_wishlist_page_id' );
+        $page_id = get_option( 'gowishcart_wishlist_page_id' );
         
         if ( $page_id ) {
             return get_permalink( $page_id );

@@ -18,7 +18,7 @@ class WishCart_Wishlist_Button_Shortcode {
      * Constructor
      */
     public function __construct() {
-        add_shortcode( 'wishcart_sc', array( $this, 'render_button' ) );
+        add_shortcode( 'gowishcart_sc', array( $this, 'render_button' ) );
     }
 
     /**
@@ -31,7 +31,7 @@ class WishCart_Wishlist_Button_Shortcode {
         $atts = shortcode_atts( array(
             'id' => '',
             'position' => '',
-        ), $atts, 'wishcart_sc' );
+        ), $atts, 'gowishcart_sc' );
 
         // Product ID is required
         $product_id = ! empty( $atts['id'] ) ? intval( $atts['id'] ) : 0;
@@ -46,7 +46,7 @@ class WishCart_Wishlist_Button_Shortcode {
         }
 
         // Check if wishlist is enabled
-        $settings = get_option( 'wishcart_settings', array() );
+        $settings = get_option( 'gowishcart_settings', array() );
         $wishlist_settings = isset( $settings['wishlist'] ) ? $settings['wishlist'] : array();
         if ( empty( $wishlist_settings['enabled'] ) ) {
             return '';
@@ -66,9 +66,9 @@ class WishCart_Wishlist_Button_Shortcode {
 
         // Render button container (React will mount here)
         $classes = array(
-            'wishcart-wishlist-button-container',
-            'wishcart-position-' . $position,
-            'wishcart-shortcode-button',
+            'gowishcart-wishlist-button-container',
+            'gowishcart-position-' . $position,
+            'gowishcart-shortcode-button',
         );
 
         return '<div class="' . esc_attr( implode( ' ', $classes ) ) . '" data-product-id="' . esc_attr( $product_id ) . '" data-position="' . esc_attr( $position ) . '"></div>';
@@ -105,13 +105,13 @@ class WishCart_Wishlist_Button_Shortcode {
      */
     private function enqueue_scripts() {
         // Check if scripts are already enqueued
-        if ( wp_script_is( 'wishcart-wishlist-frontend', 'enqueued' ) ) {
+        if ( wp_script_is( 'gowishcart-wishlist-frontend', 'enqueued' ) ) {
             return;
         }
 
         // Enqueue wishlist frontend script
         wp_enqueue_script(
-            'wishcart-wishlist-frontend',
+            'gowishcart-wishlist-frontend',
             WishCart_PLUGIN_URL . 'build/wishlist-frontend.js',
             array( 'wp-element', 'wp-api-fetch' ),
             WishCart_VERSION,
@@ -119,18 +119,18 @@ class WishCart_Wishlist_Button_Shortcode {
         );
 
         wp_enqueue_style(
-            'wishcart-wishlist-frontend',
+            'gowishcart-wishlist-frontend',
             WishCart_PLUGIN_URL . 'build/wishlist-frontend.css',
             array(),
             WishCart_VERSION
         );
 
         // Localize script if not already localized
-        if ( ! wp_script_is( 'wishcart-wishlist-frontend', 'localized' ) ) {
+        if ( ! wp_script_is( 'gowishcart-wishlist-frontend', 'localized' ) ) {
             $handler = new WishCart_Wishlist_Handler();
             $session_id = $handler->get_or_create_session_id();
             
-            $settings = get_option( 'wishcart_settings', array() );
+            $settings = get_option( 'gowishcart_settings', array() );
             $wishlist_settings = isset( $settings['wishlist'] ) ? $settings['wishlist'] : array();
             
             // Get button customization settings
@@ -139,10 +139,10 @@ class WishCart_Wishlist_Button_Shortcode {
             $button_customization = wp_parse_args( $button_customization, isset( $default_customization['button_customization'] ) ? $default_customization['button_customization'] : array() );
             
             wp_localize_script(
-                'wishcart-wishlist-frontend',
-                'wishcartWishlist',
+                'gowishcart-wishlist-frontend',
+                'gowishcartWishlist',
                 array(
-                    'apiUrl' => trailingslashit( rest_url( 'wishcart/v1' ) ),
+                    'apiUrl' => trailingslashit( rest_url( 'gowishcart/v1' ) ),
                     'ajaxUrl' => admin_url( 'admin-ajax.php' ),
                     'nonce' => wp_create_nonce( 'wp_rest' ),
                     'sessionId' => $session_id,

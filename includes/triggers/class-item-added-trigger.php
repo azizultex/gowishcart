@@ -18,7 +18,7 @@ class wishcart_Item_Added_Trigger extends \FluentCrm\App\Services\Funnel\BaseTri
      * Constructor
      */
     public function __construct() {
-        $this->triggerName = 'wishcart_item_added';
+        $this->triggerName = 'gowishcart_item_added';
         $this->priority = 20;
         $this->actionArgNum = 1;
         
@@ -98,7 +98,7 @@ class wishcart_Item_Added_Trigger extends \FluentCrm\App\Services\Funnel\BaseTri
         }
         
         // If still no email, try to get from session_id (guest)
-        if ( empty( $email ) && ! empty( $item_data['session_id'] ) && class_exists( 'wishcart_Guest_Handler' ) ) {
+        if ( empty( $email ) && ! empty( $item_data['session_id'] ) && class_exists( 'gowishcart_Guest_Handler' ) ) {
             $guest_handler = new wishcart_Guest_Handler();
             $guest = $guest_handler->get_guest_by_session( $item_data['session_id'] );
             if ( $guest && ! empty( $guest['guest_email'] ) && is_email( $guest['guest_email'] ) ) {
@@ -170,7 +170,7 @@ class wishcart_Item_Added_Trigger extends \FluentCrm\App\Services\Funnel\BaseTri
             }
             
             // If still no email, try to get from session_id (guest)
-            if ( empty( $email ) && ! empty( $item_data['session_id'] ) && class_exists( 'wishcart_Guest_Handler' ) ) {
+            if ( empty( $email ) && ! empty( $item_data['session_id'] ) && class_exists( 'gowishcart_Guest_Handler' ) ) {
                 $guest_handler = new wishcart_Guest_Handler();
                 $guest = $guest_handler->get_guest_by_session( $item_data['session_id'] );
                 if ( $guest && ! empty( $guest['guest_email'] ) && is_email( $guest['guest_email'] ) ) {

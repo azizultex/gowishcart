@@ -33,7 +33,7 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
         const cookies = document.cookie.split(';');
         for (let cookie of cookies) {
             const [name, value] = cookie.trim().split('=');
-            if (name === 'wishcart_session_id') {
+            if (name === 'gowishcart_session_id') {
                 return value;
             }
         }
@@ -880,12 +880,12 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
             }
         };
 
-        window.addEventListener('wishcart:item-added', handleItemAdded);
-        window.addEventListener('wishcart:item-removed', handleItemRemoved);
+        window.addEventListener('gowishcart:item-added', handleItemAdded);
+        window.addEventListener('gowishcart:item-removed', handleItemRemoved);
 
         return () => {
-            window.removeEventListener('wishcart:item-added', handleItemAdded);
-            window.removeEventListener('wishcart:item-removed', handleItemRemoved);
+            window.removeEventListener('gowishcart:item-added', handleItemAdded);
+            window.removeEventListener('gowishcart:item-removed', handleItemRemoved);
         };
     }, [productId, currentVariationId, checkWishlistStatus]);
 
@@ -1055,7 +1055,7 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
         if (!container) return false;
         return container.closest('.wishcart-card-container') !== null || 
                container.closest('.fct-product-card, .fc-product-card') !== null ||
-               container.classList.contains('wishcart-card-container');
+               container.classList.contains('gowishcart-card-container');
     }, [productId]);
 
     // Support both old and new icon structure

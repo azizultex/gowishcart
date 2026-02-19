@@ -649,11 +649,11 @@ class WishCart_FluentCart_Helper {
         $candidates = [ 'fc_product', 'fluent-products', 'fluent_product', 'fluentcart_product' ];
         foreach ( $candidates as $slug ) {
             if ( post_type_exists( $slug ) ) {
-                return apply_filters( 'wishcart_fluentcart_product_post_type', $slug );
+                return apply_filters( 'gowishcart_fluentcart_product_post_type', $slug );
             }
         }
         // Fallback to default
-        return apply_filters( 'wishcart_fluentcart_product_post_type', 'fc_product' );
+        return apply_filters( 'gowishcart_fluentcart_product_post_type', 'fc_product' );
     }
 
     /**
@@ -662,7 +662,7 @@ class WishCart_FluentCart_Helper {
      * @return string
      */
     public static function get_order_post_type() {
-        return apply_filters( 'wishcart_fluentcart_order_post_type', 'fc_order' );
+        return apply_filters( 'gowishcart_fluentcart_order_post_type', 'fc_order' );
     }
 
     /**
@@ -878,6 +878,6 @@ class WishCart_FluentCart_Helper {
      * @return string Capability name
      */
     public static function get_manage_capability() {
-        return apply_filters( 'wishcart_fluentcart_manage_capability', 'manage_options' );
+        return apply_filters( 'gowishcart_fluentcart_manage_capability', 'manage_options' );
     }
 }

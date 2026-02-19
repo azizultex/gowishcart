@@ -32,10 +32,10 @@ class WishCart_CRM_Campaign_Handler {
         }
 
         // Hook into wishlist events
-        add_action('wishcart_item_added', array($this, 'handle_item_added'), 10, 1);
-        add_action('wishcart_item_removed', array($this, 'handle_item_removed'), 10, 1);
-        add_action('wishcart_price_drop_detected', array($this, 'handle_price_drop'), 10, 1);
-        add_action('wishcart_back_in_stock', array($this, 'handle_back_in_stock'), 10, 1);
+        add_action('gowishcart_item_added', array($this, 'handle_item_added'), 10, 1);
+        add_action('gowishcart_item_removed', array($this, 'handle_item_removed'), 10, 1);
+        add_action('gowishcart_price_drop_detected', array($this, 'handle_price_drop'), 10, 1);
+        add_action('gowishcart_back_in_stock', array($this, 'handle_back_in_stock'), 10, 1);
     }
 
     /**
@@ -380,7 +380,7 @@ class WishCart_CRM_Campaign_Handler {
 
             if ($delay > 0) {
                 // Schedule email
-                wp_schedule_single_event(time() + ($delay * 3600), 'wishcart_send_scheduled_email', array(
+                wp_schedule_single_event(time() + ($delay * 3600), 'gowishcart_send_scheduled_email', array(
                     $contact_id,
                     $subject,
                     $body,

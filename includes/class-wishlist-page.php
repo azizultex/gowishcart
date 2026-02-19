@@ -100,7 +100,7 @@ class WishCart_Wishlist_Page {
         }
 
         if ( $page_id ) {
-            update_option( 'wishcart_wishlist_page_id', $page_id );
+            update_option( 'gowishcart_wishlist_page_id', $page_id );
             self::ensure_default_settings( $page_id );
         }
 
@@ -113,14 +113,14 @@ class WishCart_Wishlist_Page {
      * @return int Page ID
      */
     public static function get_wishlist_page_id() {
-        $settings = get_option( 'wishcart_settings', array() );
+        $settings = get_option( 'gowishcart_settings', array() );
         
         if ( isset( $settings['wishlist']['wishlist_page_id'] ) && $settings['wishlist']['wishlist_page_id'] > 0 ) {
             return intval( $settings['wishlist']['wishlist_page_id'] );
         }
 
         // Fallback to option
-        return intval( get_option( 'wishcart_wishlist_page_id', 0 ) );
+        return intval( get_option( 'gowishcart_wishlist_page_id', 0 ) );
     }
 
     /**
@@ -129,13 +129,13 @@ class WishCart_Wishlist_Page {
      * @return int Page ID
      */
     private static function locate_existing_page() {
-        $stored_id = intval( get_option( 'wishcart_wishlist_page_id', 0 ) );
+        $stored_id = intval( get_option( 'gowishcart_wishlist_page_id', 0 ) );
 
         if ( $stored_id && get_post( $stored_id ) ) {
             return $stored_id;
         }
 
-        $settings = get_option( 'wishcart_settings', array() );
+        $settings = get_option( 'gowishcart_settings', array() );
         if ( isset( $settings['wishlist']['wishlist_page_id'] ) ) {
             $settings_id = intval( $settings['wishlist']['wishlist_page_id'] );
             if ( $settings_id && get_post( $settings_id ) ) {
@@ -210,7 +210,7 @@ class WishCart_Wishlist_Page {
      * @return void
      */
     private static function ensure_default_settings( $page_id ) {
-        $settings          = get_option( 'wishcart_settings', array() );
+        $settings          = get_option( 'gowishcart_settings', array() );
         $wishlist_defaults = self::get_default_settings( $page_id );
 
         if ( ! isset( $settings['wishlist'] ) || ! is_array( $settings['wishlist'] ) ) {
@@ -220,7 +220,7 @@ class WishCart_Wishlist_Page {
         $settings['wishlist'] = wp_parse_args( $settings['wishlist'], $wishlist_defaults );
         $settings['wishlist']['wishlist_page_id'] = intval( $page_id );
 
-        update_option( 'wishcart_settings', $settings );
+        update_option( 'gowishcart_settings', $settings );
     }
 
     /**
