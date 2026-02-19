@@ -4,12 +4,12 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 /**
  * FluentCRM Triggers Registration Class
  *
- * Registers WishCart events as triggers in FluentCRM automation funnel
+ * Registers GoWishCart events as triggers in FluentCRM automation funnel
  * Uses FluentCRM's BaseTrigger class approach
  *
  * @category WordPress
  * @package  WishCart
- * @author   WishCart Team <support@gowishcart.com>
+ * @author   GoWishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://gowishcart.com
  */
@@ -41,7 +41,7 @@ class WishCart_FluentCRM_Triggers {
         // Also try to register on init in case fluent_crm/after_init doesn't fire
         add_action( 'init', array( $this, 'register_triggers' ), 30 );
         
-        // Add CSS class to WishCart category icon in FluentCRM interface
+        // Add CSS class to GoWishCart category icon in FluentCRM interface
         add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_category_icon_script' ), 20 );
     }
 
@@ -59,7 +59,7 @@ class WishCart_FluentCRM_Triggers {
     }
 
     /**
-     * Register all WishCart triggers with FluentCRM
+     * Register all GoWishCart triggers with FluentCRM
      *
      * @return void
      */
@@ -99,10 +99,10 @@ class WishCart_FluentCRM_Triggers {
     }
 
     /**
-     * Add WishCart triggers to FluentCRM's available triggers list
+     * Add GoWishCart triggers to FluentCRM's available triggers list
      *
      * @param array $triggers Existing triggers
-     * @return array Triggers with WishCart triggers added
+     * @return array Triggers with GoWishCart triggers added
      */
     public function add_triggers_to_fluentcrm( $triggers ) {
         if ( ! is_array( $triggers ) ) {
@@ -255,7 +255,7 @@ class WishCart_FluentCRM_Triggers {
     }
 
     /**
-     * Enqueue script to add CSS class to WishCart category icon in FluentCRM interface
+     * Enqueue script to add CSS class to GoWishCart category icon in FluentCRM interface
      *
      * @param string $hook Current admin page hook
      * @return void

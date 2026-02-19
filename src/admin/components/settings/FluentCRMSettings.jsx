@@ -202,7 +202,7 @@ const FluentCRMSettings = ({ embedded = false }) => {
                                 <span className="gowishcart-badge wishcart-badge-warning">{__('PROgowishcart-wishlist-for-fluentcart')}</span>
                                 <span className="gowishcart-badge wishcart-badge-info">{__('COMING SOONgowishcart-wishlist-for-fluentcart')}</span>
                             </div>
-                            <p style={{fontSize: '13px', margin: '0'}}>{__('This feature is available in WishCart Pro', 'gowishcart-wishlist-for-fluentcart')}</p>
+                            <p style={{fontSize: '13px', margin: '0'}}>{__('This feature is available in GoWishCart Pro', 'gowishcart-wishlist-for-fluentcart')}</p>
                             <p style={{fontSize: '13px', margin: '4px 0 0', color: 'var(--wishcart-text-muted)'}}>{__('Please upgrade to get all the advanced features.', 'gowishcart-wishlist-for-fluentcart')}</p>
                         </div>
                     </div>

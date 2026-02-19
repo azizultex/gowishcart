@@ -8,13 +8,13 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  *
  * @category Functionality
  * @package  WishCart
- * @author   WishCart Team <support@gowishcart.com>
+ * @author   GoWishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://gowishcart.com
  */
 
 /**
- * WishCart FluentCart Product Wrapper Class
+ * GoWishCart FluentCart Product Wrapper Class
  */
 class WishCart_FluentCart_Product {
     private $post_id;
@@ -240,7 +240,7 @@ class WishCart_FluentCart_Product {
 }
 
 /**
- * WishCart FluentCart Order Wrapper Class
+ * GoWishCart FluentCart Order Wrapper Class
  */
 class WishCart_FluentCart_Order {
     private $fc_order;
@@ -519,7 +519,7 @@ class WishCart_FluentCart_Order {
 }
 
 /**
- * WishCart FluentCart Order Item Wrapper Class
+ * GoWishCart FluentCart Order Item Wrapper Class
  */
 class WishCart_FluentCart_Order_Item {
     private $item_data;
@@ -556,7 +556,7 @@ class WishCart_FluentCart_Order_Item {
 }
 
 /**
- * WishCart FluentCart DateTime Wrapper Class
+ * GoWishCart FluentCart DateTime Wrapper Class
  */
 class WishCart_FluentCart_DateTime {
     private $datetime;
@@ -577,7 +577,7 @@ class WishCart_FluentCart_DateTime {
  *
  * @category Class
  * @package  WishCart
- * @author   WishCart Team <support@gowishcart.com>
+ * @author   GoWishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://gowishcart.com
  */

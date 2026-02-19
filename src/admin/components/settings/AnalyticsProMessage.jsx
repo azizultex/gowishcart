@@ -41,7 +41,7 @@ const AnalyticsProMessage = () => {
                         {__('Analytics Dashboard', 'gowishcart-wishlist-for-fluentcart')}
                     </CardTitle>
                     <CardDescription>
-                        {__('Advanced analytics and insights are available in WishCart Pro. Upgrade to track wishlist performance, conversion rates, and customer behavior.', 'gowishcart-wishlist-for-fluentcart')}
+                        {__('Advanced analytics and insights are available in GoWishCart Pro. Upgrade to track wishlist performance, conversion rates, and customer behavior.', 'gowishcart-wishlist-for-fluentcart')}
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">

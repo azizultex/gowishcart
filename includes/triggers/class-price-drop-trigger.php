@@ -2,13 +2,13 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 /**
- * WishCart Price Drop Trigger
+ * GoWishCart Price Drop Trigger
  *
  * Triggers when a product in a wishlist has a price drop
  *
  * @category WordPress
  * @package  WishCart
- * @author   WishCart Team <support@gowishcart.com>
+ * @author   GoWishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://gowishcart.com
  */

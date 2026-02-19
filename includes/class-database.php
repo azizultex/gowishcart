@@ -1,11 +1,11 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
 /**
- * Database handling class for WishCart plugin
+ * Database handling class for GoWishCart plugin
  *
  * @category WordPress
  * @package  WishCart
- * @author   WishCart Team <support@gowishcart.com>
+ * @author   GoWishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://gowishcart.com
  */
@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  *
  * @category WordPress
  * @package  WishCart
- * @author   WishCart Team <support@gowishcart.com>
+ * @author   GoWishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://gowishcart.com
  */

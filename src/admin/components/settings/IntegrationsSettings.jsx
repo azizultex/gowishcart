@@ -38,7 +38,7 @@ const IntegrationsSettings = () => {
                     lineHeight: '1.5',
                     margin: 0
                 }}>
-                    {__('Connect WishCart with your favorite marketing and CRM tools to automate your workflows and enhance customer engagement.', 'gowishcart-wishlist-for-fluentcart')}
+                    {__('Connect GoWishCart with your favorite marketing and CRM tools to automate your workflows and enhance customer engagement.', 'gowishcart-wishlist-for-fluentcart')}
                 </p>
             </div>
 

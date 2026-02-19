@@ -2,13 +2,13 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 /**
- * WishCart Back in Stock Trigger
+ * GoWishCart Back in Stock Trigger
  *
  * Triggers when a product in a wishlist comes back in stock
  *
  * @category WordPress
  * @package  WishCart
- * @author   WishCart Team <support@gowishcart.com>
+ * @author   GoWishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://gowishcart.com
  */

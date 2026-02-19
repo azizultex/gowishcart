@@ -943,7 +943,7 @@ const ensureWishlistShareAllowed = () => {
                             onChange={(selectedOption) => {
                                 if (selectedOption && (selectedOption.value === 'shared' || selectedOption.value === 'public')) {
                                     // Show Pro feature message
-                                    setSuccessMessage('Shared/Public privacy options are available in WishCart Pro. Please upgrade to use this feature.');
+                                    setSuccessMessage('Shared/Public privacy options are available in GoWishCart Pro. Please upgrade to use this feature.');
                                     setIsSuccessModalOpen(true);
                                     return; // Don't change the selection
                                 }

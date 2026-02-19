@@ -4,12 +4,12 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 /**
  * FluentCRM SmartCode Integration Class
  *
- * Provides dynamic shortcodes for WishCart triggers in FluentCRM email editor
+ * Provides dynamic shortcodes for GoWishCart triggers in FluentCRM email editor
  * Similar to FluentBooking's Booking Data shortcodes
  *
  * @category WordPress
  * @package  WishCart
- * @author   WishCart Team <support@gowishcart.com>
+ * @author   GoWishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://gowishcart.com
  */
@@ -31,22 +31,22 @@ class WishCart_FluentCRM_SmartCode {
         // Register the Wishlist Data tab in FluentCRM email editor for our triggers
         add_filter( 'fluent_crm_funnel_context_smart_codes', array( $this, 'push_context_codes' ), 10, 2 );
         
-        // Register the callback to parse WishCart shortcodes
+        // Register the callback to parse GoWishCart shortcodes
         add_filter( 'fluent_crm/smartcode_group_callback_wishcart', array( $this, 'parse_wishlist_data' ), 10, 4 );
     }
 
     /**
-     * Add WishCart shortcode group to FluentCRM context
+     * Add GoWishCart shortcode group to FluentCRM context
      *
      * This adds the "Wishlist Data" tab when editing email actions
-     * in automations triggered by WishCart events
+     * in automations triggered by GoWishCart events
      *
      * @param array  $codes   Existing shortcode groups
      * @param string $context The trigger context (trigger name)
      * @return array Modified shortcode groups
      */
     public function push_context_codes( $codes, $context ) {
-        // Only add our shortcodes for WishCart triggers
+        // Only add our shortcodes for GoWishCart triggers
         $wishcart_triggers = array(
             'gowishcart_item_added',
             'gowishcart_item_removed',
@@ -69,7 +69,7 @@ class WishCart_FluentCRM_SmartCode {
     }
 
     /**
-     * Parse WishCart shortcode values
+     * Parse GoWishCart shortcode values
      *
      * This callback is triggered when FluentCRM encounters a {{wishcart.*}} shortcode
      *

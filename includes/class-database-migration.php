@@ -2,13 +2,13 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 /**
- * Database Migration Handler for WishCart Plugin
+ * Database Migration Handler for GoWishCart Plugin
  *
  * Handles migration from old 2-table structure to new 7-table structure
  *
  * @category WordPress
  * @package  WishCart
- * @author   WishCart Team <support@gowishcart.com>
+ * @author   GoWishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://gowishcart.com
  */

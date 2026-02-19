@@ -1,12 +1,12 @@
 # Changelog
 
-All notable changes to the WishCart Wishlist plugin will be documented in this file.
+All notable changes to the GoWishCart Wishlist plugin will be documented in this file.
 
 
 ## [1.0.0] - 2025-11-04
 
 ### Added
-- Initial release of WishCart Wishlist for FluentCart
+- Initial release of GoWishCart Wishlist for FluentCart
 - Guest user wishlist support with email tracking
 - Product variation support in wishlists
 - Price drop alerts and notifications
