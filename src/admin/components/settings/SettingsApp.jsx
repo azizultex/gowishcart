@@ -158,7 +158,7 @@ const SettingsApp = () => {
                 title: (
                     <div className="flex items-center gap-2">
                         <XCircle className="h-4 w-4 text-red-500" />
-                        <span>{__('Failed to save settingsgowishcart-wishlist-for-fluentcart')}</span>
+                        <span>{__('Failed to save settings', 'gowishcart-wishlist-for-fluentcart')}</span>
                     </div>
                 ),
                 description: __('Please try again or contact support if the problem persists.', 'gowishcart-wishlist-for-fluentcart'),
@@ -180,12 +180,12 @@ const SettingsApp = () => {
     };
 
     const tabs = useMemo(() => ([
-        { id: 'settings', label: __('Settingsgowishcart-wishlist-for-fluentcart'), icon: Settings },
-        { id: 'customization', label: __('Customizationgowishcart-wishlist-for-fluentcart'), icon: Palette },
-        { id: 'integrations', label: __('Integrationsgowishcart-wishlist-for-fluentcart'), icon: Plug },
-        { id: 'analytics', label: __('Analyticsgowishcart-wishlist-for-fluentcart'), icon: BarChart3 },
-        { id: 'support', label: __('Supportgowishcart-wishlist-for-fluentcart'), icon: LifeBuoy },
-        { id: 'get-pro', label: __('Get Progowishcart-wishlist-for-fluentcart'), icon: Sparkles },
+        { id: 'settings', label: __('Settings', 'gowishcart-wishlist-for-fluentcart'), icon: Settings },
+        { id: 'customization', label: __('Customization', 'gowishcart-wishlist-for-fluentcart'), icon: Palette },
+        { id: 'integrations', label: __('Integrations', 'gowishcart-wishlist-for-fluentcart'), icon: Plug },
+        { id: 'analytics', label: __('Analytics', 'gowishcart-wishlist-for-fluentcart'), icon: BarChart3 },
+        { id: 'support', label: __('Support', 'gowishcart-wishlist-for-fluentcart'), icon: LifeBuoy },
+        { id: 'get-pro', label: __('Get Pro', 'gowishcart-wishlist-for-fluentcart'), icon: Sparkles },
     ]), []);
 
     const navigateToTab = useCallback((tabId) => {
@@ -286,7 +286,7 @@ const SettingsApp = () => {
                                     disabled={isSaving}
                                     className="wishcart-button wishcart-button-primary"
                                 >
-                                    {isSaving ? __('Saving...', 'gowishcart-wishlist-for-fluentcart') : __('Save Settingsgowishcart-wishlist-for-fluentcart')}
+                                    {isSaving ? __('Saving...', 'gowishcart-wishlist-for-fluentcart') : __('Save Settings', 'gowishcart-wishlist-for-fluentcart')}
                                 </button>
                             </div>
                         )}

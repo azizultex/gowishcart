@@ -30,7 +30,7 @@ export const FileUploader = ({ accept, maxSize, onUpload }) => {
             <p className="text-sm text-gray-600">
                 {isDragActive
                     ? __('Drop the file here...', 'gowishcart-wishlist-for-fluentcart')
-                    : __('Drag & drop a PDF file here, or click to selectgowishcart-wishlist-for-fluentcart')}
+                    : __('Drag & drop a PDF file here, or click to select', 'gowishcart-wishlist-for-fluentcart')}
             </p>
             <p className="text-xs text-gray-500 mt-1">
                 {__('Maximum file size:gowishcart-wishlist-for-fluentcart')} {maxSize}MB

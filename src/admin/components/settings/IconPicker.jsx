@@ -79,13 +79,13 @@ const IconPicker = ({ selectedIcon, onSelect, label, triggerLabel }) => {
                             {selectedIcon}
                         </>
                     ) : (
-                        triggerLabel || __('Select Icongowishcart-wishlist-for-fluentcart')
+                        triggerLabel || __('Select Icon', 'gowishcart-wishlist-for-fluentcart')
                     )}
                 </Button>
             </DialogTrigger>
             <DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden flex flex-col">
                 <DialogHeader>
-                    <DialogTitle>{label || __('Select Icongowishcart-wishlist-for-fluentcart')}</DialogTitle>
+                    <DialogTitle>{label || __('Select Icon', 'gowishcart-wishlist-for-fluentcart')}</DialogTitle>
                 </DialogHeader>
                 <div className="flex flex-col gap-4 flex-1 overflow-hidden">
                     <div className="relative">
@@ -131,7 +131,7 @@ const IconPicker = ({ selectedIcon, onSelect, label, triggerLabel }) => {
                         </div>
                         {filteredIcons.length === 0 && (
                             <div className="text-center py-8 text-muted-foreground">
-                                {__('No icons foundgowishcart-wishlist-for-fluentcart')}
+                                {__('No icons found', 'gowishcart-wishlist-for-fluentcart')}
                             </div>
                         )}
                     </div>

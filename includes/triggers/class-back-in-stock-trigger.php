@@ -31,13 +31,13 @@ class wishcart_Back_In_Stock_Trigger extends \FluentCrm\App\Services\Funnel\Base
      */
     public function getTrigger() {
         return array(
-            'category'      => __( 'WishCartgowishcart-wishlist-for-fluentcart' ),
-            'label'         => __( 'Item Back in Stockgowishcart-wishlist-for-fluentcart' ) . ' (' . __( 'Upcominggowishcart-wishlist-for-fluentcart' ) . ')',
-            'description'  => __( 'This funnel will be initiated when a product in a wishlist comes back in stockgowishcart-wishlist-for-fluentcart' ),
+            'category'      => __( 'WishCart', 'gowishcart-wishlist-for-fluentcart' ),
+            'label'         => __( 'Item Back in Stock', 'gowishcart-wishlist-for-fluentcart' ) . ' (' . __( 'Upcoming', 'gowishcart-wishlist-for-fluentcart' ) . ')',
+            'description'  => __( 'This funnel will be initiated when a product in a wishlist comes back in stock', 'gowishcart-wishlist-for-fluentcart' ),
             // 'icon'          => 'fc-icon-heart',
             'upcoming'      => true,
-            'upcoming_label' => __( 'Upcominggowishcart-wishlist-for-fluentcart' ),
-            'badge'         => __( 'Upcominggowishcart-wishlist-for-fluentcart' ),
+            'upcoming_label' => __( 'Upcoming', 'gowishcart-wishlist-for-fluentcart' ),
+            'badge'         => __( 'Upcoming', 'gowishcart-wishlist-for-fluentcart' ),
             'is_pro'        => false,
             'disabled'      => true,
             'is_disabled'   => true,

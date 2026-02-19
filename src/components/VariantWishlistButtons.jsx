@@ -523,8 +523,8 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
         savedWishlistIcon = { type: 'predefined', value: 'Heart', customUrl: '' };
     }
 
-    const defaultAddLabel = __('Add to Wishlistgowishcart-wishlist-for-fluentcart');
-    const defaultSavedLabel = __('Saved to Wishlistgowishcart-wishlist-for-fluentcart');
+    const defaultAddLabel = __('Add to Wishlist', 'gowishcart-wishlist-for-fluentcart');
+    const defaultSavedLabel = __('Saved to Wishlist', 'gowishcart-wishlist-for-fluentcart');
     const buttonLabel = isInWishlist 
         ? (labels.saved || defaultSavedLabel)
         : (labels.add || defaultAddLabel);

@@ -436,7 +436,7 @@ class WishCart_Wishlist_Handler {
         }
 
         if (empty($update_data)) {
-            return new WP_Error('invalid_data', __('No valid fields to updategowishcart-wishlist-for-fluentcart'));
+            return new WP_Error('invalid_data', __('No valid fields to update', 'gowishcart-wishlist-for-fluentcart'));
         }
 
         // If setting as default, unset other defaults
@@ -490,7 +490,7 @@ class WishCart_Wishlist_Handler {
     public function delete_wishlist($wishlist_id) {
         $wishlist = $this->get_wishlist($wishlist_id);
         if (!$wishlist) {
-            return new WP_Error('not_found', __('Wishlist not foundgowishcart-wishlist-for-fluentcart'));
+            return new WP_Error('not_found', __('Wishlist not found', 'gowishcart-wishlist-for-fluentcart'));
         }
 
         // Don't allow deleting default wishlist
@@ -537,7 +537,7 @@ class WishCart_Wishlist_Handler {
         // Verify product exists
         $product = WishCart_FluentCart_Helper::get_product($product_id);
         if (!$product) {
-            return new WP_Error('product_not_found', __('Product not foundgowishcart-wishlist-for-fluentcart'));
+            return new WP_Error('product_not_found', __('Product not found', 'gowishcart-wishlist-for-fluentcart'));
         }
 
         // Determine user_id or session_id
@@ -884,13 +884,13 @@ class WishCart_Wishlist_Handler {
         }
 
         if (empty($wishlist_id)) {
-            return new WP_Error('no_wishlist', __('Wishlist not foundgowishcart-wishlist-for-fluentcart'));
+            return new WP_Error('no_wishlist', __('Wishlist not found', 'gowishcart-wishlist-for-fluentcart'));
         }
 
         // Get product object before deletion (needed for trigger data)
         $product = WishCart_FluentCart_Helper::get_product($product_id);
         if (!$product) {
-            return new WP_Error('product_not_found', __('Product not foundgowishcart-wishlist-for-fluentcart'));
+            return new WP_Error('product_not_found', __('Product not found', 'gowishcart-wishlist-for-fluentcart'));
         }
 
         // Get email for trigger data (similar to add_to_wishlist)
@@ -1006,7 +1006,7 @@ class WishCart_Wishlist_Handler {
         }
 
         if (empty($update_data)) {
-            return new WP_Error('invalid_data', __('No valid fields to updategowishcart-wishlist-for-fluentcart'));
+            return new WP_Error('invalid_data', __('No valid fields to update', 'gowishcart-wishlist-for-fluentcart'));
         }
 
         $result = $this->wpdb->update(
@@ -1018,7 +1018,7 @@ class WishCart_Wishlist_Handler {
         );
 
         if (false === $result) {
-            return new WP_Error('db_error', __('Failed to update wishlist itemgowishcart-wishlist-for-fluentcart'));
+            return new WP_Error('db_error', __('Failed to update wishlist item', 'gowishcart-wishlist-for-fluentcart'));
         }
 
         return true;
@@ -1080,7 +1080,7 @@ class WishCart_Wishlist_Handler {
      */
     public function sync_guest_wishlist_to_user($session_id, $user_id) {
         if (empty($user_id)) {
-            return new WP_Error('invalid_params', __('Invalid parametersgowishcart-wishlist-for-fluentcart'));
+            return new WP_Error('invalid_params', __('Invalid parameters', 'gowishcart-wishlist-for-fluentcart'));
         }
 
         // Get guest's default wishlist

@@ -78,7 +78,7 @@ class WishCart_Wishlist_Page {
      */
     public static function create_wishlist_page( $page_name = '' ) {
         $page_id   = self::locate_existing_page();
-        $page_name = $page_name ? $page_name : __( 'Wishlistgowishcart-wishlist-for-fluentcart' );
+        $page_name = $page_name ? $page_name : __( 'Wishlist', 'gowishcart-wishlist-for-fluentcart' );
 
         if ( ! $page_id ) {
             $page_data = array(
@@ -296,8 +296,8 @@ class WishCart_Wishlist_Page {
                     'customUrl'  => '',
                 ),
                 'labels' => array(
-                    'add'    => __( 'Add to Wishlistgowishcart-wishlist-for-fluentcart' ),
-                    'saved'  => __( 'Saved to Wishlistgowishcart-wishlist-for-fluentcart' ),
+                    'add'    => __( 'Add to Wishlist', 'gowishcart-wishlist-for-fluentcart' ),
+                    'saved'  => __( 'Saved to Wishlist', 'gowishcart-wishlist-for-fluentcart' ),
                 ),
                 'buttonStyle' => 'button',
             ),

@@ -15,7 +15,7 @@ const IntegrationsSettings = () => {
         // Future integrations can be added here:
         // {
         //     id: 'mailchimp',
-        //     name: __('Mailchimpgowishcart-wishlist-for-fluentcart'),
+        //     name: __('Mailchimp', 'gowishcart-wishlist-for-fluentcart'),
         //     description: __('Sync your wishlist with Mailchimp for email marketing campaigns.', 'gowishcart-wishlist-for-fluentcart'),
         //     component: MailchimpSettings,
         // },
@@ -30,7 +30,7 @@ const IntegrationsSettings = () => {
                     color: 'var(--wishcart-gray-900)',
                     marginBottom: '8px'
                 }}>
-                    {__('Integrationsgowishcart-wishlist-for-fluentcart')}
+                    {__('Integrations', 'gowishcart-wishlist-for-fluentcart')}
                 </h3>
                 <p style={{
                     fontSize: '13px',
