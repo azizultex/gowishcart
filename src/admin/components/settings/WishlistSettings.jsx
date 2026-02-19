@@ -78,14 +78,14 @@ const WishlistSettings = ({ settings, updateSettings }) => {
         try {
             const apiUrl =
                 (typeof window !== 'undefined' &&
-                    window.wishcartSettings &&
-                    window.wishcartSettings.apiUrl) ||
-                '/wp-json/wishcart/v1/';
+                    window.gowishcartSettings &&
+                    window.gowishcartSettings.apiUrl) ||
+                '/wp-json/gowishcart/v1/';
 
             const response = await fetch(`${apiUrl}pages?per_page=100`, {
                 headers: {
                     'X-WP-Nonce':
-                        (window.wishcartSettings && window.wishcartSettings.nonce) ||
+                        (window.gowishcartSettings && window.gowishcartSettings.nonce) ||
                         '',
                 },
             });
@@ -135,15 +135,15 @@ const WishlistSettings = ({ settings, updateSettings }) => {
         try {
             const apiUrl =
                 (typeof window !== 'undefined' &&
-                    window.wishcartSettings &&
-                    window.wishcartSettings.apiUrl) ||
-                '/wp-json/wishcart/v1/';
+                    window.gowishcartSettings &&
+                    window.gowishcartSettings.apiUrl) ||
+                '/wp-json/gowishcart/v1/';
 
             const response = await fetch(`${apiUrl}pages/create-wishlist`, {
                 method: 'POST',
                 headers: {
                     'X-WP-Nonce':
-                        (window.wishcartSettings && window.wishcartSettings.nonce) ||
+                        (window.gowishcartSettings && window.gowishcartSettings.nonce) ||
                         '',
                     'Content-Type': 'application/json',
                 },

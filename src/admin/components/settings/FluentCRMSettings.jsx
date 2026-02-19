@@ -11,8 +11,10 @@ import {
     SelectValue
 } from "@/components/ui/select";
 
+const gowishcartSettings = typeof window !== 'undefined' ? window.gowishcartSettings || {} : {};
+
 const resolveProStatus = () => {
-    if (typeof wishcartSettings === 'undefined' || !wishcartSettings) {
+    if (typeof gowishcartSettings === 'undefined' || !gowishcartSettings.apiUrl) {
         return false;
     }
 
@@ -21,7 +23,7 @@ const resolveProStatus = () => {
         isPro,
         hasPro,
         isWishcartPro
-    } = wishcartSettings;
+    } = gowishcartSettings;
 
     return Boolean(
         isProActive ??
@@ -76,9 +78,9 @@ const FluentCRMSettings = ({ embedded = false }) => {
 
     const loadSettings = async () => {
         try {
-            const response = await fetch(`${wishcartSettings.apiUrl}fluentcrm/settings`, {
+            const response = await fetch(`${gowishcartSettings.apiUrl}fluentcrm/settings`, {
                 headers: {
-                    'X-WP-Nonce': wishcartSettings.nonce
+                    'X-WP-Nonce': gowishcartSettings.nonce
                 }
             });
 
@@ -99,9 +101,9 @@ const FluentCRMSettings = ({ embedded = false }) => {
 
     const loadLists = async () => {
         try {
-            const response = await fetch(`${wishcartSettings.apiUrl}fluentcrm/lists`, {
+            const response = await fetch(`${gowishcartSettings.apiUrl}fluentcrm/lists`, {
                 headers: {
-                    'X-WP-Nonce': wishcartSettings.nonce
+                    'X-WP-Nonce': gowishcartSettings.nonce
                 }
             });
 
@@ -134,11 +136,11 @@ const FluentCRMSettings = ({ embedded = false }) => {
         setSaveMessage('');
 
         try {
-            const response = await fetch(`${wishcartSettings.apiUrl}fluentcrm/settings`, {
+            const response = await fetch(`${gowishcartSettings.apiUrl}fluentcrm/settings`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-WP-Nonce': wishcartSettings.nonce
+                    'X-WP-Nonce': gowishcartSettings.nonce
                 },
                 body: JSON.stringify(settings)
             });

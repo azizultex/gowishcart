@@ -20,7 +20,8 @@ import SupportResources from './SupportResources';
 import UpgradePrompt from './UpgradePrompt';
 import AnalyticsProMessage from './AnalyticsProMessage';
 
-const localizedTabPageMap = (typeof window !== 'undefined' && window.wishcartSettings && window.wishcartSettings.tabPageMap) || {};
+const gowishcartSettings = typeof window !== 'undefined' ? window.gowishcartSettings || {} : {};
+const localizedTabPageMap = (typeof window !== 'undefined' && window.gowishcartSettings && window.gowishcartSettings.tabPageMap) || {};
 
 const SettingsApp = () => {
     const { toast } = useToast()
@@ -37,8 +38,8 @@ const SettingsApp = () => {
     });
 
     const [isSaving, setIsSaving] = useState(false);
-    const [activeTab, setActiveTab] = useState(() => wishcartSettings?.defaultTab || 'settings');
-    const baseMenuSlug = wishcartSettings?.menuSlug || 'gowishcart-wishlist-for-fluentcart';
+    const [activeTab, setActiveTab] = useState(() => gowishcartSettings?.defaultTab || 'settings');
+    const baseMenuSlug = gowishcartSettings?.menuSlug || 'gowishcart-wishlist-for-fluentcart';
     const fallbackTabPageMap = useMemo(() => ({
         settings: `${baseMenuSlug}-settings`,
         customization: `${baseMenuSlug}-customization`,
@@ -62,9 +63,10 @@ const SettingsApp = () => {
 
     const loadSettings = async () => {
         try {
-            const response = await fetch('/wp-json/wishcart/v1/settings', {
+            const apiUrl = gowishcartSettings?.apiUrl || '';
+            const response = await fetch(`${apiUrl}settings`, {
                 headers: {
-                    'X-WP-Nonce': wishcartSettings.nonce
+                    'X-WP-Nonce': gowishcartSettings.nonce
                 }
             });
             const data = await response.json();
@@ -115,8 +117,8 @@ const SettingsApp = () => {
     }, [activeTab, tabPageMap, fallbackTabPageMap]);
 
     useEffect(() => {
-        if (typeof window !== 'undefined' && typeof window.wishcartSetActiveMenu === 'function') {
-            window.wishcartSetActiveMenu(activeTab);
+        if (typeof window !== 'undefined' && typeof window.gowishcartSetActiveMenu === 'function') {
+            window.gowishcartSetActiveMenu(activeTab);
         }
     }, [activeTab]);
 
@@ -130,11 +132,12 @@ const SettingsApp = () => {
         if (!validateBeforeSave()) return;
         setIsSaving(true);
         try {
-            const response = await fetch('/wp-json/wishcart/v1/settings', {
+            const apiUrl = gowishcartSettings?.apiUrl || '';
+            const response = await fetch(`${apiUrl}settings`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-WP-Nonce': wishcartSettings.nonce
+                    'X-WP-Nonce': gowishcartSettings.nonce
                 },
                 body: JSON.stringify(settings)
             });
@@ -198,10 +201,10 @@ const SettingsApp = () => {
     }, [tabs]);
 
     useEffect(() => {
-        window.wishcartNavigateToTab = navigateToTab;
+        window.gowishcartNavigateToTab = navigateToTab;
         return () => {
-            if (window.wishcartNavigateToTab === navigateToTab) {
-                delete window.wishcartNavigateToTab;
+            if (window.gowishcartNavigateToTab === navigateToTab) {
+                delete window.gowishcartNavigateToTab;
             }
         };
     }, [navigateToTab]);

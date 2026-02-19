@@ -205,7 +205,7 @@ class gowishcart_Admin {
         return;
     }
     window.addEventListener(\'DOMContentLoaded\', function(){
-        if (!window.wishcartSettings || !window.wishcartSettings.menuTabMap) {
+        if (!window.gowishcartSettings || !window.gowishcartSettings.menuTabMap) {
             return;
         }
         var submenu = document.querySelector(\'#toplevel_page_' . esc_js( $this->plugin_slug ) . ' .wp-submenu\');
@@ -236,16 +236,16 @@ class gowishcart_Admin {
             }
         }
         function setActiveMenuByTab(tabId){
-            var map = window.wishcartSettings && window.wishcartSettings.tabPageMap;
+            var map = window.gowishcartSettings && window.gowishcartSettings.tabPageMap;
             if (!map || !map[tabId]) {
                 return;
             }
             setActiveMenuByPage(map[tabId]);
         }
-        window.wishcartSetActiveMenu = setActiveMenuByTab;
-        setActiveMenuByTab(window.wishcartSettings.defaultTab);
+        window.gowishcartSetActiveMenu = setActiveMenuByTab;
+        setActiveMenuByTab(window.gowishcartSettings.defaultTab);
         submenu.addEventListener(\'click\', function(event){
-            if (typeof window.wishcartNavigateToTab !== \'function\') {
+            if (typeof window.gowishcartNavigateToTab !== \'function\') {
                 return;
             }
             var link = event.target.closest(\'a\');
@@ -255,12 +255,12 @@ class gowishcart_Admin {
             try {
                 var url = new URL(link.href, window.location.origin);
                 var page = url.searchParams.get(\'page\') || \'' . esc_js( $this->plugin_slug ) . '-settings\';
-                var tab = window.wishcartSettings.menuTabMap[page];
+                var tab = window.gowishcartSettings.menuTabMap[page];
                 if (!tab) {
                     return;
                 }
                 event.preventDefault();
-                window.wishcartNavigateToTab(tab);
+                window.gowishcartNavigateToTab(tab);
                 setActiveMenuByPage(page);
             } catch (err) {
                 // Fail silently and allow navigation
