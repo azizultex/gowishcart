@@ -273,11 +273,11 @@ class WishCart_FluentCRM_Triggers {
         $script = "
         (function() {
             function addCategoryIconClass() {
-                // Find menu items containing 'WishCart' text
+                // Find menu items containing 'GoWishCart' text
                 const menuItems = document.querySelectorAll('.el-menu-item, .el-menu-item--horizontal');
                 menuItems.forEach(function(item) {
                     const textContent = item.textContent || item.innerText || '';
-                    if (textContent.indexOf('WishCart') !== -1) {
+                    if (textContent.indexOf('GoWishCart') !== -1) {
                         // Find icon element within this menu item
                         const iconElement = item.querySelector('.el-icon, .fc_trigger_icon, i');
                         if (iconElement && !iconElement.classList.contains('gowishcart-trigger-icon')) {

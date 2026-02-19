@@ -29,7 +29,7 @@ const UpgradePrompt = () => {
                 <CardHeader className="space-y-2">
                     <div className="inline-flex items-center gap-2 rounded-full bg-yellow-50 px-3 py-1 text-yellow-700">
                         <Sparkles className="h-4 w-4" />
-                        <span>{__('WishCart Pro', 'gowishcart-wishlist-for-fluentcart')}</span>
+                        <span>{__('GoWishCart Pro', 'gowishcart-wishlist-for-fluentcart')}</span>
                     </div>
                     <CardTitle>{__('Unlock the full wishlist experience', 'gowishcart-wishlist-for-fluentcart')}</CardTitle>
                     <CardDescription>
