@@ -8,17 +8,17 @@ const features = [
     {
         icon: Layers,
         title: __('Multiple Wishlist Collectionsgowishcart-wishlist-for-fluentcart'),
-        description: __('Segment shoppers with unlimited wishlist collections, share links, and automation triggers.gowishcart-wishlist-for-fluentcart'),
+        description: __('Segment shoppers with unlimited wishlist collections, share links, and automation triggers.', 'gowishcart-wishlist-for-fluentcart'),
     },
     {
         icon: ShieldCheck,
         title: __('Advanced Analyticsgowishcart-wishlist-for-fluentcart'),
-        description: __('Track add-to-cart conversions, revenue per wishlist, and subscriber growth in real-time.gowishcart-wishlist-for-fluentcart'),
+        description: __('Track add-to-cart conversions, revenue per wishlist, and subscriber growth in real-time.', 'gowishcart-wishlist-for-fluentcart'),
     },
     {
         icon: Flame,
         title: __('Automation Recipesgowishcart-wishlist-for-fluentcart'),
-        description: __('Plug-and-play FluentCRM workflows for reminders, low stock alerts, and VIP sequences.gowishcart-wishlist-for-fluentcart'),
+        description: __('Plug-and-play FluentCRM workflows for reminders, low stock alerts, and VIP sequences.', 'gowishcart-wishlist-for-fluentcart'),
     },
 ];
 
@@ -33,7 +33,7 @@ const UpgradePrompt = () => {
                     </div>
                     <CardTitle>{__('Unlock the full wishlist experiencegowishcart-wishlist-for-fluentcart')}</CardTitle>
                     <CardDescription>
-                        {__('Upgrade to automate follow-ups, sync advanced customer data, and supercharge your revenue from wishlists.gowishcart-wishlist-for-fluentcart')}
+                        {__('Upgrade to automate follow-ups, sync advanced customer data, and supercharge your revenue from wishlists.', 'gowishcart-wishlist-for-fluentcart')}
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">

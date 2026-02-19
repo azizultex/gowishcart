@@ -165,18 +165,18 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                     // Show success message
                     alert(__('Wishlist page created successfully!gowishcart-wishlist-for-fluentcart'));
                 } else {
-                    alert(__('Failed to create wishlist page.gowishcart-wishlist-for-fluentcart'));
+                    alert(__('Failed to create wishlist page.', 'gowishcart-wishlist-for-fluentcart'));
                 }
             } else {
                 const error = await response.json();
                 alert(
                     error.message ||
-                        __('Failed to create wishlist page.gowishcart-wishlist-for-fluentcart')
+                        __('Failed to create wishlist page.', 'gowishcart-wishlist-for-fluentcart')
                 );
             }
         } catch (error) {
             console.error('Error creating wishlist page:', error);
-            alert(__('An error occurred while creating the wishlist page.gowishcart-wishlist-for-fluentcart'));
+            alert(__('An error occurred while creating the wishlist page.', 'gowishcart-wishlist-for-fluentcart'));
         } finally {
             setCreatingPage(false);
         }
@@ -225,8 +225,8 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                         <h4>{__('Enable Multiple Wishlistsgowishcart-wishlist-for-fluentcart')}</h4>
                         <span className="wishcart-badge wishcart-badge-warning">{__('PROgowishcart-wishlist-for-fluentcart')}</span>
                     </div>
-                    <p>{__('Allow users to create and manage multiple wishlists. When disabled, products are added directly to the default wishlist.gowishcart-wishlist-for-fluentcart')}</p>
-                    <p style={{fontSize: '13px', margin: '4px 0 0', color: 'var(--wishcart-text-muted)'}}>{__('This feature is available in WishCart Pro. Please upgrade to get all the advanced features.gowishcart-wishlist-for-fluentcart')}</p>
+                    <p>{__('Allow users to create and manage multiple wishlists. When disabled, products are added directly to the default wishlist.', 'gowishcart-wishlist-for-fluentcart')}</p>
+                    <p style={{fontSize: '13px', margin: '4px 0 0', color: 'var(--wishcart-text-muted)'}}>{__('This feature is available in WishCart Pro. Please upgrade to get all the advanced features.', 'gowishcart-wishlist-for-fluentcart')}</p>
                 </div>
                 <div className="toggle-control">
                     <Switch
@@ -300,7 +300,7 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                         </SelectContent>
                     </Select>
                     <p className="wishcart-form-helper">
-                        {__('Choose where to display the wishlist button relative to the purchase actions.gowishcart-wishlist-for-fluentcart')}
+                        {__('Choose where to display the wishlist button relative to the purchase actions.', 'gowishcart-wishlist-for-fluentcart')}
                     </p>
                 </div>
             )}
@@ -316,12 +316,12 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                         [wishcart_sc id="{'{'}product id{'}'}"]
                     </code>
                     {', '}
-                    {__('e.g.gowishcart-wishlist-for-fluentcart')}{' '}
+                    {__('e.g.', 'gowishcart-wishlist-for-fluentcart')}{' '}
                     <code style={{fontFamily: 'monospace', backgroundColor: '#f5f5f5', padding: '2px 6px', borderRadius: '3px'}}>
                         [wishcart_sc id="99"]
                     </code>
                     {' '}
-                    {__('for the product whose ID is 99.gowishcart-wishlist-for-fluentcart')}
+                    {__('for the product whose ID is 99.', 'gowishcart-wishlist-for-fluentcart')}
                 </p>
             </div>
 
@@ -331,7 +331,7 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                     {__('Select Wishlist Pagegowishcart-wishlist-for-fluentcart')}
                 </h4>
                 <p style={{fontSize: '13px', color: '#666', marginBottom: '12px'}}>
-                    {__('Select the page where the wishlist will be displayed.gowishcart-wishlist-for-fluentcart')}
+                    {__('Select the page where the wishlist will be displayed.', 'gowishcart-wishlist-for-fluentcart')}
                 </p>
                 <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start', marginBottom: '8px' }}>
                     <div style={{ flex: 1 }}>
@@ -457,7 +457,7 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                             disabled={creatingPage || !pageName.trim()}
                         >
                             {creatingPage
-                                ? __('Creating...gowishcart-wishlist-for-fluentcart')
+                                ? __('Creating...', 'gowishcart-wishlist-for-fluentcart')
                                 : __('Create Pagegowishcart-wishlist-for-fluentcart')}
                         </Button>
                     </DialogFooter>
@@ -495,7 +495,7 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                     rows={8}
                     value={wishlistSettings.custom_css || ''}
                     onChange={(e) => updateWishlistSetting('custom_css', e.target.value)}
-                    placeholder={__('Add custom CSS for wishlist button styling...gowishcart-wishlist-for-fluentcart')}
+                    placeholder={__('Add custom CSS for wishlist button styling...', 'gowishcart-wishlist-for-fluentcart')}
                     disabled={!wishlistSettings.enabled}
                     className="wishcart-textarea"
                 />

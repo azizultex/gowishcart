@@ -429,7 +429,7 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
     const handleMediaUpload = (iconType) => {
         // Check if wp.media is available
         if (typeof wp === 'undefined' || !wp.media) {
-            alert(__('WordPress media library is not available. Please refresh the page.gowishcart-wishlist-for-fluentcart'));
+            alert(__('WordPress media library is not available. Please refresh the page.', 'gowishcart-wishlist-for-fluentcart'));
             return;
         }
 
@@ -449,7 +449,7 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
             const attachment = selection.first();
             
             if (!attachment) {
-                alert(__('No image selected. Please try again.gowishcart-wishlist-for-fluentcart'));
+                alert(__('No image selected. Please try again.', 'gowishcart-wishlist-for-fluentcart'));
                 return;
             }
 
@@ -463,14 +463,14 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
             
             // Validate file type (PNG or SVG only)
             if (fileExtension !== 'png' && fileExtension !== 'svg') {
-                alert(__('Please upload a PNG or SVG file only.gowishcart-wishlist-for-fluentcart'));
+                alert(__('Please upload a PNG or SVG file only.', 'gowishcart-wishlist-for-fluentcart'));
                 return;
             }
             
             // Also check MIME type
             const mimeType = attachmentData.mime || attachment.get('mime') || '';
             if (mimeType && mimeType !== 'image/png' && mimeType !== 'image/svg+xml') {
-                alert(__('Please upload a PNG or SVG file only.gowishcart-wishlist-for-fluentcart'));
+                alert(__('Please upload a PNG or SVG file only.', 'gowishcart-wishlist-for-fluentcart'));
                 return;
             }
             
@@ -485,7 +485,7 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
             
             if (!imageUrl) {
                 console.error('Attachment data:', attachmentData);
-                alert(__('Error: Could not get image URL. Please try again.gowishcart-wishlist-for-fluentcart'));
+                alert(__('Error: Could not get image URL. Please try again.', 'gowishcart-wishlist-for-fluentcart'));
                 return;
             }
             
@@ -729,7 +729,7 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
                             style={{ 
                                 background: localValue || value || '#ffffff'
                             }}
-                            title={__('Color picker not available for gradients. Use text input to edit.gowishcart-wishlist-for-fluentcart')}
+                            title={__('Color picker not available for gradients. Use text input to edit.', 'gowishcart-wishlist-for-fluentcart')}
                         >
                         </div>
                     )}

@@ -91,7 +91,7 @@ const IconPicker = ({ selectedIcon, onSelect, label, triggerLabel }) => {
                     <div className="relative">
                         <Input
                             type="text"
-                            placeholder={__('Search icons...gowishcart-wishlist-for-fluentcart')}
+                            placeholder={__('Search icons...', 'gowishcart-wishlist-for-fluentcart')}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="w-full"

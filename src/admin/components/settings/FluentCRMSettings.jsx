@@ -174,7 +174,7 @@ const FluentCRMSettings = ({ embedded = false }) => {
             {saveMessage === 'error' && (
                 <div className="wishcart-notice wishcart-notice-error">
                     <XCircle style={{width: '18px', height: '18px', flexShrink: 0}} />
-                    <span>{__('Failed to save settings. Please try again.gowishcart-wishlist-for-fluentcart')}</span>
+                    <span>{__('Failed to save settings. Please try again.', 'gowishcart-wishlist-for-fluentcart')}</span>
                 </div>
             )}
 
@@ -203,7 +203,7 @@ const FluentCRMSettings = ({ embedded = false }) => {
                                 <span className="wishcart-badge wishcart-badge-info">{__('COMING SOONgowishcart-wishlist-for-fluentcart')}</span>
                             </div>
                             <p style={{fontSize: '13px', margin: '0'}}>{__('This feature is available in WishCart Progowishcart-wishlist-for-fluentcart')}</p>
-                            <p style={{fontSize: '13px', margin: '4px 0 0', color: 'var(--wishcart-text-muted)'}}>{__('Please upgrade to get all the advanced features.gowishcart-wishlist-for-fluentcart')}</p>
+                            <p style={{fontSize: '13px', margin: '4px 0 0', color: 'var(--wishcart-text-muted)'}}>{__('Please upgrade to get all the advanced features.', 'gowishcart-wishlist-for-fluentcart')}</p>
                         </div>
                     </div>
 
@@ -215,7 +215,7 @@ const FluentCRMSettings = ({ embedded = false }) => {
                             {__('List selectgowishcart-wishlist-for-fluentcart')}
                         </label>
                         <p className="wishcart-form-helper">
-                            {__('Choose which FluentCRM list wishlist contacts will be added to.gowishcart-wishlist-for-fluentcart')}
+                            {__('Choose which FluentCRM list wishlist contacts will be added to.', 'gowishcart-wishlist-for-fluentcart')}
                         </p>
                     </div>
                     <Select
@@ -233,7 +233,7 @@ const FluentCRMSettings = ({ embedded = false }) => {
                         disabled={listsLoading}
                     >
                         <SelectTrigger id="fluentcrm_list_id" className="wishcart-select">
-                            <SelectValue placeholder={listsLoading ? __('Loading lists...gowishcart-wishlist-for-fluentcart') : __('Wishlist Usersgowishcart-wishlist-for-fluentcart')} />
+                            <SelectValue placeholder={listsLoading ? __('Loading lists...', 'gowishcart-wishlist-for-fluentcart') : __('Wishlist Usersgowishcart-wishlist-for-fluentcart')} />
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value={String(wishlistUsersListId || 0)}>
@@ -251,7 +251,7 @@ const FluentCRMSettings = ({ embedded = false }) => {
                                 {__('Custom list namegowishcart-wishlist-for-fluentcart')}
                             </label>
                             <p className="wishcart-form-helper">
-                                {__('Enter the name of the list. If the list doesn\'t exist, it will be created automatically.gowishcart-wishlist-for-fluentcart')}
+                                {__('Enter the name of the list. If the list doesn\'t exist, it will be created automatically.', 'gowishcart-wishlist-for-fluentcart')}
                             </p>
                         </div>
                         <input
@@ -271,7 +271,7 @@ const FluentCRMSettings = ({ embedded = false }) => {
                             {__('Tag formatgowishcart-wishlist-for-fluentcart')}
                         </label>
                         <p className="wishcart-form-helper">
-                            {__('Choose how tags are stored in FluentCRM for wishlist products.gowishcart-wishlist-for-fluentcart')}
+                            {__('Choose how tags are stored in FluentCRM for wishlist products.', 'gowishcart-wishlist-for-fluentcart')}
                         </p>
                     </div>
                     <Select
@@ -320,7 +320,7 @@ const FluentCRMSettings = ({ embedded = false }) => {
                             <p style={{fontSize: '12px', color: 'var(--wishcart-text-muted)', marginTop: '8px', lineHeight: '1.5'}}>
                                 {__('Available placeholders:gowishcart-wishlist-for-fluentcart')} {'{product_name}, {price}, {category}, {stock}, {sku}, {type}'}
                                 <br />
-                                {__('Enter one tag per line or separate multiple tags with commas.gowishcart-wishlist-for-fluentcart')}
+                                {__('Enter one tag per line or separate multiple tags with commas.', 'gowishcart-wishlist-for-fluentcart')}
                             </p>
                         </div>
                     )}
@@ -333,7 +333,7 @@ const FluentCRMSettings = ({ embedded = false }) => {
                             disabled={saving}
                             className="wishcart-button wishcart-button-primary"
                         >
-                            {saving ? __('Saving...gowishcart-wishlist-for-fluentcart') : __('Save Settingsgowishcart-wishlist-for-fluentcart')}
+                            {saving ? __('Saving...', 'gowishcart-wishlist-for-fluentcart') : __('Save Settingsgowishcart-wishlist-for-fluentcart')}
                         </button>
                     </div>
                 </>
@@ -361,7 +361,7 @@ const FluentCRMSettings = ({ embedded = false }) => {
                     <div>
                         <strong>{__('FluentCRM Not Availablegowishcart-wishlist-for-fluentcart')}</strong>
                         <p style={{margin: '4px 0 0'}}>
-                            {__('FluentCRM plugin is not installed or activated. Please install FluentCRM to use this integration.gowishcart-wishlist-for-fluentcart')}
+                            {__('FluentCRM plugin is not installed or activated. Please install FluentCRM to use this integration.', 'gowishcart-wishlist-for-fluentcart')}
                         </p>
                     </div>
                 </div>

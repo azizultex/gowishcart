@@ -147,7 +147,7 @@ const SettingsApp = () => {
                             <span>{__('Settings saved successfully!gowishcart-wishlist-for-fluentcart')}</span>
                         </div>
                     ),
-                    description: __('Your changes have been applied.gowishcart-wishlist-for-fluentcart'),
+                    description: __('Your changes have been applied.', 'gowishcart-wishlist-for-fluentcart'),
                     className: "bg-green-50 border-green-200"
                 });
             } else {
@@ -161,7 +161,7 @@ const SettingsApp = () => {
                         <span>{__('Failed to save settingsgowishcart-wishlist-for-fluentcart')}</span>
                     </div>
                 ),
-                description: __('Please try again or contact support if the problem persists.gowishcart-wishlist-for-fluentcart'),
+                description: __('Please try again or contact support if the problem persists.', 'gowishcart-wishlist-for-fluentcart'),
                 className: "bg-red-50 border-red-200"
             });
         } finally {
@@ -286,7 +286,7 @@ const SettingsApp = () => {
                                     disabled={isSaving}
                                     className="wishcart-button wishcart-button-primary"
                                 >
-                                    {isSaving ? __('Saving...gowishcart-wishlist-for-fluentcart') : __('Save Settingsgowishcart-wishlist-for-fluentcart')}
+                                    {isSaving ? __('Saving...', 'gowishcart-wishlist-for-fluentcart') : __('Save Settingsgowishcart-wishlist-for-fluentcart')}
                                 </button>
                             </div>
                         )}

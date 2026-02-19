@@ -9,22 +9,22 @@ const AnalyticsProMessage = () => {
         {
             icon: TrendingUp,
             title: __('Overview Dashboardgowishcart-wishlist-for-fluentcart'),
-            description: __('Track total wishlists, items, and conversion metrics at a glance.gowishcart-wishlist-for-fluentcart'),
+            description: __('Track total wishlists, items, and conversion metrics at a glance.', 'gowishcart-wishlist-for-fluentcart'),
         },
         {
             icon: ShoppingCart,
             title: __('Popular Productsgowishcart-wishlist-for-fluentcart'),
-            description: __('See which products are most wishlisted and have the highest conversion rates.gowishcart-wishlist-for-fluentcart'),
+            description: __('See which products are most wishlisted and have the highest conversion rates.', 'gowishcart-wishlist-for-fluentcart'),
         },
         {
             icon: Users,
             title: __('Conversion Funnelgowishcart-wishlist-for-fluentcart'),
-            description: __('Analyze the complete customer journey from wishlist to purchase.gowishcart-wishlist-for-fluentcart'),
+            description: __('Analyze the complete customer journey from wishlist to purchase.', 'gowishcart-wishlist-for-fluentcart'),
         },
         {
             icon: LinkIcon,
             title: __('Share Link Analyticsgowishcart-wishlist-for-fluentcart'),
-            description: __('Track clicks, views, and conversions from shared wishlist links.gowishcart-wishlist-for-fluentcart'),
+            description: __('Track clicks, views, and conversions from shared wishlist links.', 'gowishcart-wishlist-for-fluentcart'),
         },
     ];
 
@@ -41,13 +41,13 @@ const AnalyticsProMessage = () => {
                         {__('Analytics Dashboardgowishcart-wishlist-for-fluentcart')}
                     </CardTitle>
                     <CardDescription>
-                        {__('Advanced analytics and insights are available in WishCart Pro. Upgrade to track wishlist performance, conversion rates, and customer behavior.gowishcart-wishlist-for-fluentcart')}
+                        {__('Advanced analytics and insights are available in WishCart Pro. Upgrade to track wishlist performance, conversion rates, and customer behavior.', 'gowishcart-wishlist-for-fluentcart')}
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                     <div>
                         <p className="text-sm text-muted-foreground">
-                            {__('Unlock powerful analytics features to understand your customers better and optimize your sales strategy.gowishcart-wishlist-for-fluentcart')}
+                            {__('Unlock powerful analytics features to understand your customers better and optimize your sales strategy.', 'gowishcart-wishlist-for-fluentcart')}
                         </p>
                     </div>
                     <div className="flex gap-3">
