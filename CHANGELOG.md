@@ -2,6 +2,9 @@
 
 All notable changes to the GoWishCart Wishlist plugin will be documented in this file.
 
+## [1.1.0] - 2021-02-22
+
+
 
 ## [1.0.0] - 2025-11-04
 

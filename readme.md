@@ -3,7 +3,7 @@ Contributors: gowishcart, sabbirxprt
 Tags: wishlist, fluentcart, ecommerce, shopping, favorites, product wishlist, wish list
 Requires at least: 5.0
 Tested up to: 6.9
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -89,10 +89,16 @@ You can use the `[gowishcart_wishlist]` shortcode on any page, or GoWishCart wil
 
 == Changelog ==
 
+= 1.1.0 =
+* Initial release
+
 = 1.0.0 =
 * Initial release
 
 == Upgrade Notice ==
+
+= 1.1.0 =
+Initial release of GoWishCart - start building customer loyalty 
 
 = 1.0.0 =
 Initial release of GoWishCart - start building customer loyalty and boosting sales with wishlists today!
