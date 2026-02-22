@@ -32,7 +32,7 @@ class GoWishCart_FluentCRM_SmartCode {
         add_filter( 'fluent_crm_funnel_context_smart_codes', array( $this, 'push_context_codes' ), 10, 2 );
         
         // Register the callback to parse GoWishCart shortcodes
-        add_filter( 'fluent_crm/smartcode_group_callback_wishcart', array( $this, 'parse_wishlist_data' ), 10, 4 );
+        add_filter( 'fluent_crm/smartcode_group_callback_gowishcart', array( $this, 'parse_wishlist_data' ), 10, 4 );
     }
 
     /**
@@ -47,14 +47,14 @@ class GoWishCart_FluentCRM_SmartCode {
      */
     public function push_context_codes( $codes, $context ) {
         // Only add our shortcodes for GoWishCart triggers
-        $wishcart_triggers = array(
+        $gowishcart_triggers = array(
             'gowishcart_item_added',
             'gowishcart_item_removed',
             'gowishcart_price_drop',
             'gowishcart_back_in_stock',
         );
 
-        if ( ! in_array( $context, $wishcart_triggers, true ) ) {
+        if ( ! in_array( $context, $gowishcart_triggers, true ) ) {
             return $codes;
         }
 
@@ -382,13 +382,13 @@ class GoWishCart_FluentCRM_SmartCode {
             '{{gowishcart.product.regular_price}}'  => __( 'Regular Price', 'gowishcart-wishlist-for-fluentcart' ),
             '{{gowishcart.product.sale_price}}'     => __( 'Sale Price (if on sale)', 'gowishcart-wishlist-for-fluentcart' ),
             '{{gowishcart.product.sku}}'            => __( 'Product SKU', 'gowishcart-wishlist-for-fluentcart' ),
-            '##wishcart.product.url##'            => __( 'Product URL (button/link)', 'gowishcart-wishlist-for-fluentcart' ),
+            '##gowishcart.product.url##'            => __( 'Product URL (button/link)', 'gowishcart-wishlist-for-fluentcart' ),
             '{{gowishcart.product.image_url}}'      => __( 'Product Image URL', 'gowishcart-wishlist-for-fluentcart' ),
-            '##wishcart.product.add_to_cart_url##' => __( 'Add to Cart URL (button/link)', 'gowishcart-wishlist-for-fluentcart' ),
+            '##gowishcart.product.add_to_cart_url##' => __( 'Add to Cart URL (button/link)', 'gowishcart-wishlist-for-fluentcart' ),
             
             // Wishlist Data
             '{{gowishcart.wishlist.item_count}}'  => __( 'Total Items in Wishlist', 'gowishcart-wishlist-for-fluentcart' ),
-            '##wishcart.wishlist.url##'         => __( 'Wishlist Page URL (button/link)', 'gowishcart-wishlist-for-fluentcart' ),
+            '##gowishcart.wishlist.url##'         => __( 'Wishlist Page URL (button/link)', 'gowishcart-wishlist-for-fluentcart' ),
         );
     }
 }
