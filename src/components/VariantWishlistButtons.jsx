@@ -571,7 +571,7 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
         buttonStyle,
         variantId
     }));
-    const dynamicButtonClass = `wishcart-variant-wishlist-button--dynamic-${settingsHash}`;
+    const dynamicButtonClass = `gowishcart-variant-wishlist-button--dynamic-${settingsHash}`;
 
     // Inject CSS styles via style tag
     useEffect(() => {

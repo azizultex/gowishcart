@@ -96,7 +96,7 @@ const applyPlacementLayout = (container, position) => {
         return;
     }
 
-    container.classList.add(`wishcart-position-${position}`);
+    container.classList.add(`gowishcart-position-${position}`);
     container.dataset.position = position;
 
     // Find the product card element if the container is inside one
@@ -110,7 +110,7 @@ const applyPlacementLayout = (container, position) => {
     }
 
     wrapper.classList.add('gowishcart-button-wrapper');
-    wrapper.classList.add(`wishcart-button-wrapper--${position}`);
+    wrapper.classList.add(`gowishcart-button-wrapper--${position}`);
 
     if (position === 'left' || position === 'right') {
         wrapper.classList.add('gowishcart-button-wrapper--horizontal');
@@ -118,7 +118,7 @@ const applyPlacementLayout = (container, position) => {
 
     // Add button style class to wrapper
     const buttonStyle = window.wishcartWishlist?.buttonCustomization?.buttonStyle || 'button';
-    wrapper.classList.add(`wishcart-button-wrapper--${buttonStyle}`);
+    wrapper.classList.add(`gowishcart-button-wrapper--${buttonStyle}`);
 };
 
 // Detect if product has variants
@@ -286,7 +286,7 @@ const injectFluentCartContainer = () => {
     const position = normalizePosition(null, window.wishcartWishlist?.buttonPosition);
 
     const container = document.createElement('div');
-    container.className = `wishcart-wishlist-button-container gowishcart-position-${position}`;
+    container.className = `gowishcart-wishlist-button-container gowishcart-position-${position}`;
     container.setAttribute('data-product-id', String(productId));
     container.setAttribute('data-position', position);
 
@@ -351,7 +351,7 @@ const injectWishlistIntoProductCards = () => {
 
         const position = normalizePosition(window.wishcartWishlist?.buttonPosition);
         const container = document.createElement('div');
-        container.className = `wishcart-wishlist-button-container gowishcart-position-${position} gowishcart-card-container`;
+        container.className = `gowishcart-wishlist-button-container gowishcart-position-${position} gowishcart-card-container`;
         container.setAttribute('data-product-id', String(productId));
         container.setAttribute('data-position', position);
 
@@ -451,7 +451,7 @@ const injectWishlistIntoArchiveEntries = () => {
 
         const position = normalizePosition(window.wishcartWishlist?.buttonPosition);
         const container = document.createElement('div');
-        container.className = `wishcart-wishlist-button-container gowishcart-position-${position} gowishcart-archive-container`;
+        container.className = `gowishcart-wishlist-button-container gowishcart-position-${position} gowishcart-archive-container`;
         container.setAttribute('data-product-id', String(productId));
         container.setAttribute('data-position', position);
 
@@ -498,7 +498,7 @@ const injectWishlistNearActionButtons = () => {
 
         if (!container) {
             container = document.createElement('div');
-            container.className = `wishcart-wishlist-button-container gowishcart-position-${position}`;
+            container.className = `gowishcart-wishlist-button-container gowishcart-position-${position}`;
             container.setAttribute('data-product-id', String(productId));
             container.setAttribute('data-position', position);
 

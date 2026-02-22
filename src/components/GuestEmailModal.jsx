@@ -139,7 +139,7 @@ const GuestEmailModal = ({ isOpen, onClose, onEmailSubmitted }) => {
 
                     <form onSubmit={handleSubmit} className="gowishcart-email-form">
                         <div className="gowishcart-email-input-wrapper">
-                            <div className={`wishcart-input-container ${focused ? 'focused' : ''} ${error ? 'error' : ''}`}>
+                            <div className={`gowishcart-input-container ${focused ? 'focused' : ''} ${error ? 'error' : ''}`}>
                                 <Mail size={18} className="gowishcart-input-icon" />
                                 <input
                                     id="guest-email"

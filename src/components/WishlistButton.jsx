@@ -1312,7 +1312,7 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
                 className={cn(
                     "gowishcart-wishlist-button",
                     isInWishlist && "gowishcart-wishlist-button--active",
-                    position && `wishcart-placement-${position}`,
+                    position && `gowishcart-placement-${position}`,
                     buttonStyle === 'text-only' && "gowishcart-wishlist-button--text-only",
                     buttonStyle === 'text-only-link' && "gowishcart-wishlist-button--text-only-link",
                     buttonStyle === 'text-icon-link' && "gowishcart-wishlist-button--text-icon-link",

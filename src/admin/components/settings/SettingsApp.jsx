@@ -224,7 +224,7 @@ const SettingsApp = () => {
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
-                                className={`wishcart-nav-tab ${activeTab === tab.id ? 'active' : ''}`}
+                                className={`gowishcart-nav-tab ${activeTab === tab.id ? 'active' : ''}`}
                             >
                                 <Icon />
                                 {tab.label}
