@@ -81,20 +81,20 @@ class GoWishCart_FluentCRM_Triggers {
 
         // Also instantiate trigger classes so they can set up their hooks
         // FluentCRM will automatically detect and register triggers that extend BaseTrigger
-        if ( class_exists( 'gowishcart_Item_Added_Trigger' ) ) {
-            new gowishcart_Item_Added_Trigger();
+        if ( class_exists( 'GoWishCart_Item_Added_Trigger' ) ) {
+            new GoWishCart_Item_Added_Trigger();
         }
 
-        if ( class_exists( 'gowishcart_Item_Removed_Trigger' ) ) {
-            new gowishcart_Item_Removed_Trigger();
+        if ( class_exists( 'GoWishCart_Item_Removed_Trigger' ) ) {
+            new GoWishCart_Item_Removed_Trigger();
         }
 
-        if ( class_exists( 'gowishcart_Price_Drop_Trigger' ) ) {
-            new gowishcart_Price_Drop_Trigger();
+        if ( class_exists( 'GoWishCart_Price_Drop_Trigger' ) ) {
+            new GoWishCart_Price_Drop_Trigger();
         }
 
-        if ( class_exists( 'gowishcart_Back_In_Stock_Trigger' ) ) {
-            new gowishcart_Back_In_Stock_Trigger();
+        if ( class_exists( 'GoWishCart_Back_In_Stock_Trigger' ) ) {
+            new GoWishCart_Back_In_Stock_Trigger();
         }
     }
 
@@ -110,20 +110,20 @@ class GoWishCart_FluentCRM_Triggers {
         }
 
         // Register each trigger with its key and class name
-        if ( class_exists( 'gowishcart_Item_Added_Trigger' ) ) {
-            $triggers['gowishcart_item_added'] = 'gowishcart_Item_Added_Trigger';
+        if ( class_exists( 'GoWishCart_Item_Added_Trigger' ) ) {
+            $triggers['gowishcart_item_added'] = 'GoWishCart_Item_Added_Trigger';
         }
 
-        if ( class_exists( 'gowishcart_Item_Removed_Trigger' ) ) {
-            $triggers['gowishcart_item_removed'] = 'gowishcart_Item_Removed_Trigger';
+        if ( class_exists( 'GoWishCart_Item_Removed_Trigger' ) ) {
+            $triggers['gowishcart_item_removed'] = 'GoWishCart_Item_Removed_Trigger';
         }
 
-        if ( class_exists( 'gowishcart_Price_Drop_Trigger' ) ) {
-            $triggers['gowishcart_price_drop'] = 'gowishcart_Price_Drop_Trigger';
+        if ( class_exists( 'GoWishCart_Price_Drop_Trigger' ) ) {
+            $triggers['gowishcart_price_drop'] = 'GoWishCart_Price_Drop_Trigger';
         }
 
-        if ( class_exists( 'gowishcart_Back_In_Stock_Trigger' ) ) {
-            $triggers['gowishcart_back_in_stock'] = 'gowishcart_Back_In_Stock_Trigger';
+        if ( class_exists( 'GoWishCart_Back_In_Stock_Trigger' ) ) {
+            $triggers['gowishcart_back_in_stock'] = 'GoWishCart_Back_In_Stock_Trigger';
         }
 
         return $triggers;
@@ -150,8 +150,8 @@ class GoWishCart_FluentCRM_Triggers {
             }
         }
         // For guest users, get email from session_id or email field
-        elseif ( ! empty( $data['session_id'] ) && class_exists( 'gowishcart_Guest_Handler' ) ) {
-            $guest_handler = new gowishcart_Guest_Handler();
+        elseif ( ! empty( $data['session_id'] ) && class_exists( 'GoWishCart_Guest_Handler' ) ) {
+            $guest_handler = new GoWishCart_Guest_Handler();
             $guest = $guest_handler->get_guest_by_session( $data['session_id'] );
             if ( $guest && ! empty( $guest['guest_email'] ) && is_email( $guest['guest_email'] ) ) {
                 $user_email = $guest['guest_email'];

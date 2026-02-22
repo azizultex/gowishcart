@@ -67,7 +67,7 @@ const SupportResources = () => {
             {/* Commercial Support Section - Clearly labeled as Pro/Commercial */}
             <div className="mt-4">
                 <h3 className="text-sm font-semibold text-gray-700 mb-4">
-                    {__('Commercial Support (GoWishCart Pro Users)gowishcart-wishlist-for-fluentcart')}
+                    {__('Commercial Support (GoWishCart Pro Users)', 'gowishcart-wishlist-for-fluentcart')}
                 </h3>
                 <div className="grid gap-6 md:grid-cols-2">
                     {commercialResources.map((resource) => {
@@ -96,7 +96,7 @@ const SupportResources = () => {
 
                     <Card className="md:col-span-2">
                         <CardHeader>
-                            <CardTitle>{__('Email Support (Pro Users)gowishcart-wishlist-for-fluentcart')}</CardTitle>
+                            <CardTitle>{__('Email Support (Pro Users)', 'gowishcart-wishlist-for-fluentcart')}</CardTitle>
                             <CardDescription>{__('Commercial email support for GoWishCart Pro users. We will respond within one business day.', 'gowishcart-wishlist-for-fluentcart')}</CardDescription>
                         </CardHeader>
                         <CardContent className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">

@@ -173,7 +173,6 @@ class GoWishCart_Database_Migration {
         // Restore old tables
         $old_tables = array(
             'gwc_wishlists',
-            'gwc_Wishlist',
         );
 
         foreach ($old_tables as $old_table) {

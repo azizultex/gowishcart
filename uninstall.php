@@ -34,6 +34,10 @@ class GoWishCart_Uninstaller {
 
         $this->options = [
             'gowishcart_settings',
+            'gowishcart_migration_version',
+            'gowishcart_migration_date',
+            'gowishcart_wishlist_page_id',
+            'gowishcart_fluentcrm_settings',
         ];
     }
 
