@@ -18,7 +18,7 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
 
     // Get session ID from cookie or create one
     const getSessionId = () => {
-        if (window.wishcartWishlist?.isLoggedIn) {
+        if (window.gowishcartWishlist?.isLoggedIn) {
             return null;
         }
         
@@ -30,17 +30,17 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
             }
         }
 
-        if (window.wishcartWishlist?.sessionId) {
-            return window.wishcartWishlist.sessionId;
+        if (window.gowishcartWishlist?.sessionId) {
+            return window.gowishcartWishlist.sessionId;
         }
 
         const sessionId = 'wc_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
         const expiryDays = 30;
         const expiryDate = new Date();
         expiryDate.setTime(expiryDate.getTime() + (expiryDays * 24 * 60 * 60 * 1000));
-        document.cookie = `wishcart_session_id=${sessionId};expires=${expiryDate.toUTCString()};path=/;SameSite=Lax`;
-        if (window.wishcartWishlist) {
-            window.wishcartWishlist.sessionId = sessionId;
+        document.cookie = `gowishcart_session_id=${sessionId};expires=${expiryDate.toUTCString()};path=/;SameSite=Lax`;
+        if (window.gowishcartWishlist) {
+            window.gowishcartWishlist.sessionId = sessionId;
         }
 
         return sessionId;
@@ -48,17 +48,17 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
 
     // Check if guest has email via API
     const checkGuestEmail = async () => {
-        if (window.wishcartWishlist?.isLoggedIn) {
+        if (window.gowishcartWishlist?.isLoggedIn) {
             return true;
         }
 
         try {
             const sessionId = getSessionId();
-            const url = `${window.wishcartWishlist.apiUrl}guest/check-email?session_id=${sessionId}`;
+            const url = `${window.gowishcartWishlist.apiUrl}guest/check-email?session_id=${sessionId}`;
             
             const response = await fetch(url, {
                 headers: {
-                    'X-WP-Nonce': window.wishcartWishlist.nonce,
+                    'X-WP-Nonce': window.gowishcartWishlist.nonce,
                 },
             });
 
@@ -79,7 +79,7 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
     // Check if variant is in wishlist
     useEffect(() => {
         const checkWishlist = async () => {
-            if (!productId || !window.wishcartWishlist) {
+            if (!productId || !window.gowishcartWishlist) {
                 setIsLoading(false);
                 return;
             }
@@ -97,11 +97,11 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
                 }
                 
                 const queryString = params.toString();
-                const url = `${window.wishcartWishlist.apiUrl}wishlist/check/${productId}${queryString ? `?${queryString}` : ''}`;
+                const url = `${window.gowishcartWishlist.apiUrl}wishlist/check/${productId}${queryString ? `?${queryString}` : ''}`;
                 
                 const response = await fetch(url, {
                     headers: {
-                        'X-WP-Nonce': window.wishcartWishlist.nonce,
+                        'X-WP-Nonce': window.gowishcartWishlist.nonce,
                     },
                 });
 
@@ -158,7 +158,7 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
 
     // Add product directly to default wishlist
     const addToDefaultWishlist = async (skipEmailCheck = false) => {
-        if (!skipEmailCheck && !window.wishcartWishlist?.isLoggedIn) {
+        if (!skipEmailCheck && !window.gowishcartWishlist?.isLoggedIn) {
             const hasEmail = await checkGuestEmail();
             if (!hasEmail) {
                 setPendingAddAction('default');
@@ -170,13 +170,13 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
         setIsAdding(true);
         try {
             const sessionId = getSessionId();
-            const url = `${window.wishcartWishlist.apiUrl}wishlist/add`;
+            const url = `${window.gowishcartWishlist.apiUrl}wishlist/add`;
             
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-WP-Nonce': window.wishcartWishlist.nonce,
+                    'X-WP-Nonce': window.gowishcartWishlist.nonce,
                 },
                 body: JSON.stringify({
                     product_id: productId,
@@ -216,7 +216,7 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
 
     // Toggle wishlist
     const toggleWishlist = async () => {
-        if (isAdding || !productId || !window.wishcartWishlist) {
+        if (isAdding || !productId || !window.gowishcartWishlist) {
             return;
         }
 
@@ -224,13 +224,13 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
             setIsAdding(true);
             try {
                 const sessionId = getSessionId();
-                const url = `${window.wishcartWishlist.apiUrl}wishlist/remove`;
+                const url = `${window.gowishcartWishlist.apiUrl}wishlist/remove`;
                 
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-WP-Nonce': window.wishcartWishlist.nonce,
+                        'X-WP-Nonce': window.gowishcartWishlist.nonce,
                     },
                     body: JSON.stringify({
                         product_id: productId,
@@ -261,7 +261,7 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
                 setIsAdding(false);
             }
         } else {
-            if (!window.wishcartWishlist?.isLoggedIn) {
+            if (!window.gowishcartWishlist?.isLoggedIn) {
                 const hasEmail = await checkGuestEmail();
                 if (!hasEmail) {
                     setPendingAddAction('toggle');
@@ -270,7 +270,7 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
                 }
             }
 
-            const enableMultipleWishlists = window.wishcartWishlist?.enableMultipleWishlists || false;
+            const enableMultipleWishlists = window.gowishcartWishlist?.enableMultipleWishlists || false;
             
             if (enableMultipleWishlists) {
                 setIsModalOpen(true);
@@ -317,7 +317,7 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
     };
 
     // Get customization settings
-    const customization = window.wishcartWishlist?.buttonCustomization || {};
+    const customization = window.gowishcartWishlist?.buttonCustomization || {};
     const colors = customization.colors || {}; // Keep for backwards compatibility
     const productPage = customization.product_page || {};
     const productListing = customization.product_listing || {};

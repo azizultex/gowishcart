@@ -57,7 +57,7 @@ const WishlistPage = () => {
 
     // Get session ID from cookie
     const getSessionId = () => {
-        if (window.wishcartWishlist?.isLoggedIn) {
+        if (window.gowishcartWishlist?.isLoggedIn) {
             return null;
         }
         
@@ -69,8 +69,8 @@ const WishlistPage = () => {
             }
         }
 
-        if (window.wishcartWishlist?.sessionId) {
-            return window.wishcartWishlist.sessionId;
+        if (window.gowishcartWishlist?.sessionId) {
+            return window.gowishcartWishlist.sessionId;
         }
 
         return null;
@@ -79,7 +79,7 @@ const WishlistPage = () => {
     // Load wishlists
     useEffect(() => {
         const loadWishlists = async () => {
-            if (!window.wishcartWishlist) {
+            if (!window.gowishcartWishlist) {
                 return;
             }
 
@@ -87,10 +87,10 @@ const WishlistPage = () => {
             setIsLoadingWishlists(true);
             try {
                 const sessionId = getSessionId();
-                const url = `${window.wishcartWishlist.apiUrl}wishlist${sessionId ? `?session_id=${sessionId}` : ''}`;
+                const url = `${window.gowishcartWishlist.apiUrl}wishlist${sessionId ? `?session_id=${sessionId}` : ''}`;
                 const response = await fetch(url, {
                     headers: {
-                        'X-WP-Nonce': window.wishcartWishlist.nonce,
+                        'X-WP-Nonce': window.gowishcartWishlist.nonce,
                     },
                 });
 
@@ -114,7 +114,7 @@ const WishlistPage = () => {
     // Shared helper to load wishlist products
     const loadWishlist = useCallback(
         async (wishlistOverride = null, { forceReload = false } = {}) => {
-            if (!window.wishcartWishlist) {
+            if (!window.gowishcartWishlist) {
                 setIsLoading(false);
                 return;
             }
@@ -132,11 +132,11 @@ const WishlistPage = () => {
                 try {
                     const sessionId = getSessionId();
                     
-                    const url = `${window.wishcartWishlist.apiUrl}wishlist${sessionId ? `?session_id=${sessionId}` : ''}`;
+                    const url = `${window.gowishcartWishlist.apiUrl}wishlist${sessionId ? `?session_id=${sessionId}` : ''}`;
                     
                     const response = await fetch(url, {
                         headers: {
-                            'X-WP-Nonce': window.wishcartWishlist.nonce,
+                            'X-WP-Nonce': window.gowishcartWishlist.nonce,
                         },
                     });
 
@@ -172,7 +172,7 @@ const WishlistPage = () => {
             setIsLoading(true);
             try {
                 const sessionId = getSessionId();
-                let url = `${window.wishcartWishlist.apiUrl}wishlist`;
+                let url = `${window.gowishcartWishlist.apiUrl}wishlist`;
                 const params = new URLSearchParams();
                 
                 // Use wishlist_id or session_id
@@ -188,7 +188,7 @@ const WishlistPage = () => {
                 
                 const response = await fetch(url, {
                     headers: {
-                        'X-WP-Nonce': window.wishcartWishlist.nonce,
+                        'X-WP-Nonce': window.gowishcartWishlist.nonce,
                     },
                 });
 
@@ -329,7 +329,7 @@ const WishlistPage = () => {
 
     // Remove product from wishlist
     const removeProduct = async (productId, variationId = null) => {
-        if (removingIds.has(productId) || !window.wishcartWishlist) {
+        if (removingIds.has(productId) || !window.gowishcartWishlist) {
             return;
         }
 
@@ -337,7 +337,7 @@ const WishlistPage = () => {
 
         try {
             const sessionId = getSessionId();
-            const url = `${window.wishcartWishlist.apiUrl}wishlist/remove`;
+            const url = `${window.gowishcartWishlist.apiUrl}wishlist/remove`;
             
             // Get variation_id from product if not provided
             const product = products.find(p => p.id === productId);
@@ -357,7 +357,7 @@ const WishlistPage = () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-WP-Nonce': window.wishcartWishlist.nonce,
+                    'X-WP-Nonce': window.gowishcartWishlist.nonce,
                 },
                 body: JSON.stringify(body),
             });
@@ -466,7 +466,7 @@ const WishlistPage = () => {
         // Get unique key for this specific variant
         const uniqueKey = getUniqueItemKey(product);
         
-        if (addingToCartIds.has(uniqueKey) || !window.wishcartWishlist) {
+        if (addingToCartIds.has(uniqueKey) || !window.gowishcartWishlist) {
             return;
         }
 
@@ -484,7 +484,7 @@ const WishlistPage = () => {
 
             // Track the add to cart event (non-blocking)
             const sessionId = getSessionId();
-            const trackUrl = `${window.wishcartWishlist.apiUrl}wishlist/track-cart`;
+            const trackUrl = `${window.gowishcartWishlist.apiUrl}wishlist/track-cart`;
             
             const trackBody = {
                 product_id: product.id,
@@ -497,7 +497,7 @@ const WishlistPage = () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-WP-Nonce': window.wishcartWishlist.nonce,
+                    'X-WP-Nonce': window.gowishcartWishlist.nonce,
                 },
                 body: JSON.stringify(trackBody),
             }).catch(trackError => {
@@ -592,13 +592,13 @@ const WishlistPage = () => {
 
                 // Track the add to cart event (non-blocking)
                 const sessionId = getSessionId();
-                const trackUrl = `${window.wishcartWishlist.apiUrl}wishlist/track-cart`;
+                const trackUrl = `${window.gowishcartWishlist.apiUrl}wishlist/track-cart`;
                 
                 fetch(trackUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-WP-Nonce': window.wishcartWishlist.nonce,
+                        'X-WP-Nonce': window.gowishcartWishlist.nonce,
                     },
                     body: JSON.stringify({
                         product_id: product.id,
@@ -690,13 +690,13 @@ const WishlistPage = () => {
 
                 // Track the add to cart event (non-blocking)
                 const sessionId = getSessionId();
-                const trackUrl = `${window.wishcartWishlist.apiUrl}wishlist/track-cart`;
+                const trackUrl = `${window.gowishcartWishlist.apiUrl}wishlist/track-cart`;
                 
                 fetch(trackUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-WP-Nonce': window.wishcartWishlist.nonce,
+                        'X-WP-Nonce': window.gowishcartWishlist.nonce,
                     },
                     body: JSON.stringify({
                         product_id: product.id,
@@ -904,7 +904,7 @@ const ensureWishlistShareAllowed = () => {
 
     // Create new wishlist
     const createNewWishlist = async () => {
-        if (!window.wishcartWishlist) {
+        if (!window.gowishcartWishlist) {
             return;
         }
 

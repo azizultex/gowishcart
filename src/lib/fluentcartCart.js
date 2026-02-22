@@ -118,7 +118,7 @@ const addToCartViaFluentCartAPI = async (params) => {
             urlParams.append('open_cart', 'true');
             urlParams.append('is_admin_bar_enabled', isAdminBarEnabled().toString());
 
-            const ajaxUrl = window.wishcartWishlist?.ajaxUrl || window.location.origin + '/wp-admin/admin-ajax.php';
+            const ajaxUrl = window.gowishcartWishlist?.ajaxUrl || window.location.origin + '/wp-admin/admin-ajax.php';
             const url = ajaxUrl + '?' + urlParams.toString();
 
             const response = await fetch(url, {
@@ -415,9 +415,9 @@ const submitAddToCartForm = ({ productId, variationId, quantity, productUrl }) =
             addField('product-id', productId);
             
             // Add nonce if available (for security)
-            if (window.wishcartWishlist?.nonce) {
-                addField('_wpnonce', window.wishcartWishlist.nonce);
-                addField('nonce', window.wishcartWishlist.nonce);
+            if (window.gowishcartWishlist?.nonce) {
+                addField('_wpnonce', window.gowishcartWishlist.nonce);
+                addField('nonce', window.gowishcartWishlist.nonce);
             }
 
             document.body.appendChild(form);
@@ -591,7 +591,7 @@ const tryWordPressAjax = ({ productId, variationId, quantity }) => {
                 formData.append('variation_id', variationId);
             }
 
-            const ajaxUrl = window.wishcartWishlist?.ajaxUrl || window.location.origin + '/wp-admin/admin-ajax.php';
+            const ajaxUrl = window.gowishcartWishlist?.ajaxUrl || window.location.origin + '/wp-admin/admin-ajax.php';
             fetch(ajaxUrl, {
                 method: 'POST',
                 body: formData,

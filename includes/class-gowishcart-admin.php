@@ -184,6 +184,7 @@ class gowishcart_Admin {
             }
         }
 
+        $is_pro = (bool) apply_filters( 'gowishcart_is_pro', false );
         wp_localize_script(
             'gowishcart-admin',
             'gowishcartSettings',
@@ -197,6 +198,8 @@ class gowishcart_Admin {
                 'defaultTab' => $default_tab,
                 'menuTabMap' => $page_to_tab,
                 'tabPageMap' => $tab_to_page,
+                'isGoWishcartPro' => $is_pro,
+                'isWishcartPro' => $is_pro,
             ]
         );
 

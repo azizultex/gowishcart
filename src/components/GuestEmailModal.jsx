@@ -42,8 +42,8 @@ const GuestEmailModal = ({ isOpen, onClose, onEmailSubmitted }) => {
                         return value;
                     }
                 }
-                if (window.wishcartWishlist?.sessionId) {
-                    return window.wishcartWishlist.sessionId;
+                if (window.gowishcartWishlist?.sessionId) {
+                    return window.gowishcartWishlist.sessionId;
                 }
                 return null;
             };
@@ -51,12 +51,12 @@ const GuestEmailModal = ({ isOpen, onClose, onEmailSubmitted }) => {
             const sessionId = getSessionId();
             
             // Save email to guest user record
-            const url = `${window.wishcartWishlist.apiUrl}guest/update-email`;
+            const url = `${window.gowishcartWishlist.apiUrl}guest/update-email`;
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-WP-Nonce': window.wishcartWishlist.nonce,
+                    'X-WP-Nonce': window.gowishcartWishlist.nonce,
                 },
                 body: JSON.stringify({
                     email: email.trim(),
