@@ -11,7 +11,7 @@ const SupportResources = () => {
         title: __('WordPress.org Support Forum', 'gowishcart-wishlist-for-fluentcart'),
         description: __('Get free support from the community. Post your questions and get help from other users and our team.', 'gowishcart-wishlist-for-fluentcart'),
         actionLabel: __('Visit Support Forum', 'gowishcart-wishlist-for-fluentcart'),
-        href: 'https://wordpress.org/support/plugin/wishcart/',
+        href: 'https://wordpress.org/support/plugin/gowishcart-wishlist-for-fluentcart/',
         isPrimary: true,
     };
 
@@ -33,7 +33,7 @@ const SupportResources = () => {
         },
         {
             icon: LifeBuoy,
-            title: __('Commercial Support (Pro)gowishcart-wishlist-for-fluentcart'),
+            title: __('Commercial Support (Pro)', 'gowishcart-wishlist-for-fluentcart'),
             description: __('Priority support for GoWishCart Pro users. Start a live chat and our team will assist you.', 'gowishcart-wishlist-for-fluentcart'),
             actionLabel: __('Get Pro Support', 'gowishcart-wishlist-for-fluentcart'),
             href: 'https://gowishcart.com/support',

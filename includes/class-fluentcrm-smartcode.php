@@ -71,7 +71,7 @@ class GoWishCart_FluentCRM_SmartCode {
     /**
      * Parse GoWishCart shortcode values
      *
-     * This callback is triggered when FluentCRM encounters a {{wishcart.*}} shortcode
+     * This callback is triggered when FluentCRM encounters a {{gowishcart.*}} shortcode
      *
      * @param string $code         The full shortcode
      * @param string $valueKey     The key after 'gowishcart.' (e.g., 'product.name')
@@ -371,23 +371,23 @@ class GoWishCart_FluentCRM_SmartCode {
     private function get_smart_codes() {
         return array(
             // Customer Data
-            '{{wishcart.customer.first_name}}'  => __( 'Customer First Name', 'gowishcart-wishlist-for-fluentcart' ),
-            '{{wishcart.customer.last_name}}'   => __( 'Customer Last Name', 'gowishcart-wishlist-for-fluentcart' ),
-            '{{wishcart.customer.full_name}}'   => __( 'Customer Full Name', 'gowishcart-wishlist-for-fluentcart' ),
-            '{{wishcart.customer.email}}'       => __( 'Customer Email', 'gowishcart-wishlist-for-fluentcart' ),
+            '{{gowishcart.customer.first_name}}'  => __( 'Customer First Name', 'gowishcart-wishlist-for-fluentcart' ),
+            '{{gowishcart.customer.last_name}}'   => __( 'Customer Last Name', 'gowishcart-wishlist-for-fluentcart' ),
+            '{{gowishcart.customer.full_name}}'   => __( 'Customer Full Name', 'gowishcart-wishlist-for-fluentcart' ),
+            '{{gowishcart.customer.email}}'       => __( 'Customer Email', 'gowishcart-wishlist-for-fluentcart' ),
             
             // Product Data
-            '{{wishcart.product.name}}'           => __( 'Product Name', 'gowishcart-wishlist-for-fluentcart' ),
-            '{{wishcart.product.price}}'          => __( 'Current Product Price', 'gowishcart-wishlist-for-fluentcart' ),
-            '{{wishcart.product.regular_price}}'  => __( 'Regular Price', 'gowishcart-wishlist-for-fluentcart' ),
-            '{{wishcart.product.sale_price}}'     => __( 'Sale Price (if on sale)', 'gowishcart-wishlist-for-fluentcart' ),
-            '{{wishcart.product.sku}}'            => __( 'Product SKU', 'gowishcart-wishlist-for-fluentcart' ),
+            '{{gowishcart.product.name}}'           => __( 'Product Name', 'gowishcart-wishlist-for-fluentcart' ),
+            '{{gowishcart.product.price}}'          => __( 'Current Product Price', 'gowishcart-wishlist-for-fluentcart' ),
+            '{{gowishcart.product.regular_price}}'  => __( 'Regular Price', 'gowishcart-wishlist-for-fluentcart' ),
+            '{{gowishcart.product.sale_price}}'     => __( 'Sale Price (if on sale)', 'gowishcart-wishlist-for-fluentcart' ),
+            '{{gowishcart.product.sku}}'            => __( 'Product SKU', 'gowishcart-wishlist-for-fluentcart' ),
             '##wishcart.product.url##'            => __( 'Product URL (button/link)', 'gowishcart-wishlist-for-fluentcart' ),
-            '{{wishcart.product.image_url}}'      => __( 'Product Image URL', 'gowishcart-wishlist-for-fluentcart' ),
+            '{{gowishcart.product.image_url}}'      => __( 'Product Image URL', 'gowishcart-wishlist-for-fluentcart' ),
             '##wishcart.product.add_to_cart_url##' => __( 'Add to Cart URL (button/link)', 'gowishcart-wishlist-for-fluentcart' ),
             
             // Wishlist Data
-            '{{wishcart.wishlist.item_count}}'  => __( 'Total Items in Wishlist', 'gowishcart-wishlist-for-fluentcart' ),
+            '{{gowishcart.wishlist.item_count}}'  => __( 'Total Items in Wishlist', 'gowishcart-wishlist-for-fluentcart' ),
             '##wishcart.wishlist.url##'         => __( 'Wishlist Page URL (button/link)', 'gowishcart-wishlist-for-fluentcart' ),
         );
     }
