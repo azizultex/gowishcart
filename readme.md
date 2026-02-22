@@ -132,7 +132,7 @@ This plugin uses the following third-party libraries and services:
 
 == Installation ==
 
-1. Upload the plugin files to the `/wp-content/plugins/gowishcart` directory, or install the plugin through the WordPress plugins screen directly.
+1. Upload the plugin files to the `/wp-content/plugins/gowishcart-wishlist-for-fluentcart` directory, or install the plugin through the WordPress plugins screen directly.
 2. Activate the plugin through the 'Plugins' screen in WordPress
 3. Ensure FluentCart is installed and activated (GoWishCart requires FluentCart to function)
 4. Navigate to Settings->GoWishCart to configure the plugin
@@ -146,5 +146,5 @@ This plugin uses the following third-party libraries and services:
 
 == Support ==
 
-For free plugin support, please visit the [WordPress.org support forum](https://wordpress.org/support/plugin/gowishcart/). Commercial support for GoWishCart Pro is available at [gowishcart.com](https://gowishcart.com).
+For free plugin support, please visit the [WordPress.org support forum](https://wordpress.org/support/plugin/gowishcart-wishlist-for-fluentcart/). Commercial support for GoWishCart Pro is available at [gowishcart.com](https://gowishcart.com).
 

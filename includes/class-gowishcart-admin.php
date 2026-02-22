@@ -22,7 +22,7 @@ if ( ! defined('ABSPATH') ) {
  * @license  GPL-2.0+ http://www.gnu.org/licenses/gpl-2.0.txt
  * @link     https://gowishcart.com
  */
-class gowishcart_Admin {
+class GoWishCart_Admin {
 
 
     private $plugin_slug = 'gowishcart-wishlist-for-fluentcart';
@@ -33,7 +33,7 @@ class gowishcart_Admin {
      *
      * @since 1.0.0
      *
-     * @return gowishcart_Admin Instance of the class
+     * @return GoWishCart_Admin Instance of the class
      */
     public static function get_instance() {
         if ( null === self::$instance ) {
@@ -2539,4 +2539,4 @@ class gowishcart_Admin {
     }
 }
 
-gowishcart_Admin::get_instance();
+GoWishCart_Admin::get_instance();

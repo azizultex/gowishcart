@@ -125,7 +125,7 @@ class GoWishCart_Database_Migration {
             $tables = $this->wpdb->get_results(
                 $this->wpdb->prepare(
                     "SHOW TABLES LIKE %s",
-                    $this->table_prefix . 'gowishcart_%_backup_%'
+                    $this->table_prefix . 'gwc_%_backup_%'
                 ),
                 ARRAY_N
             );
@@ -237,7 +237,7 @@ class GoWishCart_Database_Migration {
         $tables = $this->wpdb->get_results(
             $this->wpdb->prepare(
                 "SHOW TABLES LIKE %s",
-                $this->table_prefix . 'gowishcart_%_backup_%'
+                $this->table_prefix . 'gwc_%_backup_%'
             ),
             ARRAY_N
         );
@@ -296,7 +296,7 @@ class GoWishCart_Database_Migration {
         $tables = $this->wpdb->get_results(
             $this->wpdb->prepare(
                 "SHOW TABLES LIKE %s",
-                $this->table_prefix . 'gowishcart_%_backup_%'
+                $this->table_prefix . 'gwc_%_backup_%'
             ),
             ARRAY_N
         );
