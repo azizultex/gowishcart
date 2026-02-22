@@ -90,7 +90,13 @@ You can use the `[gowishcart_wishlist]` shortcode on any page, or GoWishCart wil
 == Changelog ==
 
 = 1.1.0 =
-* Initial release
+### Changed
+* Plugin display name updated across the admin and public-facing areas
+
+### Fixed
+* REST API routes: added missing `permission_callback` for WordPress 5.5+ compatibility
+* AJAX endpoint: corrected link/URL used in endpoint configuration
+
 
 = 1.0.0 =
 * Initial release
@@ -98,7 +104,12 @@ You can use the `[gowishcart_wishlist]` shortcode on any page, or GoWishCart wil
 == Upgrade Notice ==
 
 = 1.1.0 =
-Initial release of GoWishCart - start building customer loyalty 
+### Changed
+Plugin display name updated across the admin and public-facing areas
+
+### Fixed
+REST API routes: added missing `permission_callback` for WordPress 5.5+ compatibility
+AJAX endpoint: corrected link/URL used in endpoint configuration
 
 = 1.0.0 =
 Initial release of GoWishCart - start building customer loyalty and boosting sales with wishlists today!

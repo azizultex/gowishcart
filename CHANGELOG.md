@@ -4,6 +4,12 @@ All notable changes to the GoWishCart Wishlist plugin will be documented in this
 
 ## [1.1.0] - 2021-02-22
 
+### Changed
+- Plugin display name updated across the admin and public-facing areas
+
+### Fixed
+- REST API routes: added missing `permission_callback` for WordPress 5.5+ compatibility
+- AJAX endpoint: corrected link/URL used in endpoint configuration
 
 
 ## [1.0.0] - 2025-11-04
