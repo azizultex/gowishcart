@@ -201,7 +201,7 @@ const FluentCRMSettings = ({ embedded = false }) => {
                         <div style={{flex: 1}}>
                             <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px'}}>
                                 <strong>{__('WebHook Credentials', 'gowishcart-wishlist-for-fluentcart')}</strong>
-                                <span className="gowishcart-badge gowishcart-badge-warning">{__('PROgowishcart-wishlist-for-fluentcart')}</span>
+                                <span className="gowishcart-badge gowishcart-badge-warning">{__('PRO GoWishCart')}</span>
                                 <span className="gowishcart-badge gowishcart-badge-info">{__('COMING SOONgowishcart-wishlist-for-fluentcart')}</span>
                             </div>
                             <p style={{fontSize: '13px', margin: '0'}}>{__('This feature is available in GoWishCart Pro', 'gowishcart-wishlist-for-fluentcart')}</p>
