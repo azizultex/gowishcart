@@ -26,8 +26,8 @@ class GoWishCart_Wishlist_Handler {
     public function __construct() {
         global $wpdb;
         $this->wpdb = $wpdb;
-        $this->wishlists_table = $wpdb->prefix . 'wc_wishlists';
-        $this->items_table = $wpdb->prefix . 'wc_wishlist_items';
+        $this->wishlists_table = $wpdb->prefix . 'gwc_wishlists';
+        $this->items_table = $wpdb->prefix . 'gwc_wishlist_items';
     }
 
     /**
@@ -154,8 +154,8 @@ class GoWishCart_Wishlist_Handler {
         }
 
         // Generate new session ID only if none exists
-        // Use format compatible with frontend (wc_ prefix for consistency)
-        $session_id = 'wc_' . wp_generate_password( 32, false );
+        // Use format compatible with frontend (gwc_ prefix for consistency)
+        $session_id = 'gwc_' . wp_generate_password( 32, false );
         
         // Set cookie (30 days expiry by default)
         // Note: HttpOnly set to false so JavaScript can read it for API requests
@@ -1178,7 +1178,7 @@ class GoWishCart_Wishlist_Handler {
 
     /**
      * Update guest user tracking
-     * Creates or updates guest record in wp_wc_wishlist_guest_users table
+     * Creates or updates guest record in wishlist_guest_users table
      *
      * @param string $session_id Session ID
      * @param int $wishlist_id Wishlist ID to add to guest tracking
@@ -1224,6 +1224,6 @@ class GoWishCart_Wishlist_Handler {
      */
     private function clear_wishlist_cache($user_id, $session_id) {
         $cache_key = $this->get_cache_key($user_id, $session_id);
-        wp_cache_delete($cache_key, 'GoWishCart_Wishlist');
+        wp_cache_delete( $cache_key, 'gowishcart_wishlist' );
     }
 }

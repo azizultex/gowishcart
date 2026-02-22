@@ -24,7 +24,7 @@ class GoWishCart_CRM_Campaign_Handler {
     public function __construct() {
         global $wpdb;
         $this->wpdb = $wpdb;
-        $this->campaigns_table = $wpdb->prefix . 'wc_wishlist_crm_campaigns';
+        $this->campaigns_table = $wpdb->prefix . 'gwc_wishlist_crm_campaigns';
         
         // Initialize FluentCRM integration
         if (class_exists('GoWishCart_FluentCRM_Integration')) {
@@ -405,8 +405,8 @@ class GoWishCart_CRM_Campaign_Handler {
         $replacements = array(
             '{product_name}' => isset($event_data['product_name']) ? $event_data['product_name'] : '',
             '{product_url}' => isset($event_data['product_url']) ? $event_data['product_url'] : '',
-            '{old_price}' => isset($event_data['old_price']) ? wc_price($event_data['old_price']) : '',
-            '{new_price}' => isset($event_data['new_price']) ? wc_price($event_data['new_price']) : '',
+            '{old_price}' => isset($event_data['old_price']) ? gwc_price($event_data['old_price']) : '',
+            '{new_price}' => isset($event_data['new_price']) ? gwc_price($event_data['new_price']) : '',
             '{discount_percentage}' => isset($event_data['discount_percentage']) ? $event_data['discount_percentage'] : '',
             '{discount_code}' => $discount_code ? $discount_code : '',
             '{wishlist_name}' => isset($event_data['wishlist_name']) ? $event_data['wishlist_name'] : '',
@@ -566,8 +566,8 @@ class GoWishCart_CRM_Campaign_Handler {
             $price = $product->get_price();
             if (!empty($price) && $price > 0) {
                 // Format price properly
-                if (function_exists('wc_price')) {
-                    $formatted_price = wc_price($price);
+                if (function_exists('gwc_price')) {
+                    $formatted_price = gwc_price($price);
                     $price_text = wp_strip_all_tags($formatted_price);
                 } else {
                     // Fallback formatting
@@ -687,8 +687,8 @@ class GoWishCart_CRM_Campaign_Handler {
         if (method_exists($product, 'get_price')) {
             $price = $product->get_price();
             if (!empty($price) && $price > 0) {
-                if (function_exists('wc_price')) {
-                    $formatted_price = wc_price($price);
+                if (function_exists('gwc_price')) {
+                    $formatted_price = gwc_price($price);
                     $data['price'] = wp_strip_all_tags($formatted_price);
                 } else {
                     $data['price'] = '$' . number_format($price, 2);
@@ -817,7 +817,7 @@ class GoWishCart_CRM_Campaign_Handler {
                 $product = $item_data['product'];
             } else {
                 // Otherwise, get product using helper
-                $product = wc_get_product($item_data['product_id']);
+                $product = gwc_get_product($item_data['product_id']);
             }
             
             if ($product) {
@@ -1082,8 +1082,8 @@ class GoWishCart_CRM_Campaign_Handler {
             }
         }
 
-        $items_table = $this->wpdb->prefix . 'wc_wishlist_items';
-        $wishlists_table = $this->wpdb->prefix . 'wc_wishlists';
+        $items_table = GoWishCart_Table_Names::get_table( GoWishCart_Table_Names::WISHLIST_ITEMS );
+        $wishlists_table = GoWishCart_Table_Names::get_table( GoWishCart_Table_Names::WISHLISTS );
         
         // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table names cannot be prepared.
         $query = "SELECT wi.user_id, wi.wishlist_id, w.wishlist_name, DATEDIFF(NOW(), wi.date_added) as days_since_added

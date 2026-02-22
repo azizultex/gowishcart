@@ -123,8 +123,8 @@ class GoWishCart_FluentCRM_SmartCode {
         }
 
         // Fallback to WooCommerce
-        if ( function_exists( 'wc_get_product' ) ) {
-            return wc_get_product( $product_id );
+        if ( function_exists( 'gwc_get_product' ) ) {
+            return gwc_get_product( $product_id );
         }
 
         return null;
@@ -235,7 +235,7 @@ class GoWishCart_FluentCRM_SmartCode {
                     $image_url = wp_get_attachment_image_url( $image_id, 'woocommerce_thumbnail' );
                     return $image_url ? $image_url : '';
                 }
-                return wc_placeholder_img_src( 'woocommerce_thumbnail' );
+                return gwc_placeholder_img_src( 'woocommerce_thumbnail' );
             
             case 'add_to_cart_url':
                 return $product->add_to_cart_url();
@@ -356,8 +356,8 @@ class GoWishCart_FluentCRM_SmartCode {
             return '';
         }
 
-        if ( function_exists( 'wc_price' ) ) {
-            return wp_strip_all_tags( wc_price( $price ) );
+        if ( function_exists( 'gwc_price' ) ) {
+            return wp_strip_all_tags( gwc_price( $price ) );
         }
 
         return number_format( floatval( $price ), 2 );

@@ -47,8 +47,9 @@ class GoWishCart_Database {
     public function create_tables() {
 		$charset_collate = $this->wpdb->get_charset_collate();
 
-        // 1. Main Wishlists Table (wc_wishlists)
-        $sql_wishlists = "CREATE TABLE IF NOT EXISTS {$this->table_prefix}wc_wishlists (
+        // 1. Main Wishlists Table (wishlists)
+        $wishlists_table = $this->table_prefix . GoWishCart_Table_Names::WISHLISTS;
+        $sql_wishlists = "CREATE TABLE IF NOT EXISTS {$wishlists_table} (
             id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
             wishlist_token varchar(64) NOT NULL UNIQUE,
             user_id bigint(20) UNSIGNED NULL DEFAULT NULL,
@@ -74,8 +75,9 @@ class GoWishCart_Database {
             KEY wishlist_slug_idx (wishlist_slug)
         ) ENGINE=InnoDB $charset_collate;";
 
-        // 2. Wishlist Items Table (wc_wishlist_items)
-        $sql_wishlist_items = "CREATE TABLE IF NOT EXISTS {$this->table_prefix}wc_wishlist_items (
+        // 2. Wishlist Items Table (wishlist_items)
+        $items_table = $this->table_prefix . GoWishCart_Table_Names::WISHLIST_ITEMS;
+        $sql_wishlist_items = "CREATE TABLE IF NOT EXISTS {$items_table} (
             item_id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
             wishlist_id bigint(20) UNSIGNED NOT NULL,
             product_id bigint(20) UNSIGNED NOT NULL,
@@ -103,8 +105,9 @@ class GoWishCart_Database {
             KEY status_idx (status)
         ) ENGINE=InnoDB $charset_collate;";
 
-        // 3. Wishlist Notifications Table (wc_wishlist_notifications)
-        $sql_wishlist_notifications = "CREATE TABLE IF NOT EXISTS {$this->table_prefix}wc_wishlist_notifications (
+        // 3. Wishlist Notifications Table (wishlist_notifications)
+        $notifications_table = $this->table_prefix . GoWishCart_Table_Names::WISHLIST_NOTIFICATIONS;
+        $sql_wishlist_notifications = "CREATE TABLE IF NOT EXISTS {$notifications_table} (
             notification_id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
             user_id bigint(20) UNSIGNED NULL,
             wishlist_id bigint(20) UNSIGNED NULL,
@@ -142,8 +145,9 @@ class GoWishCart_Database {
 
    
 
-        // 7. Guest Users Table (wc_wishlist_guest_users)
-        $sql_wishlist_guest_users = "CREATE TABLE IF NOT EXISTS {$this->table_prefix}wc_wishlist_guest_users (
+        // 7. Guest Users Table (wishlist_guest_users)
+        $guest_users_table = $this->table_prefix . GoWishCart_Table_Names::WISHLIST_GUEST_USERS;
+        $sql_wishlist_guest_users = "CREATE TABLE IF NOT EXISTS {$guest_users_table} (
             guest_id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
             session_id varchar(255) NOT NULL UNIQUE,
             guest_email varchar(255) NULL,
@@ -162,8 +166,9 @@ class GoWishCart_Database {
             KEY conversion_user_id_idx (conversion_user_id)
         ) ENGINE=InnoDB $charset_collate;";
 
-        // 8. CRM Campaigns Table (wc_wishlist_crm_campaigns)
-        $sql_crm_campaigns = "CREATE TABLE IF NOT EXISTS {$this->table_prefix}wc_wishlist_crm_campaigns (
+        // 8. CRM Campaigns Table (wishlist_crm_campaigns)
+        $crm_campaigns_table = $this->table_prefix . GoWishCart_Table_Names::WISHLIST_CRM_CAMPAIGNS;
+        $sql_crm_campaigns = "CREATE TABLE IF NOT EXISTS {$crm_campaigns_table} (
             campaign_id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
             crm_campaign_id bigint(20) UNSIGNED NULL,
             wishlist_trigger_type enum('item_added', 'price_drop', 'back_in_stock', 'time_based', 'cart_abandoned_with_wishlist', 'wishlist_anniversary', 'multiple_wishlists', 'high_value_wishlist') NOT NULL,
@@ -200,7 +205,7 @@ class GoWishCart_Database {
      * @return void
      */
     private function migrate_notifications_table() {
-        $table_name = $this->table_prefix . 'wc_wishlist_notifications';
+        $table_name = $this->table_prefix . GoWishCart_Table_Names::WISHLIST_NOTIFICATIONS;
         
         // Check if CRM columns exist
         // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared

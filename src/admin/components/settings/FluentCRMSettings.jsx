@@ -22,8 +22,7 @@ const resolveProStatus = () => {
         isGoWishcartPro,
         isProActive,
         isPro,
-        hasPro,
-        isWishcartPro
+        hasPro
     } = gowishcartSettings;
 
     return Boolean(
@@ -31,7 +30,6 @@ const resolveProStatus = () => {
         isProActive ??
         isPro ??
         hasPro ??
-        isWishcartPro ??
         false
     );
 };

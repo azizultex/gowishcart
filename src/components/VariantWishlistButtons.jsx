@@ -34,7 +34,7 @@ const VariantWishlistButton = ({ productId, variant, className, customStyles, is
             return window.gowishcartWishlist.sessionId;
         }
 
-        const sessionId = 'wc_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        const sessionId = 'gwc_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
         const expiryDays = 30;
         const expiryDate = new Date();
         expiryDate.setTime(expiryDate.getTime() + (expiryDays * 24 * 60 * 60 * 1000));

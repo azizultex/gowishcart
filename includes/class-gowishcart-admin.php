@@ -199,7 +199,6 @@ class gowishcart_Admin {
                 'menuTabMap' => $page_to_tab,
                 'tabPageMap' => $tab_to_page,
                 'isGoWishcartPro' => $is_pro,
-                'isWishcartPro' => $is_pro,
             ]
         );
 
@@ -1321,8 +1320,8 @@ class gowishcart_Admin {
         // Only update wishlist items if we have user_id or session_id
         if ( $user_id || $session_id ) {
             // Find wishlist items for this product
-            $items_table = $wpdb->prefix . 'wc_wishlist_items';
-            $wishlists_table = $wpdb->prefix . 'wc_wishlists';
+            $items_table = $wpdb->prefix . 'gwc_wishlist_items';
+            $wishlists_table = $wpdb->prefix . 'gwc_wishlists';
             
             $where_clauses = array();
             $where_values = array();
@@ -1403,7 +1402,7 @@ class gowishcart_Admin {
         
         // If wishlist_id is provided, fetch that wishlist's items
         if ( $wishlist_id ) {
-            $items_table = $wpdb->prefix . 'wc_wishlist_items';
+            $items_table = $wpdb->prefix . 'gwc_wishlist_items';
             
             // Check cache first
             $cache_key = 'gowishcart_items_' . $wishlist_id;
@@ -1443,7 +1442,7 @@ class gowishcart_Admin {
             // If user_id is provided, get that user's default wishlist and fetch its items
             $user_default_wishlist = $handler->get_default_wishlist( $requested_user_id, null );
             if ( $user_default_wishlist && isset( $user_default_wishlist['id'] ) ) {
-                $items_table = $wpdb->prefix . 'wc_wishlist_items';
+                $items_table = $wpdb->prefix . 'gwc_wishlist_items';
                 
                 // Check cache first
                 $cache_key = 'gowishcart_items_user_' . $requested_user_id;
@@ -1489,7 +1488,7 @@ class gowishcart_Admin {
                 $wishlist_id = $default_wishlist['id'];
                 $current_wishlist = $default_wishlist;
                 
-                $items_table = $wpdb->prefix . 'wc_wishlist_items';
+                $items_table = $wpdb->prefix . 'gwc_wishlist_items';
                 
                 // Determine cache key based on user or session
                 $user_id = is_user_logged_in() ? get_current_user_id() : null;
@@ -1829,7 +1828,7 @@ class gowishcart_Admin {
      */
     public function wishlist_get_users( $request ) {
         global $wpdb;
-        $table_name = $wpdb->prefix . 'GoWishCart_Wishlist';
+        $table_name = $wpdb->prefix . 'gwc_wishlists';
         
         // Check cache first
         $cache_key = 'gowishcart_users_list';
@@ -1843,7 +1842,7 @@ class gowishcart_Admin {
             $user_ids = $wpdb->get_results(
                 "SELECT DISTINCT user_id, COUNT(*) as wishlist_count 
                  FROM {$table_name} 
-                 WHERE user_id IS NOT NULL 
+                 WHERE user_id IS NOT NULL AND status = 'active' 
                  GROUP BY user_id 
                  ORDER BY wishlist_count DESC",
                 ARRAY_A
@@ -2157,7 +2156,7 @@ class gowishcart_Admin {
             $campaigns = $campaign_handler->get_campaigns_by_trigger($trigger_type, $status);
         } else {
             global $wpdb;
-            $table = $wpdb->prefix . 'wc_wishlist_crm_campaigns';
+            $table = GoWishCart_Table_Names::get_table( GoWishCart_Table_Names::WISHLIST_CRM_CAMPAIGNS );
             
             // Determine cache key based on status
             $cache_key = $status ? 'gowishcart_campaigns_' . $status : 'gowishcart_campaigns_all';
@@ -2380,7 +2379,7 @@ class gowishcart_Admin {
 
         $campaign_id = intval($request->get_param('id'));
         global $wpdb;
-        $table = $wpdb->prefix . 'wc_wishlist_crm_campaigns';
+        $table = GoWishCart_Table_Names::get_table( GoWishCart_Table_Names::WISHLIST_CRM_CAMPAIGNS );
 
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
         $result = $wpdb->delete($table, array('campaign_id' => $campaign_id), array('%d'));

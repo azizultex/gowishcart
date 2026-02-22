@@ -333,9 +333,9 @@ class GoWishCart_FluentCart_Order {
             $total_decimal = floatval( $total ) / 100;
         }
         
-        // Use wc_price if available, otherwise format manually
-        if ( function_exists( 'wc_price' ) ) {
-            return wc_price( $total_decimal, [ 'currency' => $currency ] );
+        // Use gwc_price if available, otherwise format manually
+        if ( function_exists( 'gwc_price' ) ) {
+            return gwc_price( $total_decimal, [ 'currency' => $currency ] );
         }
         
         return $currency . ' ' . number_format( $total_decimal, 2 );
@@ -486,8 +486,8 @@ class GoWishCart_FluentCart_Order {
             return '';
         }
 
-        if ( function_exists( 'wc_price' ) ) {
-            return wc_price( floatval( $total ) );
+        if ( function_exists( 'gwc_price' ) ) {
+            return gwc_price( floatval( $total ) );
         }
         return number_format( floatval( $total ), 2 );
     }
@@ -666,7 +666,7 @@ class GoWishCart_FluentCart_Helper {
     }
 
     /**
-     * Get product by ID (replaces wc_get_product)
+     * Get product by ID (replaces gwc_get_product)
      *
      * @param int|WP_Post $product_id Product ID or post object
      * @return GoWishCart_FluentCart_Product|null FluentCart product object or null
@@ -695,7 +695,7 @@ class GoWishCart_FluentCart_Helper {
     }
 
     /**
-     * Get order by ID (replaces wc_get_order)
+     * Get order by ID (replaces gwc_get_order)
      *
      * @param int|string $order_id Order ID or order number
      * @return GoWishCart_FluentCart_Order|null FluentCart order object or null
@@ -770,7 +770,7 @@ class GoWishCart_FluentCart_Helper {
     }
 
     /**
-     * Get featured product IDs (replaces wc_get_featured_product_ids)
+     * Get featured product IDs (replaces gwc_get_featured_product_ids)
      *
      * @return array Featured product IDs
      */
@@ -799,7 +799,7 @@ class GoWishCart_FluentCart_Helper {
     }
 
     /**
-     * Get orders (replaces wc_get_orders)
+     * Get orders (replaces gwc_get_orders)
      *
      * @param array $args Query arguments
      * @return array Order objects
@@ -855,7 +855,7 @@ class GoWishCart_FluentCart_Helper {
     }
 
     /**
-     * Get placeholder image source (replaces wc_placeholder_img_src)
+     * Get placeholder image source (replaces gwc_placeholder_img_src)
      *
      * @param string $size Image size
      * @return string Image URL

@@ -47,8 +47,8 @@ class GoWishCart_Database_Migration {
 
         // Archive old tables
         $old_tables = array(
-            'gowishcart_wishlists',
-            'GoWishCart_Wishlist',
+            'gwc_wishlists',
+            'gwc_Wishlist',
         );
 
         $timestamp = gmdate('Y_m_d_His');
@@ -158,10 +158,10 @@ class GoWishCart_Database_Migration {
 
         // Drop new tables
         $new_tables = array(
-            'wc_wishlists',
-            'wc_wishlist_items',
-            'wc_wishlist_notifications',
-            'wc_wishlist_guest_users',
+            'gwc_wishlists',
+            'gwc_wishlist_items',
+            'gwc_wishlist_notifications',
+            'gwc_wishlist_guest_users',
         );
 
         foreach ($new_tables as $new_table) {
@@ -172,8 +172,8 @@ class GoWishCart_Database_Migration {
 
         // Restore old tables
         $old_tables = array(
-            'gowishcart_wishlists',
-            'GoWishCart_Wishlist',
+            'gwc_wishlists',
+            'gwc_Wishlist',
         );
 
         foreach ($old_tables as $old_table) {

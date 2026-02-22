@@ -25,11 +25,11 @@ class GoWishCart_Uninstaller {
      */
     public function __construct() {
         $this->tables = [
-            'wc_wishlists',
-            'wc_wishlist_items',
-            'wc_wishlist_notifications',
-            'wc_wishlist_guest_users',
-            'wc_wishlist_crm_campaigns',
+            'gwc_wishlists',
+            'gwc_wishlist_items',
+            'gwc_wishlist_notifications',
+            'gwc_wishlist_guest_users',
+            'gwc_wishlist_crm_campaigns',
         ];
 
         $this->options = [
@@ -81,5 +81,5 @@ class GoWishCart_Uninstaller {
 }
 
 // Execute the uninstallation
-$wishcart_uninstaller = new GoWishCart_Uninstaller();
-$wishcart_uninstaller->uninstall();
+$gowishcart_uninstaller = new GoWishCart_Uninstaller();
+$gowishcart_uninstaller->uninstall();
