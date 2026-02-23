@@ -106,6 +106,12 @@ const addToCartViaFluentCartAPI = async (params) => {
         'fluent_cart_cart_update'
     ];
 
+    // Ajax URL must come from PHP (wp_localize_script); no hardcoded path for WordPress.org compliance.
+    const ajaxUrl = window.gowishcartWishlist?.ajaxUrl;
+    if (!ajaxUrl) {
+        return { success: false, error: 'Ajax URL not available' };
+    }
+
     for (let i = 0; i < endpoints.length; i++) {
         const endpointAction = endpoints[i];
         try {
@@ -118,7 +124,6 @@ const addToCartViaFluentCartAPI = async (params) => {
             urlParams.append('open_cart', 'true');
             urlParams.append('is_admin_bar_enabled', isAdminBarEnabled().toString());
 
-            const ajaxUrl = window.gowishcartWishlist?.ajaxUrl || window.location.origin + '/wp-admin/admin-ajax.php';
             const url = ajaxUrl + '?' + urlParams.toString();
 
             const response = await fetch(url, {
@@ -582,6 +587,13 @@ const tryWordPressAjax = ({ productId, variationId, quantity }) => {
                 return;
             }
 
+            // Ajax URL must come from PHP (wp_localize_script); no hardcoded path for WordPress.org compliance.
+            const ajaxUrl = window.gowishcartWishlist?.ajaxUrl;
+            if (!ajaxUrl) {
+                resolve({ success: false });
+                return;
+            }
+
             const formData = new FormData();
             formData.append('action', actions[actionIndex]);
             formData.append('product_id', productId);
@@ -591,7 +603,6 @@ const tryWordPressAjax = ({ productId, variationId, quantity }) => {
                 formData.append('variation_id', variationId);
             }
 
-            const ajaxUrl = window.gowishcartWishlist?.ajaxUrl || window.location.origin + '/wp-admin/admin-ajax.php';
             fetch(ajaxUrl, {
                 method: 'POST',
                 body: formData,
