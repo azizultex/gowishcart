@@ -3,7 +3,7 @@ Contributors: gowishcart, sabbirxprt
 Tags: wishlist, fluentcart, ecommerce, shopping, favorites, product wishlist, wish list
 Requires at least: 5.0
 Tested up to: 6.9.1
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -89,6 +89,12 @@ You can use the `[gowishcart_wishlist]` shortcode on any page, or GoWishCart wil
 
 == Changelog ==
 
+= 1.1.1 =
+
+### Fixed
+* Improved REST API security by adding proper permission and nonce checks.
+* Removed hardcoded `/wp-admin/` path and ensured admin URLs work on all WordPress setups.
+
 = 1.1.0 =
 ### Changed
 * Plugin display name updated across the admin and public-facing areas
@@ -101,6 +107,12 @@ You can use the `[gowishcart_wishlist]` shortcode on any page, or GoWishCart wil
 * Initial release
 
 == Upgrade Notice ==
+
+= 1.1.1 =
+
+### Fixed
+* Improved REST API security by adding proper permission and nonce checks.
+* Removed hardcoded `/wp-admin/` path and ensured admin URLs work on all WordPress setups.
 
 = 1.1.0 =
 ### Changed

@@ -192,6 +192,7 @@ class GoWishCart_Admin {
                 'apiUrl' => trailingslashit( rest_url( 'gowishcart/v1' ) ),
                 'nonce' => wp_create_nonce('wp_rest'),
                 'pluginUrl' => GoWishCart_PLUGIN_URL,
+                'adminUrl' => admin_url(),
                 'isFluentCartActive' => GoWishCart_FluentCart_Helper::is_fluentcart_active(),
                 'maxUploadSize' => wp_max_upload_size(),
                 'menuSlug' => $this->plugin_slug,
@@ -360,25 +361,33 @@ class GoWishCart_Admin {
         register_rest_route('gowishcart/v1', '/wishlist/add', array(
             'methods' => 'POST',
             'callback' => array($this, 'wishlist_add'),
-            'permission_callback' => '__return_true', // Public endpoint
+            'permission_callback' => function ( $request ) {
+                return $this->rest_public_nonce_permission( $request );
+            },
         ));
 
         register_rest_route('gowishcart/v1', '/wishlist/remove', array(
             'methods' => 'POST',
             'callback' => array($this, 'wishlist_remove'),
-            'permission_callback' => '__return_true', // Public endpoint
+            'permission_callback' => function ( $request ) {
+                return $this->rest_public_nonce_permission( $request );
+            },
         ));
 
         register_rest_route('gowishcart/v1', '/wishlist/track-cart', array(
             'methods' => 'POST',
             'callback' => array($this, 'wishlist_track_cart'),
-            'permission_callback' => '__return_true', // Public endpoint
+            'permission_callback' => function ( $request ) {
+                return $this->rest_public_nonce_permission( $request );
+            },
         ));
 
         register_rest_route('gowishcart/v1', '/wishlist', array(
             'methods' => 'GET',
             'callback' => array($this, 'wishlist_get'),
-            'permission_callback' => '__return_true', // Public endpoint
+            'permission_callback' => function ( $request ) {
+                return $this->rest_public_nonce_permission( $request );
+            },
         ));
 
         register_rest_route('gowishcart/v1', '/wishlist/check/(?P<product_id>\d+)', array(
@@ -425,13 +434,17 @@ class GoWishCart_Admin {
         register_rest_route('gowishcart/v1', '/guest/check-email', array(
             'methods' => 'GET',
             'callback' => array($this, 'guest_check_email'),
-            'permission_callback' => '__return_true', // Public endpoint
+            'permission_callback' => function ( $request ) {
+                return $this->rest_public_nonce_permission( $request );
+            },
         ));
 
         register_rest_route('gowishcart/v1', '/guest/update-email', array(
             'methods' => 'POST',
             'callback' => array($this, 'guest_update_email'),
-            'permission_callback' => '__return_true', // Public endpoint
+            'permission_callback' => function ( $request ) {
+                return $this->rest_public_nonce_permission( $request );
+            },
         ));
 
         // FluentCRM endpoints
@@ -572,7 +585,9 @@ class GoWishCart_Admin {
         register_rest_route('gowishcart/v1', '/notifications/subscribe', array(
             'methods' => 'POST',
             'callback' => array($this, 'notifications_subscribe'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => function ( $request ) {
+                return $this->rest_public_nonce_permission( $request );
+            },
         ));
 
         register_rest_route('gowishcart/v1', '/notifications', array(
@@ -608,10 +623,12 @@ class GoWishCart_Admin {
 
         // Activity endpoints
         register_rest_route('gowishcart/v1', '/activity/wishlist/(?P<wishlist_id>\d+)', array(
-            'methods' => 'GET',
-            'callback' => array($this, 'activity_get_wishlist'),
-            'permission_callback' => '__return_true',
-            'args' => array(
+        'methods' => 'GET',
+        'callback' => array($this, 'activity_get_wishlist'),
+        'permission_callback' => function () {
+            return current_user_can('manage_options');
+        },
+        'args' => array(
                 'wishlist_id' => array(
                     'description' => __('Wishlist ID', 'gowishcart-wishlist-for-fluentcart'),
                     'type' => 'integer',
@@ -945,6 +962,17 @@ class GoWishCart_Admin {
         }
 
         return true;
+    }
+
+    /**
+     * Permission callback helper for public REST endpoints that require a REST nonce.
+     *
+     * @param WP_REST_Request $request Request object.
+     *
+     * @return true|WP_Error True on success, WP_Error on failure.
+     */
+    private function rest_public_nonce_permission( $request ) {
+        return $this->verify_rest_nonce( $request );
     }
 
     /**
@@ -1376,6 +1404,12 @@ class GoWishCart_Admin {
      * @return WP_REST_Response
      */
     public function wishlist_get( $request ) {
+        // Enforce REST nonce verification for public read endpoint.
+        $nonce_check = $this->verify_rest_nonce( $request );
+        if ( is_wp_error( $nonce_check ) ) {
+            return $nonce_check;
+        }
+
         global $wpdb;
         $handler = new GoWishCart_Wishlist_Handler();
         $session_id = $request->get_param( 'session_id' );
@@ -1402,6 +1436,43 @@ class GoWishCart_Admin {
         
         // If wishlist_id is provided, fetch that wishlist's items
         if ( $wishlist_id ) {
+            // Get wishlist info first so we can enforce ownership.
+            $current_wishlist = $handler->get_wishlist( $wishlist_id );
+
+            if ( ! $current_wishlist ) {
+                return new WP_Error(
+                    'wishlist_not_found',
+                    __( 'Wishlist not found.', 'gowishcart-wishlist-for-fluentcart' ),
+                    array( 'status' => 404 )
+                );
+            }
+
+            if ( ! current_user_can( 'manage_options' ) ) {
+                $current_user_id = is_user_logged_in() ? get_current_user_id() : null;
+                $wishlist_user_id = isset( $current_wishlist['user_id'] ) ? intval( $current_wishlist['user_id'] ) : 0;
+
+                if ( $current_user_id ) {
+                    if ( $wishlist_user_id !== $current_user_id ) {
+                        return new WP_Error(
+                            'forbidden_wishlist_access',
+                            __( 'You are not allowed to view this wishlist.', 'gowishcart-wishlist-for-fluentcart' ),
+                            array( 'status' => 403 )
+                        );
+                    }
+                } else {
+                    $wishlist_session_id = isset( $current_wishlist['session_id'] ) ? (string) $current_wishlist['session_id'] : '';
+                    $effective_session_id = (string) $session_id;
+
+                    if ( empty( $effective_session_id ) || $wishlist_session_id !== $effective_session_id ) {
+                        return new WP_Error(
+                            'forbidden_wishlist_access',
+                            __( 'You are not allowed to view this wishlist.', 'gowishcart-wishlist-for-fluentcart' ),
+                            array( 'status' => 403 )
+                        );
+                    }
+                }
+            }
+
             $items_table = $wpdb->prefix . 'gwc_wishlist_items';
             
             // Check cache first
@@ -1435,9 +1506,6 @@ class GoWishCart_Admin {
                     );
                 }
             }
-            
-            // Get wishlist info
-            $current_wishlist = $handler->get_wishlist( $wishlist_id );
         } elseif ( $requested_user_id ) {
             // If user_id is provided, get that user's default wishlist and fetch its items
             $user_default_wishlist = $handler->get_default_wishlist( $requested_user_id, null );
@@ -1673,6 +1741,12 @@ class GoWishCart_Admin {
      * @return WP_REST_Response
      */
     public function wishlist_check( $request ) {
+        // Enforce REST nonce verification for public read endpoint.
+        $nonce_check = $this->verify_rest_nonce( $request );
+        if ( is_wp_error( $nonce_check ) ) {
+            return $nonce_check;
+        }
+
         $handler = new GoWishCart_Wishlist_Handler();
         $product_id = intval( $request->get_param( 'product_id' ) );
         $variation_id = intval( $request->get_param( 'variation_id' ) );
@@ -2440,18 +2514,36 @@ class GoWishCart_Admin {
      * @return WP_REST_Response
      */
     public function guest_check_email( $request ) {
+        // Basic rate limiting to reduce email enumeration via this endpoint.
+        $ip_address = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
+        $rate_key_suffix = $ip_address ? md5( $ip_address ) : 'unknown';
+
         $session_id = $request->get_param( 'session_id' );
         $session_id = is_string( $session_id ) ? sanitize_text_field( wp_unslash( $session_id ) ) : null;
+
+        $rate_limit_key = 'gowishcart_guest_check_email_' . $rate_key_suffix . '_' . ( $session_id ? md5( $session_id ) : 'no_session' );
+        $attempts       = (int) get_transient( $rate_limit_key );
+        $max_attempts   = 20;
+
+        if ( $attempts >= $max_attempts ) {
+            return new WP_Error(
+                'rate_limited',
+                __( 'Too many requests. Please try again later.', 'gowishcart-wishlist-for-fluentcart' ),
+                array( 'status' => 429 )
+            );
+        }
+
+        set_transient( $rate_limit_key, $attempts + 1, HOUR_IN_SECONDS );
 
         if ( empty( $session_id ) ) {
             return rest_ensure_response( array(
                 'has_email' => false,
-                'email' => null,
+                'email'     => null,
             ) );
         }
 
         $guest_handler = new GoWishCart_Guest_Handler();
-        $guest = $guest_handler->get_guest_by_session( $session_id );
+        $guest         = $guest_handler->get_guest_by_session( $session_id );
 
         if ( $guest && ! empty( $guest['guest_email'] ) ) {
             return rest_ensure_response( array(

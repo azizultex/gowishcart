@@ -185,10 +185,12 @@ const WishlistSettings = ({ settings, updateSettings }) => {
     // Get edit and preview URLs
     const getEditUrl = () => {
         if (!selectedPageId) return '#';
-        // WordPress admin URL is typically available via ajaxurl or we can construct it
-        const adminUrl = (typeof window !== 'undefined' && window.ajaxurl) 
-            ? window.ajaxurl.replace('/admin-ajax.php', '/')
-            : '/wp-admin/';
+        // Prefer localized admin URL when available, fall back to ajaxurl when needed
+        const adminUrl = (typeof window !== 'undefined' && window.gowishcartSettings?.adminUrl)
+            ? window.gowishcartSettings.adminUrl
+            : (typeof window !== 'undefined' && window.ajaxurl
+                ? window.ajaxurl.replace('/admin-ajax.php', '/')
+                : '');
         return `${adminUrl}post.php?post=${selectedPageId}&action=edit`;
     };
 
