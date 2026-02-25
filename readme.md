@@ -2,7 +2,7 @@
 Contributors: gowishcart, sabbirxprt
 Tags: wishlist, fluentcart, ecommerce, shopping, favorites, product wishlist, wish list
 Requires at least: 5.0
-Tested up to: 6.9.0
+Tested up to: 6.9
 Stable tag: 1.1.1
 Requires PHP: 7.4
 License: GPLv2 or later
