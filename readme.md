@@ -1,5 +1,5 @@
 === GoWishCart - Wishlist for FluentCart ===
-Contributors: gowishcart, sabbirxprt
+Contributors: azizultex, sabbirxprt
 Tags: wishlist, fluentcart, ecommerce, shopping, favorites, product wishlist, wish list
 Requires at least: 5.0
 Tested up to: 6.9

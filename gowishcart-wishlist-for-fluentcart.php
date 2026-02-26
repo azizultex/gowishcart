@@ -9,7 +9,7 @@
  * Requires Plugins: fluent-cart
  * Author:      GoWishCart Team <support@gowishcart.com>
  * Author URI:  https://gowishcart.com/
- * Contributors: gowishcart, sabbirxprt
+ * Contributors: azizultex, sabbirxprt
  * Text Domain:  gowishcart-wishlist-for-fluentcart
  * Domain Path: /languages/
  * License: GPL2
