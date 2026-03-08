@@ -379,17 +379,20 @@ class GoWishCart_Wishlist_Frontend {
             GoWishCart_VERSION
         );
         
-        // Output generated CSS using wp_add_inline_style
+        // Output generated CSS using wp_add_inline_style.
+        // Individual property values are escaped via esc_attr() when appended to $css_parts above.
+        // wp_strip_all_tags() is applied late — directly at the point of output — as required by
+        // WordPress coding standards, to strip any stray markup from the assembled string.
         if ( ! empty( $css_parts ) ) {
-            $generated_css = implode( "\n", $css_parts );
-            wp_add_inline_style( 'gowishcart-wishlist-frontend', $generated_css );
+            wp_add_inline_style( 'gowishcart-wishlist-frontend', wp_strip_all_tags( implode( "\n", $css_parts ) ) );
         }
-        
-        // Output custom CSS from text field using wp_add_inline_style
+
+        // Output custom CSS from settings text field.
+        // wp_strip_all_tags() is the correct late-escaping function for CSS context; it removes all
+        // HTML/script tags while preserving the CSS content, applied directly at the point of output.
         $custom_css = isset( $wishlist_settings['custom_css'] ) ? $wishlist_settings['custom_css'] : '';
         if ( ! empty( $custom_css ) ) {
-            $sanitized_css = wp_strip_all_tags( $custom_css );
-            wp_add_inline_style( 'gowishcart-wishlist-frontend', $sanitized_css );
+            wp_add_inline_style( 'gowishcart-wishlist-frontend', wp_strip_all_tags( $custom_css ) );
         }
     }
 

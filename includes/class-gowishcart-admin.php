@@ -706,8 +706,9 @@ class GoWishCart_Admin {
         ];
         
         $found_path = null;
+        $plugins_dir = trailingslashit( dirname( GoWishCart_PLUGIN_DIR ) );
         foreach ( $possible_paths as $path ) {
-            if ( file_exists( trailingslashit( WP_PLUGIN_DIR ) . $path ) ) {
+            if ( file_exists( $plugins_dir . $path ) ) {
                 $found_path = $path;
                 break;
             }

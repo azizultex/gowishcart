@@ -2,14 +2,21 @@
 
 All notable changes to the GoWishCart Wishlist plugin will be documented in this file.
 
-## [1.1.1] - 2021-02-25
+## [1.1.2] - 2026-03-09
+
+### Fixed
+- Fix unsafe SQL
+- Escape output late
+- Replace WP_PLUGIN_DIR / hardcoded plugin path logic
+
+## [1.1.1] - 2026-02-25
 
 ### Fixed
 - Improved REST API security by adding proper permission and nonce checks.
 - Removed hardcoded `/wp-admin/` path and ensured admin URLs work on all WordPress setups.
 
 
-## [1.1.0] - 2021-02-22
+## [1.1.0] - 2026-02-22
 
 ### Changed
 - Plugin display name updated across the admin and public-facing areas
