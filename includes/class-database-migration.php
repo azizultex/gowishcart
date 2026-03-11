@@ -2,17 +2,17 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 /**
- * Database Migration Handler for WishCart Plugin
+ * Database Migration Handler for GoWishCart Plugin
  *
  * Handles migration from old 2-table structure to new 7-table structure
  *
  * @category WordPress
- * @package  WishCart
- * @author   WishCart Team <support@gowishcart.com>
+ * @package  GoWishCart
+ * @author   GoWishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://gowishcart.com
  */
-class WishCart_Database_Migration {
+class GoWishCart_Database_Migration {
 
     private $wpdb;
     private $table_prefix;
@@ -39,7 +39,7 @@ class WishCart_Database_Migration {
         );
 
         // Check if migration has already been done
-        $migration_version = get_option('wishcart_migration_version', '0');
+        $migration_version = get_option('gowishcart_migration_version', '0');
         if ($migration_version === '2.0') {
             $results['message'] = 'Migration already completed';
             return $results;
@@ -47,8 +47,8 @@ class WishCart_Database_Migration {
 
         // Archive old tables
         $old_tables = array(
-            'wishcart_wishlists',
-            'WishCart_Wishlist',
+            'gwc_wishlists',
+            'gwc_Wishlist',
         );
 
         $timestamp = gmdate('Y_m_d_His');
@@ -89,7 +89,7 @@ class WishCart_Database_Migration {
         // Create new 7-table structure
         if ($results['success']) {
             try {
-                $database = new WishCart_Database();
+                $database = new GoWishCart_Database();
             } catch (Exception $e) {
                 $results['errors'][] = 'Failed to create new tables: ' . $e->getMessage();
                 $results['success'] = false;
@@ -98,8 +98,8 @@ class WishCart_Database_Migration {
 
         // Mark migration as complete
         if ($results['success']) {
-            update_option('wishcart_migration_version', '2.0');
-            update_option('wishcart_migration_date', current_time('mysql'));
+            update_option('gowishcart_migration_version', '2.0');
+            update_option('gowishcart_migration_date', current_time('mysql'));
             $results['message'] = 'Migration completed successfully';
         }
 
@@ -125,7 +125,7 @@ class WishCart_Database_Migration {
             $tables = $this->wpdb->get_results(
                 $this->wpdb->prepare(
                     "SHOW TABLES LIKE %s",
-                    $this->table_prefix . 'wishcart_%_backup_%'
+                    $this->table_prefix . 'gwc_%_backup_%'
                 ),
                 ARRAY_N
             );
@@ -158,10 +158,10 @@ class WishCart_Database_Migration {
 
         // Drop new tables
         $new_tables = array(
-            'wc_wishlists',
-            'wc_wishlist_items',
-            'wc_wishlist_notifications',
-            'wc_wishlist_guest_users',
+            'gwc_wishlists',
+            'gwc_wishlist_items',
+            'gwc_wishlist_notifications',
+            'gwc_wishlist_guest_users',
         );
 
         foreach ($new_tables as $new_table) {
@@ -172,8 +172,7 @@ class WishCart_Database_Migration {
 
         // Restore old tables
         $old_tables = array(
-            'wishcart_wishlists',
-            'WishCart_Wishlist',
+            'gwc_wishlists',
         );
 
         foreach ($old_tables as $old_table) {
@@ -211,8 +210,8 @@ class WishCart_Database_Migration {
 
         // Update migration version
         if ($results['success']) {
-            update_option('wishcart_migration_version', '1.0');
-            delete_option('wishcart_migration_date');
+            update_option('gowishcart_migration_version', '1.0');
+            delete_option('gowishcart_migration_date');
             $results['message'] = 'Rollback completed successfully';
         }
 
@@ -237,7 +236,7 @@ class WishCart_Database_Migration {
         $tables = $this->wpdb->get_results(
             $this->wpdb->prepare(
                 "SHOW TABLES LIKE %s",
-                $this->table_prefix . 'wishcart_%_backup_%'
+                $this->table_prefix . 'gwc_%_backup_%'
             ),
             ARRAY_N
         );
@@ -281,8 +280,8 @@ class WishCart_Database_Migration {
      * @return array Migration status information
      */
     public function get_migration_status() {
-        $migration_version = get_option('wishcart_migration_version', '0');
-        $migration_date = get_option('wishcart_migration_date', null);
+        $migration_version = get_option('gowishcart_migration_version', '0');
+        $migration_date = get_option('gowishcart_migration_date', null);
 
         $status = array(
             'version' => $migration_version,
@@ -296,7 +295,7 @@ class WishCart_Database_Migration {
         $tables = $this->wpdb->get_results(
             $this->wpdb->prepare(
                 "SHOW TABLES LIKE %s",
-                $this->table_prefix . 'wishcart_%_backup_%'
+                $this->table_prefix . 'gwc_%_backup_%'
             ),
             ARRAY_N
         );

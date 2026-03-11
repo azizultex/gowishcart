@@ -7,16 +7,16 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * Provides FluentCart compatibility functions to replace WooCommerce functions
  *
  * @category Functionality
- * @package  WishCart
- * @author   WishCart Team <support@gowishcart.com>
+ * @package  GoWishCart
+ * @author   GoWishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://gowishcart.com
  */
 
 /**
- * WishCart FluentCart Product Wrapper Class
+ * GoWishCart FluentCart Product Wrapper Class
  */
-class WishCart_FluentCart_Product {
+class GoWishCart_FluentCart_Product {
     private $post_id;
     private $post;
     private $meta_cache = [];
@@ -240,9 +240,9 @@ class WishCart_FluentCart_Product {
 }
 
 /**
- * WishCart FluentCart Order Wrapper Class
+ * GoWishCart FluentCart Order Wrapper Class
  */
-class WishCart_FluentCart_Order {
+class GoWishCart_FluentCart_Order {
     private $fc_order;
     private $meta_cache = [];
 
@@ -315,7 +315,7 @@ class WishCart_FluentCart_Order {
         if ( ! $this->fc_order ) {
             return null;
         }
-        return new WishCart_FluentCart_DateTime( $this->fc_order->created_at );
+        return new GoWishCart_FluentCart_DateTime( $this->fc_order->created_at );
     }
 
     public function get_formatted_order_total() {
@@ -333,9 +333,9 @@ class WishCart_FluentCart_Order {
             $total_decimal = floatval( $total ) / 100;
         }
         
-        // Use wc_price if available, otherwise format manually
-        if ( function_exists( 'wc_price' ) ) {
-            return wc_price( $total_decimal, [ 'currency' => $currency ] );
+        // Use gwc_price if available, otherwise format manually
+        if ( function_exists( 'gwc_price' ) ) {
+            return gwc_price( $total_decimal, [ 'currency' => $currency ] );
         }
         
         return $currency . ' ' . number_format( $total_decimal, 2 );
@@ -463,7 +463,7 @@ class WishCart_FluentCart_Order {
                     }
                 }
                 
-                $items[] = new WishCart_FluentCart_Order_Item( [
+                $items[] = new GoWishCart_FluentCart_Order_Item( [
                     'id' => $fc_item->id,
                     'name' => $fc_item->title,
                     'product_id' => $fc_item->post_id,
@@ -486,8 +486,8 @@ class WishCart_FluentCart_Order {
             return '';
         }
 
-        if ( function_exists( 'wc_price' ) ) {
-            return wc_price( floatval( $total ) );
+        if ( function_exists( 'gwc_price' ) ) {
+            return gwc_price( floatval( $total ) );
         }
         return number_format( floatval( $total ), 2 );
     }
@@ -519,9 +519,9 @@ class WishCart_FluentCart_Order {
 }
 
 /**
- * WishCart FluentCart Order Item Wrapper Class
+ * GoWishCart FluentCart Order Item Wrapper Class
  */
-class WishCart_FluentCart_Order_Item {
+class GoWishCart_FluentCart_Order_Item {
     private $item_data;
 
     public function __construct( $item_data ) {
@@ -538,7 +538,7 @@ class WishCart_FluentCart_Order_Item {
 
     public function get_product() {
         $product_id = isset( $this->item_data['product_id'] ) ? $this->item_data['product_id'] : null;
-        return $product_id ? WishCart_FluentCart_Helper::get_product( $product_id ) : null;
+        return $product_id ? GoWishCart_FluentCart_Helper::get_product( $product_id ) : null;
     }
 
     public function get_product_id() {
@@ -556,9 +556,9 @@ class WishCart_FluentCart_Order_Item {
 }
 
 /**
- * WishCart FluentCart DateTime Wrapper Class
+ * GoWishCart FluentCart DateTime Wrapper Class
  */
-class WishCart_FluentCart_DateTime {
+class GoWishCart_FluentCart_DateTime {
     private $datetime;
 
     public function __construct( $datetime_string ) {
@@ -571,17 +571,17 @@ class WishCart_FluentCart_DateTime {
 }
 
 /**
- * WishCart_FluentCart_Helper Class
+ * GoWishCart_FluentCart_Helper Class
  *
  * Handles FluentCart-specific operations for products and orders
  *
  * @category Class
- * @package  WishCart
- * @author   WishCart Team <support@gowishcart.com>
+ * @package  GoWishCart
+ * @author   GoWishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://gowishcart.com
  */
-class WishCart_FluentCart_Helper {
+class GoWishCart_FluentCart_Helper {
 
     /**
      * Cached result of FluentCart detection to avoid repeated checks
@@ -649,11 +649,11 @@ class WishCart_FluentCart_Helper {
         $candidates = [ 'fc_product', 'fluent-products', 'fluent_product', 'fluentcart_product' ];
         foreach ( $candidates as $slug ) {
             if ( post_type_exists( $slug ) ) {
-                return apply_filters( 'wishcart_fluentcart_product_post_type', $slug );
+                return apply_filters( 'gowishcart_fluentcart_product_post_type', $slug );
             }
         }
         // Fallback to default
-        return apply_filters( 'wishcart_fluentcart_product_post_type', 'fc_product' );
+        return apply_filters( 'gowishcart_fluentcart_product_post_type', 'fc_product' );
     }
 
     /**
@@ -662,14 +662,14 @@ class WishCart_FluentCart_Helper {
      * @return string
      */
     public static function get_order_post_type() {
-        return apply_filters( 'wishcart_fluentcart_order_post_type', 'fc_order' );
+        return apply_filters( 'gowishcart_fluentcart_order_post_type', 'fc_order' );
     }
 
     /**
-     * Get product by ID (replaces wc_get_product)
+     * Get product by ID (replaces gwc_get_product)
      *
      * @param int|WP_Post $product_id Product ID or post object
-     * @return WishCart_FluentCart_Product|null FluentCart product object or null
+     * @return GoWishCart_FluentCart_Product|null FluentCart product object or null
      */
     public static function get_product( $product_id ) {
         if ( ! self::is_fluentcart_active() ) {
@@ -691,14 +691,14 @@ class WishCart_FluentCart_Helper {
             return null;
         }
 
-        return new WishCart_FluentCart_Product( $post );
+        return new GoWishCart_FluentCart_Product( $post );
     }
 
     /**
-     * Get order by ID (replaces wc_get_order)
+     * Get order by ID (replaces gwc_get_order)
      *
      * @param int|string $order_id Order ID or order number
-     * @return WishCart_FluentCart_Order|null FluentCart order object or null
+     * @return GoWishCart_FluentCart_Order|null FluentCart order object or null
      */
     public static function get_order( $order_id ) {
         if ( ! self::is_fluentcart_active() ) {
@@ -728,7 +728,7 @@ class WishCart_FluentCart_Helper {
                     ->find( $order_id );
                 
                 if ( $fc_order ) {
-                    return new WishCart_FluentCart_Order( $fc_order );
+                    return new GoWishCart_FluentCart_Order( $fc_order );
                 }
             } catch ( Exception $e ) {
                 return null;
@@ -770,7 +770,7 @@ class WishCart_FluentCart_Helper {
     }
 
     /**
-     * Get featured product IDs (replaces wc_get_featured_product_ids)
+     * Get featured product IDs (replaces gwc_get_featured_product_ids)
      *
      * @return array Featured product IDs
      */
@@ -799,7 +799,7 @@ class WishCart_FluentCart_Helper {
     }
 
     /**
-     * Get orders (replaces wc_get_orders)
+     * Get orders (replaces gwc_get_orders)
      *
      * @param array $args Query arguments
      * @return array Order objects
@@ -842,7 +842,7 @@ class WishCart_FluentCart_Helper {
                 $orders = [];
                 
                 foreach ( $fc_orders as $fc_order ) {
-                    $orders[] = new WishCart_FluentCart_Order( $fc_order );
+                    $orders[] = new GoWishCart_FluentCart_Order( $fc_order );
                 }
                 
                 return $orders;
@@ -855,7 +855,7 @@ class WishCart_FluentCart_Helper {
     }
 
     /**
-     * Get placeholder image source (replaces wc_placeholder_img_src)
+     * Get placeholder image source (replaces gwc_placeholder_img_src)
      *
      * @param string $size Image size
      * @return string Image URL
@@ -869,7 +869,7 @@ class WishCart_FluentCart_Helper {
             }
         }
         // Fallback placeholder
-        return WishCart_PLUGIN_URL . 'assets/images/placeholder.png';
+        return GoWishCart_PLUGIN_URL . 'assets/images/placeholder.png';
     }
 
     /**
@@ -878,6 +878,6 @@ class WishCart_FluentCart_Helper {
      * @return string Capability name
      */
     public static function get_manage_capability() {
-        return apply_filters( 'wishcart_fluentcart_manage_capability', 'manage_options' );
+        return apply_filters( 'gowishcart_fluentcart_manage_capability', 'manage_options' );
     }
 }

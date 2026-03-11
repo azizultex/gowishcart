@@ -1,23 +1,23 @@
 <?php
 
 /**
- * Plugin Name:  WishCart - Wishlist for FluentCart
+ * Plugin Name:  GoWishCart - Wishlist for FluentCart
  * Plugin URI:  https://gowishcart.com
  * Description: Wishlist plugin for FluentCart with guest support, product variations, price drop alerts, and FluentCRM integration.
- * Version:     1.0.0
+ * Version:     1.1.2
  * Requires PHP: 7.4
  * Requires Plugins: fluent-cart
- * Author:      WishCart Team <support@gowishcart.com>
+ * Author:      GoWishCart Team <support@gowishcart.com>
  * Author URI:  https://gowishcart.com/
- * Contributors: wishcart, sabbirxprt
- * Text Domain:  wishcart
+ * Contributors: azizultex, sabbirxprt
+ * Text Domain:  gowishcart-wishlist-for-fluentcart
  * Domain Path: /languages/
  * License: GPL2
  * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
  *
  * @category WordPress
- * @package  WishCart
- * @author   WishCart Team <support@gowishcart.com>
+ * @package  GoWishCart
+ * @author   GoWishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ http://www.gnu.org/licenses/gpl-2.0.txt
  * @link     https://gowishcart.com
  *
@@ -35,25 +35,25 @@ if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
 }
 
 /**
- * Main plugin class for WishCart Wishlist
+ * Main plugin class for GoWishCart Wishlist
  *
  * Handles initialization, dependencies loading, and core functionality
- * of the WishCart wishlist plugin for WordPress and FluentCart.
+ * of the GoWishCart wishlist plugin for WordPress and FluentCart.
  *
  * @category WordPress
- * @package  WishCart
- * @author   WishCart Team <support@gowishcart.com>
+ * @package  GoWishCart
+ * @author   GoWishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ http://www.gnu.org/licenses/gpl-2.0.txt
  * @link     https://gowishcart.com
  */
-class WishCart_Wishlist {
+class GoWishCart_Wishlist {
 
     private static $instance = null;
 
     /**
      * Get singleton instance of this class
      *
-     * @return WishCart_Wishlist Instance of this class
+     * @return GoWishCart_Wishlist Instance of this class
      */
     public static function get_instance() {
         if ( null === self::$instance ) {
@@ -67,11 +67,11 @@ class WishCart_Wishlist {
      */
     private function __construct() {
         // Define constants
-        define('WishCart_PLUGIN_FILE', __FILE__);
-        define('WishCart_VERSION', '1.0.0');
-        define('WishCart_PLUGIN_DIR', plugin_dir_path(__FILE__));
-        define('WishCart_PLUGIN_URL', plugin_dir_url(__FILE__));
-        define('WishCart_TEXT_DOMAIN', 'wishcart');
+        define('GoWishCart_PLUGIN_FILE', __FILE__);
+        define('GoWishCart_VERSION', '1.1.2');
+        define('GoWishCart_PLUGIN_DIR', plugin_dir_path(__FILE__));
+        define('GoWishCart_PLUGIN_URL', plugin_dir_url(__FILE__));
+        define('GoWishCart_TEXT_DOMAIN', 'gowishcart-wishlist-for-fluentcart');
 
         // Check for FluentCart dependency first (before loading other dependencies)
         if ( ! $this->check_fluentcart_dependency() ) {
@@ -100,10 +100,10 @@ class WishCart_Wishlist {
         add_action('deactivated_plugin', [ $this, 'clear_fluentcart_cache' ]);
         
         // Add custom cron schedules
-        add_filter('cron_schedules', [ 'WishCart_Cron_Handler', 'add_cron_schedules' ]);
+        add_filter('cron_schedules', [ 'GoWishCart_Cron_Handler', 'add_cron_schedules' ]);
         
         // Initialize cron handler
-        new WishCart_Cron_Handler();
+        new GoWishCart_Cron_Handler();
     }
 
     /**
@@ -155,28 +155,29 @@ class WishCart_Wishlist {
         );
 
         // Check if plugin is installed but not active
-        $is_installed = file_exists( trailingslashit( WP_PLUGIN_DIR ) . $plugin_file );
+        $plugins_dir = trailingslashit( dirname( GoWishCart_PLUGIN_DIR ) );
+        $is_installed = file_exists( $plugins_dir . $plugin_file );
         
         ?>
         <div class="notice notice-error">
             <p>
-                <strong><?php esc_html_e( 'WishCart requires FluentCart', 'wishcart' ); ?></strong>
+                <strong><?php esc_html_e( 'GoWishCart requires FluentCart', 'gowishcart-wishlist-for-fluentcart' ); ?></strong>
             </p>
             <p>
-                <?php esc_html_e( 'WishCart plugin requires FluentCart to be installed and activated. Please install and activate FluentCart to use WishCart features.', 'wishcart' ); ?>
+                <?php esc_html_e( 'GoWishCart plugin requires FluentCart to be installed and activated. Please install and activate FluentCart to use GoWishCart features.', 'gowishcart-wishlist-for-fluentcart' ); ?>
             </p>
             <p>
                 <?php if ( $is_installed ) : ?>
                     <a href="<?php echo esc_url( $activate_url ); ?>" class="button button-primary">
-                        <?php esc_html_e( 'Activate FluentCart', 'wishcart' ); ?>
+                        <?php esc_html_e( 'Activate FluentCart', 'gowishcart-wishlist-for-fluentcart' ); ?>
                     </a>
                 <?php else : ?>
                     <a href="<?php echo esc_url( $install_url ); ?>" class="button button-primary">
-                        <?php esc_html_e( 'Install FluentCart', 'wishcart' ); ?>
+                        <?php esc_html_e( 'Install FluentCart', 'gowishcart-wishlist-for-fluentcart' ); ?>
                     </a>
                 <?php endif; ?>
                 <a href="<?php echo esc_url( admin_url( 'plugins.php' ) ); ?>" class="button">
-                    <?php esc_html_e( 'Go to Plugins', 'wishcart' ); ?>
+                    <?php esc_html_e( 'Go to Plugins', 'gowishcart-wishlist-for-fluentcart' ); ?>
                 </a>
             </p>
         </div>
@@ -193,9 +194,9 @@ class WishCart_Wishlist {
         // Clear cache if FluentCart or this plugin was activated/deactivated
         if ( strpos( $plugin, 'fluentcart' ) !== false || 
              strpos( $plugin, 'fluent-cart' ) !== false ||
-             strpos( $plugin, 'wishcart' ) !== false ) {
-            if ( class_exists( 'WishCart_FluentCart_Helper' ) ) {
-                WishCart_FluentCart_Helper::clear_detection_cache();
+             strpos( $plugin, 'gowishcart-wishlist-for-fluentcart' ) !== false ) {
+            if ( class_exists( 'GoWishCart_FluentCart_Helper' ) ) {
+                GoWishCart_FluentCart_Helper::clear_detection_cache();
             }
         }
     }
@@ -206,77 +207,79 @@ class WishCart_Wishlist {
      * @return void
      */
     private function load_dependencies() {
+        // Table name constants (must load before class-database.php)
+        include_once GoWishCart_PLUGIN_DIR . 'includes/class-table-names.php';
         // Core classes
-        include_once WishCart_PLUGIN_DIR . 'includes/class-database.php';
-        include_once WishCart_PLUGIN_DIR . 'includes/class-database-migration.php';
-        include_once WishCart_PLUGIN_DIR . 'includes/class-fluentcart-helper.php';
+        include_once GoWishCart_PLUGIN_DIR . 'includes/class-database.php';
+        include_once GoWishCart_PLUGIN_DIR . 'includes/class-database-migration.php';
+        include_once GoWishCart_PLUGIN_DIR . 'includes/class-fluentcart-helper.php';
         
         // Handler classes
-        include_once WishCart_PLUGIN_DIR . 'includes/class-wishlist-handler.php';
+        include_once GoWishCart_PLUGIN_DIR . 'includes/class-wishlist-handler.php';
         // Analytics handler is a Pro feature - removed from free version
         // Sharing handler is a Pro feature - removed from free version
-        include_once WishCart_PLUGIN_DIR . 'includes/class-notifications-handler.php';
-        include_once WishCart_PLUGIN_DIR . 'includes/class-guest-handler.php';
-        include_once WishCart_PLUGIN_DIR . 'includes/class-cron-handler.php';
+        include_once GoWishCart_PLUGIN_DIR . 'includes/class-notifications-handler.php';
+        include_once GoWishCart_PLUGIN_DIR . 'includes/class-guest-handler.php';
+        include_once GoWishCart_PLUGIN_DIR . 'includes/class-cron-handler.php';
         
         // FluentCRM integration classes
-        include_once WishCart_PLUGIN_DIR . 'includes/class-fluentcrm-integration.php';
-        include_once WishCart_PLUGIN_DIR . 'includes/class-fluentcrm-triggers.php';
-        include_once WishCart_PLUGIN_DIR . 'includes/class-fluentcrm-smartcode.php';
-        include_once WishCart_PLUGIN_DIR . 'includes/class-crm-campaign-handler.php';
+        include_once GoWishCart_PLUGIN_DIR . 'includes/class-fluentcrm-integration.php';
+        include_once GoWishCart_PLUGIN_DIR . 'includes/class-fluentcrm-triggers.php';
+        include_once GoWishCart_PLUGIN_DIR . 'includes/class-fluentcrm-smartcode.php';
+        include_once GoWishCart_PLUGIN_DIR . 'includes/class-crm-campaign-handler.php';
         
         // FluentCRM trigger classes (only load if FluentCRM BaseTrigger exists)
         if ( class_exists( '\FluentCrm\App\Services\Funnel\BaseTrigger' ) ) {
-            include_once WishCart_PLUGIN_DIR . 'includes/triggers/class-item-added-trigger.php';
-            include_once WishCart_PLUGIN_DIR . 'includes/triggers/class-item-removed-trigger.php';
-            include_once WishCart_PLUGIN_DIR . 'includes/triggers/class-price-drop-trigger.php';
-            include_once WishCart_PLUGIN_DIR . 'includes/triggers/class-back-in-stock-trigger.php';
+            include_once GoWishCart_PLUGIN_DIR . 'includes/triggers/class-item-added-trigger.php';
+            include_once GoWishCart_PLUGIN_DIR . 'includes/triggers/class-item-removed-trigger.php';
+            include_once GoWishCart_PLUGIN_DIR . 'includes/triggers/class-price-drop-trigger.php';
+            include_once GoWishCart_PLUGIN_DIR . 'includes/triggers/class-back-in-stock-trigger.php';
         }
         
         // Frontend classes
-        include_once WishCart_PLUGIN_DIR . 'includes/class-wishlist-frontend.php';
-        include_once WishCart_PLUGIN_DIR . 'includes/class-wishlist-page.php';
+        include_once GoWishCart_PLUGIN_DIR . 'includes/class-wishlist-frontend.php';
+        include_once GoWishCart_PLUGIN_DIR . 'includes/class-wishlist-page.php';
         // Shared wishlist page is a Pro feature - removed from free version
         // Share page handler is a Pro feature - removed from free version
-        include_once WishCart_PLUGIN_DIR . 'includes/shortcodes/class-wishlist-shortcode.php';
+        include_once GoWishCart_PLUGIN_DIR . 'includes/shortcodes/class-wishlist-shortcode.php';
         // Shared wishlist shortcode is a Pro feature - removed from free version
-        include_once WishCart_PLUGIN_DIR . 'includes/shortcodes/class-wishlist-button-shortcode.php';
+        include_once GoWishCart_PLUGIN_DIR . 'includes/shortcodes/class-wishlist-button-shortcode.php';
         
         // Admin class
-        include_once WishCart_PLUGIN_DIR . 'includes/class-wishcart-admin.php';
+        include_once GoWishCart_PLUGIN_DIR . 'includes/class-gowishcart-admin.php';
 
         // Initialize admin/API class so REST routes register for all requests
-        WishCart_Admin::get_instance();
+        GoWishCart_Admin::get_instance();
 
         // Initialize frontend handler
-        new WishCart_Wishlist_Frontend();
+        new GoWishCart_Wishlist_Frontend();
 
         // Initialize wishlist page handler (for rewrite rules)
-        new WishCart_Wishlist_Page();
+        new GoWishCart_Wishlist_Page();
         
         // Initialize FluentCRM integration if available
-        if (class_exists('WishCart_FluentCRM_Integration')) {
-            new WishCart_FluentCRM_Integration();
+        if (class_exists('GoWishCart_FluentCRM_Integration')) {
+            new GoWishCart_FluentCRM_Integration();
         }
 
         // Initialize FluentCRM triggers if available
-        if (class_exists('WishCart_FluentCRM_Triggers')) {
-            new WishCart_FluentCRM_Triggers();
+        if (class_exists('GoWishCart_FluentCRM_Triggers')) {
+            new GoWishCart_FluentCRM_Triggers();
         }
 
         // Initialize FluentCRM SmartCode (dynamic shortcodes for email editor)
-        if (class_exists('WishCart_FluentCRM_SmartCode')) {
-            new WishCart_FluentCRM_SmartCode();
+        if (class_exists('GoWishCart_FluentCRM_SmartCode')) {
+            new GoWishCart_FluentCRM_SmartCode();
         }
         
         // Initialize CRM campaign handler
-        if (class_exists('WishCart_CRM_Campaign_Handler')) {
-            new WishCart_CRM_Campaign_Handler();
+        if (class_exists('GoWishCart_CRM_Campaign_Handler')) {
+            new GoWishCart_CRM_Campaign_Handler();
         }
 
         // Ensure database tables exist even after updates (without reactivation)
         // Safe to call: dbDelta is idempotent
-        try { new WishCart_Database(); } catch ( \Throwable $e ) {}
+        try { new GoWishCart_Database(); } catch ( \Throwable $e ) {}
     }
 
     /**
@@ -294,24 +297,24 @@ class WishCart_Wishlist {
             wp_die(
                 sprintf(
                     '<h1>%s</h1><p>%s</p><p><a href="%s">%s</a></p>',
-                    esc_html__( 'WishCart Activation Failed', 'wishcart' ),
-                    esc_html__( 'WishCart requires FluentCart plugin to be installed and activated. Please install and activate FluentCart first, then try activating WishCart again.', 'wishcart' ),
+                    esc_html__( 'GoWishCart Activation Failed', 'gowishcart-wishlist-for-fluentcart' ),
+                    esc_html__( 'GoWishCart requires FluentCart plugin to be installed and activated. Please install and activate FluentCart first, then try activating GoWishCart again.', 'gowishcart-wishlist-for-fluentcart' ),
                     esc_url( admin_url( 'plugins.php' ) ),
-                    esc_html__( 'Return to Plugins', 'wishcart' )
+                    esc_html__( 'Return to Plugins', 'gowishcart-wishlist-for-fluentcart' )
                 ),
-                esc_html__( 'Plugin Activation Error', 'wishcart' ),
+                esc_html__( 'Plugin Activation Error', 'gowishcart-wishlist-for-fluentcart' ),
                 [ 'back_link' => true ]
             );
         }
 
         // Ensure database tables exist
-        new WishCart_Database();
+        new GoWishCart_Database();
         
         // Create wishlist page
-        WishCart_Wishlist_Page::create_wishlist_page();
+        GoWishCart_Wishlist_Page::create_wishlist_page();
         
         // Schedule cron events
-        WishCart_Cron_Handler::schedule_events();
+        GoWishCart_Cron_Handler::schedule_events();
         
         // Flush rewrite rules to register new routes
         flush_rewrite_rules();
@@ -324,7 +327,7 @@ class WishCart_Wishlist {
      */
     public static function deactivate() {
         // Unschedule cron events
-        WishCart_Cron_Handler::unschedule_events();
+        GoWishCart_Cron_Handler::unschedule_events();
         
         // Flush rewrite rules
         flush_rewrite_rules();
@@ -333,4 +336,4 @@ class WishCart_Wishlist {
 }
 
 // Initialize the plugin
-WishCart_Wishlist::get_instance();
+GoWishCart_Wishlist::get_instance();

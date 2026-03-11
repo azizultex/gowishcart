@@ -57,20 +57,20 @@ const WishlistPage = () => {
 
     // Get session ID from cookie
     const getSessionId = () => {
-        if (window.wishcartWishlist?.isLoggedIn) {
+        if (window.gowishcartWishlist?.isLoggedIn) {
             return null;
         }
         
         const cookies = document.cookie.split(';');
         for (let cookie of cookies) {
             const [name, value] = cookie.trim().split('=');
-            if (name === 'wishcart_session_id') {
+            if (name === 'gowishcart_session_id') {
                 return value;
             }
         }
 
-        if (window.wishcartWishlist?.sessionId) {
-            return window.wishcartWishlist.sessionId;
+        if (window.gowishcartWishlist?.sessionId) {
+            return window.gowishcartWishlist.sessionId;
         }
 
         return null;
@@ -79,7 +79,7 @@ const WishlistPage = () => {
     // Load wishlists
     useEffect(() => {
         const loadWishlists = async () => {
-            if (!window.wishcartWishlist) {
+            if (!window.gowishcartWishlist) {
                 return;
             }
 
@@ -87,10 +87,10 @@ const WishlistPage = () => {
             setIsLoadingWishlists(true);
             try {
                 const sessionId = getSessionId();
-                const url = `${window.wishcartWishlist.apiUrl}wishlist${sessionId ? `?session_id=${sessionId}` : ''}`;
+                const url = `${window.gowishcartWishlist.apiUrl}wishlist${sessionId ? `?session_id=${sessionId}` : ''}`;
                 const response = await fetch(url, {
                     headers: {
-                        'X-WP-Nonce': window.wishcartWishlist.nonce,
+                        'X-WP-Nonce': window.gowishcartWishlist.nonce,
                     },
                 });
 
@@ -114,7 +114,7 @@ const WishlistPage = () => {
     // Shared helper to load wishlist products
     const loadWishlist = useCallback(
         async (wishlistOverride = null, { forceReload = false } = {}) => {
-            if (!window.wishcartWishlist) {
+            if (!window.gowishcartWishlist) {
                 setIsLoading(false);
                 return;
             }
@@ -132,11 +132,11 @@ const WishlistPage = () => {
                 try {
                     const sessionId = getSessionId();
                     
-                    const url = `${window.wishcartWishlist.apiUrl}wishlist${sessionId ? `?session_id=${sessionId}` : ''}`;
+                    const url = `${window.gowishcartWishlist.apiUrl}wishlist${sessionId ? `?session_id=${sessionId}` : ''}`;
                     
                     const response = await fetch(url, {
                         headers: {
-                            'X-WP-Nonce': window.wishcartWishlist.nonce,
+                            'X-WP-Nonce': window.gowishcartWishlist.nonce,
                         },
                     });
 
@@ -172,7 +172,7 @@ const WishlistPage = () => {
             setIsLoading(true);
             try {
                 const sessionId = getSessionId();
-                let url = `${window.wishcartWishlist.apiUrl}wishlist`;
+                let url = `${window.gowishcartWishlist.apiUrl}wishlist`;
                 const params = new URLSearchParams();
                 
                 // Use wishlist_id or session_id
@@ -188,7 +188,7 @@ const WishlistPage = () => {
                 
                 const response = await fetch(url, {
                     headers: {
-                        'X-WP-Nonce': window.wishcartWishlist.nonce,
+                        'X-WP-Nonce': window.gowishcartWishlist.nonce,
                     },
                 });
 
@@ -291,8 +291,8 @@ const WishlistPage = () => {
             }, 300);
         };
 
-        window.addEventListener('wishcart:item-added', handleItemAdded);
-        window.addEventListener('wishcart:item-removed', handleItemRemoved);
+        window.addEventListener('gowishcart:item-added', handleItemAdded);
+        window.addEventListener('gowishcart:item-removed', handleItemRemoved);
 
         // Fallback: Refresh when page becomes visible (user might have added items in another tab)
         const handleVisibilityChange = () => {
@@ -316,20 +316,20 @@ const WishlistPage = () => {
         }, 5000); // Check every 5 seconds
 
         document.addEventListener('visibilitychange', handleVisibilityChange);
-        window.addEventListener('wishcart:item-added', handleItemAdded);
-        window.addEventListener('wishcart:item-removed', handleItemRemoved);
+        window.addEventListener('gowishcart:item-added', handleItemAdded);
+        window.addEventListener('gowishcart:item-removed', handleItemRemoved);
 
         return () => {
             clearInterval(fallbackInterval);
             document.removeEventListener('visibilitychange', handleVisibilityChange);
-            window.removeEventListener('wishcart:item-added', handleItemAdded);
-            window.removeEventListener('wishcart:item-removed', handleItemRemoved);
+            window.removeEventListener('gowishcart:item-added', handleItemAdded);
+            window.removeEventListener('gowishcart:item-removed', handleItemRemoved);
         };
     }, []); // Empty dependencies - use refs instead
 
     // Remove product from wishlist
     const removeProduct = async (productId, variationId = null) => {
-        if (removingIds.has(productId) || !window.wishcartWishlist) {
+        if (removingIds.has(productId) || !window.gowishcartWishlist) {
             return;
         }
 
@@ -337,7 +337,7 @@ const WishlistPage = () => {
 
         try {
             const sessionId = getSessionId();
-            const url = `${window.wishcartWishlist.apiUrl}wishlist/remove`;
+            const url = `${window.gowishcartWishlist.apiUrl}wishlist/remove`;
             
             // Get variation_id from product if not provided
             const product = products.find(p => p.id === productId);
@@ -357,7 +357,7 @@ const WishlistPage = () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-WP-Nonce': window.wishcartWishlist.nonce,
+                    'X-WP-Nonce': window.gowishcartWishlist.nonce,
                 },
                 body: JSON.stringify(body),
             });
@@ -466,7 +466,7 @@ const WishlistPage = () => {
         // Get unique key for this specific variant
         const uniqueKey = getUniqueItemKey(product);
         
-        if (addingToCartIds.has(uniqueKey) || !window.wishcartWishlist) {
+        if (addingToCartIds.has(uniqueKey) || !window.gowishcartWishlist) {
             return;
         }
 
@@ -484,7 +484,7 @@ const WishlistPage = () => {
 
             // Track the add to cart event (non-blocking)
             const sessionId = getSessionId();
-            const trackUrl = `${window.wishcartWishlist.apiUrl}wishlist/track-cart`;
+            const trackUrl = `${window.gowishcartWishlist.apiUrl}wishlist/track-cart`;
             
             const trackBody = {
                 product_id: product.id,
@@ -497,7 +497,7 @@ const WishlistPage = () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-WP-Nonce': window.wishcartWishlist.nonce,
+                    'X-WP-Nonce': window.gowishcartWishlist.nonce,
                 },
                 body: JSON.stringify(trackBody),
             }).catch(trackError => {
@@ -592,13 +592,13 @@ const WishlistPage = () => {
 
                 // Track the add to cart event (non-blocking)
                 const sessionId = getSessionId();
-                const trackUrl = `${window.wishcartWishlist.apiUrl}wishlist/track-cart`;
+                const trackUrl = `${window.gowishcartWishlist.apiUrl}wishlist/track-cart`;
                 
                 fetch(trackUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-WP-Nonce': window.wishcartWishlist.nonce,
+                        'X-WP-Nonce': window.gowishcartWishlist.nonce,
                     },
                     body: JSON.stringify({
                         product_id: product.id,
@@ -690,13 +690,13 @@ const WishlistPage = () => {
 
                 // Track the add to cart event (non-blocking)
                 const sessionId = getSessionId();
-                const trackUrl = `${window.wishcartWishlist.apiUrl}wishlist/track-cart`;
+                const trackUrl = `${window.gowishcartWishlist.apiUrl}wishlist/track-cart`;
                 
                 fetch(trackUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-WP-Nonce': window.wishcartWishlist.nonce,
+                        'X-WP-Nonce': window.gowishcartWishlist.nonce,
                     },
                     body: JSON.stringify({
                         product_id: product.id,
@@ -865,7 +865,7 @@ const ensureWishlistShareAllowed = () => {
 
     if (isLoading) {
         return (
-            <div className="wishcart-wishlist-page container mx-auto px-4 py-8">
+            <div className="gowishcart-wishlist-page container mx-auto px-4 py-8">
                 <div className="flex items-center justify-center min-h-[400px]">
                     <div className="text-center">
                         <Heart className="w-12 h-12 mx-auto mb-4 animate-pulse text-gray-400" />
@@ -879,7 +879,7 @@ const ensureWishlistShareAllowed = () => {
     // Show error state if there's an error
     if (error) {
         return (
-            <div className="wishcart-wishlist-page container mx-auto px-4 py-8">
+            <div className="gowishcart-wishlist-page container mx-auto px-4 py-8">
                 <Card>
                     <CardContent className="flex flex-col items-center justify-center min-h-[400px] py-12">
                         <Heart className="w-16 h-16 mb-4 text-red-300" />
@@ -904,7 +904,7 @@ const ensureWishlistShareAllowed = () => {
 
     // Create new wishlist
     const createNewWishlist = async () => {
-        if (!window.wishcartWishlist) {
+        if (!window.gowishcartWishlist) {
             return;
         }
 
@@ -918,7 +918,7 @@ const ensureWishlistShareAllowed = () => {
     };
 
     return (
-        <div className="wishcart-wishlist-page">
+        <div className="gowishcart-wishlist-page">
             <SuccessModal
                 isOpen={isSuccessModalOpen}
                 message={successMessage}
@@ -943,7 +943,7 @@ const ensureWishlistShareAllowed = () => {
                             onChange={(selectedOption) => {
                                 if (selectedOption && (selectedOption.value === 'shared' || selectedOption.value === 'public')) {
                                     // Show Pro feature message
-                                    setSuccessMessage('Shared/Public privacy options are available in WishCart Pro. Please upgrade to use this feature.');
+                                    setSuccessMessage('Shared/Public privacy options are available in GoWishCart Pro. Please upgrade to use this feature.');
                                     setIsSuccessModalOpen(true);
                                     return; // Don't change the selection
                                 }
@@ -1122,7 +1122,7 @@ const ensureWishlistShareAllowed = () => {
                     <div className="share-section" style={{position: 'relative', opacity: 0.6, pointerEvents: 'none'}}>
                         <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px'}}>
                             <span className="share-label">Wishlist Share on</span>
-                            <span className="wishcart-badge wishcart-badge-warning" style={{fontSize: '10px', padding: '2px 6px'}}>PRO</span>
+                            <span className="gowishcart-badge gowishcart-badge-warning" style={{fontSize: '10px', padding: '2px 6px'}}>PRO</span>
                         </div>
                         <div className="share-icons">
                             <button

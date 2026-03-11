@@ -2,23 +2,23 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 /**
- * WishCart Item Added Trigger
+ * GoWishCart Item Added Trigger
  *
  * Triggers when a product is added to a wishlist
  *
  * @category WordPress
- * @package  WishCart
- * @author   WishCart Team <support@gowishcart.com>
+ * @package  GoWishCart
+ * @author   GoWishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://gowishcart.com
  */
-class wishcart_Item_Added_Trigger extends \FluentCrm\App\Services\Funnel\BaseTrigger {
+class GoWishCart_Item_Added_Trigger extends \FluentCrm\App\Services\Funnel\BaseTrigger {
 
     /**
      * Constructor
      */
     public function __construct() {
-        $this->triggerName = 'wishcart_item_added';
+        $this->triggerName = 'gowishcart_item_added';
         $this->priority = 20;
         $this->actionArgNum = 1;
         
@@ -32,9 +32,9 @@ class wishcart_Item_Added_Trigger extends \FluentCrm\App\Services\Funnel\BaseTri
      */
     public function getTrigger() {
         return array(
-            'category'    => __( 'WishCart', 'wishcart' ),
-            'label'       => __( 'Item Added to WishCart', 'wishcart' ),
-            'description' => __( 'This funnel will be initiated when a product is added to a wishlist', 'wishcart' ),
+            'category'    => __( 'GoWishCart', 'gowishcart-wishlist-for-fluentcart' ),
+            'label'       => __( 'Item Added to GoWishCart', 'gowishcart-wishlist-for-fluentcart' ),
+            'description' => __( 'This funnel will be initiated when a product is added to a wishlist', 'gowishcart-wishlist-for-fluentcart' ),
             // 'icon'        => 'fc-icon-heart',
         );
     }
@@ -98,8 +98,8 @@ class wishcart_Item_Added_Trigger extends \FluentCrm\App\Services\Funnel\BaseTri
         }
         
         // If still no email, try to get from session_id (guest)
-        if ( empty( $email ) && ! empty( $item_data['session_id'] ) && class_exists( 'wishcart_Guest_Handler' ) ) {
-            $guest_handler = new wishcart_Guest_Handler();
+        if ( empty( $email ) && ! empty( $item_data['session_id'] ) && class_exists( 'GoWishCart_Guest_Handler' ) ) {
+            $guest_handler = new GoWishCart_Guest_Handler();
             $guest = $guest_handler->get_guest_by_session( $item_data['session_id'] );
             if ( $guest && ! empty( $guest['guest_email'] ) && is_email( $guest['guest_email'] ) ) {
                 $email = $guest['guest_email'];
@@ -170,8 +170,8 @@ class wishcart_Item_Added_Trigger extends \FluentCrm\App\Services\Funnel\BaseTri
             }
             
             // If still no email, try to get from session_id (guest)
-            if ( empty( $email ) && ! empty( $item_data['session_id'] ) && class_exists( 'wishcart_Guest_Handler' ) ) {
-                $guest_handler = new wishcart_Guest_Handler();
+            if ( empty( $email ) && ! empty( $item_data['session_id'] ) && class_exists( 'GoWishCart_Guest_Handler' ) ) {
+                $guest_handler = new GoWishCart_Guest_Handler();
                 $guest = $guest_handler->get_guest_by_session( $item_data['session_id'] );
                 if ( $guest && ! empty( $guest['guest_email'] ) && is_email( $guest['guest_email'] ) ) {
                     $email = $guest['guest_email'];

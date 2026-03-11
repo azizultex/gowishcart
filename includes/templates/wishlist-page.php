@@ -3,9 +3,9 @@
  * Template Name: Wishlist Page
  * 
  * This template is used for displaying the wishlist page.
- * The actual content is rendered via the [wishcart_wishlist] shortcode.
+ * The actual content is rendered via the [gowishcart_wishlist] shortcode.
  *
- * @package wishcart
+ * @package GoWishCart
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 get_header(); ?>
 
-<div class="wishcart-wishlist-wrapper">
+<div class="gowishcart-wishlist-wrapper">
     <?php
     while ( have_posts() ) :
         the_post();

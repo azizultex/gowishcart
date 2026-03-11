@@ -7,12 +7,12 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * Handles email notifications for wishlist events
  *
  * @category WordPress
- * @package  WishCart
- * @author   WishCart Team <support@gowishcart.com>
+ * @package  GoWishCart
+ * @author   GoWishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://gowishcart.com
  */
-class wishcart_Notifications_Handler {
+class GoWishCart_Notifications_Handler {
 
     private $wpdb;
     private $notifications_table;
@@ -24,11 +24,11 @@ class wishcart_Notifications_Handler {
     public function __construct() {
         global $wpdb;
         $this->wpdb = $wpdb;
-        $this->notifications_table = $wpdb->prefix . 'wc_wishlist_notifications';
+        $this->notifications_table = $wpdb->prefix . 'gwc_wishlist_notifications';
         
         // Initialize FluentCRM integration if available
-        if (class_exists('WishCart_FluentCRM_Integration')) {
-            $this->fluentcrm = new WishCart_FluentCRM_Integration();
+        if (class_exists('GoWishCart_FluentCRM_Integration')) {
+            $this->fluentcrm = new GoWishCart_FluentCRM_Integration();
         }
     }
 
@@ -44,11 +44,11 @@ class wishcart_Notifications_Handler {
         $valid_types = array('price_drop', 'back_in_stock', 'promotional', 'reminder', 'share_notification', 'estimate_request');
         
         if (!in_array($notification_type, $valid_types)) {
-            return new WP_Error('invalid_type', __('Invalid notification type', 'wishcart'));
+            return new WP_Error('invalid_type', __('Invalid notification type', 'gowishcart-wishlist-for-fluentcart'));
         }
 
         if (!is_email($email_to)) {
-            return new WP_Error('invalid_email', __('Invalid email address', 'wishcart'));
+            return new WP_Error('invalid_email', __('Invalid email address', 'gowishcart-wishlist-for-fluentcart'));
         }
 
         $user_id = isset($data['user_id']) ? intval($data['user_id']) : null;
@@ -76,7 +76,7 @@ class wishcart_Notifications_Handler {
         $result = $this->wpdb->insert($this->notifications_table, $insert_data, $format);
 
         if (false === $result) {
-            return new WP_Error('db_error', __('Failed to queue notification', 'wishcart'));
+            return new WP_Error('db_error', __('Failed to queue notification', 'gowishcart-wishlist-for-fluentcart'));
         }
 
         return $this->wpdb->insert_id;
@@ -96,16 +96,16 @@ class wishcart_Notifications_Handler {
 
         switch ($notification_type) {
             case 'price_drop':
-                $product_name = isset($data['product_name']) ? $data['product_name'] : __('Product', 'wishcart');
+                $product_name = isset($data['product_name']) ? $data['product_name'] : __('Product', 'gowishcart-wishlist-for-fluentcart');
                 $old_price = isset($data['old_price']) ? $data['old_price'] : '';
                 $new_price = isset($data['new_price']) ? $data['new_price'] : '';
                 $product_url = isset($data['product_url']) ? $data['product_url'] : '';
 
                 /* translators: %1$s: Product name */
-                $subject = sprintf(__('Price Drop Alert: %1$s', 'wishcart'), $product_name);
+                $subject = sprintf(__('Price Drop Alert: %1$s', 'gowishcart-wishlist-for-fluentcart'), $product_name);
                 $content = sprintf(
                     /* translators: %1$s: Newline, %2$s: Newline, %3$s: Product name, %4$s: Newline, %5$s: Old price, %6$s: Newline, %7$s: New price, %8$s: Newlines, %9$s: Newline, %10$s: Product URL */
-                    __('Good news! A product in your wishlist has dropped in price.%1$s%2$sProduct: %3$s%4$sOld Price: %5$s%6$sNew Price: %7$s%8$s%9$sView Product: %10$s', 'wishcart'),
+                    __('Good news! A product in your wishlist has dropped in price.%1$s%2$sProduct: %3$s%4$sOld Price: %5$s%6$sNew Price: %7$s%8$s%9$sView Product: %10$s', 'gowishcart-wishlist-for-fluentcart'),
                     "\n\n",
                     "\n",
                     $product_name,
@@ -120,14 +120,14 @@ class wishcart_Notifications_Handler {
                 break;
 
             case 'back_in_stock':
-                $product_name = isset($data['product_name']) ? $data['product_name'] : __('Product', 'wishcart');
+                $product_name = isset($data['product_name']) ? $data['product_name'] : __('Product', 'gowishcart-wishlist-for-fluentcart');
                 $product_url = isset($data['product_url']) ? $data['product_url'] : '';
 
                 /* translators: %1$s: Product name */
-                $subject = sprintf(__('Back in Stock: %1$s', 'wishcart'), $product_name);
+                $subject = sprintf(__('Back in Stock: %1$s', 'gowishcart-wishlist-for-fluentcart'), $product_name);
                 $content = sprintf(
                     /* translators: %1$s: Newline, %2$s: Newline, %3$s: Product name, %4$s: Newlines, %5$s: Newline, %6$s: Product URL */
-                    __('Great news! A product in your wishlist is back in stock.%1$s%2$sProduct: %3$s%4$s%5$sView Product: %6$s', 'wishcart'),
+                    __('Great news! A product in your wishlist is back in stock.%1$s%2$sProduct: %3$s%4$s%5$sView Product: %6$s', 'gowishcart-wishlist-for-fluentcart'),
                     "\n\n",
                     "\n",
                     $product_name,
@@ -138,20 +138,20 @@ class wishcart_Notifications_Handler {
                 break;
 
             case 'promotional':
-                $subject = isset($data['subject']) ? $data['subject'] : __('Special Offer on Your Wishlist', 'wishcart');
+                $subject = isset($data['subject']) ? $data['subject'] : __('Special Offer on Your Wishlist', 'gowishcart-wishlist-for-fluentcart');
                 $content = isset($data['message']) ? $data['message'] : '';
                 break;
 
             case 'reminder':
-                $wishlist_name = isset($data['wishlist_name']) ? $data['wishlist_name'] : __('Your Wishlist', 'wishcart');
+                $wishlist_name = isset($data['wishlist_name']) ? $data['wishlist_name'] : __('Your Wishlist', 'gowishcart-wishlist-for-fluentcart');
                 $wishlist_url = isset($data['wishlist_url']) ? $data['wishlist_url'] : '';
                 $item_count = isset($data['item_count']) ? intval($data['item_count']) : 0;
 
                 /* translators: %1$d: Item count */
-                $subject = sprintf(__('Reminder: You have %1$d items in your wishlist', 'wishcart'), $item_count);
+                $subject = sprintf(__('Reminder: You have %1$d items in your wishlist', 'gowishcart-wishlist-for-fluentcart'), $item_count);
                 $content = sprintf(
                     /* translators: %1$s: Newline, %2$s: Newline, %3$d: Item count, %4$s: Wishlist name, %5$s: Newlines, %6$s: Newline, %7$s: Wishlist URL */
-                    __('Hi there,%1$s%2$sJust a friendly reminder that you have %3$d items waiting in your wishlist "%4$s".%5$s%6$sView Your Wishlist: %7$s', 'wishcart'),
+                    __('Hi there,%1$s%2$sJust a friendly reminder that you have %3$d items waiting in your wishlist "%4$s".%5$s%6$sView Your Wishlist: %7$s', 'gowishcart-wishlist-for-fluentcart'),
                     "\n\n",
                     "\n\n",
                     $item_count,
@@ -163,16 +163,16 @@ class wishcart_Notifications_Handler {
                 break;
 
             case 'share_notification':
-                $shared_by = isset($data['shared_by']) ? $data['shared_by'] : __('Someone', 'wishcart');
-                $wishlist_name = isset($data['wishlist_name']) ? $data['wishlist_name'] : __('a wishlist', 'wishcart');
+                $shared_by = isset($data['shared_by']) ? $data['shared_by'] : __('Someone', 'gowishcart-wishlist-for-fluentcart');
+                $wishlist_name = isset($data['wishlist_name']) ? $data['wishlist_name'] : __('a wishlist', 'gowishcart-wishlist-for-fluentcart');
                 $wishlist_url = isset($data['wishlist_url']) ? $data['wishlist_url'] : '';
                 $message = isset($data['message']) ? $data['message'] : '';
 
                 /* translators: %1$s: Shared by name, %2$s: Wishlist name */
-                $subject = sprintf(__('%1$s shared %2$s with you', 'wishcart'), $shared_by, $wishlist_name);
+                $subject = sprintf(__('%1$s shared %2$s with you', 'gowishcart-wishlist-for-fluentcart'), $shared_by, $wishlist_name);
                 $content = sprintf(
                     /* translators: %1$s: Newline, %2$s: Newline, %3$s: Shared by name, %4$s: Wishlist name */
-                    __('Hi,%1$s%2$s%3$s has shared a wishlist with you: "%4$s"', 'wishcart'),
+                    __('Hi,%1$s%2$s%3$s has shared a wishlist with you: "%4$s"', 'gowishcart-wishlist-for-fluentcart'),
                     "\n\n",
                     "\n\n",
                     $shared_by,
@@ -180,25 +180,25 @@ class wishcart_Notifications_Handler {
                 );
 
                 if (!empty($message)) {
-                    $content .= "\n\n" . __('Message:', 'wishcart') . "\n" . $message;
+                    $content .= "\n\n" . __('Message:', 'gowishcart-wishlist-for-fluentcart') . "\n" . $message;
                 }
 
-                $content .= "\n\n" . __('View Wishlist:', 'wishcart') . "\n" . $wishlist_url;
+                $content .= "\n\n" . __('View Wishlist:', 'gowishcart-wishlist-for-fluentcart') . "\n" . $wishlist_url;
                 break;
 
             case 'estimate_request':
-                $subject = __('Wishlist Estimate Request', 'wishcart');
+                $subject = __('Wishlist Estimate Request', 'gowishcart-wishlist-for-fluentcart');
                 $content = isset($data['message']) ? $data['message'] : '';
                 break;
 
             default:
-                $subject = __('Wishlist Notification', 'wishcart');
+                $subject = __('Wishlist Notification', 'gowishcart-wishlist-for-fluentcart');
                 $content = isset($data['message']) ? $data['message'] : '';
         }
 
         // Add footer
         /* translators: %1$s: Site name */
-        $content .= "\n\n---\n" . sprintf(__('This email was sent by %1$s', 'wishcart'), $site_name);
+        $content .= "\n\n---\n" . sprintf(__('This email was sent by %1$s', 'gowishcart-wishlist-for-fluentcart'), $site_name);
 
         return array(
             'subject' => $subject,
@@ -264,7 +264,7 @@ class wishcart_Notifications_Handler {
         $notification = $this->get_notification($notification_id);
         
         if (!$notification) {
-            return new WP_Error('not_found', __('Notification not found', 'wishcart'));
+            return new WP_Error('not_found', __('Notification not found', 'gowishcart-wishlist-for-fluentcart'));
         }
 
         // Increment attempts
@@ -318,7 +318,7 @@ class wishcart_Notifications_Handler {
             return true;
         } else {
             // Mark as failed
-            $error_message = is_wp_error($result) ? $result->get_error_message() : __('Failed to send email', 'wishcart');
+            $error_message = is_wp_error($result) ? $result->get_error_message() : __('Failed to send email', 'gowishcart-wishlist-for-fluentcart');
             $this->wpdb->update(
                 $this->notifications_table,
                 array(
@@ -342,12 +342,12 @@ class wishcart_Notifications_Handler {
      */
     public function send_via_fluentcrm($notification) {
         if (!$this->fluentcrm || !$this->fluentcrm->is_available()) {
-            return new WP_Error('fluentcrm_not_available', __('FluentCRM is not available', 'wishcart'));
+            return new WP_Error('fluentcrm_not_available', __('FluentCRM is not available', 'gowishcart-wishlist-for-fluentcart'));
         }
 
         $settings = $this->fluentcrm->get_settings();
         if (!$settings['enabled']) {
-            return new WP_Error('integration_disabled', __('FluentCRM integration is disabled', 'wishcart'));
+            return new WP_Error('integration_disabled', __('FluentCRM integration is disabled', 'gowishcart-wishlist-for-fluentcart'));
         }
 
         // Get or create contact
@@ -391,7 +391,7 @@ class wishcart_Notifications_Handler {
         }
 
         if (!$contact_id) {
-            return new WP_Error('no_contact', __('Could not create or find contact', 'wishcart'));
+            return new WP_Error('no_contact', __('Could not create or find contact', 'gowishcart-wishlist-for-fluentcart'));
         }
 
         // Send email via FluentCRM
@@ -527,7 +527,7 @@ class wishcart_Notifications_Handler {
         );
 
         if (false === $result) {
-            return new WP_Error('db_error', __('Failed to cancel notification', 'wishcart'));
+            return new WP_Error('db_error', __('Failed to cancel notification', 'gowishcart-wishlist-for-fluentcart'));
         }
 
         return true;
@@ -546,8 +546,8 @@ class wishcart_Notifications_Handler {
         );
 
         // Get all active wishlist items with prices
-        $items_table = $this->wpdb->prefix . 'wc_wishlist_items';
-        $wishlists_table = $this->wpdb->prefix . 'wc_wishlists';
+        $items_table = GoWishCart_Table_Names::get_table( GoWishCart_Table_Names::WISHLIST_ITEMS );
+        $wishlists_table = GoWishCart_Table_Names::get_table( GoWishCart_Table_Names::WISHLISTS );
 
         // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         $items = $this->wpdb->get_results(
@@ -562,7 +562,7 @@ class wishcart_Notifications_Handler {
         // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
         foreach ($items as $item) {
-            $product = WishCart_FluentCart_Helper::get_product($item['product_id']);
+            $product = GoWishCart_FluentCart_Helper::get_product($item['product_id']);
             
             if (!$product) {
                 continue;
@@ -612,11 +612,11 @@ class wishcart_Notifications_Handler {
                                 'old_price' => $original_price,
                                 'new_price' => $current_price,
                             );
-                            do_action('wishcart_price_drop_detected', $price_data);
+                            do_action('gowishcart_price_drop_detected', $price_data);
 
                             // Fire FluentCRM automation trigger
-                            if ( class_exists( 'WishCart_FluentCRM_Triggers' ) ) {
-                                WishCart_FluentCRM_Triggers::fire_trigger( 'wishcart_price_drop', $price_data );
+                            if ( class_exists( 'GoWishCart_FluentCRM_Triggers' ) ) {
+                                GoWishCart_FluentCRM_Triggers::fire_trigger( 'gowishcart_price_drop', $price_data );
                             }
                         }
                     }
@@ -640,8 +640,8 @@ class wishcart_Notifications_Handler {
         );
 
         // Get all wishlist items
-        $items_table = $this->wpdb->prefix . 'wc_wishlist_items';
-        $wishlists_table = $this->wpdb->prefix . 'wc_wishlists';
+        $items_table = GoWishCart_Table_Names::get_table( GoWishCart_Table_Names::WISHLIST_ITEMS );
+        $wishlists_table = GoWishCart_Table_Names::get_table( GoWishCart_Table_Names::WISHLISTS );
 
         // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         $items = $this->wpdb->get_results(
@@ -655,7 +655,7 @@ class wishcart_Notifications_Handler {
         // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
         foreach ($items as $item) {
-            $product = WishCart_FluentCart_Helper::get_product($item['product_id']);
+            $product = GoWishCart_FluentCart_Helper::get_product($item['product_id']);
             
             if (!$product) {
                 continue;
@@ -709,11 +709,11 @@ class wishcart_Notifications_Handler {
                                 'product_name' => $product->get_name(),
                                 'product_url' => get_permalink($item['product_id']),
                             );
-                            do_action('wishcart_back_in_stock', $stock_data);
+                            do_action('gowishcart_back_in_stock', $stock_data);
 
                             // Fire FluentCRM automation trigger
-                            if ( class_exists( 'WishCart_FluentCRM_Triggers' ) ) {
-                                WishCart_FluentCRM_Triggers::fire_trigger( 'wishcart_back_in_stock', $stock_data );
+                            if ( class_exists( 'GoWishCart_FluentCRM_Triggers' ) ) {
+                                GoWishCart_FluentCRM_Triggers::fire_trigger( 'gowishcart_back_in_stock', $stock_data );
                             }
                         }
                     }

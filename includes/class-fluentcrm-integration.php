@@ -7,12 +7,12 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * Handles integration with FluentCRM for automated marketing campaigns
  *
  * @category WordPress
- * @package  WishCart
- * @author   WishCart Team <support@gowishcart.com>
+ * @package  GoWishCart
+ * @author   GoWishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://gowishcart.com
  */
-class WishCart_FluentCRM_Integration {
+class GoWishCart_FluentCRM_Integration {
 
     private $wpdb;
     private $is_available = null;
@@ -151,7 +151,7 @@ class WishCart_FluentCRM_Integration {
             'fluentcrm_custom_tag_format' => '',
         );
 
-        $settings = get_option('wishcart_fluentcrm_settings', array());
+        $settings = get_option('gowishcart_fluentcrm_settings', array());
         $settings = wp_parse_args($settings, $defaults);
         
         // When integration is enabled, automatically enable all features
@@ -232,7 +232,7 @@ class WishCart_FluentCRM_Integration {
             $settings['fluentcrm_custom_tag_format'] = sanitize_textarea_field($settings['fluentcrm_custom_tag_format']);
         }
 
-        return update_option('wishcart_fluentcrm_settings', $settings);
+        return update_option('gowishcart_fluentcrm_settings', $settings);
     }
 
     /**
@@ -245,12 +245,12 @@ class WishCart_FluentCRM_Integration {
      */
     public function create_or_update_contact($user_id = null, $email = null, $data = array()) {
         if (!$this->is_available()) {
-            return new WP_Error('fluentcrm_not_available', __('FluentCRM is not available', 'wishcart'));
+            return new WP_Error('fluentcrm_not_available', __('FluentCRM is not available', 'gowishcart-wishlist-for-fluentcart'));
         }
 
         $settings = $this->get_settings();
         if (!$settings['enabled']) {
-            return new WP_Error('integration_disabled', __('FluentCRM integration is disabled', 'wishcart'));
+            return new WP_Error('integration_disabled', __('FluentCRM integration is disabled', 'gowishcart-wishlist-for-fluentcart'));
         }
 
         // Get email from user if not provided
@@ -262,7 +262,7 @@ class WishCart_FluentCRM_Integration {
         }
 
         if (empty($email) || !is_email($email)) {
-            return new WP_Error('invalid_email', __('Invalid email address', 'wishcart'));
+            return new WP_Error('invalid_email', __('Invalid email address', 'gowishcart-wishlist-for-fluentcart'));
         }
 
         try {
@@ -375,7 +375,7 @@ class WishCart_FluentCRM_Integration {
                 return $contact_id;
             }
 
-            return new WP_Error('fluentcrm_api_not_found', __('FluentCRM API not found', 'wishcart'));
+            return new WP_Error('fluentcrm_api_not_found', __('FluentCRM API not found', 'gowishcart-wishlist-for-fluentcart'));
         } catch (Exception $e) {
             return new WP_Error('fluentcrm_error', $e->getMessage());
         }
@@ -390,7 +390,7 @@ class WishCart_FluentCRM_Integration {
      */
     public function attach_tags($contact_id, $tag_ids) {
         if (!$this->is_available()) {
-            return new WP_Error('fluentcrm_not_available', __('FluentCRM is not available', 'wishcart'));
+            return new WP_Error('fluentcrm_not_available', __('FluentCRM is not available', 'gowishcart-wishlist-for-fluentcart'));
         }
 
         try {
@@ -426,7 +426,7 @@ class WishCart_FluentCRM_Integration {
                     return true;
                 }
             }
-            return new WP_Error('contact_not_found', __('Contact not found', 'wishcart'));
+            return new WP_Error('contact_not_found', __('Contact not found', 'gowishcart-wishlist-for-fluentcart'));
         } catch (Exception $e) {
             return new WP_Error('fluentcrm_error', $e->getMessage());
         }
@@ -441,7 +441,7 @@ class WishCart_FluentCRM_Integration {
      */
     public function attach_lists($contact_id, $list_ids) {
         if (!$this->is_available()) {
-            return new WP_Error('fluentcrm_not_available', __('FluentCRM is not available', 'wishcart'));
+            return new WP_Error('fluentcrm_not_available', __('FluentCRM is not available', 'gowishcart-wishlist-for-fluentcart'));
         }
 
         try {
@@ -474,7 +474,7 @@ class WishCart_FluentCRM_Integration {
                     return true;
                 }
             }
-            return new WP_Error('contact_not_found', __('Contact not found', 'wishcart'));
+            return new WP_Error('contact_not_found', __('Contact not found', 'gowishcart-wishlist-for-fluentcart'));
         } catch (Exception $e) {
             return new WP_Error('fluentcrm_error', $e->getMessage());
         }
@@ -547,19 +547,19 @@ class WishCart_FluentCRM_Integration {
      */
     public function send_email($contact_id, $subject, $body, $options = array()) {
         if (!$this->is_available()) {
-            return new WP_Error('fluentcrm_not_available', __('FluentCRM is not available', 'wishcart'));
+            return new WP_Error('fluentcrm_not_available', __('FluentCRM is not available', 'gowishcart-wishlist-for-fluentcart'));
         }
 
         try {
             // Get contact
             $contact = $this->get_contact_by_id($contact_id);
             if (!$contact) {
-                return new WP_Error('contact_not_found', __('Contact not found', 'wishcart'));
+                return new WP_Error('contact_not_found', __('Contact not found', 'gowishcart-wishlist-for-fluentcart'));
             }
 
             $email_address = is_object($contact) ? $contact->email : (isset($contact['email']) ? $contact['email'] : null);
             if (!$email_address) {
-                return new WP_Error('no_email', __('Contact email not found', 'wishcart'));
+                return new WP_Error('no_email', __('Contact email not found', 'gowishcart-wishlist-for-fluentcart'));
             }
 
             // Convert plain text body to HTML if needed
@@ -648,7 +648,7 @@ class WishCart_FluentCRM_Integration {
             // Method 5: Use FluentCRM action hook
             if (!$email_sent) {
                 try {
-                    do_action('wishcart_fluentcrm_send_custom_email', array(
+                    do_action('gowishcart_fluentcrm_send_custom_email', array(
                         'contact_id' => $contact_id,
                         'to' => $email_address,
                         'subject' => $subject,
@@ -677,7 +677,7 @@ class WishCart_FluentCRM_Integration {
             if ($email_sent) {
                 return true;
             } else {
-                $error_message = $last_error ? $last_error : __('Failed to send email', 'wishcart');
+                $error_message = $last_error ? $last_error : __('Failed to send email', 'gowishcart-wishlist-for-fluentcart');
                 return new WP_Error('send_failed', $error_message);
             }
         } catch (Exception $e) {
@@ -695,33 +695,33 @@ class WishCart_FluentCRM_Integration {
     public function sync_wishlist_user($user_id, $wishlist_data = array()) {
         $settings = $this->get_settings();
         if (!$settings['enabled'] || !$settings['auto_create_contacts']) {
-            return new WP_Error('sync_disabled', __('Contact sync is disabled', 'wishcart'));
+            return new WP_Error('sync_disabled', __('Contact sync is disabled', 'gowishcart-wishlist-for-fluentcart'));
         }
 
         $user = get_userdata($user_id);
         if (!$user) {
-            return new WP_Error('user_not_found', __('User not found', 'wishcart'));
+            return new WP_Error('user_not_found', __('User not found', 'gowishcart-wishlist-for-fluentcart'));
         }
 
         // Get wishlist stats
         global $wpdb;
-        $wishlists_table = $wpdb->prefix . 'wc_wishlists';
-        $items_table = $wpdb->prefix . 'wc_wishlist_items';
+        $wishlists_table = $wpdb->prefix . 'gwc_wishlists';
+        $items_table = $wpdb->prefix . 'gwc_wishlist_items';
         
         // Get wishlist count with caching
-        $wishlist_cache_key = 'wishcart_fluentcrm_wishlist_count_' . $user_id;
-        $wishlist_count = wp_cache_get($wishlist_cache_key, 'wishcart_fluentcrm');
+        $wishlist_cache_key = 'gowishcart_fluentcrm_wishlist_count_' . $user_id;
+        $wishlist_count = wp_cache_get($wishlist_cache_key, 'gowishcart_fluentcrm');
         
         if (false === $wishlist_count) {
             $wishlist_query = "SELECT COUNT(*) FROM {$wishlists_table} WHERE user_id = %d AND status = 'active'";
             // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Query is prepared on next line, table name must be interpolated.
             $wishlist_count = $wpdb->get_var($wpdb->prepare($wishlist_query, $user_id)); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,PluginCheck.Security.DirectDB.UnescapedDBParameter
-            wp_cache_set($wishlist_cache_key, $wishlist_count, 'wishcart_fluentcrm', 300);
+            wp_cache_set($wishlist_cache_key, $wishlist_count, 'gowishcart_fluentcrm', 300);
         }
         
         // Get items count with caching
-        $items_cache_key = 'wishcart_fluentcrm_items_count_' . $user_id;
-        $items_count = wp_cache_get($items_cache_key, 'wishcart_fluentcrm');
+        $items_cache_key = 'gowishcart_fluentcrm_items_count_' . $user_id;
+        $items_count = wp_cache_get($items_cache_key, 'gowishcart_fluentcrm');
         
         if (false === $items_count) {
             $items_query = "SELECT COUNT(*) FROM {$items_table} wi
@@ -729,7 +729,7 @@ class WishCart_FluentCRM_Integration {
                 WHERE w.user_id = %d AND wi.status = 'active' AND w.status = 'active'";
             // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Query is prepared on next line, table names must be interpolated.
             $items_count = $wpdb->get_var($wpdb->prepare($items_query, $user_id)); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,PluginCheck.Security.DirectDB.UnescapedDBParameter
-            wp_cache_set($items_cache_key, $items_count, 'wishcart_fluentcrm', 300);
+            wp_cache_set($items_cache_key, $items_count, 'gowishcart_fluentcrm', 300);
         }
 
         // Prepare contact data
@@ -850,11 +850,11 @@ class WishCart_FluentCRM_Integration {
      */
     public function create_list_if_not_exists($list_name) {
         if (!$this->is_available()) {
-            return new WP_Error('fluentcrm_not_available', __('FluentCRM is not available', 'wishcart'));
+            return new WP_Error('fluentcrm_not_available', __('FluentCRM is not available', 'gowishcart-wishlist-for-fluentcart'));
         }
 
         if (empty($list_name)) {
-            return new WP_Error('invalid_list_name', __('Invalid list name', 'wishcart'));
+            return new WP_Error('invalid_list_name', __('Invalid list name', 'gowishcart-wishlist-for-fluentcart'));
         }
 
         try {
@@ -876,10 +876,10 @@ class WishCart_FluentCRM_Integration {
                     return $list->id;
                 }
 
-                return new WP_Error('list_creation_failed', __('Failed to create list', 'wishcart'));
+                return new WP_Error('list_creation_failed', __('Failed to create list', 'gowishcart-wishlist-for-fluentcart'));
             }
 
-            return new WP_Error('fluentcrm_api_not_found', __('FluentCRM API not found', 'wishcart'));
+            return new WP_Error('fluentcrm_api_not_found', __('FluentCRM API not found', 'gowishcart-wishlist-for-fluentcart'));
         } catch (Exception $e) {
             return new WP_Error('fluentcrm_error', $e->getMessage());
         }

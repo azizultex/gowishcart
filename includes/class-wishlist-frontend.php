@@ -7,12 +7,12 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * Handles frontend wishlist button rendering and hooks
  *
  * @category WordPress
- * @package  WishCart
- * @author   WishCart Team <support@gowishcart.com>
+ * @package  GoWishCart
+ * @author   GoWishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://gowishcart.com
  */
-class WishCart_Wishlist_Frontend {
+class GoWishCart_Wishlist_Frontend {
 
     private $handler;
 
@@ -20,7 +20,7 @@ class WishCart_Wishlist_Frontend {
      * Constructor
      */
     public function __construct() {
-        $this->handler = new WishCart_Wishlist_Handler();
+        $this->handler = new GoWishCart_Wishlist_Handler();
         
         // Enqueue scripts and styles
         add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
@@ -43,7 +43,7 @@ class WishCart_Wishlist_Frontend {
      */
     private function get_button_position( $wishlist_settings = null ) {
         if ( null === $wishlist_settings ) {
-            $settings = get_option( 'wishcart_settings', array() );
+            $settings = get_option( 'gowishcart_settings', array() );
             $wishlist_settings = isset( $settings['wishlist'] ) ? $settings['wishlist'] : array();
         }
 
@@ -70,7 +70,7 @@ class WishCart_Wishlist_Frontend {
      * @return void
      */
     public function enqueue_scripts() {
-        $settings = get_option( 'wishcart_settings', array() );
+        $settings = get_option( 'gowishcart_settings', array() );
         $wishlist_settings = isset( $settings['wishlist'] ) ? $settings['wishlist'] : array();
 
         if ( empty( $wishlist_settings['enabled'] ) ) {
@@ -79,18 +79,18 @@ class WishCart_Wishlist_Frontend {
 
         // Enqueue wishlist frontend script
         wp_enqueue_script(
-            'wishcart-wishlist-frontend',
-            WishCart_PLUGIN_URL . 'build/wishlist-frontend.js',
+            'gowishcart-wishlist-frontend',
+            GoWishCart_PLUGIN_URL . 'build/wishlist-frontend.js',
             array( 'wp-element', 'wp-api-fetch' ),
-            WishCart_VERSION,
+            GoWishCart_VERSION,
             true
         );
 
         wp_enqueue_style(
-            'wishcart-wishlist-frontend',
-            WishCart_PLUGIN_URL . 'build/wishlist-frontend.css',
+            'gowishcart-wishlist-frontend',
+            GoWishCart_PLUGIN_URL . 'build/wishlist-frontend.css',
             array(),
-            WishCart_VERSION
+            GoWishCart_VERSION
         );
 
         // Localize script
@@ -98,14 +98,14 @@ class WishCart_Wishlist_Frontend {
         
         // Get button customization settings
         $button_customization = isset( $wishlist_settings['button_customization'] ) ? $wishlist_settings['button_customization'] : array();
-        $default_customization = WishCart_Wishlist_Page::get_default_settings();
+        $default_customization = GoWishCart_Wishlist_Page::get_default_settings();
         $button_customization = wp_parse_args( $button_customization, isset( $default_customization['button_customization'] ) ? $default_customization['button_customization'] : array() );
         
         wp_localize_script(
-            'wishcart-wishlist-frontend',
-            'wishcartWishlist',
+            'gowishcart-wishlist-frontend',
+            'gowishcartWishlist',
             array(
-                'apiUrl' => trailingslashit( rest_url( 'wishcart/v1' ) ),
+                'apiUrl' => trailingslashit( rest_url( 'gowishcart/v1' ) ),
                 'ajaxUrl' => admin_url( 'admin-ajax.php' ),
                 'nonce' => wp_create_nonce( 'wp_rest' ),
                 'sessionId' => $session_id,
@@ -135,7 +135,7 @@ class WishCart_Wishlist_Frontend {
      * @return void
      */
     private function add_product_hooks() {
-        $settings = get_option( 'wishcart_settings', array() );
+        $settings = get_option( 'gowishcart_settings', array() );
         $wishlist_settings = isset( $settings['wishlist'] ) ? $settings['wishlist'] : array();
         
         if ( empty( $wishlist_settings['enabled'] ) ) {
@@ -203,7 +203,7 @@ class WishCart_Wishlist_Frontend {
         }
 
         // Check if it's a FluentCart product
-        $product_type = WishCart_FluentCart_Helper::get_product_post_type();
+        $product_type = GoWishCart_FluentCart_Helper::get_product_post_type();
         $post_type = get_post_type( $product_id );
         
         if ( $post_type !== $product_type && $post_type !== 'product' ) {
@@ -212,8 +212,8 @@ class WishCart_Wishlist_Frontend {
 
         $position = $this->get_button_position();
         $classes = array(
-            'wishcart-wishlist-button-container',
-            'wishcart-position-' . $position,
+            'gowishcart-wishlist-button-container',
+            'gowishcart-position-' . $position,
         );
 
         // Render button container (React will mount here)
@@ -229,7 +229,7 @@ class WishCart_Wishlist_Frontend {
      */
     public function sync_on_login( $user_login, $user ) {
         // Get session ID from cookie
-        $cookie_name = 'wishcart_session_id';
+        $cookie_name = 'gowishcart_session_id';
         if ( ! isset( $_COOKIE[ $cookie_name ] ) || empty( $_COOKIE[ $cookie_name ] ) ) {
             return;
         }
@@ -246,20 +246,20 @@ class WishCart_Wishlist_Frontend {
      * @return void
      */
     public function output_custom_css() {
-        $settings = get_option( 'wishcart_settings', array() );
+        $settings = get_option( 'gowishcart_settings', array() );
         $wishlist_settings = isset( $settings['wishlist'] ) ? $settings['wishlist'] : array();
         $button_customization = isset( $wishlist_settings['button_customization'] ) ? $wishlist_settings['button_customization'] : array();
         
         $css_parts = array();
         
         // Generate CSS from product_page customization settings
-        // Note: Product listing styles come after and have higher specificity (.wishcart-card-container .wishcart-wishlist-button)
+        // Note: Product listing styles come after and have higher specificity (.gowishcart-card-container .gowishcart-wishlist-button)
         $product_page = isset( $button_customization['product_page'] ) ? $button_customization['product_page'] : array();
         if ( ! empty( $product_page ) ) {
             $css_parts[] = '/* Button Styles */';
-            // Buttons are those NOT inside .wishcart-card-container
+            // Buttons are those NOT inside .gowishcart-card-container
             // Since listing styles come after with higher specificity, they will override when applicable
-            $css_parts[] = '.wishcart-wishlist-button-container:not(.wishcart-card-container) .wishcart-wishlist-button {';
+            $css_parts[] = '.gowishcart-wishlist-button-container:not(.gowishcart-card-container) .gowishcart-wishlist-button {';
 
             if ( ! empty( $product_page['backgroundColor'] ) ) {
                 $background = $product_page['backgroundColor'];
@@ -287,7 +287,7 @@ class WishCart_Wishlist_Frontend {
             
             // Hover state
             if ( ! empty( $product_page['backgroundHoverColor'] ) || ! empty( $product_page['buttonTextHoverColor'] ) ) {
-                $css_parts[] = '.wishcart-wishlist-button-container:not(.wishcart-card-container) .wishcart-wishlist-button:hover:not(:disabled) {';
+                $css_parts[] = '.gowishcart-wishlist-button-container:not(.gowishcart-card-container) .gowishcart-wishlist-button:hover:not(:disabled) {';
                 if ( ! empty( $product_page['backgroundHoverColor'] ) ) {
                     $background_hover = $product_page['backgroundHoverColor'];
                     // Use background for gradients, background-color for solid colors
@@ -305,7 +305,7 @@ class WishCart_Wishlist_Frontend {
             
             // Icon size for product page
             if ( ! empty( $product_page['iconSize'] ) ) {
-                $css_parts[] = '.wishcart-wishlist-button-container:not(.wishcart-card-container) .wishcart-wishlist-button .wishcart-wishlist-button__icon {';
+                $css_parts[] = '.gowishcart-wishlist-button-container:not(.gowishcart-card-container) .gowishcart-wishlist-button .gowishcart-wishlist-button__icon {';
                 $css_parts[] = '  width: ' . esc_attr( $product_page['iconSize'] ) . ';';
                 $css_parts[] = '  height: ' . esc_attr( $product_page['iconSize'] ) . ';';
                 $css_parts[] = '}';
@@ -317,8 +317,8 @@ class WishCart_Wishlist_Frontend {
         $product_listing = isset( $button_customization['product_listing'] ) ? $button_customization['product_listing'] : array();
         if ( ! empty( $product_listing ) ) {
             $css_parts[] = '/* Product Listing Button Styles */';
-            // More specific selector will override product page styles when button is inside .wishcart-card-container
-            $css_parts[] = '.wishcart-card-container .wishcart-wishlist-button {';
+            // More specific selector will override product page styles when button is inside .gowishcart-card-container
+            $css_parts[] = '.gowishcart-card-container .gowishcart-wishlist-button {';
 
             if ( ! empty( $product_listing['backgroundColor'] ) ) {
                 $background = $product_listing['backgroundColor'];
@@ -346,7 +346,7 @@ class WishCart_Wishlist_Frontend {
             
             // Hover state for product listing
             if ( ! empty( $product_listing['backgroundHoverColor'] ) || ! empty( $product_listing['buttonTextHoverColor'] ) ) {
-                $css_parts[] = '.wishcart-card-container .wishcart-wishlist-button:hover:not(:disabled) {';
+                $css_parts[] = '.gowishcart-card-container .gowishcart-wishlist-button:hover:not(:disabled) {';
                 if ( ! empty( $product_listing['backgroundHoverColor'] ) ) {
                     $background_hover = $product_listing['backgroundHoverColor'];
                     // Use background for gradients, background-color for solid colors
@@ -364,7 +364,7 @@ class WishCart_Wishlist_Frontend {
             
             // Icon size for product listing
             if ( ! empty( $product_listing['iconSize'] ) ) {
-                $css_parts[] = '.wishcart-card-container .wishcart-wishlist-button .wishcart-wishlist-button__icon {';
+                $css_parts[] = '.gowishcart-card-container .gowishcart-wishlist-button .gowishcart-wishlist-button__icon {';
                 $css_parts[] = '  width: ' . esc_attr( $product_listing['iconSize'] ) . ';';
                 $css_parts[] = '  height: ' . esc_attr( $product_listing['iconSize'] ) . ';';
                 $css_parts[] = '}';
@@ -373,23 +373,18 @@ class WishCart_Wishlist_Frontend {
         
         // Ensure the style is enqueued first
         wp_enqueue_style(
-            'wishcart-wishlist-frontend',
-            WishCart_PLUGIN_URL . 'build/wishlist-frontend.css',
+            'gowishcart-wishlist-frontend',
+            GoWishCart_PLUGIN_URL . 'build/wishlist-frontend.css',
             array(),
-            WishCart_VERSION
+            GoWishCart_VERSION
         );
         
-        // Output generated CSS using wp_add_inline_style
+        // Output generated CSS using wp_add_inline_style.
+        // Individual property values are escaped via esc_attr() when appended to $css_parts above.
+        // wp_strip_all_tags() is applied late — directly at the point of output — as required by
+        // WordPress coding standards, to strip any stray markup from the assembled string.
         if ( ! empty( $css_parts ) ) {
-            $generated_css = implode( "\n", $css_parts );
-            wp_add_inline_style( 'wishcart-wishlist-frontend', $generated_css );
-        }
-        
-        // Output custom CSS from text field using wp_add_inline_style
-        $custom_css = isset( $wishlist_settings['custom_css'] ) ? $wishlist_settings['custom_css'] : '';
-        if ( ! empty( $custom_css ) ) {
-            $sanitized_css = wp_strip_all_tags( $custom_css );
-            wp_add_inline_style( 'wishcart-wishlist-frontend', $sanitized_css );
+            wp_add_inline_style( 'gowishcart-wishlist-frontend', wp_strip_all_tags( implode( "\n", $css_parts ) ) );
         }
     }
 
@@ -399,7 +394,7 @@ class WishCart_Wishlist_Frontend {
      * @return bool
      */
     private function is_product_page() {
-        $product_type = WishCart_FluentCart_Helper::get_product_post_type();
+        $product_type = GoWishCart_FluentCart_Helper::get_product_post_type();
         
         return is_singular( $product_type ) || 
                is_singular( 'product' ) || 

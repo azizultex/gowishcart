@@ -25,7 +25,7 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
 
     // Get session ID from cookie or create one
     const getSessionId = () => {
-        if (window.wishcartWishlist?.isLoggedIn) {
+        if (window.gowishcartWishlist?.isLoggedIn) {
             return null; // Logged in users don't need session ID
         }
         
@@ -33,23 +33,23 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
         const cookies = document.cookie.split(';');
         for (let cookie of cookies) {
             const [name, value] = cookie.trim().split('=');
-            if (name === 'wishcart_session_id') {
+            if (name === 'gowishcart_session_id') {
                 return value;
             }
         }
 
-        if (window.wishcartWishlist?.sessionId) {
-            return window.wishcartWishlist.sessionId;
+        if (window.gowishcartWishlist?.sessionId) {
+            return window.gowishcartWishlist.sessionId;
         }
 
         // Create new session ID if not exists
-        const sessionId = 'wc_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        const sessionId = 'gwc_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
         const expiryDays = 30;
         const expiryDate = new Date();
         expiryDate.setTime(expiryDate.getTime() + (expiryDays * 24 * 60 * 60 * 1000));
-        document.cookie = `wishcart_session_id=${sessionId};expires=${expiryDate.toUTCString()};path=/;SameSite=Lax`;
-        if (window.wishcartWishlist) {
-            window.wishcartWishlist.sessionId = sessionId;
+        document.cookie = `gowishcart_session_id=${sessionId};expires=${expiryDate.toUTCString()};path=/;SameSite=Lax`;
+        if (window.gowishcartWishlist) {
+            window.gowishcartWishlist.sessionId = sessionId;
         }
 
         return sessionId;
@@ -57,17 +57,17 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
 
     // Check if guest has email via API
     const checkGuestEmail = async () => {
-        if (window.wishcartWishlist?.isLoggedIn) {
+        if (window.gowishcartWishlist?.isLoggedIn) {
             return true; // Logged in users don't need email check
         }
 
         try {
             const sessionId = getSessionId();
-            const url = `${window.wishcartWishlist.apiUrl}guest/check-email?session_id=${sessionId}`;
+            const url = `${window.gowishcartWishlist.apiUrl}guest/check-email?session_id=${sessionId}`;
             
             const response = await fetch(url, {
                 headers: {
-                    'X-WP-Nonce': window.wishcartWishlist.nonce,
+                    'X-WP-Nonce': window.gowishcartWishlist.nonce,
                 },
             });
 
@@ -87,7 +87,7 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
 
     // Fetch variants from API with caching
     const fetchVariantsFromAPI = useCallback(async () => {
-        if (!productId || !window.wishcartWishlist) {
+        if (!productId || !window.gowishcartWishlist) {
             return [];
         }
 
@@ -120,10 +120,10 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
 
         try {
             // Fetch variants from API endpoint
-            const url = `${window.wishcartWishlist.apiUrl}product/${productId}/variants`;
+            const url = `${window.gowishcartWishlist.apiUrl}product/${productId}/variants`;
             const response = await fetch(url, {
                 headers: {
-                    'X-WP-Nonce': window.wishcartWishlist.nonce,
+                    'X-WP-Nonce': window.gowishcartWishlist.nonce,
                 },
                 signal: abortControllerRef.current.signal,
             });
@@ -737,18 +737,18 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
 
     // Function to check wishlist status
     const checkWishlistStatus = useCallback(async (variationId) => {
-            if (!productId || !window.wishcartWishlist) {
+            if (!productId || !window.gowishcartWishlist) {
                 setIsLoading(false);
                 return;
             }
 
             try {
                 const sessionId = getSessionId();
-            const url = `${window.wishcartWishlist.apiUrl}wishlist/check/${productId}${sessionId ? `?session_id=${sessionId}` : ''}${variationId ? `&variation_id=${variationId}` : ''}`;
+            const url = `${window.gowishcartWishlist.apiUrl}wishlist/check/${productId}${sessionId ? `?session_id=${sessionId}` : ''}${variationId ? `&variation_id=${variationId}` : ''}`;
                 
                 const response = await fetch(url, {
                     headers: {
-                        'X-WP-Nonce': window.wishcartWishlist.nonce,
+                        'X-WP-Nonce': window.gowishcartWishlist.nonce,
                     },
                 });
 
@@ -880,19 +880,19 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
             }
         };
 
-        window.addEventListener('wishcart:item-added', handleItemAdded);
-        window.addEventListener('wishcart:item-removed', handleItemRemoved);
+        window.addEventListener('gowishcart:item-added', handleItemAdded);
+        window.addEventListener('gowishcart:item-removed', handleItemRemoved);
 
         return () => {
-            window.removeEventListener('wishcart:item-added', handleItemAdded);
-            window.removeEventListener('wishcart:item-removed', handleItemRemoved);
+            window.removeEventListener('gowishcart:item-added', handleItemAdded);
+            window.removeEventListener('gowishcart:item-removed', handleItemRemoved);
         };
     }, [productId, currentVariationId, checkWishlistStatus]);
 
     // Add product directly to default wishlist (when multiple wishlists disabled)
     const addToDefaultWishlist = async (skipEmailCheck = false) => {
         // Check if guest has email (unless we're executing after email was provided)
-        if (!skipEmailCheck && !window.wishcartWishlist?.isLoggedIn) {
+        if (!skipEmailCheck && !window.gowishcartWishlist?.isLoggedIn) {
             const hasEmail = await checkGuestEmail();
             if (!hasEmail) {
                 // Store the pending action and show email modal
@@ -905,7 +905,7 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
         setIsAdding(true);
         try {
             const sessionId = getSessionId();
-            const url = `${window.wishcartWishlist.apiUrl}wishlist/add`;
+            const url = `${window.gowishcartWishlist.apiUrl}wishlist/add`;
             
             // Detect current variant before adding
             const variationId = detectCurrentVariant();
@@ -915,7 +915,7 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-WP-Nonce': window.wishcartWishlist.nonce,
+                    'X-WP-Nonce': window.gowishcartWishlist.nonce,
                 },
                 body: JSON.stringify({
                     product_id: productId,
@@ -941,7 +941,7 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
 
     // Toggle wishlist
     const toggleWishlist = async () => {
-        if (isAdding || !productId || !window.wishcartWishlist) {
+        if (isAdding || !productId || !window.gowishcartWishlist) {
             return;
         }
 
@@ -951,13 +951,13 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
             try {
                 const sessionId = getSessionId();
                 const variationId = currentVariationId || 0;
-                const url = `${window.wishcartWishlist.apiUrl}wishlist/remove`;
+                const url = `${window.gowishcartWishlist.apiUrl}wishlist/remove`;
                 
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-WP-Nonce': window.wishcartWishlist.nonce,
+                        'X-WP-Nonce': window.gowishcartWishlist.nonce,
                     },
                     body: JSON.stringify({
                         product_id: productId,
@@ -976,7 +976,7 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
             }
         } else {
             // For guests, check if they have email first
-            if (!window.wishcartWishlist?.isLoggedIn) {
+            if (!window.gowishcartWishlist?.isLoggedIn) {
                 const hasEmail = await checkGuestEmail();
                 if (!hasEmail) {
                     // Store the pending action and show email modal
@@ -1022,7 +1022,7 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
     };
 
     // Get customization settings
-    const customization = window.wishcartWishlist?.buttonCustomization || {};
+    const customization = window.gowishcartWishlist?.buttonCustomization || {};
     const colors = customization.colors || {}; // Keep for backwards compatibility
     const productPage = customization.product_page || {};
     const productListing = customization.product_listing || {};
@@ -1053,9 +1053,9 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
         if (typeof document === 'undefined') return false;
         const container = document.querySelector(`[data-product-id="${productId}"]`);
         if (!container) return false;
-        return container.closest('.wishcart-card-container') !== null || 
+        return container.closest('.gowishcart-card-container') !== null || 
                container.closest('.fct-product-card, .fc-product-card') !== null ||
-               container.classList.contains('wishcart-card-container');
+               container.classList.contains('gowishcart-card-container');
     }, [productId]);
 
     // Support both old and new icon structure
@@ -1087,12 +1087,12 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
     }
 
     // Get button labels
-    const defaultAddLabel = __('Add to Wishlist', 'wishcart');
-    const defaultSavedLabel = __('Saved to Wishlist', 'wishcart');
+    const defaultAddLabel = __('Add to Wishlist', 'gowishcart-wishlist-for-fluentcart');
+    const defaultSavedLabel = __('Saved to Wishlist', 'gowishcart-wishlist-for-fluentcart');
     const buttonLabel = isInWishlist 
         ? (labels.saved || defaultSavedLabel)
         : (labels.add || defaultAddLabel);
-    const srLabel = isInWishlist ? __('Remove from wishlist', 'wishcart') : __('Add to wishlist', 'wishcart');
+    const srLabel = isInWishlist ? __('Remove from wishlist', 'gowishcart-wishlist-for-fluentcart') : __('Add to wishlist', 'gowishcart-wishlist-for-fluentcart');
 
     // Get icon component based on wishlist state
     const getIconComponent = () => {
@@ -1105,7 +1105,7 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
                 <img
                     src={currentIcon.customUrl}
                     alt=""
-                    className={cn("wishcart-wishlist-button__icon", isInWishlist && "wishcart-wishlist-button__icon--filled")}
+                    className={cn("gowishcart-wishlist-button__icon", isInWishlist && "gowishcart-wishlist-button__icon--filled")}
                     style={{ width: iconSize, height: iconSize }}
                 />
             );
@@ -1117,7 +1117,7 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
         
         return (
             <IconComponent 
-                className={cn("wishcart-wishlist-button__icon", isInWishlist && "wishcart-wishlist-button__icon--filled")}
+                className={cn("gowishcart-wishlist-button__icon", isInWishlist && "gowishcart-wishlist-button__icon--filled")}
                 style={{ width: iconSize, height: iconSize }}
             />
         );
@@ -1240,18 +1240,18 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
                     <img
                         src={currentIcon.customUrl}
                         alt=""
-                        className="wishcart-wishlist-button__icon wishcart-wishlist-button__icon--loading"
+                        className="gowishcart-wishlist-button__icon gowishcart-wishlist-button__icon--loading"
                         style={{ width: iconSize, height: iconSize }}
                     />
                 );
             }
             const iconValue = currentIcon.value || 'Heart';
             const IconComponent = LucideIcons[iconValue] || Heart;
-            return <IconComponent className="wishcart-wishlist-button__icon wishcart-wishlist-button__icon--loading" style={{ width: iconSize, height: iconSize }} />;
+            return <IconComponent className="gowishcart-wishlist-button__icon gowishcart-wishlist-button__icon--loading" style={{ width: iconSize, height: iconSize }} />;
         };
 
         return (
-            <div className={cn("wishcart-wishlist-button-loading", className)} style={buildButtonStyles()}>
+            <div className={cn("gowishcart-wishlist-button-loading", className)} style={buildButtonStyles()}>
                 {renderLoadingIcon()}
             </div>
         );
@@ -1281,18 +1281,18 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
                     <img
                         src={currentIcon.customUrl}
                         alt=""
-                        className="wishcart-wishlist-button__icon wishcart-wishlist-button__icon--loading"
+                        className="gowishcart-wishlist-button__icon gowishcart-wishlist-button__icon--loading"
                         style={{ width: iconSize, height: iconSize }}
                     />
                 );
             }
             const iconValue = currentIcon.value || 'Heart';
             const IconComponent = LucideIcons[iconValue] || Heart;
-            return <IconComponent className="wishcart-wishlist-button__icon wishcart-wishlist-button__icon--loading" style={{ width: iconSize, height: iconSize }} />;
+            return <IconComponent className="gowishcart-wishlist-button__icon gowishcart-wishlist-button__icon--loading" style={{ width: iconSize, height: iconSize }} />;
         };
 
         return (
-            <div className={cn("wishcart-wishlist-button-loading", className)} style={buildButtonStyles()}>
+            <div className={cn("gowishcart-wishlist-button-loading", className)} style={buildButtonStyles()}>
                 {renderLoadingIcon()}
             </div>
         );
@@ -1310,13 +1310,13 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
                 onClick={toggleWishlist}
                 disabled={isAdding}
                 className={cn(
-                    "wishcart-wishlist-button",
-                    isInWishlist && "wishcart-wishlist-button--active",
-                    position && `wishcart-placement-${position}`,
-                    buttonStyle === 'text-only' && "wishcart-wishlist-button--text-only",
-                    buttonStyle === 'text-only-link' && "wishcart-wishlist-button--text-only-link",
-                    buttonStyle === 'text-icon-link' && "wishcart-wishlist-button--text-icon-link",
-                    buttonStyle === 'icon-only' && "wishcart-wishlist-button--icon-only",
+                    "gowishcart-wishlist-button",
+                    isInWishlist && "gowishcart-wishlist-button--active",
+                    position && `gowishcart-placement-${position}`,
+                    buttonStyle === 'text-only' && "gowishcart-wishlist-button--text-only",
+                    buttonStyle === 'text-only-link' && "gowishcart-wishlist-button--text-only-link",
+                    buttonStyle === 'text-icon-link' && "gowishcart-wishlist-button--text-icon-link",
+                    buttonStyle === 'icon-only' && "gowishcart-wishlist-button--icon-only",
                     className
                 )}
                 style={buildButtonStyles()}
@@ -1443,14 +1443,14 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
                                 <img
                                     src={currentIcon.customUrl}
                                     alt=""
-                                    className="wishcart-wishlist-button__icon wishcart-wishlist-button__icon--loading"
+                                    className="gowishcart-wishlist-button__icon gowishcart-wishlist-button__icon--loading"
                                     style={{ width: iconSize, height: iconSize }}
                                 />
                             );
                         }
                         const iconValue = currentIcon.value || 'Heart';
                         const IconComponent = LucideIcons[iconValue] || Heart;
-                        return <IconComponent className="wishcart-wishlist-button__icon wishcart-wishlist-button__icon--loading" style={{ width: iconSize, height: iconSize }} />;
+                        return <IconComponent className="gowishcart-wishlist-button__icon gowishcart-wishlist-button__icon--loading" style={{ width: iconSize, height: iconSize }} />;
                     })()
                 ) : (
                     getIconComponent()
@@ -1458,7 +1458,7 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
             )}
             {/* Conditionally render text based on buttonStyle */}
             {(buttonStyle !== 'icon-only') && (
-                <span className="wishcart-wishlist-button__label">{buttonLabel}</span>
+                <span className="gowishcart-wishlist-button__label">{buttonLabel}</span>
             )}
             </button>
         </>

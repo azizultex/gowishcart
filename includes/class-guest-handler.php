@@ -7,12 +7,12 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * Manages guest user sessions and conversion tracking
  *
  * @category WordPress
- * @package  WishCart
- * @author   WishCart Team <support@gowishcart.com>
+ * @package  GoWishCart
+ * @author   GoWishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://gowishcart.com
  */
-class WishCart_Guest_Handler {
+class GoWishCart_Guest_Handler {
 
     private $wpdb;
     private $guest_users_table;
@@ -23,7 +23,7 @@ class WishCart_Guest_Handler {
     public function __construct() {
         global $wpdb;
         $this->wpdb = $wpdb;
-        $this->guest_users_table = $wpdb->prefix . 'wc_wishlist_guest_users';
+        $this->guest_users_table = $wpdb->prefix . 'gwc_wishlist_guest_users';
     }
 
     /**
@@ -35,14 +35,14 @@ class WishCart_Guest_Handler {
      */
     public function create_or_update_guest($session_id, $data = array()) {
         if (empty($session_id)) {
-            return new WP_Error('invalid_session', __('Invalid session ID', 'wishcart'));
+            return new WP_Error('invalid_session', __('Invalid session ID', 'gowishcart-wishlist-for-fluentcart'));
         }
 
         // Check if guest exists
         $existing_guest = $this->get_guest_by_session($session_id);
 
         // Get expiration date
-        $settings = get_option('wishcart_settings', array());
+        $settings = get_option('gowishcart_settings', array());
         $expiry_days = isset($settings['wishlist']['guest_cookie_expiry']) ? intval($settings['wishlist']['guest_cookie_expiry']) : 30;
         $date_expires = gmdate('Y-m-d H:i:s', strtotime('+' . $expiry_days . ' days'));
 
@@ -80,7 +80,7 @@ class WishCart_Guest_Handler {
             );
 
             if (false === $result) {
-                return new WP_Error('db_error', __('Failed to update guest user', 'wishcart'));
+                return new WP_Error('db_error', __('Failed to update guest user', 'gowishcart-wishlist-for-fluentcart'));
             }
 
             return $existing_guest['guest_id'];
@@ -102,7 +102,7 @@ class WishCart_Guest_Handler {
             $result = $this->wpdb->insert($this->guest_users_table, $insert_data, $format);
 
             if (false === $result) {
-                return new WP_Error('db_error', __('Failed to create guest user', 'wishcart'));
+                return new WP_Error('db_error', __('Failed to create guest user', 'gowishcart-wishlist-for-fluentcart'));
             }
 
             return $this->wpdb->insert_id;
@@ -112,24 +112,28 @@ class WishCart_Guest_Handler {
     /**
      * Get client IP address
      *
+     * Uses REMOTE_ADDR only to avoid trusting spoofable headers.
+     *
      * @return string|null
      */
     private function get_client_ip() {
-        $ip = null;
-
-        if (isset($_SERVER['HTTP_CLIENT_IP']) && !empty($_SERVER['HTTP_CLIENT_IP'])) {
-            $ip = sanitize_text_field(wp_unslash($_SERVER['HTTP_CLIENT_IP']));
-        } elseif (isset($_SERVER['HTTP_X_FORWARDED_FOR']) && !empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            $ip = sanitize_text_field(wp_unslash($_SERVER['HTTP_X_FORWARDED_FOR']));
-        } elseif (isset($_SERVER['REMOTE_ADDR']) && !empty($_SERVER['REMOTE_ADDR'])) {
-            $ip = sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR']));
+        if ( ! isset( $_SERVER['REMOTE_ADDR'] ) || empty( $_SERVER['REMOTE_ADDR'] ) ) {
+            return null;
         }
 
-        if ($ip) {
-            $ip = substr($ip, 0, 45);
+        $ip = sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) );
+
+        // If REMOTE_ADDR contains multiple IPs (comma-separated), take the first one.
+        if ( strpos( $ip, ',' ) !== false ) {
+            $parts = explode( ',', $ip );
+            $ip    = trim( $parts[0] );
         }
 
-        return $ip;
+        if ( ! filter_var( $ip, FILTER_VALIDATE_IP ) ) {
+            return null;
+        }
+
+        return substr( $ip, 0, 45 );
     }
 
     /**
@@ -197,7 +201,7 @@ class WishCart_Guest_Handler {
             return array();
         }
 
-        $wishlists_table = $this->wpdb->prefix . 'wc_wishlists';
+        $wishlists_table = GoWishCart_Table_Names::get_table( GoWishCart_Table_Names::WISHLISTS );
         
         // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared
         $wishlists = $this->wpdb->get_results(
@@ -222,7 +226,7 @@ class WishCart_Guest_Handler {
      */
     public function update_guest_wishlist_data($session_id, $wishlist_ids = null) {
         if (empty($session_id)) {
-            return new WP_Error('invalid_session', __('Invalid session ID', 'wishcart'));
+            return new WP_Error('invalid_session', __('Invalid session ID', 'gowishcart-wishlist-for-fluentcart'));
         }
 
         // If no wishlist_ids provided, fetch from database
@@ -256,7 +260,7 @@ class WishCart_Guest_Handler {
         );
 
         if (false === $result) {
-            return new WP_Error('db_error', __('Failed to update wishlist data', 'wishcart'));
+            return new WP_Error('db_error', __('Failed to update wishlist data', 'gowishcart-wishlist-for-fluentcart'));
         }
 
         return true;
@@ -271,7 +275,7 @@ class WishCart_Guest_Handler {
      */
     public function add_wishlist_to_guest($session_id, $wishlist_id) {
         if (empty($session_id) || empty($wishlist_id)) {
-            return new WP_Error('invalid_params', __('Invalid parameters', 'wishcart'));
+            return new WP_Error('invalid_params', __('Invalid parameters', 'gowishcart-wishlist-for-fluentcart'));
         }
 
         // Get current wishlist data
@@ -302,13 +306,13 @@ class WishCart_Guest_Handler {
      */
     public function convert_guest_to_user($session_id, $user_id) {
         if (empty($session_id) || empty($user_id)) {
-            return new WP_Error('invalid_params', __('Invalid parameters', 'wishcart'));
+            return new WP_Error('invalid_params', __('Invalid parameters', 'gowishcart-wishlist-for-fluentcart'));
         }
 
         // Get guest data
         $guest = $this->get_guest_by_session($session_id);
         if (!$guest) {
-            return new WP_Error('guest_not_found', __('Guest user not found', 'wishcart'));
+            return new WP_Error('guest_not_found', __('Guest user not found', 'gowishcart-wishlist-for-fluentcart'));
         }
 
         // Update guest record with conversion data
@@ -321,12 +325,12 @@ class WishCart_Guest_Handler {
         );
 
         if (false === $result) {
-            return new WP_Error('db_error', __('Failed to record conversion', 'wishcart'));
+            return new WP_Error('db_error', __('Failed to record conversion', 'gowishcart-wishlist-for-fluentcart'));
         }
 
         // Sync wishlists
-        if (class_exists('WishCart_Wishlist_Handler')) {
-            $wishlist_handler = new WishCart_Wishlist_Handler();
+        if (class_exists('GoWishCart_Wishlist_Handler')) {
+            $wishlist_handler = new GoWishCart_Wishlist_Handler();
             $sync_result = $wishlist_handler->sync_guest_wishlist_to_user($session_id, $user_id);
 
             if (is_wp_error($sync_result)) {
@@ -335,7 +339,7 @@ class WishCart_Guest_Handler {
         }
 
         // Update wishlists to use user_id instead of session_id
-        $wishlists_table = $this->wpdb->prefix . 'wc_wishlists';
+        $wishlists_table = GoWishCart_Table_Names::get_table( GoWishCart_Table_Names::WISHLISTS );
         $this->wpdb->update(
             $wishlists_table,
             array(
@@ -468,7 +472,7 @@ class WishCart_Guest_Handler {
 
             foreach ($expired_sessions as $session_id) {
                 // Delete guest wishlists
-                $wishlists_table = $this->wpdb->prefix . 'wc_wishlists';
+                $wishlists_table = GoWishCart_Table_Names::get_table( GoWishCart_Table_Names::WISHLISTS );
                 $this->wpdb->update(
                     $wishlists_table,
                     array('status' => 'deleted'),
@@ -558,8 +562,8 @@ class WishCart_Guest_Handler {
         // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
 
         // Get wishlist statistics for guests
-        $wishlists_table = $this->wpdb->prefix . 'wc_wishlists';
-        $items_table = $this->wpdb->prefix . 'wc_wishlist_items';
+        $wishlists_table = GoWishCart_Table_Names::get_table( GoWishCart_Table_Names::WISHLISTS );
+        $items_table = GoWishCart_Table_Names::get_table( GoWishCart_Table_Names::WISHLIST_ITEMS );
 
         // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared
         $wishlist_stats = $this->wpdb->get_row(
@@ -630,7 +634,7 @@ class WishCart_Guest_Handler {
      */
     public function delete_guest_data($session_id) {
         // Delete guest wishlists
-        $wishlists_table = $this->wpdb->prefix . 'wc_wishlists';
+        $wishlists_table = GoWishCart_Table_Names::get_table( GoWishCart_Table_Names::WISHLISTS );
         $this->wpdb->update(
             $wishlists_table,
             array('status' => 'deleted'),
@@ -647,7 +651,7 @@ class WishCart_Guest_Handler {
         );
 
         if (false === $result) {
-            return new WP_Error('db_error', __('Failed to delete guest data', 'wishcart'));
+            return new WP_Error('db_error', __('Failed to delete guest data', 'gowishcart-wishlist-for-fluentcart'));
         }
 
         return true;

@@ -1,9 +1,9 @@
-=== WishCart - Wishlist for FluentCart ===
-Contributors: wishcart, sabbirxprt
-Tags: wishlist, fluentcart, ecommerce, shopping, favorites, product wishlist, wish list
+=== GoWishCart - Wishlist for FluentCart ===
+Contributors: azizultex, sabbirxprt
+Tags: wishlist, fluentcart, ecommerce, shopping, favorites
 Requires at least: 5.0
 Tested up to: 6.9
-Stable tag: 1.0.0
+Stable tag: 1.1.2
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -17,10 +17,10 @@ Wishlists are popular tools in ecommerce shops. Thanks to the wishlist, users ca
 
 This means that you'll be able to loyalise customers, push them to buy and attract new customers any time a wishlist is shared.
 
-**WishCart** is a wishlist plugin built specifically for **FluentCart** stores. With seamless integration and automation features, WishCart helps you increase customer engagement.
+**GoWishCart** is a wishlist plugin built specifically for **FluentCart** stores. With seamless integration and automation features, GoWishCart helps you increase customer engagement.
 
-== Why Choose WishCart? ==
-* 💯 **WishCart is FREE!** - Core features available at no cost
+== Why Choose GoWishCart? ==
+* 💯 **GoWishCart is FREE!** - Core features available at no cost
 * 🛒 **Built for FluentCart** - Native integration with FluentCart products and checkout
 * 👥 **Guest Support** - Customers can create wishlists without creating an account
 * 🎨 **Product Variations** - Saves specific product variants (color, size, etc.)
@@ -31,7 +31,7 @@ This means that you'll be able to loyalise customers, push them to buy and attra
 * 🎯 **Conversion Tracking** - Track wishlist-to-cart conversions (Pro feature)
 
 == FluentCart Integration ==
-WishCart is built from the ground up for FluentCart stores:
+GoWishCart is built from the ground up for FluentCart stores:
 * **Native Product Support**: Seamlessly integrates with FluentCart products, variations, and pricing
 * **Cart Integration**: Easy add-to-cart functionality directly from wishlist
 * **Order Tracking**: Track conversions from wishlist to purchase
@@ -48,32 +48,32 @@ WishCart is built from the ground up for FluentCart stores:
 * **Price drop alerts** - Automatically notify customers when wishlist items go on sale
 * **Back in stock notifications** - Alert customers when out-of-stock wishlist items become available
 * **Customizable button icons and text** - Customize the appearance of wishlist buttons with custom icons and text labels
-* **Wishlist page with shortcode support** - Display wishlist using shortcodes: `[wishcart_wishlist]` and `[wishcart_wishlist_button]`
+* **Wishlist page with shortcode support** - Display wishlist using shortcodes: `[gowishcart_wishlist]` and `[gowishcart_wishlist_button]`
 * **Privacy settings** - Control wishlist visibility (private by default, shared/public available in Pro)
 * **Multiple wishlists** - Create and manage multiple wishlists (Pro feature)
 * **Social sharing** - Share wishlists on Facebook, Twitter, Pinterest, WhatsApp, and via email (Pro feature)
 * **Analytics tracking** - Track wishlist performance and conversion metrics (Pro feature)
 
 = 📞 Support =
-For free plugin support, please visit the [WordPress.org support forum](https://wordpress.org/support/plugin/wishcart/). Commercial support for WishCart Pro is available at [gowishcart.com](https://gowishcart.com).
+For free plugin support, please visit the [WordPress.org support forum](https://wordpress.org/support/plugin/gowishcart-wishlist-for-fluentcart/). Commercial support for GoWishCart Pro is available at [gowishcart.com](https://gowishcart.com).
 = 📝 License =
 This project is licensed under the GPL-2.0+ License - see the LICENSE file for details.
 
 ---
 Developed with ❤️ by [gowishcart.com Team](https://gowishcart.com)
 == Frequently Asked Questions ==
-= How much does WishCart cost? =
-WishCart offers a free version with core wishlist features including guest support, product variations, basic notifications, and FluentCRM integration. Advanced features like multiple wishlists, social sharing, and analytics are available in WishCart Pro.
-= Do I need FluentCart to use WishCart? =
-Yes, WishCart is built specifically for FluentCart and requires FluentCart to be installed and activated. WishCart integrates seamlessly with FluentCart products, variations, pricing, and checkout functionality.
+= How much does GoWishCart cost? =
+GoWishCart offers a free version with core wishlist features including guest support, product variations, basic notifications, and FluentCRM integration. Advanced features like multiple wishlists, social sharing, and analytics are available in GoWishCart Pro.
+= Do I need FluentCart to use GoWishCart? =
+Yes, GoWishCart is built specifically for FluentCart and requires FluentCart to be installed and activated. GoWishCart integrates seamlessly with FluentCart products, variations, pricing, and checkout functionality.
 = How does guest wishlist work? =
 Guest users can create and manage wishlists without creating an account. Wishlists are stored using session-based cookies. You can optionally capture guest email addresses to enable email notifications and convert guest wishlists to user accounts when they register.
 = Can I customize the wishlist button? =
-Yes! WishCart offers extensive customization options. You can customize the button position (top or bottom of product pages), choose custom icons or use predefined icons, and customize the text labels for both "Add to Wishlist" and "Remove from Wishlist" states. You can also add custom CSS for advanced styling.
-= Does WishCart support product variations? =
-Yes, WishCart fully supports product variations. When a customer selects a specific color, size, or other variation and adds it to their wishlist, those specific variant details are saved. When they view their wishlist later, they'll see the exact variation they selected.
+Yes! GoWishCart offers extensive customization options. You can customize the button position (top or bottom of product pages), choose custom icons or use predefined icons, and customize the text labels for both "Add to Wishlist" and "Remove from Wishlist" states. You can also add custom CSS for advanced styling.
+= Does GoWishCart support product variations? =
+Yes, GoWishCart fully supports product variations. When a customer selects a specific color, size, or other variation and adds it to their wishlist, those specific variant details are saved. When they view their wishlist later, they'll see the exact variation they selected.
 = How does FluentCRM integration work? =
-WishCart integrates with FluentCRM to provide automation triggers. You can set up email campaigns that trigger when:
+GoWishCart integrates with FluentCRM to provide automation triggers. You can set up email campaigns that trigger when:
 * A product is added to a wishlist
 * A product is removed from a wishlist
 * A wishlist item's price drops
@@ -81,22 +81,63 @@ WishCart integrates with FluentCRM to provide automation triggers. You can set u
 
 These triggers can be used in FluentCRM automation funnels to send targeted marketing emails.
 = What notifications are available? =
-WishCart supports price drop alerts and back-in-stock notifications. When a product in a customer's wishlist goes on sale or comes back in stock, they'll automatically receive an email notification (if they've provided their email address).
+GoWishCart supports price drop alerts and back-in-stock notifications. When a product in a customer's wishlist goes on sale or comes back in stock, they'll automatically receive an email notification (if they've provided their email address).
 = Can I show the wishlist button on shop/archive pages? =
-Yes, you can enable the "Show Button on Shop Page" option in the WishCart settings. This will display the wishlist button on product archive pages, making it easy for customers to add products to their wishlist while browsing.
+Yes, you can enable the "Show Button on Shop Page" option in the GoWishCart settings. This will display the wishlist button on product archive pages, making it easy for customers to add products to their wishlist while browsing.
 = How do I display the wishlist page? =
-You can use the `[wishcart_wishlist]` shortcode on any page, or WishCart will automatically create a wishlist page. You can also use the `[wishcart_wishlist_button]` shortcode to display the add-to-wishlist button anywhere on your site.
+You can use the `[gowishcart_wishlist]` shortcode on any page, or GoWishCart will automatically create a wishlist page. You can also use the `[gowishcart_wishlist_button]` shortcode to display the add-to-wishlist button anywhere on your site.
 
 == Changelog ==
+
+= 1.1.2 =
+
+### Fixed
+* Fix unsafe SQL
+* Escape output late
+* Replace WP_PLUGIN_DIR / hardcoded plugin path logic
+
+= 1.1.1 =
+
+### Fixed
+* Improved REST API security by adding proper permission and nonce checks.
+* Removed hardcoded `/wp-admin/` path and ensured admin URLs work on all WordPress setups.
+
+= 1.1.0 =
+### Changed
+* Plugin display name updated across the admin and public-facing areas
+
+### Fixed
+* REST API routes: added missing `permission_callback` for WordPress 5.5+ compatibility
+* AJAX endpoint: corrected link/URL used in endpoint configuration
 
 = 1.0.0 =
 * Initial release
 
 == Upgrade Notice ==
 
-= 1.0.0 =
-Initial release of WishCart - start building customer loyalty and boosting sales with wishlists today!
+= 1.1.2 =
 
+### Fixed
+* Fix unsafe SQL
+* Escape output late
+* Replace WP_PLUGIN_DIR / hardcoded plugin path logic
+
+= 1.1.1 =
+
+### Fixed
+* Improved REST API security by adding proper permission and nonce checks.
+* Removed hardcoded `/wp-admin/` path and ensured admin URLs work on all WordPress setups.
+
+= 1.1.0 =
+### Changed
+Plugin display name updated across the admin and public-facing areas
+
+### Fixed
+REST API routes: added missing `permission_callback` for WordPress 5.5+ compatibility
+AJAX endpoint: corrected link/URL used in endpoint configuration
+
+= 1.0.0 =
+Initial release of GoWishCart - start building customer loyalty and boosting sales with wishlists today!
 == Screenshots ==
 
 1. Wishlist page with products
@@ -127,10 +168,10 @@ This plugin uses the following third-party libraries and services:
 
 == Installation ==
 
-1. Upload the plugin files to the `/wp-content/plugins/wishcart` directory, or install the plugin through the WordPress plugins screen directly.
+1. Upload the plugin files to the `/wp-content/plugins/gowishcart-wishlist-for-fluentcart` directory, or install the plugin through the WordPress plugins screen directly.
 2. Activate the plugin through the 'Plugins' screen in WordPress
-3. Ensure FluentCart is installed and activated (WishCart requires FluentCart to function)
-4. Navigate to Settings->WishCart to configure the plugin
+3. Ensure FluentCart is installed and activated (GoWishCart requires FluentCart to function)
+4. Navigate to Settings->GoWishCart to configure the plugin
 5. Configure your wishlist settings:
    * Select wishlist page or use the default wishlist page
    * Customize button position (top or bottom)
@@ -141,5 +182,5 @@ This plugin uses the following third-party libraries and services:
 
 == Support ==
 
-For free plugin support, please visit the [WordPress.org support forum](https://wordpress.org/support/plugin/wishcart/). Commercial support for WishCart Pro is available at [gowishcart.com](https://gowishcart.com).
+For free plugin support, please visit the [WordPress.org support forum](https://wordpress.org/support/plugin/gowishcart-wishlist-for-fluentcart/). Commercial support for GoWishCart Pro is available at [gowishcart.com](https://gowishcart.com).
 

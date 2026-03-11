@@ -3,10 +3,10 @@
 @tailwind utilities;
 
 /* Import FluentCart Design System */
-@import './wishcart-theme.scss';
+@import './gowishcart-theme.scss';
 @import './settings.scss';
 
-/* wishcart-aligned color system for Tailwind/shadcn components */
+/* gowishcart-aligned color system for Tailwind/shadcn components */
 :root {
   /* Background colors - WordPress admin */
   --background: 0 0% 94%;  /* #f0f0f1 */
@@ -73,9 +73,9 @@
 }
 
 /* Ensure admin shell uses WordPress/FluentCart typography */
-.wishcart-admin-shell {
+.gowishcart-admin-shell {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
   font-size: 13px;
   line-height: 1.4em;
-  color: var(--wishcart-text-primary);
+  color: var(--gowishcart-text-primary);
 }
