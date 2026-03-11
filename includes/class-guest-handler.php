@@ -112,24 +112,28 @@ class GoWishCart_Guest_Handler {
     /**
      * Get client IP address
      *
+     * Uses REMOTE_ADDR only to avoid trusting spoofable headers.
+     *
      * @return string|null
      */
     private function get_client_ip() {
-        $ip = null;
-
-        if (isset($_SERVER['HTTP_CLIENT_IP']) && !empty($_SERVER['HTTP_CLIENT_IP'])) {
-            $ip = sanitize_text_field(wp_unslash($_SERVER['HTTP_CLIENT_IP']));
-        } elseif (isset($_SERVER['HTTP_X_FORWARDED_FOR']) && !empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            $ip = sanitize_text_field(wp_unslash($_SERVER['HTTP_X_FORWARDED_FOR']));
-        } elseif (isset($_SERVER['REMOTE_ADDR']) && !empty($_SERVER['REMOTE_ADDR'])) {
-            $ip = sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR']));
+        if ( ! isset( $_SERVER['REMOTE_ADDR'] ) || empty( $_SERVER['REMOTE_ADDR'] ) ) {
+            return null;
         }
 
-        if ($ip) {
-            $ip = substr($ip, 0, 45);
+        $ip = sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) );
+
+        // If REMOTE_ADDR contains multiple IPs (comma-separated), take the first one.
+        if ( strpos( $ip, ',' ) !== false ) {
+            $parts = explode( ',', $ip );
+            $ip    = trim( $parts[0] );
         }
 
-        return $ip;
+        if ( ! filter_var( $ip, FILTER_VALIDATE_IP ) ) {
+            return null;
+        }
+
+        return substr( $ip, 0, 45 );
     }
 
     /**

@@ -487,24 +487,6 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                 </p>
             </div>
 
-            {/* Custom CSS */}
-            <div className="gowishcart-form-group gowishcart-code-editor">
-                <label className="gowishcart-label" htmlFor="custom_css">
-                    {__('Custom CSSgowishcart-wishlist-for-fluentcart')}
-                </label>
-                <Textarea
-                    id="custom_css"
-                    rows={8}
-                    value={wishlistSettings.custom_css || ''}
-                    onChange={(e) => updateWishlistSetting('custom_css', e.target.value)}
-                    placeholder={__('Add custom CSS for wishlist button styling...', 'gowishcart-wishlist-for-fluentcart')}
-                    disabled={!wishlistSettings.enabled}
-                    className="gowishcart-textarea"
-                />
-                <p className="gowishcart-form-helper">
-                    {__('Add custom CSS to style the wishlist button. Use selector: .gowishcart-wishlist-button', 'gowishcart-wishlist-for-fluentcart')}
-                </p>
-            </div>
         </div>
     );
 };

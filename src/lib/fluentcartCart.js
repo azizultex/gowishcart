@@ -53,16 +53,10 @@ const updateCartFromFragments = (fragments) => {
                     }
                 }
 
-                // Trigger any scripts in the new content
-                const scripts = element.querySelectorAll('script');
-                scripts.forEach(oldScript => {
-                    const newScript = document.createElement('script');
-                    Array.from(oldScript.attributes).forEach(attr => {
-                        newScript.setAttribute(attr.name, attr.value);
-                    });
-                    newScript.appendChild(document.createTextNode(oldScript.innerHTML));
-                    oldScript.parentNode.replaceChild(newScript, oldScript);
-                });
+                // Do NOT manually re-execute scripts from injected HTML.
+                // If FluentCart needs to re-initialize behavior after a fragment update,
+                // dispatch a custom event that its own scripts can listen for.
+                element.dispatchEvent(new CustomEvent('fluentcart:fragment:updated', { bubbles: true }));
             }
         } catch (error) {
             console.error('Error updating cart fragment:', fragment.selector, error);

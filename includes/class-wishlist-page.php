@@ -235,7 +235,6 @@ class GoWishCart_Wishlist_Page {
             'shop_page_button'     => true,
             'product_page_button'  => true,
             'button_position'      => 'bottom',
-            'custom_css'           => '',
             'wishlist_page_id'     => intval( $page_id ),
             'guest_cookie_expiry'  => 30,
             'button_customization' => array(

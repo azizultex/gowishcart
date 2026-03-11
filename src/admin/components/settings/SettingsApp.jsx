@@ -31,7 +31,6 @@ const SettingsApp = () => {
             shop_page_button: true,
             product_page_button: true,
             button_position: 'bottom',
-            custom_css: '',
             wishlist_page_id: 0,
             guest_cookie_expiry: 30,
         }

@@ -1428,10 +1428,25 @@ class GoWishCart_Admin {
         $wishlist_id = $request->get_param( 'wishlist_id' );
         $wishlist_id = ! empty( $wishlist_id ) ? intval( $wishlist_id ) : null;
         
-        // Check if user_id is provided (for viewing other users' wishlists)
+        // Check if user_id is provided (for viewing a specific user's wishlist)
         $requested_user_id = $request->get_param( 'user_id' );
         $requested_user_id = ! empty( $requested_user_id ) ? intval( $requested_user_id ) : null;
-        
+
+        // Enforce ownership: only the user themself or an admin can view a user_id-based wishlist.
+        if ( $requested_user_id ) {
+            if ( ! current_user_can( 'manage_options' ) ) {
+                $current_user_id = is_user_logged_in() ? get_current_user_id() : null;
+
+                if ( ! $current_user_id || $current_user_id !== $requested_user_id ) {
+                    return new WP_Error(
+                        'forbidden_wishlist_access',
+                        __( 'You are not allowed to view this wishlist.', 'gowishcart-wishlist-for-fluentcart' ),
+                        array( 'status' => 403 )
+                    );
+                }
+            }
+        }
+
         $wishlist_items = array();
         $current_wishlist = null;
         

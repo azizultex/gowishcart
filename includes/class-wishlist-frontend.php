@@ -386,14 +386,6 @@ class GoWishCart_Wishlist_Frontend {
         if ( ! empty( $css_parts ) ) {
             wp_add_inline_style( 'gowishcart-wishlist-frontend', wp_strip_all_tags( implode( "\n", $css_parts ) ) );
         }
-
-        // Output custom CSS from settings text field.
-        // wp_strip_all_tags() is the correct late-escaping function for CSS context; it removes all
-        // HTML/script tags while preserving the CSS content, applied directly at the point of output.
-        $custom_css = isset( $wishlist_settings['custom_css'] ) ? $wishlist_settings['custom_css'] : '';
-        if ( ! empty( $custom_css ) ) {
-            wp_add_inline_style( 'gowishcart-wishlist-frontend', wp_strip_all_tags( $custom_css ) );
-        }
     }
 
     /**
