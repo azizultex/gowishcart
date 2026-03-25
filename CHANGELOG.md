@@ -2,6 +2,11 @@
 
 All notable changes to the GoWishCart Wishlist plugin will be documented in this file.
 
+= 1.1.3 =
+
+### Changed
+- Banner update
+
 ## [1.1.2] - 2026-03-09
 
 ### Fixed
