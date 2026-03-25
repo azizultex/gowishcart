@@ -4,6 +4,8 @@
 /.git export-ignore
 /node_modules export-ignore
 # /src export-ignore  # Comment out to include source code
+/.claude export-ignore
+
 
 # Files 
 .gitattributes export-ignore
