@@ -2,6 +2,11 @@
 
 All notable changes to the GoWishCart Wishlist plugin will be documented in this file.
 
+= 1.1.4 =
+
+### Changed
+* Banner add
+
 = 1.1.3 =
 
 ### Changed
