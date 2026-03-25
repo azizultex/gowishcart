@@ -1,0 +1,765 @@
+/**
+ * FluentCart Design System
+ * 
+ * This file contains all design tokens and styles to match FluentCart's visual design
+ * as a cohesive addon integration with WordPress admin aesthetics.
+ */
+
+/* ==========================================
+   FluentCart Color System
+   ========================================== */
+
+:root {
+  /* Primary Colors - FluentCart Brand */
+  --gowishcart-primary: #1e73be;
+  --gowishcart-primary-hover: #1a5fa0;
+  --gowishcart-primary-active: #165082;
+  
+  /* WordPress Admin Blues */
+  --wp-admin-blue: #2271b1;
+  --wp-admin-blue-hover: #135e96;
+  --wp-admin-blue-active: #0a4b78;
+  
+  /* Status Colors */
+  --gowishcart-success: #00a32a;
+  --gowishcart-success-bg: #e7f7ed;
+  --gowishcart-warning: #dba617;
+  --gowishcart-warning-bg: #fcf9e8;
+  --gowishcart-danger: #d63638;
+  --gowishcart-danger-bg: #fcf0f1;
+  --gowishcart-info: #2271b1;
+  --gowishcart-info-bg: #e5f5fa;
+  
+  /* Gray Scale - WordPress Admin */
+  --gowishcart-gray-900: #1d2327;
+  --gowishcart-gray-800: #2c3338;
+  --gowishcart-gray-700: #3c434a;
+  --gowishcart-gray-600: #50575e;
+  --gowishcart-gray-500: #646970;
+  --gowishcart-gray-400: #787c82;
+  --gowishcart-gray-300: #8c8f94;
+  --gowishcart-gray-200: #a7aaad;
+  --gowishcart-gray-100: #c3c4c7;
+  --gowishcart-gray-50: #dcdcde;
+  --gowishcart-gray-25: #f0f0f1;
+  --gowishcart-gray-10: #f6f7f7;
+  
+  /* Background Colors */
+  --gowishcart-bg-body: #f0f0f1;
+  --gowishcart-bg-white: #ffffff;
+  --gowishcart-bg-light: #f6f7f7;
+  
+  /* Border Colors */
+  --gowishcart-border: #c3c4c7;
+  --gowishcart-border-light: #dcdcde;
+  --gowishcart-border-dark: #8c8f94;
+  
+  /* Text Colors */
+  --gowishcart-text-primary: #1d2327;
+  --gowishcart-text-secondary: #50575e;
+  --gowishcart-text-muted: #646970;
+  --gowishcart-text-light: #787c82;
+  
+  /* Shadows */
+  --gowishcart-shadow-sm: 0 1px 1px rgba(0, 0, 0, 0.04);
+  --gowishcart-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --gowishcart-shadow-md: 0 2px 4px rgba(0, 0, 0, 0.08);
+  
+  /* Border Radius */
+  --gowishcart-radius-sm: 3px;
+  --gowishcart-radius: 4px;
+  --gowishcart-radius-md: 6px;
+  
+  /* Spacing (WordPress Admin Standard) */
+  --gowishcart-space-xs: 4px;
+  --gowishcart-space-sm: 8px;
+  --gowishcart-space-md: 12px;
+  --gowishcart-space-lg: 16px;
+  --gowishcart-space-xl: 20px;
+  --gowishcart-space-2xl: 24px;
+  --gowishcart-space-3xl: 32px;
+}
+
+/* ==========================================
+   Typography System
+   ========================================== */
+
+.gowishcart-typography {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  font-size: 13px;
+  line-height: 1.4em;
+  color: var(--gowishcart-text-primary);
+}
+
+.gowishcart-h1 {
+  font-size: 23px;
+  font-weight: 400;
+  line-height: 1.3;
+  color: var(--gowishcart-gray-900);
+  margin: 0 0 20px;
+  padding: 9px 0 4px;
+}
+
+.gowishcart-h2 {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--gowishcart-gray-900);
+  margin: 0 0 16px;
+}
+
+.gowishcart-h3 {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--gowishcart-gray-900);
+  margin: 0 0 12px;
+}
+
+.gowishcart-h4 {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--gowishcart-gray-800);
+  margin: 0 0 8px;
+}
+
+.gowishcart-body {
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.4em;
+  color: var(--gowishcart-text-primary);
+}
+
+.gowishcart-body-sm {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.4em;
+  color: var(--gowishcart-text-secondary);
+}
+
+.gowishcart-label {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4em;
+  color: var(--gowishcart-gray-800);
+  display: block;
+  margin-bottom: 6px;
+}
+
+/* ==========================================
+   Button Styles - WordPress Admin
+   ========================================== */
+
+.gowishcart-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1;
+  border-radius: var(--gowishcart-radius-sm);
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.15s ease-in-out;
+  white-space: nowrap;
+  
+  &:focus {
+    outline: 2px solid var(--wp-admin-blue);
+    outline-offset: 1px;
+  }
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.gowishcart-button-primary {
+  background: var(--wp-admin-blue);
+  color: #ffffff;
+  border-color: var(--wp-admin-blue);
+  
+  &:hover:not(:disabled) {
+    background: var(--wp-admin-blue-hover);
+    border-color: var(--wp-admin-blue-hover);
+  }
+  
+  &:active:not(:disabled) {
+    background: var(--wp-admin-blue-active);
+    border-color: var(--wp-admin-blue-active);
+  }
+}
+
+.gowishcart-button-secondary {
+  background: #f6f7f7;
+  color: var(--gowishcart-gray-700);
+  border-color: var(--gowishcart-border);
+  
+  &:hover:not(:disabled) {
+    background: #ffffff;
+    border-color: var(--gowishcart-border-dark);
+  }
+}
+
+.gowishcart-button-outline {
+  background: #ffffff;
+  color: var(--wp-admin-blue);
+  border-color: var(--wp-admin-blue);
+  
+  &:hover:not(:disabled) {
+    background: var(--gowishcart-info-bg);
+  }
+}
+
+.gowishcart-button-ghost {
+  background: transparent;
+  color: var(--gowishcart-gray-700);
+  border-color: transparent;
+  
+  &:hover:not(:disabled) {
+    background: var(--gowishcart-gray-25);
+  }
+}
+
+.gowishcart-button-danger {
+  background: var(--gowishcart-danger);
+  color: #ffffff;
+  border-color: var(--gowishcart-danger);
+  
+  &:hover:not(:disabled) {
+    background: #b32d2e;
+  }
+}
+
+.gowishcart-button-sm {
+  height: 28px;
+  padding: 0 10px;
+  font-size: 12px;
+}
+
+.gowishcart-button-lg {
+  height: 36px;
+  padding: 0 16px;
+  font-size: 14px;
+}
+
+/* ==========================================
+   Form Controls - WordPress Admin
+   ========================================== */
+
+.gowishcart-input {
+  width: 100%;
+  height: 32px;
+  padding: 0 8px;
+  font-size: 13px;
+  line-height: 1.4em;
+  color: var(--gowishcart-text-primary);
+  background: #ffffff;
+  border: 1px solid var(--gowishcart-border-dark);
+  border-radius: var(--gowishcart-radius);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.07);
+  transition: border-color 0.15s ease-in-out;
+  
+  &:focus {
+    border-color: var(--wp-admin-blue);
+    outline: none;
+    box-shadow: 0 0 0 1px var(--wp-admin-blue);
+  }
+  
+  &::placeholder {
+    color: var(--gowishcart-gray-200);
+  }
+  
+  &:disabled {
+    background: var(--gowishcart-gray-25);
+    color: var(--gowishcart-text-muted);
+    cursor: not-allowed;
+  }
+}
+
+.gowishcart-textarea {
+  @extend .gowishcart-input;
+  height: auto;
+  min-height: 80px;
+  padding: 6px 8px;
+  resize: vertical;
+}
+
+.gowishcart-select {
+  @extend .gowishcart-input;
+  cursor: pointer;
+  padding-right: 24px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23646970' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 12px;
+}
+
+.gowishcart-checkbox,
+.gowishcart-radio {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  cursor: pointer;
+  
+  &:focus {
+    outline: 2px solid var(--wp-admin-blue);
+    outline-offset: 2px;
+  }
+}
+
+.gowishcart-toggle {
+  position: relative;
+  display: inline-block;
+  width: 36px;
+  height: 20px;
+  
+  input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    
+    &:checked + .gowishcart-toggle-slider {
+      background: var(--wp-admin-blue);
+      
+      &:before {
+        transform: translateX(16px);
+      }
+    }
+    
+    &:focus + .gowishcart-toggle-slider {
+      box-shadow: 0 0 0 2px rgba(34, 113, 177, 0.2);
+    }
+  }
+}
+
+.gowishcart-toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--gowishcart-gray-100);
+  border-radius: 20px;
+  transition: 0.2s;
+  
+  &:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 2px;
+    bottom: 2px;
+    background: white;
+    border-radius: 50%;
+    transition: 0.2s;
+  }
+}
+
+/* ==========================================
+   Card/Panel Styles - WordPress Admin
+   ========================================== */
+
+.gowishcart-card {
+  background: var(--gowishcart-bg-white);
+  border: 1px solid var(--gowishcart-border);
+  border-radius: var(--gowishcart-radius);
+  box-shadow: var(--gowishcart-shadow-sm);
+  padding: var(--gowishcart-space-xl);
+  margin-bottom: var(--gowishcart-space-xl);
+}
+
+.gowishcart-card-header {
+  margin-bottom: var(--gowishcart-space-lg);
+  padding-bottom: var(--gowishcart-space-md);
+  border-bottom: 1px solid var(--gowishcart-border-light);
+}
+
+.gowishcart-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gowishcart-gray-900);
+  margin: 0;
+}
+
+.gowishcart-card-description {
+  font-size: 13px;
+  color: var(--gowishcart-text-secondary);
+  margin: 4px 0 0;
+}
+
+.gowishcart-card-content {
+  /* Content area - no default styles */
+}
+
+.gowishcart-card-footer {
+  margin-top: var(--gowishcart-space-lg);
+  padding-top: var(--gowishcart-space-lg);
+  border-top: 1px solid var(--gowishcart-border-light);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--gowishcart-space-sm);
+}
+
+/* ==========================================
+   Navigation Tabs - WordPress Admin Style
+   ========================================== */
+
+.gowishcart-nav-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--gowishcart-border);
+  background: var(--gowishcart-bg-white);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
+  justify-content: flex-end;
+  margin-bottom: 0;
+}
+
+.gowishcart-nav-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 20px;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--gowishcart-text-secondary);
+  text-decoration: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  background: transparent;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  position: relative;
+  
+  &:hover {
+    color: var(--gowishcart-primary);
+    background: rgba(30, 115, 190, 0.05);
+  }
+  
+  &.active {
+    color: var(--gowishcart-primary);
+    background: rgba(30, 115, 190, 0.1);
+    border-bottom-color: var(--gowishcart-primary);
+    font-weight: 600;
+  }
+  
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* ==========================================
+   WordPress Admin Layout
+   ========================================== */
+
+.gowishcart-admin-page {
+  background: var(--gowishcart-bg-body);
+  min-height: 100vh;
+  padding: 0;
+  margin: 0 0 0 -20px;
+}
+
+.gowishcart-admin-page-header {  
+  padding: 25px 24px; 
+}
+
+.gowishcart-admin-page-header-content {
+  padding-left: 50px;
+  padding-right: 50px;
+  max-width: calc(1400px + 100px); 
+  margin: 0 auto;
+  
+    @media (max-width: 565px) {
+      padding-left: 25px;
+      padding-right: 25px;
+      max-width: calc(100vw + 50px);
+    } 
+}
+
+.gowishcart-admin-page-title {
+  font-size: 23px;
+  font-weight: 400;
+  line-height: 1.3;
+  color: var(--gowishcart-gray-900);
+  margin: 0;
+  padding: 0;
+}
+
+.gowishcart-admin-header {
+  background: var(--gowishcart-bg-white);
+  border-bottom: 1px solid var(--gowishcart-border);
+  padding: 20px 24px;
+  margin-bottom: 0;
+}
+
+.gowishcart-admin-header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.gowishcart-admin-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.gowishcart-admin-logo {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(30, 115, 190, 0.08);
+  border-radius: var(--gowishcart-radius);
+  
+  img {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.gowishcart-admin-title-wrapper {
+  h1 {
+    font-size: 23px;
+    font-weight: 400;
+    margin: 0;
+    padding: 0;
+    line-height: 1.3;
+    color: var(--gowishcart-gray-900);
+  }
+  
+  p {
+    font-size: 13px;
+    color: var(--gowishcart-text-secondary);
+    margin: 2px 0 0;
+    line-height: 1.4;
+  }
+}
+
+.gowishcart-admin-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gowishcart-admin-body {
+  padding: 0;
+  padding-left: 50px;
+  padding-right: 50px;
+  max-width: calc(1400px + 100px);
+  margin: 0 auto;
+
+  @media (max-width: 565px) {
+    padding-left: 25px;
+    padding-right: 25px;
+    max-width: calc(100vw + 50px);
+  }
+}
+
+.gowishcart-admin-content {
+  background: var(--gowishcart-bg-white);
+  padding: 24px;
+}
+
+/* ==========================================
+   Notices - WordPress Admin Style
+   ========================================== */
+
+.gowishcart-notice {
+  padding: 12px 16px;
+  border-left: 4px solid var(--gowishcart-border);
+  background: var(--gowishcart-bg-white);
+  margin: 16px 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 13px;
+  box-shadow: var(--gowishcart-shadow-sm);
+}
+
+.gowishcart-notice-success {
+  border-left-color: var(--gowishcart-success);
+  background: var(--gowishcart-success-bg);
+}
+
+.gowishcart-notice-warning {
+  border-left-color: var(--gowishcart-warning);
+  background: var(--gowishcart-warning-bg);
+}
+
+.gowishcart-notice-error {
+  border-left-color: var(--gowishcart-danger);
+  background: var(--gowishcart-danger-bg);
+}
+
+.gowishcart-notice-info {
+  border-left-color: var(--gowishcart-info);
+  background: var(--gowishcart-info-bg);
+}
+
+/* ==========================================
+   Status Badge
+   ========================================== */
+
+.gowishcart-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.4;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.gowishcart-badge-success {
+  background: var(--gowishcart-success-bg);
+  color: var(--gowishcart-success);
+}
+
+.gowishcart-badge-warning {
+  background: var(--gowishcart-warning-bg);
+  color: var(--gowishcart-warning);
+}
+
+.gowishcart-badge-danger {
+  background: var(--gowishcart-danger-bg);
+  color: var(--gowishcart-danger);
+}
+
+.gowishcart-badge-info {
+  background: var(--gowishcart-info-bg);
+  color: var(--gowishcart-info);
+}
+
+.gowishcart-badge-neutral {
+  background: var(--gowishcart-gray-25);
+  color: var(--gowishcart-text-secondary);
+}
+
+/* ==========================================
+   Connection Status Badge
+   ========================================== */
+
+.gowishcart-connection-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: var(--gowishcart-success-bg);
+  color: var(--gowishcart-success);
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+  
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--gowishcart-success);
+  }
+}
+
+/* ==========================================
+   Form Group
+   ========================================== */
+
+.gowishcart-form-group {
+  margin-bottom: var(--gowishcart-space-lg);
+}
+
+.gowishcart-form-row {
+  display: flex;
+  gap: var(--gowishcart-space-lg);
+  margin-bottom: var(--gowishcart-space-lg);
+  
+  .gowishcart-form-group {
+    flex: 1;
+    margin-bottom: 0;
+  }
+}
+
+.gowishcart-form-helper {
+  font-size: 12px;
+  color: var(--gowishcart-text-muted);
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+.gowishcart-form-error {
+  font-size: 12px;
+  color: var(--gowishcart-danger);
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+/* ==========================================
+   Utility Classes
+   ========================================== */
+
+.gowishcart-text-center {
+  text-align: center;
+}
+
+.gowishcart-text-right {
+  text-align: right;
+}
+
+.gowishcart-flex {
+  display: flex;
+}
+
+.gowishcart-flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gowishcart-flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.gowishcart-gap-sm {
+  gap: var(--gowishcart-space-sm);
+}
+
+.gowishcart-gap-md {
+  gap: var(--gowishcart-space-md);
+}
+
+.gowishcart-gap-lg {
+  gap: var(--gowishcart-space-lg);
+}
+
+.gowishcart-mt-0 { margin-top: 0; }
+.gowishcart-mt-xs { margin-top: var(--gowishcart-space-xs); }
+.gowishcart-mt-sm { margin-top: var(--gowishcart-space-sm); }
+.gowishcart-mt-md { margin-top: var(--gowishcart-space-md); }
+.gowishcart-mt-lg { margin-top: var(--gowishcart-space-lg); }
+.gowishcart-mt-xl { margin-top: var(--gowishcart-space-xl); }
+
+.gowishcart-mb-0 { margin-bottom: 0; }
+.gowishcart-mb-xs { margin-bottom: var(--gowishcart-space-xs); }
+.gowishcart-mb-sm { margin-bottom: var(--gowishcart-space-sm); }
+.gowishcart-mb-md { margin-bottom: var(--gowishcart-space-md); }
+.gowishcart-mb-lg { margin-bottom: var(--gowishcart-space-lg); }
+.gowishcart-mb-xl { margin-bottom: var(--gowishcart-space-xl); }

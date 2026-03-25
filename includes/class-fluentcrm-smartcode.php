@@ -4,16 +4,16 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 /**
  * FluentCRM SmartCode Integration Class
  *
- * Provides dynamic shortcodes for WishCart triggers in FluentCRM email editor
+ * Provides dynamic shortcodes for GoWishCart triggers in FluentCRM email editor
  * Similar to FluentBooking's Booking Data shortcodes
  *
  * @category WordPress
- * @package  WishCart
- * @author   WishCart Team <support@gowishcart.com>
+ * @package  GoWishCart
+ * @author   GoWishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://gowishcart.com
  */
-class WishCart_FluentCRM_SmartCode {
+class GoWishCart_FluentCRM_SmartCode {
 
     /**
      * Constructor
@@ -31,37 +31,37 @@ class WishCart_FluentCRM_SmartCode {
         // Register the Wishlist Data tab in FluentCRM email editor for our triggers
         add_filter( 'fluent_crm_funnel_context_smart_codes', array( $this, 'push_context_codes' ), 10, 2 );
         
-        // Register the callback to parse WishCart shortcodes
-        add_filter( 'fluent_crm/smartcode_group_callback_wishcart', array( $this, 'parse_wishlist_data' ), 10, 4 );
+        // Register the callback to parse GoWishCart shortcodes
+        add_filter( 'fluent_crm/smartcode_group_callback_gowishcart', array( $this, 'parse_wishlist_data' ), 10, 4 );
     }
 
     /**
-     * Add WishCart shortcode group to FluentCRM context
+     * Add GoWishCart shortcode group to FluentCRM context
      *
      * This adds the "Wishlist Data" tab when editing email actions
-     * in automations triggered by WishCart events
+     * in automations triggered by GoWishCart events
      *
      * @param array  $codes   Existing shortcode groups
      * @param string $context The trigger context (trigger name)
      * @return array Modified shortcode groups
      */
     public function push_context_codes( $codes, $context ) {
-        // Only add our shortcodes for WishCart triggers
-        $wishcart_triggers = array(
-            'wishcart_item_added',
-            'wishcart_item_removed',
-            'wishcart_price_drop',
-            'wishcart_back_in_stock',
+        // Only add our shortcodes for GoWishCart triggers
+        $gowishcart_triggers = array(
+            'gowishcart_item_added',
+            'gowishcart_item_removed',
+            'gowishcart_price_drop',
+            'gowishcart_back_in_stock',
         );
 
-        if ( ! in_array( $context, $wishcart_triggers, true ) ) {
+        if ( ! in_array( $context, $gowishcart_triggers, true ) ) {
             return $codes;
         }
 
         // Add the Wishlist Data group
         $codes[] = array(
-            'key'        => 'wishcart',
-            'title'      => __( 'Wishlist Data', 'wishcart' ),
+            'key'        => 'gowishcart',
+            'title'      => __( 'Wishlist Data', 'gowishcart-wishlist-for-fluentcart' ),
             'shortcodes' => $this->get_smart_codes(),
         );
 
@@ -69,12 +69,12 @@ class WishCart_FluentCRM_SmartCode {
     }
 
     /**
-     * Parse WishCart shortcode values
+     * Parse GoWishCart shortcode values
      *
-     * This callback is triggered when FluentCRM encounters a {{wishcart.*}} shortcode
+     * This callback is triggered when FluentCRM encounters a {{gowishcart.*}} shortcode
      *
      * @param string $code         The full shortcode
-     * @param string $valueKey     The key after 'wishcart.' (e.g., 'product.name')
+     * @param string $valueKey     The key after 'gowishcart.' (e.g., 'product.name')
      * @param string $defaultValue Default value if parsing fails
      * @param object $subscriber   The FluentCRM subscriber object
      * @return string Parsed value
@@ -118,13 +118,13 @@ class WishCart_FluentCRM_SmartCode {
         $product_id = intval( $funnelSub->source_ref_id );
 
         // Get the product using FluentCart helper or WooCommerce
-        if ( class_exists( 'WishCart_FluentCart_Helper' ) ) {
-            return WishCart_FluentCart_Helper::get_product( $product_id );
+        if ( class_exists( 'GoWishCart_FluentCart_Helper' ) ) {
+            return GoWishCart_FluentCart_Helper::get_product( $product_id );
         }
 
         // Fallback to WooCommerce
-        if ( function_exists( 'wc_get_product' ) ) {
-            return wc_get_product( $product_id );
+        if ( function_exists( 'gwc_get_product' ) ) {
+            return gwc_get_product( $product_id );
         }
 
         return null;
@@ -235,7 +235,7 @@ class WishCart_FluentCRM_SmartCode {
                     $image_url = wp_get_attachment_image_url( $image_id, 'woocommerce_thumbnail' );
                     return $image_url ? $image_url : '';
                 }
-                return wc_placeholder_img_src( 'woocommerce_thumbnail' );
+                return gwc_placeholder_img_src( 'woocommerce_thumbnail' );
             
             case 'add_to_cart_url':
                 return $product->add_to_cart_url();
@@ -278,7 +278,7 @@ class WishCart_FluentCRM_SmartCode {
      * @return string Item count
      */
     private function get_wishlist_item_count( $subscriber ) {
-        if ( ! $subscriber || ! class_exists( 'WishCart_Wishlist_Handler' ) ) {
+        if ( ! $subscriber || ! class_exists( 'GoWishCart_Wishlist_Handler' ) ) {
             return '0';
         }
 
@@ -294,24 +294,28 @@ class WishCart_FluentCRM_SmartCode {
         $session_id = null;
 
         // If no user, try to find guest session
-        if ( ! $user_id && class_exists( 'wishcart_Guest_Handler' ) ) {
-            global $wpdb;
-            $guests_table = $wpdb->prefix . 'wishcart_guests';
-            $guest = $wpdb->get_row(
-                $wpdb->prepare(
-                    "SELECT session_id FROM {$guests_table} WHERE guest_email = %s ORDER BY created_at DESC LIMIT 1",
-                    $email
-                ),
-                ARRAY_A
-            );
-            if ( $guest ) {
-                $session_id = $guest['session_id'];
+        if ( ! $user_id && class_exists( 'GoWishCart_Guest_Handler' ) ) {
+            // Use cache to avoid repeated database queries
+            $cache_key = 'gowishcart_guest_session_' . md5( $email );
+            $cached_session_id = wp_cache_get( $cache_key, 'gowishcart_cache' );
+            
+            if ( false !== $cached_session_id ) {
+                $session_id = $cached_session_id;
+            } else {
+                $guest_handler = new GoWishCart_Guest_Handler();
+                $guest = $guest_handler->get_guest_by_email( $email );
+                
+                if ( $guest && isset( $guest['session_id'] ) ) {
+                    $session_id = $guest['session_id'];
+                    // Cache for 5 minutes
+                    wp_cache_set( $cache_key, $session_id, 'gowishcart_cache', 300 );
+                }
             }
         }
 
         // Get wishlist handler
-        $handler = new WishCart_Wishlist_Handler();
-        $wishlists = $handler->get_wishlists( $user_id, $session_id );
+        $handler = new GoWishCart_Wishlist_Handler();
+        $wishlists = $handler->get_user_wishlists( $user_id, $session_id );
 
         if ( empty( $wishlists ) ) {
             return '0';
@@ -331,7 +335,7 @@ class WishCart_FluentCRM_SmartCode {
      */
     private function get_wishlist_url() {
         // Get wishlist page ID from options
-        $page_id = get_option( 'wishcart_wishlist_page_id' );
+        $page_id = get_option( 'gowishcart_wishlist_page_id' );
         
         if ( $page_id ) {
             return get_permalink( $page_id );
@@ -352,8 +356,8 @@ class WishCart_FluentCRM_SmartCode {
             return '';
         }
 
-        if ( function_exists( 'wc_price' ) ) {
-            return strip_tags( wc_price( $price ) );
+        if ( function_exists( 'gwc_price' ) ) {
+            return wp_strip_all_tags( gwc_price( $price ) );
         }
 
         return number_format( floatval( $price ), 2 );
@@ -367,24 +371,24 @@ class WishCart_FluentCRM_SmartCode {
     private function get_smart_codes() {
         return array(
             // Customer Data
-            '{{wishcart.customer.first_name}}'  => __( 'Customer First Name', 'wishcart' ),
-            '{{wishcart.customer.last_name}}'   => __( 'Customer Last Name', 'wishcart' ),
-            '{{wishcart.customer.full_name}}'   => __( 'Customer Full Name', 'wishcart' ),
-            '{{wishcart.customer.email}}'       => __( 'Customer Email', 'wishcart' ),
+            '{{gowishcart.customer.first_name}}'  => __( 'Customer First Name', 'gowishcart-wishlist-for-fluentcart' ),
+            '{{gowishcart.customer.last_name}}'   => __( 'Customer Last Name', 'gowishcart-wishlist-for-fluentcart' ),
+            '{{gowishcart.customer.full_name}}'   => __( 'Customer Full Name', 'gowishcart-wishlist-for-fluentcart' ),
+            '{{gowishcart.customer.email}}'       => __( 'Customer Email', 'gowishcart-wishlist-for-fluentcart' ),
             
             // Product Data
-            '{{wishcart.product.name}}'           => __( 'Product Name', 'wishcart' ),
-            '{{wishcart.product.price}}'          => __( 'Current Product Price', 'wishcart' ),
-            '{{wishcart.product.regular_price}}'  => __( 'Regular Price', 'wishcart' ),
-            '{{wishcart.product.sale_price}}'     => __( 'Sale Price (if on sale)', 'wishcart' ),
-            '{{wishcart.product.sku}}'            => __( 'Product SKU', 'wishcart' ),
-            '##wishcart.product.url##'            => __( 'Product URL (button/link)', 'wishcart' ),
-            '{{wishcart.product.image_url}}'      => __( 'Product Image URL', 'wishcart' ),
-            '##wishcart.product.add_to_cart_url##' => __( 'Add to Cart URL (button/link)', 'wishcart' ),
+            '{{gowishcart.product.name}}'           => __( 'Product Name', 'gowishcart-wishlist-for-fluentcart' ),
+            '{{gowishcart.product.price}}'          => __( 'Current Product Price', 'gowishcart-wishlist-for-fluentcart' ),
+            '{{gowishcart.product.regular_price}}'  => __( 'Regular Price', 'gowishcart-wishlist-for-fluentcart' ),
+            '{{gowishcart.product.sale_price}}'     => __( 'Sale Price (if on sale)', 'gowishcart-wishlist-for-fluentcart' ),
+            '{{gowishcart.product.sku}}'            => __( 'Product SKU', 'gowishcart-wishlist-for-fluentcart' ),
+            '##gowishcart.product.url##'            => __( 'Product URL (button/link)', 'gowishcart-wishlist-for-fluentcart' ),
+            '{{gowishcart.product.image_url}}'      => __( 'Product Image URL', 'gowishcart-wishlist-for-fluentcart' ),
+            '##gowishcart.product.add_to_cart_url##' => __( 'Add to Cart URL (button/link)', 'gowishcart-wishlist-for-fluentcart' ),
             
             // Wishlist Data
-            '{{wishcart.wishlist.item_count}}'  => __( 'Total Items in Wishlist', 'wishcart' ),
-            '##wishcart.wishlist.url##'         => __( 'Wishlist Page URL (button/link)', 'wishcart' ),
+            '{{gowishcart.wishlist.item_count}}'  => __( 'Total Items in Wishlist', 'gowishcart-wishlist-for-fluentcart' ),
+            '##gowishcart.wishlist.url##'         => __( 'Wishlist Page URL (button/link)', 'gowishcart-wishlist-for-fluentcart' ),
         );
     }
 }

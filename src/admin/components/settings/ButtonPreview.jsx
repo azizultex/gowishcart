@@ -55,8 +55,8 @@ const ButtonPreview = ({ buttonCustomization }) => {
     }
 
     const labels = buttonCustomization?.labels || { add: '', saved: '' };
-    const defaultAddLabel = __('Add to Wishlist', 'wishcart');
-    const defaultSavedLabel = __('Saved to Wishlist', 'wishcart');
+    const defaultAddLabel = __('Add to Wishlist', 'gowishcart-wishlist-for-fluentcart');
+    const defaultSavedLabel = __('Saved to Wishlist', 'gowishcart-wishlist-for-fluentcart');
     const addLabel = labels.add || defaultAddLabel;
     const savedLabel = labels.saved || defaultSavedLabel;
 
@@ -67,7 +67,7 @@ const ButtonPreview = ({ buttonCustomization }) => {
                 <img
                     src={iconConfig.customUrl}
                     alt=""
-                    className={cn("wishcart-wishlist-button__icon", isActive && "wishcart-wishlist-button__icon--filled")}
+                    className={cn("gowishcart-wishlist-button__icon", isActive && "gowishcart-wishlist-button__icon--filled")}
                     style={{ 
                         width: iconSize, 
                         height: iconSize 
@@ -81,7 +81,7 @@ const ButtonPreview = ({ buttonCustomization }) => {
         
         return (
             <IconComponent 
-                className={cn("wishcart-wishlist-button__icon", isActive && "wishcart-wishlist-button__icon--filled")}
+                className={cn("gowishcart-wishlist-button__icon", isActive && "gowishcart-wishlist-button__icon--filled")}
                 style={{ 
                     width: iconSize, 
                     height: iconSize 
@@ -200,12 +200,12 @@ const ButtonPreview = ({ buttonCustomization }) => {
 
         // Build className based on button style
         const buttonClasses = cn(
-            "wishcart-wishlist-button-preview",
-            isActive && "wishcart-wishlist-button-preview--active",
-            buttonStyle === 'text-only' && "wishcart-wishlist-button-preview--text-only",
-            buttonStyle === 'text-only-link' && "wishcart-wishlist-button-preview--text-only-link",
-            buttonStyle === 'text-icon-link' && "wishcart-wishlist-button-preview--text-icon-link",
-            buttonStyle === 'icon-only' && "wishcart-wishlist-button-preview--icon-only"
+            "gowishcart-wishlist-button-preview",
+            isActive && "gowishcart-wishlist-button-preview--active",
+            buttonStyle === 'text-only' && "gowishcart-wishlist-button-preview--text-only",
+            buttonStyle === 'text-only-link' && "gowishcart-wishlist-button-preview--text-only-link",
+            buttonStyle === 'text-icon-link' && "gowishcart-wishlist-button-preview--text-icon-link",
+            buttonStyle === 'icon-only' && "gowishcart-wishlist-button-preview--icon-only"
         );
 
         return (
@@ -245,26 +245,26 @@ const ButtonPreview = ({ buttonCustomization }) => {
                 }}
             >
                 {showIcon && getIconComponent(icon, isActive, iconSize)}
-                {showText && <span className="wishcart-wishlist-button__label">{label}</span>}
+                {showText && <span className="gowishcart-wishlist-button__label">{label}</span>}
             </button>
         );
     };
 
     return (
-        <div className="wishcart-button-preview-container">
-            <div className="wishcart-button-preview-header">
-                <h3 className="text-lg font-semibold mb-4">{__('Live Preview', 'wishcart')}</h3>
+        <div className="gowishcart-button-preview-container">
+            <div className="gowishcart-button-preview-header">
+                <h3 className="text-lg font-semibold mb-4">{__('Live Preview', 'gowishcart-wishlist-for-fluentcart')}</h3>
                 <p className="text-sm text-muted-foreground mb-6">
-                    {__('See how your buttons will look in real-time', 'wishcart')}
+                    {__('See how your buttons will look in real-time', 'gowishcart-wishlist-for-fluentcart')}
                 </p>
             </div>
 
             {/* Button Preview */}
-            <div className="wishcart-preview-section mb-8">
+            <div className="gowishcart-preview-section mb-8">
                 <div className="space-y-3">
                     <div>
                         <p className="text-xs text-muted-foreground mb-2">
-                            {__('Add to Wishlist', 'wishcart')}
+                            {__('Add to Wishlist', 'gowishcart-wishlist-for-fluentcart')}
                         </p>
                         <PreviewButton
                             label={addLabel}
@@ -276,7 +276,7 @@ const ButtonPreview = ({ buttonCustomization }) => {
                     </div>
                     <div>
                         <p className="text-xs text-muted-foreground mb-2">
-                            {__('Saved to Wishlist', 'wishcart')}
+                            {__('Saved to Wishlist', 'gowishcart-wishlist-for-fluentcart')}
                         </p>
                         <PreviewButton
                             label={savedLabel}

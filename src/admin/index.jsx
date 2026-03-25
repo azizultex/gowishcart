@@ -5,7 +5,7 @@ import './styles/main.scss';
 
 document.addEventListener('DOMContentLoaded', () => {
     // Mount settings page
-    const settingsContainer = document.getElementById('wishcart-settings-app');
+    const settingsContainer = document.getElementById('gowishcart-settings-app');
     if (settingsContainer) {
         const settingsRoot = createRoot(settingsContainer);
         settingsRoot.render(<SettingsApp />);

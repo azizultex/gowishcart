@@ -7,12 +7,12 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * Handles campaign rule engine, trigger evaluation, and campaign execution
  *
  * @category WordPress
- * @package  WishCart
- * @author   WishCart Team <support@gowishcart.com>
+ * @package  GoWishCart
+ * @author   GoWishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://gowishcart.com
  */
-class WishCart_CRM_Campaign_Handler {
+class GoWishCart_CRM_Campaign_Handler {
 
     private $wpdb;
     private $campaigns_table;
@@ -24,18 +24,18 @@ class WishCart_CRM_Campaign_Handler {
     public function __construct() {
         global $wpdb;
         $this->wpdb = $wpdb;
-        $this->campaigns_table = $wpdb->prefix . 'fc_wishlist_crm_campaigns';
+        $this->campaigns_table = $wpdb->prefix . 'gwc_wishlist_crm_campaigns';
         
         // Initialize FluentCRM integration
-        if (class_exists('WishCart_FluentCRM_Integration')) {
-            $this->fluentcrm = new WishCart_FluentCRM_Integration();
+        if (class_exists('GoWishCart_FluentCRM_Integration')) {
+            $this->fluentcrm = new GoWishCart_FluentCRM_Integration();
         }
 
         // Hook into wishlist events
-        add_action('wishcart_item_added', array($this, 'handle_item_added'), 10, 1);
-        add_action('wishcart_item_removed', array($this, 'handle_item_removed'), 10, 1);
-        add_action('wishcart_price_drop_detected', array($this, 'handle_price_drop'), 10, 1);
-        add_action('wishcart_back_in_stock', array($this, 'handle_back_in_stock'), 10, 1);
+        add_action('gowishcart_item_added', array($this, 'handle_item_added'), 10, 1);
+        add_action('gowishcart_item_removed', array($this, 'handle_item_removed'), 10, 1);
+        add_action('gowishcart_price_drop_detected', array($this, 'handle_price_drop'), 10, 1);
+        add_action('gowishcart_back_in_stock', array($this, 'handle_back_in_stock'), 10, 1);
     }
 
     /**
@@ -48,7 +48,8 @@ class WishCart_CRM_Campaign_Handler {
         $required_fields = array('wishlist_trigger_type', 'status');
         foreach ($required_fields as $field) {
             if (!isset($data[$field])) {
-                return new WP_Error('missing_field', sprintf(__('Missing required field: %s', 'wishcart'), $field));
+                /* translators: %s: field name */
+                return new WP_Error('missing_field', sprintf(__('Missing required field: %s', 'gowishcart-wishlist-for-fluentcart'), $field));
             }
         }
 
@@ -72,7 +73,7 @@ class WishCart_CRM_Campaign_Handler {
         $result = $this->wpdb->insert($this->campaigns_table, $insert_data, $format);
 
         if (false === $result) {
-            return new WP_Error('db_error', __('Failed to create campaign', 'wishcart'));
+            return new WP_Error('db_error', __('Failed to create campaign', 'gowishcart-wishlist-for-fluentcart'));
         }
 
         return $this->wpdb->insert_id;
@@ -88,7 +89,7 @@ class WishCart_CRM_Campaign_Handler {
     public function update_campaign($campaign_id, $data) {
         $campaign = $this->get_campaign($campaign_id);
         if (!$campaign) {
-            return new WP_Error('not_found', __('Campaign not found', 'wishcart'));
+            return new WP_Error('not_found', __('Campaign not found', 'gowishcart-wishlist-for-fluentcart'));
         }
 
         $update_data = array();
@@ -153,11 +154,11 @@ class WishCart_CRM_Campaign_Handler {
      * @return array|null Campaign data or null
      */
     public function get_campaign($campaign_id) {
-        $campaign = $this->wpdb->get_row(
-            $this->wpdb->prepare(
-                "SELECT * FROM {$this->campaigns_table} WHERE campaign_id = %d",
-                $campaign_id
-            ),
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table name cannot be prepared.
+        $query = "SELECT * FROM {$this->campaigns_table} WHERE campaign_id = %d";
+        $campaign = $this->wpdb->get_row( // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Query is prepared on next line, table name must be interpolated.
+            $this->wpdb->prepare($query, $campaign_id),
             ARRAY_A
         );
 
@@ -187,9 +188,11 @@ class WishCart_CRM_Campaign_Handler {
             $params[] = $status;
         }
 
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table name cannot be prepared.
         $query = "SELECT * FROM {$this->campaigns_table} WHERE {$where} ORDER BY date_created DESC";
         
-        $campaigns = $this->wpdb->get_results(
+        $campaigns = $this->wpdb->get_results( // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Query is prepared on next line, table name must be interpolated.
             $this->wpdb->prepare($query, $params),
             ARRAY_A
         );
@@ -278,11 +281,11 @@ class WishCart_CRM_Campaign_Handler {
     public function execute_campaign($campaign_id, $event_data) {
         $campaign = $this->get_campaign($campaign_id);
         if (!$campaign) {
-            return new WP_Error('campaign_not_found', __('Campaign not found', 'wishcart'));
+            return new WP_Error('campaign_not_found', __('Campaign not found', 'gowishcart-wishlist-for-fluentcart'));
         }
 
         if ($campaign['status'] !== 'active') {
-            return new WP_Error('campaign_inactive', __('Campaign is not active', 'wishcart'));
+            return new WP_Error('campaign_inactive', __('Campaign is not active', 'gowishcart-wishlist-for-fluentcart'));
         }
 
         // Evaluate conditions
@@ -316,7 +319,7 @@ class WishCart_CRM_Campaign_Handler {
         }
 
         if (!$contact_id) {
-            return new WP_Error('no_contact', __('No contact found for campaign execution', 'wishcart'));
+            return new WP_Error('no_contact', __('No contact found for campaign execution', 'gowishcart-wishlist-for-fluentcart'));
         }
 
         // Generate discount code if needed
@@ -377,7 +380,7 @@ class WishCart_CRM_Campaign_Handler {
 
             if ($delay > 0) {
                 // Schedule email
-                wp_schedule_single_event(time() + ($delay * 3600), 'wishcart_send_scheduled_email', array(
+                wp_schedule_single_event(time() + ($delay * 3600), 'gowishcart_send_scheduled_email', array(
                     $contact_id,
                     $subject,
                     $body,
@@ -402,8 +405,8 @@ class WishCart_CRM_Campaign_Handler {
         $replacements = array(
             '{product_name}' => isset($event_data['product_name']) ? $event_data['product_name'] : '',
             '{product_url}' => isset($event_data['product_url']) ? $event_data['product_url'] : '',
-            '{old_price}' => isset($event_data['old_price']) ? wc_price($event_data['old_price']) : '',
-            '{new_price}' => isset($event_data['new_price']) ? wc_price($event_data['new_price']) : '',
+            '{old_price}' => isset($event_data['old_price']) ? gwc_price($event_data['old_price']) : '',
+            '{new_price}' => isset($event_data['new_price']) ? gwc_price($event_data['new_price']) : '',
             '{discount_percentage}' => isset($event_data['discount_percentage']) ? $event_data['discount_percentage'] : '',
             '{discount_code}' => $discount_code ? $discount_code : '',
             '{wishlist_name}' => isset($event_data['wishlist_name']) ? $event_data['wishlist_name'] : '',
@@ -439,7 +442,7 @@ class WishCart_CRM_Campaign_Handler {
     /**
      * Build product tags from product object (supports both WooCommerce and FluentCart)
      *
-     * @param WC_Product|WishCart_FluentCart_Product $product Product object
+     * @param WC_Product|GoWishCart_FluentCart_Product $product Product object
      * @param string $format Tag format: 'detailed', 'simple', or 'prefixed'
      * @return array Array of formatted tag strings
      */
@@ -563,9 +566,9 @@ class WishCart_CRM_Campaign_Handler {
             $price = $product->get_price();
             if (!empty($price) && $price > 0) {
                 // Format price properly
-                if (function_exists('wc_price')) {
-                    $formatted_price = wc_price($price);
-                    $price_text = strip_tags($formatted_price);
+                if (function_exists('gwc_price')) {
+                    $formatted_price = gwc_price($price);
+                    $price_text = wp_strip_all_tags($formatted_price);
                 } else {
                     // Fallback formatting
                     $price_text = '$' . number_format($price, 2);
@@ -684,9 +687,9 @@ class WishCart_CRM_Campaign_Handler {
         if (method_exists($product, 'get_price')) {
             $price = $product->get_price();
             if (!empty($price) && $price > 0) {
-                if (function_exists('wc_price')) {
-                    $formatted_price = wc_price($price);
-                    $data['price'] = strip_tags($formatted_price);
+                if (function_exists('gwc_price')) {
+                    $formatted_price = gwc_price($price);
+                    $data['price'] = wp_strip_all_tags($formatted_price);
                 } else {
                     $data['price'] = '$' . number_format($price, 2);
                 }
@@ -814,7 +817,7 @@ class WishCart_CRM_Campaign_Handler {
                 $product = $item_data['product'];
             } else {
                 // Otherwise, get product using helper
-                $product = wc_get_product($item_data['product_id']);
+                $product = gwc_get_product($item_data['product_id']);
             }
             
             if ($product) {
@@ -871,7 +874,7 @@ class WishCart_CRM_Campaign_Handler {
                 // Handle guest users with email addresses
                 else if (!empty($item_data['session_id'])) {
                     // Check if guest user has email in guest_users table
-                    $guest_handler = new WishCart_Guest_Handler();
+                    $guest_handler = new GoWishCart_Guest_Handler();
                     $guest = $guest_handler->get_guest_by_session($item_data['session_id']);
                     
                     if ($guest && !empty($guest['guest_email']) && is_email($guest['guest_email'])) {
@@ -949,13 +952,15 @@ class WishCart_CRM_Campaign_Handler {
                 
                 if ($settings['enabled'] && isset($settings['send_welcome_email']) && $settings['send_welcome_email']) {
                     // Send default welcome email
-                    $product_name = isset($item_data['product_name']) ? $item_data['product_name'] : __('Product', 'wishcart');
+                    $product_name = isset($item_data['product_name']) ? $item_data['product_name'] : __('Product', 'gowishcart-wishlist-for-fluentcart');
                     $product_url = isset($item_data['product_url']) ? $item_data['product_url'] : '';
                     $site_name = get_bloginfo('name');
                     
-                    $subject = sprintf(__('You added %s to your wishlist!', 'wishcart'), $product_name);
+                    /* translators: %s: product name */
+                    $subject = sprintf(__('You added %s to your wishlist!', 'gowishcart-wishlist-for-fluentcart'), $product_name);
                     $body = sprintf(
-                        __('Hi there,%s%sGreat news! You just added "%s" to your wishlist.%s%sView Product: %s%s%sThank you for using %s!', 'wishcart'),
+                        /* translators: %1$s: newline after greeting, %2$s: newline before message, %3$s: product name, %4$s: newline after product message, %5$s: newline before link, %6$s: product URL, %7$s: newline after link, %8$s: newline before closing, %9$s: site name */
+                        __('Hi there,%1$s%2$sGreat news! You just added "%3$s" to your wishlist.%4$s%5$sView Product: %6$s%7$s%8$sThank you for using %9$s!', 'gowishcart-wishlist-for-fluentcart'),
                         "\n\n",
                         "\n",
                         $product_name,
@@ -1077,22 +1082,23 @@ class WishCart_CRM_Campaign_Handler {
             }
         }
 
-        $items_table = $this->wpdb->prefix . 'fc_wishlist_items';
-        $wishlists_table = $this->wpdb->prefix . 'fc_wishlists';
+        $items_table = GoWishCart_Table_Names::get_table( GoWishCart_Table_Names::WISHLIST_ITEMS );
+        $wishlists_table = GoWishCart_Table_Names::get_table( GoWishCart_Table_Names::WISHLISTS );
         
-        $query = $this->wpdb->prepare(
-            "SELECT wi.user_id, wi.wishlist_id, w.wishlist_name, DATEDIFF(NOW(), wi.date_added) as days_since_added
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table names cannot be prepared.
+        $query = "SELECT wi.user_id, wi.wishlist_id, w.wishlist_name, DATEDIFF(NOW(), wi.date_added) as days_since_added
             FROM {$items_table} wi
             JOIN {$wishlists_table} w ON wi.wishlist_id = w.id
             WHERE wi.status = 'active'
                 AND w.status = 'active'
                 AND wi.user_id IS NOT NULL
                 AND DATEDIFF(NOW(), wi.date_added) = %d
-            GROUP BY wi.user_id, wi.wishlist_id",
-            $days
-        );
+            GROUP BY wi.user_id, wi.wishlist_id";
 
-        return $this->wpdb->get_results($query, ARRAY_A);
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Query is prepared on next line, table names must be interpolated.
+        $prepared_query = $this->wpdb->prepare($query, $days);
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Query was prepared above.
+        return $this->wpdb->get_results($prepared_query, ARRAY_A); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
     }
 }
 

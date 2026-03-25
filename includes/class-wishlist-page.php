@@ -7,12 +7,12 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * Creates and manages the wishlist page
  *
  * @category WordPress
- * @package  WishCart
- * @author   WishCart Team <support@gowishcart.com>
+ * @package  GoWishCart
+ * @author   GoWishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://gowishcart.com
  */
-class WishCart_Wishlist_Page {
+class GoWishCart_Wishlist_Page {
 
     /**
      * Constructor - Initialize rewrite rules
@@ -78,12 +78,12 @@ class WishCart_Wishlist_Page {
      */
     public static function create_wishlist_page( $page_name = '' ) {
         $page_id   = self::locate_existing_page();
-        $page_name = $page_name ? $page_name : __( 'Wishlist', 'wishcart' );
+        $page_name = $page_name ? $page_name : __( 'Wishlist', 'gowishcart-wishlist-for-fluentcart' );
 
         if ( ! $page_id ) {
             $page_data = array(
                 'post_title'   => $page_name,
-                'post_content' => '[wishcart_wishlist]',
+                'post_content' => '[gowishcart_wishlist]',
                 'post_status'  => 'publish',
                 'post_type'    => 'page',
                 'post_name'    => sanitize_title( $page_name ),
@@ -100,7 +100,7 @@ class WishCart_Wishlist_Page {
         }
 
         if ( $page_id ) {
-            update_option( 'wishcart_wishlist_page_id', $page_id );
+            update_option( 'gowishcart_wishlist_page_id', $page_id );
             self::ensure_default_settings( $page_id );
         }
 
@@ -113,14 +113,14 @@ class WishCart_Wishlist_Page {
      * @return int Page ID
      */
     public static function get_wishlist_page_id() {
-        $settings = get_option( 'wishcart_settings', array() );
+        $settings = get_option( 'gowishcart_settings', array() );
         
         if ( isset( $settings['wishlist']['wishlist_page_id'] ) && $settings['wishlist']['wishlist_page_id'] > 0 ) {
             return intval( $settings['wishlist']['wishlist_page_id'] );
         }
 
         // Fallback to option
-        return intval( get_option( 'wishcart_wishlist_page_id', 0 ) );
+        return intval( get_option( 'gowishcart_wishlist_page_id', 0 ) );
     }
 
     /**
@@ -129,13 +129,13 @@ class WishCart_Wishlist_Page {
      * @return int Page ID
      */
     private static function locate_existing_page() {
-        $stored_id = intval( get_option( 'wishcart_wishlist_page_id', 0 ) );
+        $stored_id = intval( get_option( 'gowishcart_wishlist_page_id', 0 ) );
 
         if ( $stored_id && get_post( $stored_id ) ) {
             return $stored_id;
         }
 
-        $settings = get_option( 'wishcart_settings', array() );
+        $settings = get_option( 'gowishcart_settings', array() );
         if ( isset( $settings['wishlist']['wishlist_page_id'] ) ) {
             $settings_id = intval( $settings['wishlist']['wishlist_page_id'] );
             if ( $settings_id && get_post( $settings_id ) ) {
@@ -187,8 +187,8 @@ class WishCart_Wishlist_Page {
         }
 
         $content = $page->post_content ?? '';
-        if ( strpos( $content, '[wishcart_wishlist]' ) === false ) {
-            $content                     = trim( $content . "\n\n[wishcart_wishlist]\n" );
+        if ( strpos( $content, '[gowishcart_wishlist]' ) === false ) {
+            $content                     = trim( $content . "\n\n[gowishcart_wishlist]\n" );
             $updated_data['post_content'] = $content;
             $needs_update                = true;
         }
@@ -210,7 +210,7 @@ class WishCart_Wishlist_Page {
      * @return void
      */
     private static function ensure_default_settings( $page_id ) {
-        $settings          = get_option( 'wishcart_settings', array() );
+        $settings          = get_option( 'gowishcart_settings', array() );
         $wishlist_defaults = self::get_default_settings( $page_id );
 
         if ( ! isset( $settings['wishlist'] ) || ! is_array( $settings['wishlist'] ) ) {
@@ -220,7 +220,7 @@ class WishCart_Wishlist_Page {
         $settings['wishlist'] = wp_parse_args( $settings['wishlist'], $wishlist_defaults );
         $settings['wishlist']['wishlist_page_id'] = intval( $page_id );
 
-        update_option( 'wishcart_settings', $settings );
+        update_option( 'gowishcart_settings', $settings );
     }
 
     /**
@@ -235,10 +235,8 @@ class WishCart_Wishlist_Page {
             'shop_page_button'     => true,
             'product_page_button'  => true,
             'button_position'      => 'bottom',
-            'custom_css'           => '',
             'wishlist_page_id'     => intval( $page_id ),
             'guest_cookie_expiry'  => 30,
-            'enable_multiple_wishlists' => false,
             'button_customization' => array(
                 'product_page' => array(
                     'backgroundColor'        => 'linear-gradient(180deg, #ffffff29, #fff0), #253241',
@@ -297,38 +295,10 @@ class WishCart_Wishlist_Page {
                     'customUrl'  => '',
                 ),
                 'labels' => array(
-                    'add'    => __( 'Add to Wishlist', 'wishcart' ),
-                    'saved'  => __( 'Saved to Wishlist', 'wishcart' ),
+                    'add'    => __( 'Add to Wishlist', 'gowishcart-wishlist-for-fluentcart' ),
+                    'saved'  => __( 'Saved to Wishlist', 'gowishcart-wishlist-for-fluentcart' ),
                 ),
                 'buttonStyle' => 'button',
-            ),
-        );
-    }
-
-    /**
-     * Default integration settings for admin UI
-     *
-     * @return array
-     */
-    public static function get_default_integrations_settings() {
-        return array(
-            'whatsapp' => array(
-                'enabled' => false,
-                'account_sid' => '',
-                'auth_token' => '',
-                'phone_number' => '',
-                'welcome_message' => '',
-                'enable_template_messages' => false,
-            ),
-            'telegram' => array(
-                'enabled' => false,
-                'bot_token' => '',
-                'bot_username' => '',
-                'welcome_message' => '',
-            ),
-            'contact_form' => array(
-                'enabled' => false,
-                'shortcode' => '',
             ),
         );
     }

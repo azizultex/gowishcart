@@ -1,25 +1,25 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
 /**
- * Database handling class for WishCart plugin
+ * Database handling class for GoWishCart plugin
  *
  * @category WordPress
- * @package  WishCart
- * @author   WishCart Team <support@gowishcart.com>
+ * @package  GoWishCart
+ * @author   GoWishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://gowishcart.com
  */
 
 /**
- * WishCart_Database Class
+ * GoWishCart_Database Class
  *
  * @category WordPress
- * @package  WishCart
- * @author   WishCart Team <support@gowishcart.com>
+ * @package  GoWishCart
+ * @author   GoWishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://gowishcart.com
  */
-class WishCart_Database {
+class GoWishCart_Database {
 
     private $wpdb;
     private $table_prefix;
@@ -34,9 +34,7 @@ class WishCart_Database {
         $this->wpdb = $wpdb;
         $this->table_prefix = $wpdb->prefix;
 		
-		$this->log_debug('WishCart_Database::__construct start');
 		$this->create_tables();
-		$this->log_debug('WishCart_Database::__construct end');
     }
 
     /**
@@ -48,10 +46,10 @@ class WishCart_Database {
      */
     public function create_tables() {
 		$charset_collate = $this->wpdb->get_charset_collate();
-		$this->log_debug('create_tables: start');
 
-        // 1. Main Wishlists Table (fc_wishlists)
-        $sql_wishlists = "CREATE TABLE IF NOT EXISTS {$this->table_prefix}fc_wishlists (
+        // 1. Main Wishlists Table (wishlists)
+        $wishlists_table = $this->table_prefix . GoWishCart_Table_Names::WISHLISTS;
+        $sql_wishlists = "CREATE TABLE IF NOT EXISTS {$wishlists_table} (
             id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
             wishlist_token varchar(64) NOT NULL UNIQUE,
             user_id bigint(20) UNSIGNED NULL DEFAULT NULL,
@@ -77,8 +75,9 @@ class WishCart_Database {
             KEY wishlist_slug_idx (wishlist_slug)
         ) ENGINE=InnoDB $charset_collate;";
 
-        // 2. Wishlist Items Table (fc_wishlist_items)
-        $sql_wishlist_items = "CREATE TABLE IF NOT EXISTS {$this->table_prefix}fc_wishlist_items (
+        // 2. Wishlist Items Table (wishlist_items)
+        $items_table = $this->table_prefix . GoWishCart_Table_Names::WISHLIST_ITEMS;
+        $sql_wishlist_items = "CREATE TABLE IF NOT EXISTS {$items_table} (
             item_id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
             wishlist_id bigint(20) UNSIGNED NOT NULL,
             product_id bigint(20) UNSIGNED NOT NULL,
@@ -106,56 +105,9 @@ class WishCart_Database {
             KEY status_idx (status)
         ) ENGINE=InnoDB $charset_collate;";
 
-        // 3. Wishlist Shares Table (fc_wishlist_shares)
-        $sql_wishlist_shares = "CREATE TABLE IF NOT EXISTS {$this->table_prefix}fc_wishlist_shares (
-            share_id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-            wishlist_id bigint(20) UNSIGNED NOT NULL,
-            share_token varchar(64) UNIQUE,
-            share_type enum('link', 'email', 'facebook', 'twitter', 'pinterest', 'whatsapp', 'instagram', 'other') NOT NULL,
-            shared_by_user_id bigint(20) UNSIGNED NULL,
-            shared_with_email varchar(255) NULL,
-            share_key varchar(255) NULL,
-            share_title varchar(255) NULL,
-            share_message text NULL,
-            click_count int(11) DEFAULT 0,
-            conversion_count int(11) DEFAULT 0,
-            date_created datetime DEFAULT CURRENT_TIMESTAMP,
-            date_expires datetime NULL,
-            last_clicked datetime NULL,
-            status varchar(20) DEFAULT 'active',
-            PRIMARY KEY (share_id),
-            KEY wishlist_id_idx (wishlist_id),
-            KEY share_token_idx (share_token),
-            KEY share_type_idx (share_type),
-            KEY shared_by_user_idx (shared_by_user_id),
-            KEY status_idx (status)
-        ) ENGINE=InnoDB $charset_collate;";
-
-        // 4. Wishlist Analytics Table (fc_wishlist_analytics)
-        $sql_wishlist_analytics = "CREATE TABLE IF NOT EXISTS {$this->table_prefix}fc_wishlist_analytics (
-            analytics_id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-            product_id bigint(20) UNSIGNED NOT NULL,
-            variation_id bigint(20) UNSIGNED NULL DEFAULT 0,
-            wishlist_count int(11) DEFAULT 0,
-            click_count int(11) DEFAULT 0,
-            add_to_cart_count int(11) DEFAULT 0,
-            purchase_count int(11) DEFAULT 0,
-            share_count int(11) DEFAULT 0,
-            first_added_date datetime NULL,
-            last_added_date datetime NULL,
-            last_purchased_date datetime NULL,
-            average_days_in_wishlist decimal(10,2) DEFAULT 0,
-            conversion_rate decimal(5,2) DEFAULT 0,
-            date_updated datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            PRIMARY KEY (analytics_id),
-            UNIQUE KEY product_variation_unique (product_id, variation_id),
-            KEY product_id_idx (product_id),
-            KEY wishlist_count_idx (wishlist_count),
-            KEY conversion_rate_idx (conversion_rate)
-        ) ENGINE=InnoDB $charset_collate;";
-
-        // 5. Wishlist Notifications Table (fc_wishlist_notifications)
-        $sql_wishlist_notifications = "CREATE TABLE IF NOT EXISTS {$this->table_prefix}fc_wishlist_notifications (
+        // 3. Wishlist Notifications Table (wishlist_notifications)
+        $notifications_table = $this->table_prefix . GoWishCart_Table_Names::WISHLIST_NOTIFICATIONS;
+        $sql_wishlist_notifications = "CREATE TABLE IF NOT EXISTS {$notifications_table} (
             notification_id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
             user_id bigint(20) UNSIGNED NULL,
             wishlist_id bigint(20) UNSIGNED NULL,
@@ -191,29 +143,11 @@ class WishCart_Database {
             KEY crm_campaign_id_idx (crm_campaign_id)
         ) ENGINE=InnoDB $charset_collate;";
 
-        // 6. Wishlist Activities Table (fc_wishlist_activities)
-        $sql_wishlist_activities = "CREATE TABLE IF NOT EXISTS {$this->table_prefix}fc_wishlist_activities (
-            activity_id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-            wishlist_id bigint(20) UNSIGNED NULL,
-            user_id bigint(20) UNSIGNED NULL,
-            session_id varchar(255) NULL,
-            activity_type enum('created', 'added_item', 'removed_item', 'moved_item', 'shared', 'viewed', 'renamed', 'deleted', 'purchased', 'updated') NOT NULL,
-            object_id bigint(20) UNSIGNED NULL,
-            object_type varchar(50) NULL,
-            activity_data text NULL,
-            ip_address varchar(45) NULL,
-            user_agent text NULL,
-            referrer_url text NULL,
-            date_created datetime DEFAULT CURRENT_TIMESTAMP,
-            PRIMARY KEY (activity_id),
-            KEY wishlist_id_idx (wishlist_id),
-            KEY user_id_idx (user_id),
-            KEY activity_type_idx (activity_type),
-            KEY date_created_idx (date_created)
-        ) ENGINE=InnoDB $charset_collate;";
+   
 
-        // 7. Guest Users Table (fc_wishlist_guest_users)
-        $sql_wishlist_guest_users = "CREATE TABLE IF NOT EXISTS {$this->table_prefix}fc_wishlist_guest_users (
+        // 7. Guest Users Table (wishlist_guest_users)
+        $guest_users_table = $this->table_prefix . GoWishCart_Table_Names::WISHLIST_GUEST_USERS;
+        $sql_wishlist_guest_users = "CREATE TABLE IF NOT EXISTS {$guest_users_table} (
             guest_id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
             session_id varchar(255) NOT NULL UNIQUE,
             guest_email varchar(255) NULL,
@@ -232,8 +166,9 @@ class WishCart_Database {
             KEY conversion_user_id_idx (conversion_user_id)
         ) ENGINE=InnoDB $charset_collate;";
 
-        // 8. CRM Campaigns Table (fc_wishlist_crm_campaigns)
-        $sql_crm_campaigns = "CREATE TABLE IF NOT EXISTS {$this->table_prefix}fc_wishlist_crm_campaigns (
+        // 8. CRM Campaigns Table (wishlist_crm_campaigns)
+        $crm_campaigns_table = $this->table_prefix . GoWishCart_Table_Names::WISHLIST_CRM_CAMPAIGNS;
+        $sql_crm_campaigns = "CREATE TABLE IF NOT EXISTS {$crm_campaigns_table} (
             campaign_id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
             crm_campaign_id bigint(20) UNSIGNED NULL,
             wishlist_trigger_type enum('item_added', 'price_drop', 'back_in_stock', 'time_based', 'cart_abandoned_with_wishlist', 'wishlist_anniversary', 'multiple_wishlists', 'high_value_wishlist') NOT NULL,
@@ -256,17 +191,12 @@ class WishCart_Database {
 
         dbDelta($sql_wishlists);
         dbDelta($sql_wishlist_items);
-        dbDelta($sql_wishlist_shares);
-        dbDelta($sql_wishlist_analytics);
         dbDelta($sql_wishlist_notifications);
-        dbDelta($sql_wishlist_activities);
         dbDelta($sql_wishlist_guest_users);
         dbDelta($sql_crm_campaigns);
 		
 		// Migrate existing notifications table if needed
 		$this->migrate_notifications_table();
-		
-		$this->log_debug('create_tables: end');
     }
 
     /**
@@ -275,43 +205,44 @@ class WishCart_Database {
      * @return void
      */
     private function migrate_notifications_table() {
-        $table_name = $this->table_prefix . 'fc_wishlist_notifications';
-        
-        // Check if CRM columns exist
-        $columns = $this->wpdb->get_col("DESCRIBE {$table_name}");
-        
-        $crm_columns = array(
-            'crm_contact_id' => "ALTER TABLE {$table_name} ADD COLUMN crm_contact_id bigint(20) UNSIGNED NULL AFTER error_message",
-            'crm_campaign_id' => "ALTER TABLE {$table_name} ADD COLUMN crm_campaign_id bigint(20) UNSIGNED NULL AFTER crm_contact_id",
-            'crm_email_id' => "ALTER TABLE {$table_name} ADD COLUMN crm_email_id bigint(20) UNSIGNED NULL AFTER crm_campaign_id",
-            'discount_code' => "ALTER TABLE {$table_name} ADD COLUMN discount_code varchar(50) NULL AFTER crm_email_id",
-            'discount_expires' => "ALTER TABLE {$table_name} ADD COLUMN discount_expires datetime NULL AFTER discount_code",
-            'engagement_score' => "ALTER TABLE {$table_name} ADD COLUMN engagement_score decimal(5,2) NULL AFTER discount_expires",
-            'conversion_value' => "ALTER TABLE {$table_name} ADD COLUMN conversion_value decimal(19,4) NULL AFTER engagement_score"
+        // $table_name is the only dynamic identifier; it is built solely from the
+        // WordPress-supplied $wpdb->prefix and a plugin class constant, then escaped
+        // with esc_sql() as an extra precaution.
+        $table_name = esc_sql( $this->table_prefix . GoWishCart_Table_Names::WISHLIST_NOTIFICATIONS );
+
+        // DESCRIBE uses an identifier as its subject, not a parameterisable value,
+        // so wpdb::prepare() cannot be applied here.
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- identifier escaped via esc_sql() above.
+        $columns = $this->wpdb->get_col( "DESCRIBE `{$table_name}`" );
+
+        // Each ALTER TABLE statement is a fully hardcoded string — no column name or
+        // index name is stored in a PHP variable and interpolated into SQL. Only the
+        // table name (escaped above) appears as a dynamic value.
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- only $table_name is dynamic; escaped via esc_sql().
+        $alter_statements = array(
+            'crm_contact_id'  => "ALTER TABLE `{$table_name}` ADD COLUMN crm_contact_id bigint(20) UNSIGNED NULL AFTER error_message",
+            'crm_campaign_id' => "ALTER TABLE `{$table_name}` ADD COLUMN crm_campaign_id bigint(20) UNSIGNED NULL AFTER crm_contact_id",
+            'crm_email_id'    => "ALTER TABLE `{$table_name}` ADD COLUMN crm_email_id bigint(20) UNSIGNED NULL AFTER crm_campaign_id",
+            'discount_code'   => "ALTER TABLE `{$table_name}` ADD COLUMN discount_code varchar(50) NULL AFTER crm_email_id",
+            'discount_expires' => "ALTER TABLE `{$table_name}` ADD COLUMN discount_expires datetime NULL AFTER discount_code",
+            'engagement_score' => "ALTER TABLE `{$table_name}` ADD COLUMN engagement_score decimal(5,2) NULL AFTER discount_expires",
+            'conversion_value' => "ALTER TABLE `{$table_name}` ADD COLUMN conversion_value decimal(19,4) NULL AFTER engagement_score",
         );
-        
-        foreach ($crm_columns as $column => $sql) {
-            if (!in_array($column, $columns)) {
-                $this->wpdb->query($sql);
-                // Add indexes if needed
-                if (in_array($column, array('crm_contact_id', 'crm_campaign_id'))) {
-                    $index_name = $column . '_idx';
-                    $this->wpdb->query("ALTER TABLE {$table_name} ADD INDEX {$index_name} ({$column})");
+
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- only $table_name is dynamic; escaped via esc_sql().
+        $index_statements = array(
+            'crm_contact_id'  => "ALTER TABLE `{$table_name}` ADD INDEX `crm_contact_id_idx` (`crm_contact_id`)",
+            'crm_campaign_id' => "ALTER TABLE `{$table_name}` ADD INDEX `crm_campaign_id_idx` (`crm_campaign_id`)",
+        );
+
+        foreach ( $alter_statements as $column => $sql ) {
+            if ( ! in_array( $column, $columns, true ) ) {
+                $this->wpdb->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery -- ALTER TABLE DDL; only $table_name is dynamic and is escaped via esc_sql().
+
+                if ( isset( $index_statements[ $column ] ) ) {
+                    $this->wpdb->query( $index_statements[ $column ] ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery -- ALTER TABLE DDL; only $table_name is dynamic and is escaped via esc_sql().
                 }
             }
         }
     }
-
-	/**
-	 * Lightweight debug logger
-	 *
-	 * @param string $message
-	 * @return void
-	 */
-	private function log_debug($message) {
-		if (defined('WP_DEBUG') && WP_DEBUG) {
-			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Debug logging is properly guarded
-			error_log('[WishCart DB] ' . $message);
-		}
-	}
 }

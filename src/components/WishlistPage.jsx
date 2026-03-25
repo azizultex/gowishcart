@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Heart, Trash2, ShoppingCart, Check, X, Twitter, Mail, MessageCircle, Link2 } from 'lucide-react';
+import { Heart, Trash2, ShoppingCart, Check, X, Twitter, Mail, MessageCircle, Link2, Lock } from 'lucide-react';
 import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
 import { Checkbox } from './ui/checkbox';
@@ -57,20 +57,20 @@ const WishlistPage = () => {
 
     // Get session ID from cookie
     const getSessionId = () => {
-        if (window.wishcartWishlist?.isLoggedIn) {
+        if (window.gowishcartWishlist?.isLoggedIn) {
             return null;
         }
         
         const cookies = document.cookie.split(';');
         for (let cookie of cookies) {
             const [name, value] = cookie.trim().split('=');
-            if (name === 'wishcart_session_id') {
+            if (name === 'gowishcart_session_id') {
                 return value;
             }
         }
 
-        if (window.wishcartWishlist?.sessionId) {
-            return window.wishcartWishlist.sessionId;
+        if (window.gowishcartWishlist?.sessionId) {
+            return window.gowishcartWishlist.sessionId;
         }
 
         return null;
@@ -79,107 +79,30 @@ const WishlistPage = () => {
     // Load wishlists
     useEffect(() => {
         const loadWishlists = async () => {
-            if (!window.wishcartWishlist) {
+            if (!window.gowishcartWishlist) {
                 return;
             }
 
-            const shareCode = window.wishcartWishlist?.shareCode;
-            
-            // If viewing a shared wishlist, load it directly
-            if (shareCode) {
-                // Debug: Log share code extraction
-                console.log('wishcart: Loading shared wishlist with share code:', shareCode);
-                // Mark as loading immediately to prevent second useEffect from running
-                hasLoadedRef.current = true;
-                setIsLoadingWishlists(true);
-                setError(null); // Clear any previous errors
-                try {
-                    const url = `${window.wishcartWishlist.apiUrl}wishlist/share/${shareCode}`;
-                    
-                    // Build headers - make nonce optional for public endpoints
-                    const headers = {};
-                    if (window.wishcartWishlist.nonce) {
-                        headers['X-WP-Nonce'] = window.wishcartWishlist.nonce;
-                    }
-                    
-                    const response = await fetch(url, {
-                        headers: headers,
-                    });
-
-                    if (response.ok) {
-                        const data = await response.json();
-                        if (data.wishlist) {
-                            setCurrentWishlist(data.wishlist);
-                            setProducts(data.products || []);
-                            setError(null); // Clear error on success
-                            // Mark as loaded to prevent second useEffect from running
-                            hasLoadedRef.current = true;
-                            loadedWishlistIdRef.current = data.wishlist.id || data.wishlist.share_code;
-                        } else {
-                            // Wishlist not found or invalid response
-                            setError('Wishlist not found or invalid.');
-                            setProducts([]);
-                        }
-                    } else {
-                        // Handle non-OK responses
-                        let errorMessage = 'Failed to load wishlist.';
-                        try {
-                            const errorData = await response.json();
-                            if (errorData.message) {
-                                errorMessage = errorData.message;
-                            } else if (errorData.code === 'not_found') {
-                                errorMessage = 'Wishlist not found.';
-                            }
-                        } catch (parseError) {
-                            // If response is not JSON, use status text
-                            if (response.status === 404) {
-                                errorMessage = 'Wishlist not found.';
-                            } else if (response.status === 403) {
-                                errorMessage = 'Access denied.';
-                            } else {
-                                errorMessage = `Failed to load wishlist (${response.status}).`;
-                            }
-                        }
-                        setError(errorMessage);
-                        setProducts([]);
-                        console.error('Error loading shared wishlist:', response.status, errorMessage);
-                    }
-                } catch (error) {
-                    console.error('Error loading shared wishlist:', error);
-                    setError('Network error. Please check your connection and try again.');
-                    setProducts([]);
-                } finally {
-                    setIsLoadingWishlists(false);
-                    setIsLoading(false);
-                }
-                return;
-            }
-
-            // Load user's own wishlists (including guest users)
+            // Load user's default wishlist (free version supports single wishlist only)
             setIsLoadingWishlists(true);
             try {
                 const sessionId = getSessionId();
-                const url = `${window.wishcartWishlist.apiUrl}wishlists${sessionId ? `?session_id=${sessionId}` : ''}`;
+                const url = `${window.gowishcartWishlist.apiUrl}wishlist${sessionId ? `?session_id=${sessionId}` : ''}`;
                 const response = await fetch(url, {
                     headers: {
-                        'X-WP-Nonce': window.wishcartWishlist.nonce,
+                        'X-WP-Nonce': window.gowishcartWishlist.nonce,
                     },
                 });
 
                 if (response.ok) {
                     const data = await response.json();
-                    setWishlists(data.wishlists || []);
-                    
-                    // Set default wishlist
-                    const defaultWishlist = data.wishlists?.find(w => w.is_default === 1 || w.is_default === '1');
-                    if (defaultWishlist) {
-                        setCurrentWishlist(defaultWishlist);
-                    } else if (data.wishlists?.length > 0) {
-                        setCurrentWishlist(data.wishlists[0]);
+                    if (data.wishlist) {
+                        setCurrentWishlist(data.wishlist);
+                        setWishlists([data.wishlist]); // Single wishlist in free version
                     }
                 }
             } catch (error) {
-                console.error('Error loading wishlists:', error);
+                // Error handled silently
             } finally {
                 setIsLoadingWishlists(false);
             }
@@ -191,17 +114,8 @@ const WishlistPage = () => {
     // Shared helper to load wishlist products
     const loadWishlist = useCallback(
         async (wishlistOverride = null, { forceReload = false } = {}) => {
-            if (!window.wishcartWishlist) {
+            if (!window.gowishcartWishlist) {
                 setIsLoading(false);
-                return;
-            }
-
-            // Skip if viewing shared wishlist (already loaded in first effect)
-            // IMPORTANT: If shareCode exists, completely skip this loader to prevent session_id fallback
-            const shareCode = window.wishcartWishlist?.shareCode;
-            if (shareCode) {
-                // Share code exists - first useEffect will handle loading
-                // Don't make any session_id requests when viewing a shared wishlist
                 return;
             }
 
@@ -218,34 +132,16 @@ const WishlistPage = () => {
                 try {
                     const sessionId = getSessionId();
                     
-                    // Debug logging
-                    console.log('[WishCart] Loading wishlist (no wishlists exist):', {
-                        sessionId: sessionId ? 'present' : 'none',
-                        isLoggedIn: window.wishcartWishlist?.isLoggedIn || false
-                    });
-                    
-                    const url = `${window.wishcartWishlist.apiUrl}wishlist${sessionId ? `?session_id=${sessionId}` : ''}`;
+                    const url = `${window.gowishcartWishlist.apiUrl}wishlist${sessionId ? `?session_id=${sessionId}` : ''}`;
                     
                     const response = await fetch(url, {
                         headers: {
-                            'X-WP-Nonce': window.wishcartWishlist.nonce,
+                            'X-WP-Nonce': window.gowishcartWishlist.nonce,
                         },
                     });
 
                     if (response.ok) {
                         const data = await response.json();
-                        
-                        // Debug logging
-                        console.log('[WishCart] Wishlist loaded (no wishlists exist):', {
-                            productCount: data.products?.length || 0,
-                            wishlistId: data.wishlist?.id || 'default',
-                            wishlistName: data.wishlist?.name || 'default',
-                            products: data.products?.map(p => ({
-                                id: p.id,
-                                variationId: p.variation_id,
-                                name: p.name
-                            })) || []
-                        });
                         
                         setProducts(data.products || []);
                         if (data.wishlist) {
@@ -276,13 +172,11 @@ const WishlistPage = () => {
             setIsLoading(true);
             try {
                 const sessionId = getSessionId();
-                let url = `${window.wishcartWishlist.apiUrl}wishlist`;
+                let url = `${window.gowishcartWishlist.apiUrl}wishlist`;
                 const params = new URLSearchParams();
                 
-                // Use share_code if available, otherwise use wishlist_id
-                if (activeWishlist.share_code) {
-                    params.append('share_code', activeWishlist.share_code);
-                } else if (activeWishlist.id) {
+                // Use wishlist_id or session_id
+                if (activeWishlist.id) {
                     params.append('wishlist_id', activeWishlist.id);
                 } else if (sessionId) {
                     params.append('session_id', sessionId);
@@ -294,27 +188,12 @@ const WishlistPage = () => {
                 
                 const response = await fetch(url, {
                     headers: {
-                        'X-WP-Nonce': window.wishcartWishlist.nonce,
+                        'X-WP-Nonce': window.gowishcartWishlist.nonce,
                     },
                 });
 
                 if (response.ok) {
                     const data = await response.json();
-                    
-                    // Debug logging
-                    const sessionId = getSessionId();
-                    console.log('[WishCart] Wishlist loaded:', {
-                        wishlistId: data.wishlist?.id || currentWishlistId,
-                        wishlistName: data.wishlist?.name || 'default',
-                        productCount: data.products?.length || 0,
-                        sessionId: sessionId ? 'present' : 'none',
-                        isLoggedIn: window.wishcartWishlist?.isLoggedIn || false,
-                        products: data.products?.map(p => ({
-                            id: p.id,
-                            variationId: p.variation_id,
-                            name: p.name
-                        })) || []
-                    });
                     
                     setProducts(data.products || []);
                     if (data.wishlist) {
@@ -334,7 +213,7 @@ const WishlistPage = () => {
                     hasLoadedRef.current = true;
                 }
             } catch (error) {
-                console.error('Error loading wishlist:', error);
+                // Error handled silently
             } finally {
                 setIsLoading(false);
             }
@@ -391,20 +270,8 @@ const WishlistPage = () => {
             const currentWishlist = currentWishlistRef.current;
             const loadWishlist = loadWishlistRef.current;
             
-            // Debug logging
-            console.log('[WishCart] Item added event received:', {
-                productId,
-                variationId,
-                wishlistId,
-                currentWishlistId: currentWishlist?.id,
-                currentWishlistName: currentWishlist?.name,
-                sessionId: getSessionId() ? 'present' : 'none',
-                isLoggedIn: window.wishcartWishlist?.isLoggedIn || false
-            });
-            
             // Always refresh when item is added (items might be added to default wishlist)
             // Use a small delay to ensure the database has been updated
-            console.log('[WishCart] Refreshing wishlist after item added');
             setTimeout(() => {
                 if (loadWishlist) {
                     loadWishlist(null, { forceReload: true });
@@ -416,15 +283,7 @@ const WishlistPage = () => {
             const { productId, variationId } = event.detail || {};
             const loadWishlist = loadWishlistRef.current;
             
-            // Debug logging
-            console.log('[WishCart] Item removed event received:', {
-                productId,
-                variationId,
-                currentWishlistId: currentWishlistRef.current?.id
-            });
-            
             // Always refresh when item is removed
-            console.log('[WishCart] Refreshing wishlist after item removed');
             setTimeout(() => {
                 if (loadWishlist) {
                     loadWishlist(null, { forceReload: true });
@@ -432,15 +291,14 @@ const WishlistPage = () => {
             }, 300);
         };
 
-        window.addEventListener('wishcart:item-added', handleItemAdded);
-        window.addEventListener('wishcart:item-removed', handleItemRemoved);
+        window.addEventListener('gowishcart:item-added', handleItemAdded);
+        window.addEventListener('gowishcart:item-removed', handleItemRemoved);
 
         // Fallback: Refresh when page becomes visible (user might have added items in another tab)
         const handleVisibilityChange = () => {
             if (document.visibilityState === 'visible') {
                 const loadWishlist = loadWishlistRef.current;
                 if (loadWishlist) {
-                    console.log('[WishCart] Page became visible, refreshing wishlist as fallback');
                     // loadWishlist(null, { forceReload: true });
                 }
             }
@@ -453,37 +311,25 @@ const WishlistPage = () => {
             
             // Only run fallback if we have a wishlist but no products
             if (loadWishlist && currentWishlist && products.length === 0 && !isLoading) {
-                console.log('[WishCart] Fallback: No products found, refreshing wishlist');
                 loadWishlist(null, { forceReload: true });
             }
         }, 5000); // Check every 5 seconds
 
         document.addEventListener('visibilitychange', handleVisibilityChange);
-        window.addEventListener('wishcart:item-added', handleItemAdded);
-        window.addEventListener('wishcart:item-removed', handleItemRemoved);
+        window.addEventListener('gowishcart:item-added', handleItemAdded);
+        window.addEventListener('gowishcart:item-removed', handleItemRemoved);
 
         return () => {
             clearInterval(fallbackInterval);
             document.removeEventListener('visibilitychange', handleVisibilityChange);
-            window.removeEventListener('wishcart:item-added', handleItemAdded);
-            window.removeEventListener('wishcart:item-removed', handleItemRemoved);
+            window.removeEventListener('gowishcart:item-added', handleItemAdded);
+            window.removeEventListener('gowishcart:item-removed', handleItemRemoved);
         };
     }, []); // Empty dependencies - use refs instead
 
     // Remove product from wishlist
     const removeProduct = async (productId, variationId = null) => {
-        // Check if viewing a shared wishlist (not owned by current user)
-        const shareCode = window.wishcartWishlist?.shareCode;
-        const isViewingShared = shareCode && currentWishlist && 
-            (currentWishlist.user_id !== window.wishcartWishlist?.userId || 
-             (currentWishlist.user_id && !window.wishcartWishlist?.isLoggedIn));
-        
-        if (isViewingShared) {
-            alert('You can only remove items from your own wishlist');
-            return;
-        }
-
-        if (removingIds.has(productId) || !window.wishcartWishlist) {
+        if (removingIds.has(productId) || !window.gowishcartWishlist) {
             return;
         }
 
@@ -491,7 +337,7 @@ const WishlistPage = () => {
 
         try {
             const sessionId = getSessionId();
-            const url = `${window.wishcartWishlist.apiUrl}wishlist/remove`;
+            const url = `${window.gowishcartWishlist.apiUrl}wishlist/remove`;
             
             // Get variation_id from product if not provided
             const product = products.find(p => p.id === productId);
@@ -511,7 +357,7 @@ const WishlistPage = () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-WP-Nonce': window.wishcartWishlist.nonce,
+                    'X-WP-Nonce': window.gowishcartWishlist.nonce,
                 },
                 body: JSON.stringify(body),
             });
@@ -526,11 +372,9 @@ const WishlistPage = () => {
                 });
             } else {
                 const error = await response.json();
-                console.error('Error removing product:', error);
                 alert('Failed to remove product from wishlist');
             }
         } catch (error) {
-            console.error('Error removing product:', error);
             alert('Failed to remove product from wishlist');
         } finally {
             setRemovingIds(prev => {
@@ -615,7 +459,6 @@ const WishlistPage = () => {
     // Add product to cart
     const addToCart = async (product) => {
         if (!product) {
-            console.error('Product not found');
             setCartMessage({ type: 'error', text: 'Product not found' });
             return;
         }
@@ -623,7 +466,7 @@ const WishlistPage = () => {
         // Get unique key for this specific variant
         const uniqueKey = getUniqueItemKey(product);
         
-        if (addingToCartIds.has(uniqueKey) || !window.wishcartWishlist) {
+        if (addingToCartIds.has(uniqueKey) || !window.gowishcartWishlist) {
             return;
         }
 
@@ -641,7 +484,7 @@ const WishlistPage = () => {
 
             // Track the add to cart event (non-blocking)
             const sessionId = getSessionId();
-            const trackUrl = `${window.wishcartWishlist.apiUrl}wishlist/track-cart`;
+            const trackUrl = `${window.gowishcartWishlist.apiUrl}wishlist/track-cart`;
             
             const trackBody = {
                 product_id: product.id,
@@ -654,11 +497,11 @@ const WishlistPage = () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-WP-Nonce': window.wishcartWishlist.nonce,
+                    'X-WP-Nonce': window.gowishcartWishlist.nonce,
                 },
                 body: JSON.stringify(trackBody),
             }).catch(trackError => {
-                console.error('Error tracking cart event:', trackError);
+                // Error tracked silently
             });
 
             // Add to cart via AJAX
@@ -682,7 +525,6 @@ const WishlistPage = () => {
                 }, 3000);
             } else {
                 // If AJAX fails, fallback to navigation
-                console.warn('AJAX add to cart failed, redirecting to product page:', result.error);
                 setCartMessage({
                     type: 'info',
                     text: 'Redirecting to product page...',
@@ -694,7 +536,6 @@ const WishlistPage = () => {
                 }, 500);
             }
         } catch (error) {
-            console.error('Error adding to cart:', error);
             setCartMessage({
                 type: 'error',
                 text: 'Failed to add product to cart. Please try again.',
@@ -751,13 +592,13 @@ const WishlistPage = () => {
 
                 // Track the add to cart event (non-blocking)
                 const sessionId = getSessionId();
-                const trackUrl = `${window.wishcartWishlist.apiUrl}wishlist/track-cart`;
+                const trackUrl = `${window.gowishcartWishlist.apiUrl}wishlist/track-cart`;
                 
                 fetch(trackUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-WP-Nonce': window.wishcartWishlist.nonce,
+                        'X-WP-Nonce': window.gowishcartWishlist.nonce,
                     },
                     body: JSON.stringify({
                         product_id: product.id,
@@ -782,7 +623,6 @@ const WishlistPage = () => {
                 // Small delay between additions to avoid overwhelming the server
                 await new Promise(resolve => setTimeout(resolve, 300));
             } catch (error) {
-                console.error(`Error adding ${product.name} to cart:`, error);
                 failCount++;
             } finally {
                 setAddingToCartIds(prev => {
@@ -850,13 +690,13 @@ const WishlistPage = () => {
 
                 // Track the add to cart event (non-blocking)
                 const sessionId = getSessionId();
-                const trackUrl = `${window.wishcartWishlist.apiUrl}wishlist/track-cart`;
+                const trackUrl = `${window.gowishcartWishlist.apiUrl}wishlist/track-cart`;
                 
                 fetch(trackUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-WP-Nonce': window.wishcartWishlist.nonce,
+                        'X-WP-Nonce': window.gowishcartWishlist.nonce,
                     },
                     body: JSON.stringify({
                         product_id: product.id,
@@ -881,7 +721,6 @@ const WishlistPage = () => {
                 // Small delay between additions
                 await new Promise(resolve => setTimeout(resolve, 300));
             } catch (error) {
-                console.error(`Error adding ${product.name} to cart:`, error);
                 failCount++;
             } finally {
                 setAddingToCartIds(prev => {
@@ -983,79 +822,7 @@ const WishlistPage = () => {
     const [shareLink, setShareLink] = useState('');
     const [isGeneratingShare, setIsGeneratingShare] = useState(false);
 
-    // Generate share link via API
-    const generateShareLink = async () => {
-        // If we don't have a valid wishlist, do not attempt to share
-        if (!currentWishlist || !currentWishlist.id) {
-            return null;
-        }
-
-        // Check privacy status - do not generate share link for private wishlists
-        if (currentWishlist.privacy_status === 'private') {
-            setSuccessMessage('This wishlist is private. Please change privacy to "Shared" to share it.');
-            setIsSuccessModalOpen(true);
-            return null;
-        }
-
-        // Check if we already have a share link
-        if (shareLink) {
-            return shareLink;
-        }
-
-        setIsGeneratingShare(true);
-        try {
-            const response = await fetch(`${window.wishcartWishlist.apiUrl}share/create`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-WP-Nonce': window.wishcartWishlist.nonce,
-                },
-                body: JSON.stringify({
-                    wishlist_id: currentWishlist.id,
-                    share_type: 'link',
-                }),
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                if (data.success && data.share_url) {
-                    setShareLink(data.share_url);
-                    return data.share_url;
-                } else {
-                    // API returned success but no share_url
-                    const errorMsg = data.message || 'Failed to generate share link. The response was invalid.';
-                    setSuccessMessage(errorMsg);
-                    setIsSuccessModalOpen(true);
-                    return null;
-                }
-            } else {
-                // Handle non-OK responses
-                let errorMessage = 'Failed to create share link. Please try again.';
-                try {
-                    const errorData = await response.json();
-                    errorMessage = errorData.message || errorData.error || errorMessage;
-                } catch (parseError) {
-                    // If response is not JSON, use status text
-                    errorMessage = `Failed to create share link (${response.status}). Please try again.`;
-                }
-                setSuccessMessage(errorMessage);
-                setIsSuccessModalOpen(true);
-                return null;
-            }
-        } catch (err) {
-            console.error('Error generating share link:', err);
-            setSuccessMessage('Network error. Failed to create share link. Please check your connection and try again.');
-            setIsSuccessModalOpen(true);
-            return null;
-        } finally {
-            setIsGeneratingShare(false);
-        }
-    };
-
-    // Get wishlist share URL (async wrapper)
-    const getWishlistShareUrl = async () => {
-        return await generateShareLink();
-    };
+    
 
     // Get wishlist share text
     const getWishlistShareText = () => {
@@ -1070,105 +837,9 @@ const ensureWishlistShareAllowed = () => {
     }
     return true; // ok to continue
 };
-
-    // Share on Facebook
-const shareOnFacebook = async () => {
-    if (!ensureWishlistShareAllowed()) return;
-
-    const url = await getWishlistShareUrl();
-    const encodedUrl = encodeURIComponent(url);
-    const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
-    window.open(shareUrl, '_blank', 'width=600,height=400');
-};
-
-// Share on Twitter
-const shareOnTwitter = async () => {
-    if (!ensureWishlistShareAllowed()) return;
-
-    const url = await getWishlistShareUrl();
-    const encodedUrl = encodeURIComponent(url);
-    const text = encodeURIComponent(getWishlistShareText());
-    const shareUrl = `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${text}`;
-    window.open(shareUrl, '_blank', 'width=600,height=400');
-};
-
-// Share on Pinterest
-const shareOnPinterest = async () => {
-    if (!ensureWishlistShareAllowed()) return;
-
-    const url = await getWishlistShareUrl();
-    const encodedUrl = encodeURIComponent(url);
-    const description = encodeURIComponent(getWishlistShareText());
-    const shareUrl = `https://pinterest.com/pin/create/button/?url=${encodedUrl}&description=${description}`;
-    window.open(shareUrl, '_blank', 'width=600,height=400');
-};
-
-// Share on WhatsApp
-const shareOnWhatsApp = async () => {
-    if (!ensureWishlistShareAllowed()) return;
-
-    const url = await getWishlistShareUrl();
-    const text = encodeURIComponent(`${getWishlistShareText()} ${url}`);
-    const shareUrl = `https://wa.me/?text=${text}`;
-    window.open(shareUrl, '_blank');
-};
-
-// Share via Email
-const shareViaEmail = async () => {
-    if (!ensureWishlistShareAllowed()) return;
-
-    const url = await getWishlistShareUrl();
-    const subject = encodeURIComponent('My Wishlist');
-    const body = encodeURIComponent(`${getWishlistShareText()}\n\n${url}`);
-    const mailtoUrl = `mailto:?subject=${subject}&body=${body}`;
-    window.location.href = mailtoUrl;
-};
-
-// Copy wishlist link
-const copyWishlistLink = async () => {
-    if (!ensureWishlistShareAllowed()) return;
-    if (isGeneratingShare) return;
-
-    try {
-        const url = await getWishlistShareUrl();
-        if (!url) {
-            setSuccessMessage('Failed to generate share link. Please try again.');
-            setIsSuccessModalOpen(true);
-            return;
-        }
-
-        await navigator.clipboard.writeText(url);
-        setLinkCopied(true);
-        setSuccessMessage('Share link copied to clipboard!');
-        setIsSuccessModalOpen(true);
-        setTimeout(() => setLinkCopied(false), 2000);
-    } catch (error) {
-        console.error('Failed to copy link:', error);
-        setSuccessMessage('Failed to copy link to clipboard. Please try again.');
-        setIsSuccessModalOpen(true);
-        
-        // Fallback for older browsers or when clipboard API fails
-        try {
-            const url = await getWishlistShareUrl();
-            if (url) {
-                const textArea = document.createElement('textarea');
-                textArea.value = url;
-                textArea.style.position = 'fixed';
-                textArea.style.opacity = '0';
-                document.body.appendChild(textArea);
-                textArea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textArea);
-                setLinkCopied(true);
-                setSuccessMessage('Share link copied to clipboard!');
-                setIsSuccessModalOpen(true);
-                setTimeout(() => setLinkCopied(false), 2000);
-            }
-        } catch (fallbackError) {
-            console.error('Fallback copy failed:', fallbackError);
-        }
-    }
-};
+ 
+ 
+  
 
     // Handle wishlist selection
     const handleWishlistSelect = (wishlistId) => {
@@ -1194,7 +865,7 @@ const copyWishlistLink = async () => {
 
     if (isLoading) {
         return (
-            <div className="wishcart-wishlist-page container mx-auto px-4 py-8">
+            <div className="gowishcart-wishlist-page container mx-auto px-4 py-8">
                 <div className="flex items-center justify-center min-h-[400px]">
                     <div className="text-center">
                         <Heart className="w-12 h-12 mx-auto mb-4 animate-pulse text-gray-400" />
@@ -1208,7 +879,7 @@ const copyWishlistLink = async () => {
     // Show error state if there's an error
     if (error) {
         return (
-            <div className="wishcart-wishlist-page container mx-auto px-4 py-8">
+            <div className="gowishcart-wishlist-page container mx-auto px-4 py-8">
                 <Card>
                     <CardContent className="flex flex-col items-center justify-center min-h-[400px] py-12">
                         <Heart className="w-16 h-16 mb-4 text-red-300" />
@@ -1227,50 +898,13 @@ const copyWishlistLink = async () => {
 
     // Handle privacy change
     const handlePrivacyChange = async (newPrivacy) => {
-        if (!currentWishlist || !currentWishlist.id) {
-            return;
-        }
-
-        try {
-            const response = await fetch(`${window.wishcartWishlist.apiUrl}wishlists/${currentWishlist.id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-WP-Nonce': window.wishcartWishlist.nonce,
-                },
-                body: JSON.stringify({
-                    privacy_status: newPrivacy,
-                }),
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                // Update current wishlist with new privacy
-                setCurrentWishlist({
-                    ...currentWishlist,
-                    privacy_status: newPrivacy,
-                });
-                
-                // Clear cached share link so it regenerates
-                setShareLink('');
-
-                // Show success message in modal
-                setSuccessMessage('Privacy updated to: ' + newPrivacy);
-                setIsSuccessModalOpen(true);
-                console.log('Privacy updated to:', newPrivacy);
-            } else {
-                const errorData = await response.json();
-                alert(errorData.message || 'Failed to update privacy. Please try again.');
-            }
-        } catch (err) {
-            console.error('Error updating privacy:', err);
-            alert('Failed to update privacy. Please try again.');
-        }
+        // Privacy options are a Pro feature - not available in free version
+        return;
     };
 
     // Create new wishlist
     const createNewWishlist = async () => {
-        if (!window.wishcartWishlist) {
+        if (!window.gowishcartWishlist) {
             return;
         }
 
@@ -1279,98 +913,45 @@ const copyWishlistLink = async () => {
             return;
         }
 
-        try {
-            const response = await fetch(`${window.wishcartWishlist.apiUrl}wishlists`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-WP-Nonce': window.wishcartWishlist.nonce,
-                },
-                body: JSON.stringify({
-                    name: name,
-                    is_default: false,
-                }),
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                // Reload wishlists
-                const wishlistsResponse = await fetch(`${window.wishcartWishlist.apiUrl}wishlists`, {
-                    headers: {
-                        'X-WP-Nonce': window.wishcartWishlist.nonce,
-                    },
-                });
-                if (wishlistsResponse.ok) {
-                    const wishlistsData = await wishlistsResponse.json();
-                    setWishlists(wishlistsData.wishlists || []);
-                    if (data.wishlist) {
-                        // Reset refs for new wishlist
-                        hasLoadedRef.current = false;
-                        loadedWishlistIdRef.current = null;
-                        setCurrentWishlist(data.wishlist);
-                    }
-                }
-            }
-        } catch (error) {
-            console.error('Error creating wishlist:', error);
-            alert('Failed to create wishlist');
-        }
+        // Multiple wishlists is a Pro feature - not available in free version
+        alert('Multiple wishlists is a Pro feature. Please upgrade to create multiple wishlists.');
     };
 
-    // Check if viewing shared wishlist
-    const shareCode = window.wishcartWishlist?.shareCode;
-    const isViewingShared = shareCode && currentWishlist && 
-        (currentWishlist.user_id !== window.wishcartWishlist?.userId || 
-         (currentWishlist.user_id && !window.wishcartWishlist?.isLoggedIn));
-
     return (
-        <div className="wishcart-wishlist-page">
+        <div className="gowishcart-wishlist-page">
             <SuccessModal
                 isOpen={isSuccessModalOpen}
                 message={successMessage}
                 onClose={() => setIsSuccessModalOpen(false)}
             />
 
-            {wishlists.length > 0 && !isViewingShared && (
-                <div className="wishlist-selector">
-                    <CustomSelect
-                        options={wishlists.map(wishlist => ({
-                            value: wishlist.id.toString(),
-                            label: `${wishlist.wishlist_name}${wishlist.is_default ? ' (Default)' : ''}`
-                        }))}
-                        value={currentWishlist ? {
-                            value: currentWishlist.id.toString(),
-                            label: `${currentWishlist.wishlist_name}${currentWishlist.is_default ? ' (Default)' : ''}`
-                        } : null}
-                        onChange={(selectedOption) => handleWishlistSelect(selectedOption.value)}
-                        placeholder="Select Wishlist"
-                        className="wishlist-select-trigger"
-                    />
-                    {window.wishcartWishlist?.enableMultipleWishlists && (
-                        <Button
-                            onClick={createNewWishlist}
-                            className="create-wishlist-btn"
-                            variant="outline"
-                        >
-                            Create New
-                        </Button>
-                    )}
-                    
-                    {/* Privacy Control */}
-                    {currentWishlist && !isViewingShared && (
+            {/* Multiple Wishlists Selector - Pro Feature (removed from free version) */}
+            
+            {/* Privacy Control - Only Private in free version */}
+            {currentWishlist && (
+                <div className="wishlist-selector" style={{marginBottom: '16px'}}>
+                    <div style={{position: 'relative'}}>
                         <CustomSelect
                             options={[
                                 { value: 'private', label: '🔒 Private' },
-                                { value: 'shared', label: '👥 Shared' }
+                                { value: 'shared', label: '👥 Shared (PRO)', isDisabled: true }
                             ]}
                             value={{
-                                value: currentWishlist.privacy_status || 'private',
-                                label: currentWishlist.privacy_status === 'shared' ? '👥 Shared' : '🔒 Private'
+                                value: 'private',
+                                label: '🔒 Private'
                             }}
-                            onChange={(selectedOption) => handlePrivacyChange(selectedOption.value)}
+                            onChange={(selectedOption) => {
+                                if (selectedOption && (selectedOption.value === 'shared' || selectedOption.value === 'public')) {
+                                    // Show Pro feature message
+                                    setSuccessMessage('Shared/Public privacy options are available in GoWishCart Pro. Please upgrade to use this feature.');
+                                    setIsSuccessModalOpen(true);
+                                    return; // Don't change the selection
+                                }
+                            }}
                             className="privacy-select-trigger"
+                            isDisabled={false}
                         />
-                    )}
+                    </div>
                 </div>
             )}
             
@@ -1410,8 +991,7 @@ const copyWishlistLink = async () => {
             ) : (
                 <>
                     {/* Bulk Actions Bar */}
-                    {!isViewingShared && (
-                        <div className="bulk-actions-bar">
+                    <div className="bulk-actions-bar">
                             <div className="bulk-select">
                                 <Checkbox
                                     checked={allSelected}
@@ -1452,22 +1032,19 @@ const copyWishlistLink = async () => {
                                     Add All To Cart
                                 </Button>
                             </div>
-                        </div>
-                    )}
+                    </div>
 
                     {/* Product List - FluentCart Style */}
                     <div className="wishlist-items-container">
                         {products.map((product) => (
                             <div key={product.id} className="wishlist-item">
                                 {/* Checkbox */}
-                                {!isViewingShared && (
-                                    <div className="item-checkbox">
-                                        <Checkbox
-                                            checked={selectedIds.has(product.id)}
-                                            onCheckedChange={(checked) => toggleSelection(product.id, checked)}
-                                        />
-                                    </div>
-                                )}
+                                <div className="item-checkbox">
+                                    <Checkbox
+                                        checked={selectedIds.has(product.id)}
+                                        onCheckedChange={(checked) => toggleSelection(product.id, checked)}
+                                    />
+                                </div>
 
                                 {/* Product Thumbnail */}
                                 <div className="item-image">
@@ -1529,83 +1106,81 @@ const copyWishlistLink = async () => {
                                 </Button>
 
                                 {/* Remove Button */}
-                                {!isViewingShared && (
-                                    <button
-                                        onClick={() => removeProduct(product.id)}
-                                        disabled={removingIds.has(product.id)}
-                                        className="item-remove"
-                                        aria-label="Remove from wishlist"
-                                    >
-                                        <Trash2 className="w-4 h-4" />
-                                    </button>
-                                )}
+                                <button
+                                    onClick={() => removeProduct(product.id)}
+                                    disabled={removingIds.has(product.id)}
+                                    className="item-remove"
+                                    aria-label="Remove from wishlist"
+                                >
+                                    <Trash2 className="w-4 h-4" />
+                                </button>
                             </div>
                         ))}
                     </div>
 
-                    {/* Share Section */}
-                    {!isViewingShared && (
-                        <div className="share-section">
+                    {/* Share Section - Pro Feature */}
+                    <div className="share-section" style={{position: 'relative', opacity: 0.6, pointerEvents: 'none'}}>
+                        <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px'}}>
                             <span className="share-label">Wishlist Share on</span>
-                            <div className="share-icons">
-                                <button
-                                    onClick={shareOnFacebook}
-                                    className="share-icon"
-                                    aria-label="Share on Facebook"
-                                    title="Share on Facebook"
-                                >
-                                    <span className="share-icon-text">f</span>
-                                </button>
-                                <button
-                                    onClick={shareOnTwitter}
-                                    className="share-icon"
-                                    aria-label="Share on Twitter"
-                                    title="Share on Twitter"
-                                >
-                                    <Twitter className="share-icon-svg" />
-                                </button>
-                                <button
-                                    onClick={shareOnPinterest}
-                                    className="share-icon"
-                                    aria-label="Share on Pinterest"
-                                    title="Share on Pinterest"
-                                >
-                                    <span className="share-icon-text">P</span>
-                                </button>
-                                <button
-                                    onClick={shareOnWhatsApp}
-                                    className="share-icon"
-                                    aria-label="Share on WhatsApp"
-                                    title="Share on WhatsApp"
-                                >
-                                    <MessageCircle className="share-icon-svg" />
-                                </button>
-                                <button
-                                    onClick={copyWishlistLink}
-                                    className="share-icon"
-                                    aria-label="Copy link"
-                                    title="Copy link"
-                                    disabled={isGeneratingShare}
-                                >
-                                    {isGeneratingShare ? (
-                                        <span className="spinner-small">⏳</span>
-                                    ) : linkCopied ? (
-                                        <Check className="share-icon-svg" />
-                                    ) : (
-                                        <Link2 className="share-icon-svg" />
-                                    )}
-                                </button>
-                                <button
-                                    onClick={shareViaEmail}
-                                    className="share-icon"
-                                    aria-label="Share via Email"
-                                    title="Share via Email"
-                                >
-                                    <Mail className="share-icon-svg" />
-                                </button>
-                            </div>
+                            <span className="gowishcart-badge gowishcart-badge-warning" style={{fontSize: '10px', padding: '2px 6px'}}>PRO</span>
                         </div>
-                    )}
+                        <div className="share-icons">
+                            <button
+                                onClick={() => {}}
+                                className="share-icon"
+                                aria-label="Share on Facebook (Pro Feature)"
+                                title="Share on Facebook (Pro Feature)"
+                                disabled={true}
+                            >
+                                <span className="share-icon-text">f</span>
+                            </button>
+                            <button
+                                onClick={() => {}}
+                                className="share-icon"
+                                aria-label="Share on Twitter (Pro Feature)"
+                                title="Share on Twitter (Pro Feature)"
+                                disabled={true}
+                            >
+                                <Twitter className="share-icon-svg" />
+                            </button>
+                            <button
+                                onClick={() => {}}
+                                className="share-icon"
+                                aria-label="Share on Pinterest (Pro Feature)"
+                                title="Share on Pinterest (Pro Feature)"
+                                disabled={true}
+                            >
+                                <span className="share-icon-text">P</span>
+                            </button>
+                            <button
+                                onClick={() => {}}
+                                className="share-icon"
+                                aria-label="Share on WhatsApp (Pro Feature)"
+                                title="Share on WhatsApp (Pro Feature)"
+                                disabled={true}
+                            >
+                                <MessageCircle className="share-icon-svg" />
+                            </button>
+                            <button
+                                onClick={() => {}}
+                                className="share-icon"
+                                aria-label="Copy link (Pro Feature)"
+                                title="Copy link (Pro Feature)"
+                                disabled={true}
+                            >
+                                <Link2 className="share-icon-svg" />
+                            </button>
+                            <button
+                                onClick={() => {}}
+                                className="share-icon"
+                                aria-label="Share via Email (Pro Feature)"
+                                title="Share via Email (Pro Feature)"
+                                disabled={true}
+                            >
+                                <Mail className="share-icon-svg" />
+                            </button>
+                        </div>
+                    </div>
                 </>
             )}
         </div>

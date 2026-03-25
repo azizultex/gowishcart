@@ -109,7 +109,52 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
     const labels = localButtonCustomization.labels || { add: '', saved: '' };
     const buttonStyle = localButtonCustomization.buttonStyle || 'button';
 
+    // Helper to detect if a value is a gradient
+    const isGradientValue = (value) => {
+        if (!value || typeof value !== 'string') return false;
+        return value.toLowerCase().includes('gradient(');
+    };
+
+    // Helper to extract a fallback HEX color from gradient for color picker display
+    const extractHexFromGradient = (gradientValue, fallback = '#ffffff') => {
+        if (!gradientValue || typeof gradientValue !== 'string') {
+            return fallback;
+        }
+
+        // Try to extract all rgb/rgba values from gradient
+        // Match rgb/rgba patterns: rgb(37, 50, 65) or rgba(255, 255, 255, 0.16)
+        const rgbMatches = gradientValue.matchAll(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*[\d.]+)?\)/g);
+        const rgbColors = Array.from(rgbMatches);
+        
+        if (rgbColors.length > 0) {
+            // Prefer the last match (usually the fallback/base color after the gradient)
+            // For gradients like: linear-gradient(...), rgb(37, 50, 65), the last rgb is the base
+            const lastMatch = rgbColors[rgbColors.length - 1];
+            const r = parseInt(lastMatch[1], 10).toString(16).padStart(2, '0');
+            const g = parseInt(lastMatch[2], 10).toString(16).padStart(2, '0');
+            const b = parseInt(lastMatch[3], 10).toString(16).padStart(2, '0');
+            return `#${r}${g}${b}`;
+        }
+
+        // Try to extract hex values: #253241 or #fff
+        const hexMatches = Array.from(gradientValue.matchAll(/#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})\b/g));
+        if (hexMatches.length > 0) {
+            // Prefer the last hex match as well
+            const lastHexMatch = hexMatches[hexMatches.length - 1];
+            let hex = lastHexMatch[1];
+            if (hex.length === 3) {
+                // Expand short hex to full hex
+                const [r, g, b] = hex.split('');
+                hex = `${r}${r}${g}${g}${b}${b}`;
+            }
+            return `#${hex.toLowerCase()}`;
+        }
+
+        return fallback;
+    };
+
     // Helper to normalize color values to a safe HEX value for the HTML5 color input
+    // This function preserves gradients and only normalizes HEX colors
     const normalizeHexColor = (value, fallback = '#ffffff') => {
         if (!value || typeof value !== 'string') {
             return fallback;
@@ -117,7 +162,12 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
 
         let color = value.trim();
 
-        // If the value looks like a gradient or anything non-hex, fall back
+        // If it's a gradient, preserve it as-is
+        if (isGradientValue(color)) {
+            return color;
+        }
+
+        // If the value doesn't start with '#', it's not a valid HEX color
         if (!color.startsWith('#')) {
             return fallback;
         }
@@ -199,10 +249,10 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
 
         return (
             <div className="space-y-4 border-t pt-4">
-                <Label className="text-base font-semibold">{__('Button Labels', 'wishcart')}</Label>
+                <Label className="text-base font-semibold">{__('Button Labels', 'gowishcart-wishlist-for-fluentcart')}</Label>
                 
                 <div className="space-y-2">
-                    <Label htmlFor="label_add">{__('"Add to Wishlist" Text', 'wishcart')}</Label>
+                    <Label htmlFor="label_add">{__('"Add to Wishlist" Text', 'gowishcart-wishlist-for-fluentcart')}</Label>
                     <Input
                         ref={addLabelRef}
                         id="label_add"
@@ -211,15 +261,15 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
                         onChange={handleAddLabelChange}
                         onFocus={handleAddLabelFocus}
                         onBlur={handleAddLabelBlur}
-                        placeholder={__('Add to Wishlist', 'wishcart')}
+                        placeholder={__('Add to Wishlist', 'gowishcart-wishlist-for-fluentcart')}
                     />
                     <p className="text-sm text-muted-foreground">
-                        {__('Text displayed when product is not in wishlist', 'wishcart')}
+                        {__('Text displayed when product is not in wishlist', 'gowishcart-wishlist-for-fluentcart')}
                     </p>
                 </div>
 
                 <div className="space-y-2">
-                    <Label htmlFor="label_saved">{__('"Saved to Wishlist" Text', 'wishcart')}</Label>
+                    <Label htmlFor="label_saved">{__('"Saved to Wishlist" Text', 'gowishcart-wishlist-for-fluentcart')}</Label>
                     <Input
                         ref={savedLabelRef}
                         id="label_saved"
@@ -228,10 +278,10 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
                         onChange={handleSavedLabelChange}
                         onFocus={handleSavedLabelFocus}
                         onBlur={handleSavedLabelBlur}
-                        placeholder={__('Saved to Wishlist', 'wishcart')}
+                        placeholder={__('Saved to Wishlist', 'gowishcart-wishlist-for-fluentcart')}
                     />
                     <p className="text-sm text-muted-foreground">
-                        {__('Text displayed when product is in wishlist', 'wishcart')}
+                        {__('Text displayed when product is in wishlist', 'gowishcart-wishlist-for-fluentcart')}
                     </p>
                 </div>
             </div>
@@ -240,7 +290,7 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
 
     // Font options
     const fontOptions = [
-        { value: 'default', label: __('Use Default Font', 'wishcart') },
+        { value: 'default', label: __('Use Default Font', 'gowishcart-wishlist-for-fluentcart') },
         { value: 'Manrope, sans-serif', label: 'Manrope, sans-serif' },
         { value: 'Arial', label: 'Arial' },
         { value: 'Helvetica', label: 'Helvetica' },
@@ -379,14 +429,14 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
     const handleMediaUpload = (iconType) => {
         // Check if wp.media is available
         if (typeof wp === 'undefined' || !wp.media) {
-            alert(__('WordPress media library is not available. Please refresh the page.', 'wishcart'));
+            alert(__('WordPress media library is not available. Please refresh the page.', 'gowishcart-wishlist-for-fluentcart'));
             return;
         }
 
         const mediaUploader = wp.media({
-            title: __('Select Icon', 'wishcart'),
+            title: __('Select Icon', 'gowishcart-wishlist-for-fluentcart'),
             button: {
-                text: __('Use this icon', 'wishcart')
+                text: __('Use this icon', 'gowishcart-wishlist-for-fluentcart')
             },
             multiple: false,
             library: {
@@ -399,7 +449,7 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
             const attachment = selection.first();
             
             if (!attachment) {
-                alert(__('No image selected. Please try again.', 'wishcart'));
+                alert(__('No image selected. Please try again.', 'gowishcart-wishlist-for-fluentcart'));
                 return;
             }
 
@@ -413,14 +463,14 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
             
             // Validate file type (PNG or SVG only)
             if (fileExtension !== 'png' && fileExtension !== 'svg') {
-                alert(__('Please upload a PNG or SVG file only.', 'wishcart'));
+                alert(__('Please upload a PNG or SVG file only.', 'gowishcart-wishlist-for-fluentcart'));
                 return;
             }
             
             // Also check MIME type
             const mimeType = attachmentData.mime || attachment.get('mime') || '';
             if (mimeType && mimeType !== 'image/png' && mimeType !== 'image/svg+xml') {
-                alert(__('Please upload a PNG or SVG file only.', 'wishcart'));
+                alert(__('Please upload a PNG or SVG file only.', 'gowishcart-wishlist-for-fluentcart'));
                 return;
             }
             
@@ -435,7 +485,7 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
             
             if (!imageUrl) {
                 console.error('Attachment data:', attachmentData);
-                alert(__('Error: Could not get image URL. Please try again.', 'wishcart'));
+                alert(__('Error: Could not get image URL. Please try again.', 'gowishcart-wishlist-for-fluentcart'));
                 return;
             }
             
@@ -497,25 +547,25 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value="predefined" id={`${iconType}_predefined`} />
                         <Label htmlFor={`${iconType}_predefined`} className="cursor-pointer">
-                            {__('Default Icon', 'wishcart')}
+                            {__('Default Icon', 'gowishcart-wishlist-for-fluentcart')}
                         </Label>
                     </div>
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value="custom" id={`${iconType}_custom`} />
                         <Label htmlFor={`${iconType}_custom`} className="cursor-pointer">
-                            {__('Custom Icon', 'wishcart')}
+                            {__('Custom Icon', 'gowishcart-wishlist-for-fluentcart')}
                         </Label>
                     </div>
                 </RadioGroup>
 
                 {iconConfig.type === 'predefined' ? (
                     <div className="space-y-2">
-                        <Label>{__('Select Icon', 'wishcart')}</Label>
+                        <Label>{__('Select Icon', 'gowishcart-wishlist-for-fluentcart')}</Label>
                         <IconPicker
                             selectedIcon={iconConfig.value}
                             onSelect={(iconName) => updateIcon(iconType, 'value', iconName)}
-                            label={__('Select Icon', 'wishcart')}
-                            triggerLabel={iconConfig.value || __('Select Icon', 'wishcart')}
+                            label={__('Select Icon', 'gowishcart-wishlist-for-fluentcart')}
+                            triggerLabel={iconConfig.value || __('Select Icon', 'gowishcart-wishlist-for-fluentcart')}
                         />
                         {SelectedIconComponent && (
                             <div className="mt-2 p-3 border rounded-lg inline-flex items-center gap-2">
@@ -526,7 +576,7 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
                     </div>
                 ) : (
                     <div className="space-y-4">
-                        <Label>{__('Custom Icon', 'wishcart')}</Label>
+                        <Label>{__('Custom Icon', 'gowishcart-wishlist-for-fluentcart')}</Label>
                         
                         {/* Image Preview Area - Always visible when custom is selected */}
                         <div className="w-full">
@@ -535,7 +585,7 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
                                     <div className="relative inline-block border-2 border-gray-300 rounded-lg p-4 bg-gray-50 hover:bg-gray-100 transition-colors">
                                         <img
                                             src={iconConfig.customUrl}
-                                            alt={__('Custom icon preview', 'wishcart')}
+                                            alt={__('Custom icon preview', 'gowishcart-wishlist-for-fluentcart')}
                                             className="w-32 h-32 object-contain"
                                             onError={(e) => {
                                                 console.error('Failed to load image:', iconConfig.customUrl);
@@ -548,7 +598,7 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
                                             size="sm"
                                             className="absolute -top-2 -right-2 h-7 w-7 p-0 rounded-full bg-white border-2 border-gray-300 hover:bg-red-50 hover:border-red-400 shadow-sm"
                                             onClick={() => updateIcon(iconType, 'customUrl', '')}
-                                            title={__('Remove icon', 'wishcart')}
+                                            title={__('Remove icon', 'gowishcart-wishlist-for-fluentcart')}
                                         >
                                             <X className="h-4 w-4 text-gray-700" />
                                         </Button>
@@ -560,7 +610,7 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
                             ) : (
                                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 bg-gray-50 text-center">
                                     <p className="text-sm text-muted-foreground">
-                                        {__('No icon selected', 'wishcart')}
+                                        {__('No icon selected', 'gowishcart-wishlist-for-fluentcart')}
                                     </p>
                                 </div>
                             )}
@@ -572,7 +622,7 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
                             onClick={() => handleMediaUpload(iconType)}
                             className="w-full"
                         >
-                            {iconConfig.customUrl ? __('Change Icon', 'wishcart') : __('Upload Icon', 'wishcart')}
+                            {iconConfig.customUrl ? __('Change Icon', 'gowishcart-wishlist-for-fluentcart') : __('Upload Icon', 'gowishcart-wishlist-for-fluentcart')}
                         </Button>
                     </div>
                 )}
@@ -581,6 +631,7 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
     };
 
     // Color input component using HTML5 input type="color" plus a HEX text field
+    // Now supports both HEX colors and gradient values
     const ColorInput = ({ label, value, onChange, colorPickerId, section, settingKey }) => {
         const inputRef = useRef(null);
         const colorInputRef = useRef(null);
@@ -604,6 +655,9 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
             };
         }, [inputId]);
 
+        // Check if current value is a gradient
+        const isGradient = isGradientValue(localValue || value);
+
         const handleTextChange = (e) => {
             const newValue = e.target.value;
             setLocalValue(newValue);
@@ -616,7 +670,8 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
         const handleTextBlur = () => {
             isAnyInputFocused.current = false;
 
-            // Normalize to a valid HEX color for storage
+            // Preserve gradients, normalize only HEX colors
+            // normalizeHexColor already preserves gradients, so this is safe
             const normalized = normalizeHexColor(localValue, '#ffffff');
             setLocalValue(normalized);
 
@@ -630,12 +685,14 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
         };
 
         const handleColorInputChange = (e) => {
+            // When user picks a color from the picker, it's always a HEX color
             const hexColor = e.target.value;
             setLocalValue(hexColor); // Update local component state
         };
 
         const handleColorInputBlur = () => {
             // Update parent state when color picker closes (user clicks outside)
+            // normalizeHexColor already preserves gradients, so this is safe
             const normalized = normalizeHexColor(localValue, '#ffffff');
             setLocalValue(normalized);
 
@@ -646,21 +703,36 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
             }
         };
 
-        const colorPickerValue = normalizeHexColor(localValue || value, '#ffffff');
+        // For color picker display: use extracted HEX from gradient or normalized HEX
+        const colorPickerValue = isGradient 
+            ? extractHexFromGradient(localValue || value, '#ffffff')
+            : normalizeHexColor(localValue || value, '#ffffff');
 
         return (
             <div className="space-y-2">
                 <Label className="text-sm">{label}</Label>
                 <div className="flex items-center gap-2">
-                    <input
-                        ref={colorInputRef}
-                        type="color"
-                        value={colorPickerValue}
-                        onChange={handleColorInputChange}
-                        onBlur={handleColorInputBlur}
-                        className="w-10 h-10 rounded border-2 border-gray-200 cursor-pointer bg-transparent p-0"
-                        aria-label={label}
-                    />
+                    {!isGradient && (
+                        <input
+                            ref={colorInputRef}
+                            type="color"
+                            value={colorPickerValue}
+                            onChange={handleColorInputChange}
+                            onBlur={handleColorInputBlur}
+                            className="w-10 h-10 rounded border-2 border-gray-200 cursor-pointer bg-transparent p-0"
+                            aria-label={label}
+                        />
+                    )}
+                    {isGradient && (
+                        <div 
+                            className="w-10 h-10 rounded border-2 border-gray-200 flex items-center justify-center cursor-not-allowed"
+                            style={{ 
+                                background: localValue || value || '#ffffff'
+                            }}
+                            title={__('Color picker not available for gradients. Use text input to edit.', 'gowishcart-wishlist-for-fluentcart')}
+                        >
+                        </div>
+                    )}
                     <Input
                         ref={inputRef}
                         type="text"
@@ -668,7 +740,7 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
                         onChange={handleTextChange}
                         onFocus={handleTextFocus}
                         onBlur={handleTextBlur}
-                        placeholder="#ffffff"
+                        placeholder={isGradient ? 'linear-gradient(...)' : '#ffffff'}
                         className="flex-1 font-mono text-sm"
                     />
                 </div>
@@ -738,7 +810,7 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
                 <Label className="text-base font-semibold">{title}</Label>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <ColorInput
-                        label={__('Background Color', 'wishcart')}
+                        label={__('Background Color', 'gowishcart-wishlist-for-fluentcart')}
                         value={sectionSettings.backgroundColor}
                         onChange={(value) => updateButtonCustomization(sectionKey, 'backgroundColor', value)}
                         colorPickerId={`${sectionKey}-bg`}
@@ -746,7 +818,7 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
                         settingKey="backgroundColor"
                     />
                     <ColorInput
-                        label={__('Background Hover Color', 'wishcart')}
+                        label={__('Background Hover Color', 'gowishcart-wishlist-for-fluentcart')}
                         value={sectionSettings.backgroundHoverColor}
                         onChange={(value) => updateButtonCustomization(sectionKey, 'backgroundHoverColor', value)}
                         colorPickerId={`${sectionKey}-bg-hover`}
@@ -754,7 +826,7 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
                         settingKey="backgroundHoverColor"
                     />
                     <ColorInput
-                        label={__('Button Text Color', 'wishcart')}
+                        label={__('Button Text Color', 'gowishcart-wishlist-for-fluentcart')}
                         value={sectionSettings.buttonTextColor}
                         onChange={(value) => updateButtonCustomization(sectionKey, 'buttonTextColor', value)}
                         colorPickerId={`${sectionKey}-btn-text`}
@@ -762,7 +834,7 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
                         settingKey="buttonTextColor"
                     />
                     <ColorInput
-                        label={__('Button Text Hover Color', 'wishcart')}
+                        label={__('Button Text Hover Color', 'gowishcart-wishlist-for-fluentcart')}
                         value={sectionSettings.buttonTextHoverColor}
                         onChange={(value) => updateButtonCustomization(sectionKey, 'buttonTextHoverColor', value)}
                         colorPickerId={`${sectionKey}-btn-text-hover`}
@@ -770,13 +842,13 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
                         settingKey="buttonTextHoverColor"
                     />
                     <div className="space-y-2">
-                        <Label className="text-sm">{__('Font', 'wishcart')}</Label>
+                        <Label className="text-sm">{__('Font', 'gowishcart-wishlist-for-fluentcart')}</Label>
                         <Select
                             value={sectionSettings.font || 'default'}
                             onValueChange={(value) => updateButtonCustomization(sectionKey, 'font', value)}
                         >
                             <SelectTrigger>
-                                <SelectValue placeholder={__('Select font', 'wishcart')} />
+                                <SelectValue placeholder={__('Select font', 'gowishcart-wishlist-for-fluentcart')} />
                             </SelectTrigger>
                             <SelectContent>
                                 {fontOptions.map((font) => (
@@ -788,7 +860,7 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
                         </Select>
                     </div>
                     <div className="space-y-2">
-                        <Label className="text-sm">{__('Font Size', 'wishcart')}</Label>
+                        <Label className="text-sm">{__('Font Size', 'gowishcart-wishlist-for-fluentcart')}</Label>
                         <Input
                             ref={fontSizeRef}
                             type="text"
@@ -800,7 +872,7 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
                         />
                     </div>
                     <div className="space-y-2">
-                        <Label className="text-sm">{__('Icon Size', 'wishcart')}</Label>
+                        <Label className="text-sm">{__('Icon Size', 'gowishcart-wishlist-for-fluentcart')}</Label>
                         <Input
                             ref={iconSizeRef}
                             type="text"
@@ -812,7 +884,7 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
                         />
                     </div>
                     <div className="space-y-2">
-                        <Label className="text-sm">{__('Border Radius', 'wishcart')}</Label>
+                        <Label className="text-sm">{__('Border Radius', 'gowishcart-wishlist-for-fluentcart')}</Label>
                         <Input
                             ref={borderRadiusRef}
                             type="text"
@@ -830,28 +902,28 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
 
     // Button style options
     const buttonStyleOptions = [
-        { value: 'button', label: __('Button (Text + Icon)', 'wishcart') },
-        { value: 'text-only', label: __('Text Only', 'wishcart') },
-        { value: 'text-only-link', label: __('Text Only (No Button)', 'wishcart') },
-        { value: 'text-icon-link', label: __('Text with Icon (No Button)', 'wishcart') },
-        { value: 'icon-only', label: __('Icon Only', 'wishcart') },
+        { value: 'button', label: __('Button (Text + Icon)gowishcart-wishlist-for-fluentcart') },
+        { value: 'text-only', label: __('Text Only', 'gowishcart-wishlist-for-fluentcart') },
+        { value: 'text-only-link', label: __('Text Only (No Button)gowishcart-wishlist-for-fluentcart') },
+        { value: 'text-icon-link', label: __('Text with Icon (No Button)gowishcart-wishlist-for-fluentcart') },
+        { value: 'icon-only', label: __('Icon Only', 'gowishcart-wishlist-for-fluentcart') },
     ];
 
     return (
-        <div className="wishcart-button-customization-wrapper" style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: '2rem', alignItems: 'start' }}>
+        <div className="gowishcart-button-customization-wrapper" style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: '2rem', alignItems: 'start' }}>
                 {/* Settings Section */}
-            <div className="wishcart-settings-section">
+            <div className="gowishcart-settings-section">
                 {/* General Settings Section */}
                 <div className="space-y-4 pb-6 border-b">
-                    <Label className="text-base font-semibold">{__('General Settings', 'wishcart')}</Label>
+                    <Label className="text-base font-semibold">{__('General Settings', 'gowishcart-wishlist-for-fluentcart')}</Label>
                     <div className="space-y-2">
-                        <Label className="text-sm">{__('Button Style', 'wishcart')}</Label>
+                        <Label className="text-sm">{__('Button Style', 'gowishcart-wishlist-for-fluentcart')}</Label>
                         <Select
                             value={buttonStyle}
                             onValueChange={(value) => updateTopLevelProperty('buttonStyle', value)}
                         >
                             <SelectTrigger>
-                                <SelectValue placeholder={__('Select button style', 'wishcart')} />
+                                <SelectValue placeholder={__('Select button style', 'gowishcart-wishlist-for-fluentcart')} />
                             </SelectTrigger>
                             <SelectContent>
                                 {buttonStyleOptions.map((option) => (
@@ -862,40 +934,40 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
                             </SelectContent>
                         </Select>
                         <p className="text-sm text-muted-foreground">
-                            {__('Choose how the wishlist button should be displayed', 'wishcart')}
+                            {__('Choose how the wishlist button should be displayed', 'gowishcart-wishlist-for-fluentcart')}
                         </p>
                     </div>
                 </div>
 
                 {/* Button Section */}
                 <ButtonSection
-                    title={__('"Add To Wishlist" Button', 'wishcart')}
+                    title={__('"Add To Wishlist" Button', 'gowishcart-wishlist-for-fluentcart')}
                     sectionKey="product_page"
                     settings={productPage}
                 />
 
                 {/* Saved to Wishlist Button Section */}
                 <ButtonSection
-                    title={__('"Saved to Wishlist" Button', 'wishcart')}
+                    title={__('"Saved to Wishlist" Button', 'gowishcart-wishlist-for-fluentcart')}
                     sectionKey="saved_product_page"
                     settings={savedProductPage}
                 />
 
                 {/* Icon Section */}
                 <div className="space-y-4 border-t pt-4">
-                    <Label className="text-base font-semibold">{__('Icons', 'wishcart')}</Label>
+                    <Label className="text-base font-semibold">{__('Icons', 'gowishcart-wishlist-for-fluentcart')}</Label>
                     <p className="text-sm text-muted-foreground">
-                        {__('Configure separate icons for "Add to Wishlist" and "Saved to Wishlist" states', 'wishcart')}
+                        {__('Configure separate icons for "Add to Wishlist" and "Saved to Wishlist" states', 'gowishcart-wishlist-for-fluentcart')}
                     </p>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <IconSection
-                            title={__('"Add to Wishlist" Icon', 'wishcart')}
+                            title={__('"Add to Wishlist" Icon', 'gowishcart-wishlist-for-fluentcart')}
                             iconType="addToWishlist"
                             iconConfig={addToWishlistIcon}
                         />
                         <IconSection
-                            title={__('"Saved to Wishlist" Icon', 'wishcart')}
+                            title={__('"Saved to Wishlist" Icon', 'gowishcart-wishlist-for-fluentcart')}
                             iconType="savedWishlist"
                             iconConfig={savedWishlistIcon}
                         />
@@ -907,7 +979,7 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
             </div>
 
             {/* Live Preview Section */}
-            <div className="wishcart-preview-wrapper">
+            <div className="gowishcart-preview-wrapper">
                 <ButtonPreview buttonCustomization={localButtonCustomization} />
             </div>
         </div>

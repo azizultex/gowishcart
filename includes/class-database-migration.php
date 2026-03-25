@@ -2,17 +2,17 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 /**
- * Database Migration Handler for WishCart Plugin
+ * Database Migration Handler for GoWishCart Plugin
  *
  * Handles migration from old 2-table structure to new 7-table structure
  *
  * @category WordPress
- * @package  WishCart
- * @author   WishCart Team <support@gowishcart.com>
+ * @package  GoWishCart
+ * @author   GoWishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://gowishcart.com
  */
-class WishCart_Database_Migration {
+class GoWishCart_Database_Migration {
 
     private $wpdb;
     private $table_prefix;
@@ -39,7 +39,7 @@ class WishCart_Database_Migration {
         );
 
         // Check if migration has already been done
-        $migration_version = get_option('wishcart_migration_version', '0');
+        $migration_version = get_option('gowishcart_migration_version', '0');
         if ($migration_version === '2.0') {
             $results['message'] = 'Migration already completed';
             return $results;
@@ -47,28 +47,31 @@ class WishCart_Database_Migration {
 
         // Archive old tables
         $old_tables = array(
-            'wishcart_wishlists',
-            'WishCart_Wishlist',
+            'gwc_wishlists',
+            'gwc_Wishlist',
         );
 
-        $timestamp = date('Y_m_d_His');
+        $timestamp = gmdate('Y_m_d_His');
 
         foreach ($old_tables as $old_table) {
             $full_table_name = $this->table_prefix . $old_table;
             $backup_table_name = $full_table_name . '_backup_' . $timestamp;
 
             // Check if old table exists
+            // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared
             $table_exists = $this->wpdb->get_var(
                 $this->wpdb->prepare(
                     "SHOW TABLES LIKE %s",
                     $full_table_name
                 )
             );
+            // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
 
             if ($table_exists) {
                 // Rename old table to backup
+                // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
                 $rename_result = $this->wpdb->query(
-                    "RENAME TABLE {$full_table_name} TO {$backup_table_name}"
+                    "RENAME TABLE " . esc_sql( $full_table_name ) . " TO " . esc_sql( $backup_table_name )
                 );
 
                 if ($rename_result !== false) {
@@ -76,7 +79,6 @@ class WishCart_Database_Migration {
                         'old' => $full_table_name,
                         'new' => $backup_table_name,
                     );
-                    $this->log_debug("Archived table: {$full_table_name} to {$backup_table_name}");
                 } else {
                     $results['errors'][] = "Failed to archive table: {$full_table_name}";
                     $results['success'] = false;
@@ -87,8 +89,7 @@ class WishCart_Database_Migration {
         // Create new 7-table structure
         if ($results['success']) {
             try {
-                $database = new WishCart_Database();
-                $this->log_debug('New 7-table structure created successfully');
+                $database = new GoWishCart_Database();
             } catch (Exception $e) {
                 $results['errors'][] = 'Failed to create new tables: ' . $e->getMessage();
                 $results['success'] = false;
@@ -97,8 +98,8 @@ class WishCart_Database_Migration {
 
         // Mark migration as complete
         if ($results['success']) {
-            update_option('wishcart_migration_version', '2.0');
-            update_option('wishcart_migration_date', current_time('mysql'));
+            update_option('gowishcart_migration_version', '2.0');
+            update_option('gowishcart_migration_date', current_time('mysql'));
             $results['message'] = 'Migration completed successfully';
         }
 
@@ -120,13 +121,15 @@ class WishCart_Database_Migration {
 
         // If no timestamp provided, find the most recent backup
         if (empty($timestamp)) {
+            // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared
             $tables = $this->wpdb->get_results(
                 $this->wpdb->prepare(
                     "SHOW TABLES LIKE %s",
-                    $this->table_prefix . 'wishcart_%_backup_%'
+                    $this->table_prefix . 'gwc_%_backup_%'
                 ),
                 ARRAY_N
             );
+            // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
 
             if (empty($tables)) {
                 $results['success'] = false;
@@ -155,24 +158,21 @@ class WishCart_Database_Migration {
 
         // Drop new tables
         $new_tables = array(
-            'fc_wishlists',
-            'fc_wishlist_items',
-            'fc_wishlist_shares',
-            'fc_wishlist_analytics',
-            'fc_wishlist_notifications',
-            'fc_wishlist_activities',
-            'fc_wishlist_guest_users',
+            'gwc_wishlists',
+            'gwc_wishlist_items',
+            'gwc_wishlist_notifications',
+            'gwc_wishlist_guest_users',
         );
 
         foreach ($new_tables as $new_table) {
             $full_table_name = $this->table_prefix . $new_table;
-            $this->wpdb->query("DROP TABLE IF EXISTS {$full_table_name}");
+            // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+            $this->wpdb->query("DROP TABLE IF EXISTS " . esc_sql( $full_table_name ));
         }
 
         // Restore old tables
         $old_tables = array(
-            'wishcart_wishlists',
-            'WishCart_Wishlist',
+            'gwc_wishlists',
         );
 
         foreach ($old_tables as $old_table) {
@@ -180,17 +180,20 @@ class WishCart_Database_Migration {
             $backup_table_name = $full_table_name . '_backup_' . $timestamp;
 
             // Check if backup exists
+            // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared
             $backup_exists = $this->wpdb->get_var(
                 $this->wpdb->prepare(
                     "SHOW TABLES LIKE %s",
                     $backup_table_name
                 )
             );
+            // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
 
             if ($backup_exists) {
                 // Rename backup back to original
+                // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
                 $rename_result = $this->wpdb->query(
-                    "RENAME TABLE {$backup_table_name} TO {$full_table_name}"
+                    "RENAME TABLE " . esc_sql( $backup_table_name ) . " TO " . esc_sql( $full_table_name )
                 );
 
                 if ($rename_result !== false) {
@@ -207,8 +210,8 @@ class WishCart_Database_Migration {
 
         // Update migration version
         if ($results['success']) {
-            update_option('wishcart_migration_version', '1.0');
-            delete_option('wishcart_migration_date');
+            update_option('gowishcart_migration_version', '1.0');
+            delete_option('gowishcart_migration_date');
             $results['message'] = 'Rollback completed successfully';
         }
 
@@ -229,13 +232,15 @@ class WishCart_Database_Migration {
         );
 
         // Find all backup tables
+        // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared
         $tables = $this->wpdb->get_results(
             $this->wpdb->prepare(
                 "SHOW TABLES LIKE %s",
-                $this->table_prefix . 'wishcart_%_backup_%'
+                $this->table_prefix . 'gwc_%_backup_%'
             ),
             ARRAY_N
         );
+        // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
 
         $cutoff_date = strtotime("-{$days_old} days");
 
@@ -252,7 +257,8 @@ class WishCart_Database_Migration {
 
                 if ($table_date < $cutoff_date) {
                     // Delete old backup table
-                    $drop_result = $this->wpdb->query("DROP TABLE IF EXISTS {$table_name}");
+                    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+                    $drop_result = $this->wpdb->query("DROP TABLE IF EXISTS " . esc_sql( $table_name ));
 
                     if ($drop_result !== false) {
                         $results['deleted_tables'][] = $table_name;
@@ -274,8 +280,8 @@ class WishCart_Database_Migration {
      * @return array Migration status information
      */
     public function get_migration_status() {
-        $migration_version = get_option('wishcart_migration_version', '0');
-        $migration_date = get_option('wishcart_migration_date', null);
+        $migration_version = get_option('gowishcart_migration_version', '0');
+        $migration_date = get_option('gowishcart_migration_date', null);
 
         $status = array(
             'version' => $migration_version,
@@ -285,18 +291,21 @@ class WishCart_Database_Migration {
         );
 
         // Find backup tables
+        // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared
         $tables = $this->wpdb->get_results(
             $this->wpdb->prepare(
                 "SHOW TABLES LIKE %s",
-                $this->table_prefix . 'wishcart_%_backup_%'
+                $this->table_prefix . 'gwc_%_backup_%'
             ),
             ARRAY_N
         );
+        // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
 
         foreach ($tables as $table) {
             $table_name = $table[0];
             
             // Get table size
+            // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared
             $size_query = $this->wpdb->get_row(
                 $this->wpdb->prepare(
                     "SELECT 
@@ -310,6 +319,7 @@ class WishCart_Database_Migration {
                 ),
                 ARRAY_A
             );
+            // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
 
             $status['backup_tables'][] = array(
                 'name' => $table_name,
@@ -318,18 +328,6 @@ class WishCart_Database_Migration {
         }
 
         return $status;
-    }
-
-    /**
-     * Lightweight debug logger
-     *
-     * @param string $message
-     * @return void
-     */
-    private function log_debug($message) {
-        if (defined('WP_DEBUG') && WP_DEBUG) {
-            error_log('[WishCart Migration] ' . $message);
-        }
     }
 }
 

@@ -18,9 +18,10 @@ import ButtonCustomizationSettings from './ButtonCustomizationSettings';
 import IntegrationsSettings from './IntegrationsSettings';
 import SupportResources from './SupportResources';
 import UpgradePrompt from './UpgradePrompt';
-import { AnalyticsDashboard } from '../AnalyticsDashboard';
+import AnalyticsProMessage from './AnalyticsProMessage';
 
-const localizedTabPageMap = (typeof window !== 'undefined' && window.wishcartSettings && window.wishcartSettings.tabPageMap) || {};
+const gowishcartSettings = typeof window !== 'undefined' ? window.gowishcartSettings || {} : {};
+const localizedTabPageMap = (typeof window !== 'undefined' && window.gowishcartSettings && window.gowishcartSettings.tabPageMap) || {};
 
 const SettingsApp = () => {
     const { toast } = useToast()
@@ -30,20 +31,19 @@ const SettingsApp = () => {
             shop_page_button: true,
             product_page_button: true,
             button_position: 'bottom',
-            custom_css: '',
             wishlist_page_id: 0,
             guest_cookie_expiry: 30,
         }
     });
 
     const [isSaving, setIsSaving] = useState(false);
-    const [activeTab, setActiveTab] = useState(() => wishcartSettings?.defaultTab || 'settings');
-    const baseMenuSlug = wishcartSettings?.menuSlug || 'wishcart';
+    const [activeTab, setActiveTab] = useState(() => gowishcartSettings?.defaultTab || 'settings');
+    const baseMenuSlug = gowishcartSettings?.menuSlug || 'gowishcart-wishlist-for-fluentcart';
     const fallbackTabPageMap = useMemo(() => ({
         settings: `${baseMenuSlug}-settings`,
         customization: `${baseMenuSlug}-customization`,
-        analytics: `${baseMenuSlug}-analytics`,
         integrations: `${baseMenuSlug}-integrations`,
+        analytics: `${baseMenuSlug}-analytics`,
         support: `${baseMenuSlug}-support`,
         'get-pro': `${baseMenuSlug}-get-pro`,
     }), [baseMenuSlug]);
@@ -62,9 +62,10 @@ const SettingsApp = () => {
 
     const loadSettings = async () => {
         try {
-            const response = await fetch('/wp-json/wishcart/v1/settings', {
+            const apiUrl = gowishcartSettings?.apiUrl || '';
+            const response = await fetch(`${apiUrl}settings`, {
                 headers: {
-                    'X-WP-Nonce': wishcartSettings.nonce
+                    'X-WP-Nonce': gowishcartSettings.nonce
                 }
             });
             const data = await response.json();
@@ -115,8 +116,8 @@ const SettingsApp = () => {
     }, [activeTab, tabPageMap, fallbackTabPageMap]);
 
     useEffect(() => {
-        if (typeof window !== 'undefined' && typeof window.wishcartSetActiveMenu === 'function') {
-            window.wishcartSetActiveMenu(activeTab);
+        if (typeof window !== 'undefined' && typeof window.gowishcartSetActiveMenu === 'function') {
+            window.gowishcartSetActiveMenu(activeTab);
         }
     }, [activeTab]);
 
@@ -130,11 +131,12 @@ const SettingsApp = () => {
         if (!validateBeforeSave()) return;
         setIsSaving(true);
         try {
-            const response = await fetch('/wp-json/wishcart/v1/settings', {
+            const apiUrl = gowishcartSettings?.apiUrl || '';
+            const response = await fetch(`${apiUrl}settings`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-WP-Nonce': wishcartSettings.nonce
+                    'X-WP-Nonce': gowishcartSettings.nonce
                 },
                 body: JSON.stringify(settings)
             });
@@ -144,10 +146,10 @@ const SettingsApp = () => {
                     title: (
                         <div className="flex items-center gap-2">
                             <CheckCircle2 className="h-4 w-4 text-green-500" />
-                            <span>{__('Settings saved successfully!', 'wishcart')}</span>
+                            <span>{__('Settings saved successfully!', 'gowishcart-wishlist-for-fluentcart')}</span>
                         </div>
                     ),
-                    description: __('Your changes have been applied.', 'wishcart'),
+                    description: __('Your changes have been applied.', 'gowishcart-wishlist-for-fluentcart'),
                     className: "bg-green-50 border-green-200"
                 });
             } else {
@@ -158,10 +160,10 @@ const SettingsApp = () => {
                 title: (
                     <div className="flex items-center gap-2">
                         <XCircle className="h-4 w-4 text-red-500" />
-                        <span>{__('Failed to save settings', 'wishcart')}</span>
+                        <span>{__('Failed to save settings', 'gowishcart-wishlist-for-fluentcart')}</span>
                     </div>
                 ),
-                description: __('Please try again or contact support if the problem persists.', 'wishcart'),
+                description: __('Please try again or contact support if the problem persists.', 'gowishcart-wishlist-for-fluentcart'),
                 className: "bg-red-50 border-red-200"
             });
         } finally {
@@ -180,12 +182,12 @@ const SettingsApp = () => {
     };
 
     const tabs = useMemo(() => ([
-        { id: 'settings', label: __('Settings', 'wishcart'), icon: Settings },
-        { id: 'customization', label: __('Customization', 'wishcart'), icon: Palette },
-        { id: 'analytics', label: __('Analytics', 'wishcart'), icon: BarChart3 },
-        { id: 'integrations', label: __('Integrations', 'wishcart'), icon: Plug },
-        { id: 'support', label: __('Support', 'wishcart'), icon: LifeBuoy },
-        { id: 'get-pro', label: __('Get Pro', 'wishcart'), icon: Sparkles },
+        { id: 'settings', label: __('Settings', 'gowishcart-wishlist-for-fluentcart'), icon: Settings },
+        { id: 'customization', label: __('Customization', 'gowishcart-wishlist-for-fluentcart'), icon: Palette },
+        { id: 'integrations', label: __('Integrations', 'gowishcart-wishlist-for-fluentcart'), icon: Plug },
+        { id: 'analytics', label: __('Analytics', 'gowishcart-wishlist-for-fluentcart'), icon: BarChart3 },
+        { id: 'support', label: __('Support', 'gowishcart-wishlist-for-fluentcart'), icon: LifeBuoy },
+        { id: 'get-pro', label: __('Get Pro', 'gowishcart-wishlist-for-fluentcart'), icon: Sparkles },
     ]), []);
 
     const navigateToTab = useCallback((tabId) => {
@@ -198,10 +200,10 @@ const SettingsApp = () => {
     }, [tabs]);
 
     useEffect(() => {
-        window.wishcartNavigateToTab = navigateToTab;
+        window.gowishcartNavigateToTab = navigateToTab;
         return () => {
-            if (window.wishcartNavigateToTab === navigateToTab) {
-                delete window.wishcartNavigateToTab;
+            if (window.gowishcartNavigateToTab === navigateToTab) {
+                delete window.gowishcartNavigateToTab;
             }
         };
     }, [navigateToTab]);
@@ -212,16 +214,16 @@ const SettingsApp = () => {
 
     return (
         <>
-            <div className="wishcart-admin-shell wishcart-admin-page">
+            <div className="gowishcart-admin-shell gowishcart-admin-page">
                 {/* Navigation Tabs - WordPress/FluentCart Style */}
-                <nav className="wishcart-nav-tabs">
+                <nav className="gowishcart-nav-tabs">
                     {tabs.map((tab) => {
                         const Icon = tab.icon;
                         return (
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
-                                className={`wishcart-nav-tab ${activeTab === tab.id ? 'active' : ''}`}
+                                className={`gowishcart-nav-tab ${activeTab === tab.id ? 'active' : ''}`}
                             >
                                 <Icon />
                                 {tab.label}
@@ -231,17 +233,17 @@ const SettingsApp = () => {
                 </nav>
 
                 {/* Active Tab Header */}
-                <div className="wishcart-admin-page-header">
-                    <div className="wishcart-admin-page-header-content">
-                        <h1 className="wishcart-admin-page-title">
+                <div className="gowishcart-admin-page-header">
+                    <div className="gowishcart-admin-page-header-content">
+                        <h1 className="gowishcart-admin-page-title">
                             {activeTabData.label}
                         </h1>
                     </div>
                 </div>
 
                 {/* Main Content Area */}
-                <div className="wishcart-admin-body">
-                    <div className="wishcart-admin-content">
+                <div className="gowishcart-admin-body">
+                    <div className="gowishcart-admin-content">
                         {/* Settings Tab */}
                         {activeTab === 'settings' && (
                             <WishlistSettings
@@ -258,14 +260,14 @@ const SettingsApp = () => {
                             />
                         )}
 
-                        {/* Analytics Tab */}
-                        {activeTab === 'analytics' && (
-                            <AnalyticsDashboard />
-                        )}
-
                         {/* Integrations Tab */}
                         {activeTab === 'integrations' && (
                             <IntegrationsSettings />
+                        )}
+
+                        {/* Analytics Tab */}
+                        {activeTab === 'analytics' && (
+                            <AnalyticsProMessage />
                         )}
 
                         {/* Support Tab */}
@@ -280,13 +282,13 @@ const SettingsApp = () => {
 
                         {/* Save Button - Only show for tabs that need it */}
                         {shouldShowSave && (
-                            <div className="wishcart-card-footer" style={{ marginTop: '24px' }}>
+                            <div className="gowishcart-card-footer" style={{ marginTop: '24px' }}>
                                 <button
                                     onClick={saveSettings}
                                     disabled={isSaving}
-                                    className="wishcart-button wishcart-button-primary"
+                                    className="gowishcart-button gowishcart-button-primary"
                                 >
-                                    {isSaving ? __('Saving...', 'wishcart') : __('Save Settings', 'wishcart')}
+                                    {isSaving ? __('Saving...', 'gowishcart-wishlist-for-fluentcart') : __('Save Settings', 'gowishcart-wishlist-for-fluentcart')}
                                 </button>
                             </div>
                         )}
