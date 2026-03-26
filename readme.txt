@@ -6,18 +6,25 @@ Tested up to: 6.9
 Stable tag: 1.1.4
 Requires PHP: 7.4
 License: GPLv2 or later
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
-Wishlist plugin for FluentCart with guest support, product variations, FluentCRM integration, price drop alerts, and notifications.
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
+
+Wishlist management for FluentCart stores with guest wishlists, variation support, and optional notification and FluentCRM integration.
+
 == Description ==
-Wishlists are popular tools in ecommerce shops. Thanks to the wishlist, users can:
 
-* Save their favourite products, find them quickly and easily at a later time and buy them.
-* Share the wishlist with relatives and friends for Christmas, birthdays and similar occasions so they can buy them one of the products from the list.
-* Share the wishlist on social networks and get indirect advertising for your store.
+GoWishCart adds wishlist functionality to FluentCart-powered stores.
 
-This means that you'll be able to loyalise customers, push them to buy and attract new customers any time a wishlist is shared.
+Customers can:
+* Save products for later
+* Save selected product variations
+* Manage wishlists as logged-in or guest users
+* Receive optional notifications for price drops and back-in-stock updates
 
-**GoWishCart** is a wishlist plugin built specifically for **FluentCart** stores. With seamless integration and automation features, GoWishCart helps you increase customer engagement.
+Store admins can:
+* Choose or create a wishlist page
+* Control button placement on product and shop/archive pages
+* Customize button text and icons
+* Connect optional FluentCRM automation triggers
 
 == Why Choose GoWishCart? ==
 * 💯 **GoWishCart is FREE!** - Core features available at no cost
@@ -203,4 +210,3 @@ This plugin uses the following third-party libraries and services:
 == Support ==
 
 For free plugin support, please visit the [WordPress.org support forum](https://wordpress.org/support/plugin/gowishcart-wishlist-for-fluentcart/). Commercial support for GoWishCart Pro is available at [gowishcart.com](https://gowishcart.com).
-

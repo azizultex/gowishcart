@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "skills": {
+    "wp-plugin-readme": {
+      "source": "sabbirxprt/skills",
+      "sourceType": "github",
+      "computedHash": "154795a12bf9cea7fec17194f1209ad9300e9e2987ddaba21c7349630517ae9f"
+    }
+  }
+}

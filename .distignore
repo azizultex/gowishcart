@@ -3,6 +3,12 @@ node_modules
 .git
 .github
 .wordpress-org
+.gitignore
+.gitattributes
+.distignore
+.buildignore
+.cursor
+.claude
 .env
 .env.*
 .user.ini
@@ -11,3 +17,6 @@ wp-cli.phar
 test.*
 *.log
 .DS_Store
+.agents
+.claude/skills/wp-plugin-readme
+skills-lock.json
