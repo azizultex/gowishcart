@@ -155,7 +155,7 @@ class GoWishCart_Wishlist {
      * Includes the Appsero client by creating a class alias if necessary.
      *
      * If the 'Appsero\Client' class is not defined, it will create an alias to
-     * 'AISK_AI_CHAT\Appsero\Client'.
+     * 'GoWishCart_Wishlist\Appsero\Client'.
      *
      * @version 1.0.0
      * @return void
