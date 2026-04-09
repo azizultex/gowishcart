@@ -3,7 +3,7 @@ Contributors: azizultex, sabbirxprt
 Tags: wishlist, fluentcart, ecommerce, shopping, favorites
 Requires at least: 5.0
 Tested up to: 6.9
-Stable tag: 1.1.5
+Stable tag: 1.2.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -96,6 +96,9 @@ You can use the `[gowishcart_wishlist]` shortcode on any page, or GoWishCart wil
 
 == Changelog ==
 
+= 1.2.0 =
+* Add: Integrated Appsero to track plugin installs, uninstalls, and collect uninstall feedback.
+
 = 1.1.5 =
 
 ### Changed
@@ -137,6 +140,9 @@ You can use the `[gowishcart_wishlist]` shortcode on any page, or GoWishCart wil
 * Initial release
 
 == Upgrade Notice ==
+
+= 1.2.0 =
+* Add: Integrated Appsero to track plugin installs, uninstalls, and collect uninstall feedback.
 
 = 1.1.5 =
 
@@ -222,3 +228,13 @@ This plugin uses the following third-party libraries and services:
 == Support ==
 
 For free plugin support, please visit the [WordPress.org support forum](https://wordpress.org/support/plugin/gowishcart-wishlist-for-fluentcart/). Commercial support for GoWishCart Pro is available at [gowishcart.com](https://gowishcart.com).
+
+
+## Privacy Policy 
+GoWishCart – Wishlist for FluentCart uses [Appsero](https://appsero.com) SDK to collect some telemetry data upon user's confirmation. This helps us to troubleshoot problems faster & make product improvements.
+
+Appsero SDK **does not gather any data by default.** The SDK only starts gathering basic telemetry data **when a user allows it via the admin notice**. We collect the data to ensure a great user experience for all our users. 
+
+Integrating Appsero SDK **DOES NOT IMMEDIATELY** start gathering data, **without confirmation from users in any case.**
+
+Learn more about how [Appsero collects and uses this data](https://appsero.com/privacy-policy/).
