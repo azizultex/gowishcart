@@ -72,6 +72,7 @@ class GoWishCart_Wishlist {
         define('GoWishCart_PLUGIN_DIR', plugin_dir_path(__FILE__));
         define('GoWishCart_PLUGIN_URL', plugin_dir_url(__FILE__));
         define('GoWishCart_TEXT_DOMAIN', 'gowishcart-wishlist-for-fluentcart');
+        define('GoWishCart_APPSERO_TOKEN', 'b0651d80-9209-4b08-9c2c-eb84e6cbc81a');
 
         // Check for FluentCart dependency first (before loading other dependencies)
         if ( ! $this->check_fluentcart_dependency() ) {
@@ -84,6 +85,10 @@ class GoWishCart_Wishlist {
         add_action('init', [ $this, 'init' ]);
         register_activation_hook(__FILE__, [ $this, 'activate' ]);
         register_deactivation_hook(__FILE__, [ __CLASS__, 'deactivate' ]);
+
+
+        $this->include_appsero_client();
+        $this->appsero_init_tracker_gowishcart_wishlist_for_fluentcart();
 
         // Load required files
         $this->load_dependencies();
@@ -131,6 +136,38 @@ class GoWishCart_Wishlist {
         }
 
         return false;
+    }
+
+    
+    /**
+     * Initialize the plugin tracker
+     *
+     * @return void
+     */
+    public function appsero_init_tracker_gowishcart_wishlist_for_fluentcart() {
+        $client = new GoWishCart_Wishlist\Appsero\Client( GoWishCart_APPSERO_TOKEN, 'Aisk — AI Sales Chatbot for WooCommerce | Knowledgebase & Support bot', GoWishCart_PLUGIN_FILE );
+
+        // Active insights.
+        $client->insights()->init();
+    }
+
+    /**
+     * Includes the Appsero client by creating a class alias if necessary.
+     *
+     * If the 'Appsero\Client' class is not defined, it will create an alias to
+     * 'AISK_AI_CHAT\Appsero\Client'.
+     *
+     * @version 1.0.0
+     * @return void
+     */
+    public function include_appsero_client() {
+        if ( ! class_exists( 'GoWishCart_Wishlist\Appsero\Client' ) ) {
+            require_once __DIR__ . '/appsero/client/src/Client.php';
+        }
+
+        if ( ! class_exists('GoWishCart_Wishlist\Appsero\Client') ) {
+            class_alias('GoWishCart_Wishlist\Appsero\Client','GoWishCart_Wishlist\Appsero\Client');
+        }
     }
 
     /**
