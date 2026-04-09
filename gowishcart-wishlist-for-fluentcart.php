@@ -145,7 +145,7 @@ class GoWishCart_Wishlist {
      * @return void
      */
     public function appsero_init_tracker_gowishcart_wishlist_for_fluentcart() {
-        $client = new GoWishCart_Wishlist\Appsero\Client( GoWishCart_APPSERO_TOKEN, 'Aisk — AI Sales Chatbot for WooCommerce | Knowledgebase & Support bot', GoWishCart_PLUGIN_FILE );
+        $client = new GoWishCart_Wishlist\Appsero\Client( GoWishCart_APPSERO_TOKEN, 'GoWishCart - Wishlist for FluentCart', GoWishCart_PLUGIN_FILE );
 
         // Active insights.
         $client->insights()->init();
