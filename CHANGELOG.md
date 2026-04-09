@@ -2,6 +2,9 @@
 
 All notable changes to the GoWishCart Wishlist plugin will be documented in this file.
 
+= 1.2.0 =
+* Add: Integrated Appsero to track plugin installs, uninstalls, and collect uninstall feedback.
+
 = 1.1.5 =
 
 ### Changed
