@@ -38,12 +38,12 @@ const GuestEmailModal = ({ isOpen, onClose, onEmailSubmitted }) => {
                 const cookies = document.cookie.split(';');
                 for (let cookie of cookies) {
                     const [name, value] = cookie.trim().split('=');
-                    if (name === 'gowishcart_session_id') {
+                    if (name === 'wishcart_session_id') {
                         return value;
                     }
                 }
-                if (window.gowishcartWishlist?.sessionId) {
-                    return window.gowishcartWishlist.sessionId;
+                if (window.wishcartWishlist?.sessionId) {
+                    return window.wishcartWishlist.sessionId;
                 }
                 return null;
             };
@@ -51,12 +51,12 @@ const GuestEmailModal = ({ isOpen, onClose, onEmailSubmitted }) => {
             const sessionId = getSessionId();
             
             // Save email to guest user record
-            const url = `${window.gowishcartWishlist.apiUrl}guest/update-email`;
+            const url = `${window.wishcartWishlist.apiUrl}guest/update-email`;
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-WP-Nonce': window.gowishcartWishlist.nonce,
+                    'X-WP-Nonce': window.wishcartWishlist.nonce,
                 },
                 body: JSON.stringify({
                     email: email.trim(),
@@ -66,7 +66,7 @@ const GuestEmailModal = ({ isOpen, onClose, onEmailSubmitted }) => {
 
             if (response.ok) {
                 // Store email in localStorage to avoid asking again in this session
-                localStorage.setItem('gowishcart_guest_email', email.trim());
+                localStorage.setItem('wishcart_guest_email', email.trim());
                 
                 // Call success callback
                 if (onEmailSubmitted) {
@@ -107,40 +107,40 @@ const GuestEmailModal = ({ isOpen, onClose, onEmailSubmitted }) => {
     if (!isOpen) return null;
 
     return (
-        <div className="gowishcart-modal-overlay" onClick={onClose}>
-            <div className="gowishcart-modal gowishcart-email-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="wishcart-modal-overlay" onClick={onClose}>
+            <div className="wishcart-modal wishcart-email-modal" onClick={(e) => e.stopPropagation()}>
                 <button 
-                    className="gowishcart-modal-close" 
+                    className="wishcart-modal-close" 
                     onClick={onClose}
                     aria-label="Close"
                     disabled={isSubmitting}
                 >
                     <X size={18} />
                 </button>
-                <div className="gowishcart-modal-header">
-                    <div className="gowishcart-modal-header-content">
-                        <div className="gowishcart-modal-icon">
+                <div className="wishcart-modal-header">
+                    <div className="wishcart-modal-header-content">
+                        <div className="wishcart-modal-icon">
                             <Bell size={24} />
                         </div>
                         <h2>Get Notified About Your Wishlist</h2>
                     </div>
                 </div>
 
-                <div className="gowishcart-modal-body">
-                    <div className="gowishcart-email-description">
+                <div className="wishcart-modal-body">
+                    <div className="wishcart-email-description">
                         Enter your email to receive notifications about price drops, back-in-stock alerts, and more for items in your wishlist.
                     </div>
 
                     {error && (
-                        <div className="gowishcart-modal-error">
+                        <div className="wishcart-modal-error">
                             {error}
                         </div>
                     )}
 
-                    <form onSubmit={handleSubmit} className="gowishcart-email-form">
-                        <div className="gowishcart-email-input-wrapper">
-                            <div className={`gowishcart-input-container ${focused ? 'focused' : ''} ${error ? 'error' : ''}`}>
-                                <Mail size={18} className="gowishcart-input-icon" />
+                    <form onSubmit={handleSubmit} className="wishcart-email-form">
+                        <div className="wishcart-email-input-wrapper">
+                            <div className={`wishcart-input-container ${focused ? 'focused' : ''} ${error ? 'error' : ''}`}>
+                                <Mail size={18} className="wishcart-input-icon" />
                                 <input
                                     id="guest-email"
                                     type="email"
@@ -155,19 +155,19 @@ const GuestEmailModal = ({ isOpen, onClose, onEmailSubmitted }) => {
                                     autoFocus
                                     required
                                     disabled={isSubmitting}
-                                    className="gowishcart-email-input"
+                                    className="wishcart-email-input"
                                 />
                             </div>
-                            <p className="gowishcart-email-hint">
+                            <p className="wishcart-email-hint">
                                 We'll use this to notify you about your wishlist items
                             </p>
                         </div>
                     </form>
                 </div>
 
-                <div className="gowishcart-modal-footer">
+                <div className="wishcart-modal-footer">
                     <button
-                        className="gowishcart-button-secondary"
+                        className="wishcart-button-secondary"
                         onClick={onClose}
                         disabled={isSubmitting}
                         type="button"
@@ -175,14 +175,14 @@ const GuestEmailModal = ({ isOpen, onClose, onEmailSubmitted }) => {
                         Skip
                     </button>
                     <button
-                        className="gowishcart-button-primary"
+                        className="wishcart-button-primary"
                         onClick={handleSubmit}
                         disabled={isSubmitting || !email.trim()}
                         type="button"
                     >
                         {isSubmitting ? (
                             <>
-                                <div className="gowishcart-button-spinner"></div>
+                                <div className="wishcart-button-spinner"></div>
                                 <span>Saving...</span>
                             </>
                         ) : (

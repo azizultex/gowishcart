@@ -4,7 +4,7 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
     exit;
 }
 
-class GoWishCart_Uninstaller {
+class WishCart_Uninstaller {
 
     /**
      * Array of table names
@@ -25,19 +25,11 @@ class GoWishCart_Uninstaller {
      */
     public function __construct() {
         $this->tables = [
-            'gwc_wishlists',
-            'gwc_wishlist_items',
-            'gwc_wishlist_notifications',
-            'gwc_wishlist_guest_users',
-            'gwc_wishlist_crm_campaigns',
+            'WishCart_Wishlist',
         ];
 
         $this->options = [
-            'gowishcart_settings',
-            'gowishcart_migration_version',
-            'gowishcart_migration_date',
-            'gowishcart_wishlist_page_id',
-            'gowishcart_fluentcrm_settings',
+            'wishcart_settings',
         ];
     }
 
@@ -85,5 +77,5 @@ class GoWishCart_Uninstaller {
 }
 
 // Execute the uninstallation
-$gowishcart_uninstaller = new GoWishCart_Uninstaller();
-$gowishcart_uninstaller->uninstall();
+$uninstaller = new WishCart_Uninstaller();
+$uninstaller->uninstall();

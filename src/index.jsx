@@ -1,0 +1,1 @@
+// This file is no longer used - wishlist functionality is in src/frontend/index.jsx

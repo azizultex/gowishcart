@@ -2,23 +2,23 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 /**
- * GoWishCart Back in Stock Trigger
+ * WishCart Back in Stock Trigger
  *
  * Triggers when a product in a wishlist comes back in stock
  *
  * @category WordPress
- * @package  GoWishCart
- * @author   GoWishCart Team <support@gowishcart.com>
+ * @package  WishCart
+ * @author   WishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://gowishcart.com
  */
-class GoWishCart_Back_In_Stock_Trigger extends \FluentCrm\App\Services\Funnel\BaseTrigger {
+class wishcart_Back_In_Stock_Trigger extends \FluentCrm\App\Services\Funnel\BaseTrigger {
 
     /**
      * Constructor
      */
     public function __construct() {
-        $this->triggerName = 'gowishcart_back_in_stock';
+        $this->triggerName = 'wishcart_back_in_stock';
         $this->priority = 20;
         $this->actionArgNum = 2;
         parent::__construct();
@@ -31,13 +31,13 @@ class GoWishCart_Back_In_Stock_Trigger extends \FluentCrm\App\Services\Funnel\Ba
      */
     public function getTrigger() {
         return array(
-            'category'      => __( 'GoWishCart', 'gowishcart-wishlist-for-fluentcart-pro' ),
-            'label'         => __( 'Item Back in Stock', 'gowishcart-wishlist-for-fluentcart-pro' ) . ' (' . __( 'Upcoming', 'gowishcart-wishlist-for-fluentcart-pro' ) . ')',
-            'description'  => __( 'This funnel will be initiated when a product in a wishlist comes back in stock', 'gowishcart-wishlist-for-fluentcart-pro' ),
+            'category'      => __( 'WishCart', 'wishcart' ),
+            'label'         => __( 'Item Back in Stock', 'wishcart' ) . ' (' . __( 'Upcoming', 'wishcart' ) . ')',
+            'description'  => __( 'This funnel will be initiated when a product in a wishlist comes back in stock', 'wishcart' ),
             // 'icon'          => 'fc-icon-heart',
             'upcoming'      => true,
-            'upcoming_label' => __( 'Upcoming', 'gowishcart-wishlist-for-fluentcart-pro' ),
-            'badge'         => __( 'Upcoming', 'gowishcart-wishlist-for-fluentcart-pro' ),
+            'upcoming_label' => __( 'Upcoming', 'wishcart' ),
+            'badge'         => __( 'Upcoming', 'wishcart' ),
             'is_pro'        => false,
             'disabled'      => true,
             'is_disabled'   => true,

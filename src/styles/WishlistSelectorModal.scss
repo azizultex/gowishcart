@@ -1,5 +1,5 @@
 // Wishlist Selector Modal Styles
-.gowishcart-modal-overlay {
+.wishcart-modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -23,7 +23,7 @@
     }
 }
 
-.gowishcart-modal {
+.wishcart-modal {
     background: white;
     border-radius: 8px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
@@ -47,7 +47,7 @@
     }
 }
 
-.gowishcart-modal-header {
+.wishcart-modal-header {
     display: flex;
     align-items: center;
     justify-content: flex-start;
@@ -62,7 +62,7 @@
     }
 }
 
-.gowishcart-modal-close {
+.wishcart-modal-close {
     position: absolute;
     top: .75rem;
     right: .75rem;
@@ -110,14 +110,14 @@
     }
 }
 
-.gowishcart-modal-body {
+.wishcart-modal-body {
     padding: 1.5rem;
     overflow-y: auto;
     overflow-x: hidden;
     flex: 1;
     min-height: 0;
     
-    .gowishcart-email-modal & {
+    .wishcart-email-modal & {
         padding: 1.75rem 1.5rem;
     }
     
@@ -140,7 +140,7 @@
     }
 }
 
-.gowishcart-modal-error {
+.wishcart-modal-error {
     background-color: #fee2e2;
     border: 1px solid #fecaca;
     color: #991b1b;
@@ -150,7 +150,7 @@
     font-size: 0.875rem;
 }
 
-.gowishcart-modal-loading {
+.wishcart-modal-loading {
     text-align: center;
     padding: 2.5rem 1.5rem;
     color: #6b7280;
@@ -168,7 +168,7 @@
     }
 }
 
-.gowishcart-spinner {
+.wishcart-spinner {
     width: 40px;
     height: 40px;
     border: 3px solid #e5e7eb;
@@ -183,7 +183,7 @@
     }
 }
 
-.gowishcart-success-checkmark {
+.wishcart-success-checkmark {
     width: 48px;
     height: 48px;
     border-radius: 50%;
@@ -206,14 +206,14 @@
     }
 }
 
-.gowishcart-wishlists-list {
+.wishcart-wishlists-list {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
     margin-bottom: 1rem;
 }
 
-.gowishcart-wishlist-item {
+.wishcart-wishlist-item {
     display: flex;
     align-items: center;
     gap: 0.75rem;
@@ -239,7 +239,7 @@
     }
 }
 
-.gowishcart-wishlist-radio {
+.wishcart-wishlist-radio {
     width: 20px;
     height: 20px;
     border: 2px solid #d1d5db;
@@ -250,18 +250,18 @@
     flex-shrink: 0;
     transition: all 0.2s;
 
-    .gowishcart-wishlist-item.selected & {
+    .wishcart-wishlist-item.selected & {
         border-color: #3b82f6;
         background-color: #3b82f6;
         color: white;
     }
 }
 
-.gowishcart-wishlist-info {
+.wishcart-wishlist-info {
     flex: 1;
 }
 
-.gowishcart-wishlist-name {
+.wishcart-wishlist-name {
     font-weight: 500;
     color: #111827;
     display: flex;
@@ -269,7 +269,7 @@
     gap: 0.5rem;
 }
 
-.gowishcart-default-badge {
+.wishcart-default-badge {
     display: inline-block;
     padding: 0.125rem 0.5rem;
     background-color: #dbeafe;
@@ -279,7 +279,7 @@
     font-weight: 500;
 }
 
-.gowishcart-create-new-button {
+.wishcart-create-new-button {
     width: 100%;
     display: flex;
     align-items: center;
@@ -311,7 +311,7 @@
     }
 }
 
-.gowishcart-create-new-form {
+.wishcart-create-new-form {
     display: flex;
     flex-direction: column;
     
@@ -350,7 +350,7 @@
     }
 }
 
-.gowishcart-back-button {
+.wishcart-back-button {
     width: 100%;
     padding: 0.75rem 1rem;
     border: 1px solid #374151;
@@ -383,7 +383,7 @@
     }
 }
 
-.gowishcart-modal-footer {
+.wishcart-modal-footer {
     display: flex;
     gap: 0.75rem;
     padding: 1.5rem;
@@ -421,7 +421,7 @@
             cursor: not-allowed;
         }
 
-        &.gowishcart-button-success {
+        &.wishcart-button-success {
             // background-color: #10b981;
             // border-color: #10b981;
 
@@ -432,7 +432,7 @@
     }
 }
 
-.gowishcart-button-spinner {
+.wishcart-button-spinner {
     width: 16px;
     height: 16px;
     border: 2px solid rgba(255, 255, 255, 0.3);
@@ -442,17 +442,17 @@
 }
 
 // Guest Email Modal Specific Styles
-.gowishcart-email-modal {
+.wishcart-email-modal {
     max-width: 480px;
 }
 
-.gowishcart-modal-header-content {
+.wishcart-modal-header-content {
     display: flex;
     align-items: center;
     gap: 0.75rem;
 }
 
-.gowishcart-modal-icon {
+.wishcart-modal-icon {
     width: 48px;
     height: 48px;
     border-radius: 50%;
@@ -465,7 +465,7 @@
     box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
 }
 
-.gowishcart-email-description {
+.wishcart-email-description {
     margin-bottom: 1.75rem;
     color: #6b7280;
     font-size: 0.9375rem;
@@ -473,17 +473,17 @@
     text-align: left;
 }
 
-.gowishcart-email-form {
+.wishcart-email-form {
     width: 100%;
 }
 
-.gowishcart-email-input-wrapper {
+.wishcart-email-input-wrapper {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
 }
 
-.gowishcart-email-label {
+.wishcart-email-label {
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -497,31 +497,31 @@
     }
 }
 
-.gowishcart-input-container {
+.wishcart-input-container {
     position: relative;
     display: flex;
     align-items: center;
     transition: all 0.2s ease;
 
     &.focused {
-        .gowishcart-input-icon {
+        .wishcart-input-icon {
             color: #3b82f6;
         }
     }
 
     &.error {
-        .gowishcart-email-input {
+        .wishcart-email-input {
             border-color: #ef4444;
             box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
         }
         
-        .gowishcart-input-icon {
+        .wishcart-input-icon {
             color: #ef4444;
         }
     }
 }
 
-.gowishcart-input-icon {
+.wishcart-input-icon {
     position: absolute;
     left: 1rem;
     color: #9ca3af;
@@ -532,7 +532,7 @@
     height: 18px;
 }
 
-.gowishcart-email-input {
+.wishcart-email-input {
     width: 100%;
     padding: 0.875rem 1rem 0.875rem 3rem;
     border: 2px solid #e5e7eb;
@@ -565,7 +565,7 @@
     }
 }
 
-.gowishcart-email-hint {
+.wishcart-email-hint {
     font-size: 0.8125rem;
     color: #6b7280;
     margin: 0;
@@ -573,8 +573,8 @@
     line-height: 1.5;
 }
 
-.gowishcart-button-primary,
-.gowishcart-button-secondary {
+.wishcart-button-primary,
+.wishcart-button-secondary {
     flex: 1;
     display: flex;
     align-items: center;
@@ -601,7 +601,7 @@
     }
 }
 
-.gowishcart-button-primary {
+.wishcart-button-primary {
     background: #3B82F6;
     color: white;
 
@@ -616,7 +616,7 @@
     }
 }
 
-.gowishcart-button-secondary {
+.wishcart-button-secondary {
     background: white;
     color: #374151;
     border: 2px solid #e5e7eb;
@@ -634,12 +634,12 @@
 
 // Responsive styles
 @media (max-width: 640px) {
-    .gowishcart-modal-overlay {
+    .wishcart-modal-overlay {
         padding: 0;
         align-items: flex-end;
     }
 
-    .gowishcart-modal {
+    .wishcart-modal {
         max-width: 100%;
         max-height: 95vh;
         border-bottom-left-radius: 0;
@@ -656,17 +656,17 @@
         }
     }
 
-    .gowishcart-modal-header,
-    .gowishcart-modal-body,
-    .gowishcart-modal-footer {
+    .wishcart-modal-header,
+    .wishcart-modal-body,
+    .wishcart-modal-footer {
         padding: 1rem;
     }
 
-    .gowishcart-wishlist-item {
+    .wishcart-wishlist-item {
         padding: 0.875rem;
     }
 
-    .gowishcart-modal-footer {
+    .wishcart-modal-footer {
         flex-direction: column-reverse;
 
         button {
@@ -674,8 +674,8 @@
         }
     }
 
-    .gowishcart-email-modal {
-        .gowishcart-modal-icon {
+    .wishcart-email-modal {
+        .wishcart-modal-icon {
             width: 40px;
             height: 40px;
 
@@ -685,7 +685,7 @@
             }
         }
 
-        .gowishcart-modal-header h2 {
+        .wishcart-modal-header h2 {
             font-size: 1.125rem;
         }
     }

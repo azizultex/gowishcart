@@ -38,6 +38,7 @@ const updateCartFromFragments = (fragments) => {
                     document.body.appendChild(cartContainer);
                     element = cartContainer;
                     elementWasCreated = true;
+                    console.log('Cart drawer container created from fragment');
                 }
             }
             
@@ -53,10 +54,16 @@ const updateCartFromFragments = (fragments) => {
                     }
                 }
 
-                // Do NOT manually re-execute scripts from injected HTML.
-                // If FluentCart needs to re-initialize behavior after a fragment update,
-                // dispatch a custom event that its own scripts can listen for.
-                element.dispatchEvent(new CustomEvent('fluentcart:fragment:updated', { bubbles: true }));
+                // Trigger any scripts in the new content
+                const scripts = element.querySelectorAll('script');
+                scripts.forEach(oldScript => {
+                    const newScript = document.createElement('script');
+                    Array.from(oldScript.attributes).forEach(attr => {
+                        newScript.setAttribute(attr.name, attr.value);
+                    });
+                    newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+                    oldScript.parentNode.replaceChild(newScript, oldScript);
+                });
             }
         } catch (error) {
             console.error('Error updating cart fragment:', fragment.selector, error);
@@ -100,12 +107,6 @@ const addToCartViaFluentCartAPI = async (params) => {
         'fluent_cart_cart_update'
     ];
 
-    // Ajax URL must come from PHP (wp_localize_script); no hardcoded path for WordPress.org compliance.
-    const ajaxUrl = window.gowishcartWishlist?.ajaxUrl;
-    if (!ajaxUrl) {
-        return { success: false, error: 'Ajax URL not available' };
-    }
-
     for (let i = 0; i < endpoints.length; i++) {
         const endpointAction = endpoints[i];
         try {
@@ -118,7 +119,7 @@ const addToCartViaFluentCartAPI = async (params) => {
             urlParams.append('open_cart', 'true');
             urlParams.append('is_admin_bar_enabled', isAdminBarEnabled().toString());
 
-            const url = ajaxUrl + '?' + urlParams.toString();
+            const url = window.location.origin + '/wp-admin/admin-ajax.php?' + urlParams.toString();
 
             const response = await fetch(url, {
                 method: 'GET',
@@ -202,6 +203,7 @@ export const addToCartViaAJAX = async ({ productId, variationId = 0, quantity = 
             }
         } catch (apiError) {
             // API method failed, continue to fallbacks
+            console.debug('FluentCart API method failed, trying fallbacks:', apiError);
         }
 
         // If API method fails, fall back to other methods
@@ -347,7 +349,7 @@ const clickFluentCartButton = ({ productId, variationId }) => {
                     resolve({ success: true });
                     return;
                 } catch (e) {
-                    // Button click failed, continue to next method
+                    console.debug('Button click failed:', e);
                 }
             }
 
@@ -414,9 +416,9 @@ const submitAddToCartForm = ({ productId, variationId, quantity, productUrl }) =
             addField('product-id', productId);
             
             // Add nonce if available (for security)
-            if (window.gowishcartWishlist?.nonce) {
-                addField('_wpnonce', window.gowishcartWishlist.nonce);
-                addField('nonce', window.gowishcartWishlist.nonce);
+            if (window.wishcartWishlist?.nonce) {
+                addField('_wpnonce', window.wishcartWishlist.nonce);
+                addField('nonce', window.wishcartWishlist.nonce);
             }
 
             document.body.appendChild(form);
@@ -581,13 +583,6 @@ const tryWordPressAjax = ({ productId, variationId, quantity }) => {
                 return;
             }
 
-            // Ajax URL must come from PHP (wp_localize_script); no hardcoded path for WordPress.org compliance.
-            const ajaxUrl = window.gowishcartWishlist?.ajaxUrl;
-            if (!ajaxUrl) {
-                resolve({ success: false });
-                return;
-            }
-
             const formData = new FormData();
             formData.append('action', actions[actionIndex]);
             formData.append('product_id', productId);
@@ -597,7 +592,7 @@ const tryWordPressAjax = ({ productId, variationId, quantity }) => {
                 formData.append('variation_id', variationId);
             }
 
-            fetch(ajaxUrl, {
+            fetch(`${window.location.origin}/wp-admin/admin-ajax.php`, {
                 method: 'POST',
                 body: formData,
                 credentials: 'same-origin',
@@ -688,9 +683,10 @@ export const openCartSidebar = () => {
             if (cartButton.tagName !== 'A' || !cartButton.hasAttribute('href')) {
                 try {
                     cartButton.click();
+                    console.log('Cart sidebar opened via button click');
                     return;
                 } catch (e) {
-                    // Button click failed
+                    console.debug('Button click failed:', e);
                 }
             }
         }

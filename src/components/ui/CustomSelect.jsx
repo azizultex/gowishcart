@@ -17,7 +17,7 @@ const CustomSelect = ({
     isClearable = false,
     ...props 
 }) => {
-    // gowishcart-inspired custom styles
+    // wishcart-inspired custom styles
     const customStyles = {
         control: (base, state) => ({
             ...base,
@@ -90,24 +90,19 @@ const CustomSelect = ({
         }),
         option: (base, state) => ({
             ...base,
-            backgroundColor: state.isDisabled
-                ? '#f9fafb'
-                : state.isSelected 
-                    ? '#f3f4f6' 
-                    : state.isFocused 
-                        ? '#f9fafb' 
-                        : '#ffffff',
-            color: state.isDisabled 
-                ? '#9ca3af'
-                : state.isSelected ? '#111827' : '#374151',
-            cursor: state.isDisabled ? 'not-allowed' : 'pointer',
+            backgroundColor: state.isSelected 
+                ? '#f3f4f6' 
+                : state.isFocused 
+                    ? '#f9fafb' 
+                    : '#ffffff',
+            color: state.isSelected ? '#111827' : '#374151',
+            cursor: 'pointer',
             fontSize: '14px',
             fontWeight: state.isSelected ? '600' : '400',
             padding: '12px 16px',
             transition: 'background-color 0.15s ease',
-            opacity: state.isDisabled ? 0.6 : 1,
             '&:active': {
-                backgroundColor: state.isDisabled ? '#f9fafb' : '#f3f4f6',
+                backgroundColor: '#f3f4f6',
             },
         }),
         noOptionsMessage: (base) => ({

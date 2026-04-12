@@ -45,6 +45,7 @@ tsconfig.json
 vite.config.js
 postcss.config.js
 tailwind.config.js
+package.json
 package-lock.json
 yarn.lock
 composer.json

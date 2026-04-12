@@ -7,16 +7,16 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * Provides FluentCart compatibility functions to replace WooCommerce functions
  *
  * @category Functionality
- * @package  GoWishCart
- * @author   GoWishCart Team <support@gowishcart.com>
+ * @package  AISK
+ * @author   WishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://gowishcart.com
  */
 
 /**
- * GoWishCart FluentCart Product Wrapper Class
+ * AISK FluentCart Product Wrapper Class
  */
-class GoWishCart_FluentCart_Product {
+class WishCart_FluentCart_Product {
     private $post_id;
     private $post;
     private $meta_cache = [];
@@ -180,10 +180,10 @@ class GoWishCart_FluentCart_Product {
         global $wpdb;
         $table_name = $wpdb->prefix . 'fct_product_variations';
         
-        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
         if ( $wpdb->get_var( "SHOW TABLES LIKE '$table_name'" ) === $table_name ) {
-            $variants = $wpdb->get_results( $wpdb->prepare( // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter
-                // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
+            $variants = $wpdb->get_results( $wpdb->prepare(
+                // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
                 "SELECT * FROM {$table_name} WHERE post_id = %d ORDER BY serial_index ASC",
                 $this->post_id
             ), ARRAY_A );
@@ -240,9 +240,9 @@ class GoWishCart_FluentCart_Product {
 }
 
 /**
- * GoWishCart FluentCart Order Wrapper Class
+ * AISK FluentCart Order Wrapper Class
  */
-class GoWishCart_FluentCart_Order {
+class WishCart_FluentCart_Order {
     private $fc_order;
     private $meta_cache = [];
 
@@ -315,7 +315,7 @@ class GoWishCart_FluentCart_Order {
         if ( ! $this->fc_order ) {
             return null;
         }
-        return new GoWishCart_FluentCart_DateTime( $this->fc_order->created_at );
+        return new WishCart_FluentCart_DateTime( $this->fc_order->created_at );
     }
 
     public function get_formatted_order_total() {
@@ -333,9 +333,9 @@ class GoWishCart_FluentCart_Order {
             $total_decimal = floatval( $total ) / 100;
         }
         
-        // Use gwc_price if available, otherwise format manually
-        if ( function_exists( 'gwc_price' ) ) {
-            return gwc_price( $total_decimal, [ 'currency' => $currency ] );
+        // Use wc_price if available, otherwise format manually
+        if ( function_exists( 'wc_price' ) ) {
+            return wc_price( $total_decimal, [ 'currency' => $currency ] );
         }
         
         return $currency . ' ' . number_format( $total_decimal, 2 );
@@ -412,6 +412,38 @@ class GoWishCart_FluentCart_Order {
                 // Get variation_id if available (FluentCart may store it in various fields)
                 $variation_id = 0;
                 
+                // Debug: Log all available attributes on the Eloquent model
+                if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+                    $item_attributes = array();
+                    if ( is_object( $fc_item ) ) {
+                        // For Laravel Eloquent models, use getAttributes() or access attributes directly
+                        if ( method_exists( $fc_item, 'getAttributes' ) ) {
+                            $item_attributes = $fc_item->getAttributes();
+                        } elseif ( method_exists( $fc_item, 'getAttribute' ) ) {
+                            // Try to get common fields
+                            $common_fields = array( 'id', 'post_id', 'variation_id', 'variant_id', 'product_variation_id', 'variation', 'item_id', 'product_id' );
+                            foreach ( $common_fields as $field ) {
+                                try {
+                                    $value = $fc_item->getAttribute( $field );
+                                    if ( $value !== null ) {
+                                        $item_attributes[ $field ] = is_scalar( $value ) ? $value : gettype( $value );
+                                    }
+                                } catch ( Exception $e ) {
+                                    // Ignore
+                                }
+                            }
+                        }
+                        // Also try direct property access (Laravel magic methods)
+                        $direct_properties = array( 'id', 'post_id', 'variation_id', 'variant_id', 'product_variation_id', 'variation', 'item_id', 'product_id' );
+                        foreach ( $direct_properties as $prop ) {
+                            if ( isset( $fc_item->$prop ) ) {
+                                $item_attributes[ $prop ] = is_scalar( $fc_item->$prop ) ? $fc_item->$prop : gettype( $fc_item->$prop );
+                            }
+                        }
+                    }
+                    error_log( '[WishCart] FluentCart order item attributes: ' . print_r( $item_attributes, true ) );
+                }
+                
                 // Check multiple possible field names for variation_id
                 // FluentCart stores variation_id in object_id field!
                 // Try direct property access first (Laravel magic methods)
@@ -463,7 +495,13 @@ class GoWishCart_FluentCart_Order {
                     }
                 }
                 
-                $items[] = new GoWishCart_FluentCart_Order_Item( [
+                // Debug: Log extracted variation_id
+                if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+                    $post_id = isset( $fc_item->post_id ) ? $fc_item->post_id : ( method_exists( $fc_item, 'getAttribute' ) ? $fc_item->getAttribute( 'post_id' ) : 'N/A' );
+                    error_log( '[WishCart] FluentCart order item: post_id=' . $post_id . ', extracted variation_id=' . $variation_id );
+                }
+                
+                $items[] = new WishCart_FluentCart_Order_Item( [
                     'id' => $fc_item->id,
                     'name' => $fc_item->title,
                     'product_id' => $fc_item->post_id,
@@ -486,8 +524,8 @@ class GoWishCart_FluentCart_Order {
             return '';
         }
 
-        if ( function_exists( 'gwc_price' ) ) {
-            return gwc_price( floatval( $total ) );
+        if ( function_exists( 'wc_price' ) ) {
+            return wc_price( floatval( $total ) );
         }
         return number_format( floatval( $total ), 2 );
     }
@@ -519,9 +557,9 @@ class GoWishCart_FluentCart_Order {
 }
 
 /**
- * GoWishCart FluentCart Order Item Wrapper Class
+ * AISK FluentCart Order Item Wrapper Class
  */
-class GoWishCart_FluentCart_Order_Item {
+class WishCart_FluentCart_Order_Item {
     private $item_data;
 
     public function __construct( $item_data ) {
@@ -538,7 +576,7 @@ class GoWishCart_FluentCart_Order_Item {
 
     public function get_product() {
         $product_id = isset( $this->item_data['product_id'] ) ? $this->item_data['product_id'] : null;
-        return $product_id ? GoWishCart_FluentCart_Helper::get_product( $product_id ) : null;
+        return $product_id ? WishCart_FluentCart_Helper::get_product( $product_id ) : null;
     }
 
     public function get_product_id() {
@@ -556,9 +594,9 @@ class GoWishCart_FluentCart_Order_Item {
 }
 
 /**
- * GoWishCart FluentCart DateTime Wrapper Class
+ * AISK FluentCart DateTime Wrapper Class
  */
-class GoWishCart_FluentCart_DateTime {
+class WishCart_FluentCart_DateTime {
     private $datetime;
 
     public function __construct( $datetime_string ) {
@@ -571,17 +609,17 @@ class GoWishCart_FluentCart_DateTime {
 }
 
 /**
- * GoWishCart_FluentCart_Helper Class
+ * WishCart_FluentCart_Helper Class
  *
  * Handles FluentCart-specific operations for products and orders
  *
  * @category Class
- * @package  GoWishCart
- * @author   GoWishCart Team <support@gowishcart.com>
+ * @package  AISK
+ * @author   WishCart Team <support@gowishcart.com>
  * @license  GPL-2.0+ https://www.gnu.org/licenses/gpl-2.0.html
  * @link     https://gowishcart.com
  */
-class GoWishCart_FluentCart_Helper {
+class WishCart_FluentCart_Helper {
 
     /**
      * Cached result of FluentCart detection to avoid repeated checks
@@ -649,11 +687,11 @@ class GoWishCart_FluentCart_Helper {
         $candidates = [ 'fc_product', 'fluent-products', 'fluent_product', 'fluentcart_product' ];
         foreach ( $candidates as $slug ) {
             if ( post_type_exists( $slug ) ) {
-                return apply_filters( 'gowishcart_fluentcart_product_post_type', $slug );
+                return apply_filters( 'wishcart_fluentcart_product_post_type', $slug );
             }
         }
         // Fallback to default
-        return apply_filters( 'gowishcart_fluentcart_product_post_type', 'fc_product' );
+        return apply_filters( 'wishcart_fluentcart_product_post_type', 'fc_product' );
     }
 
     /**
@@ -662,14 +700,14 @@ class GoWishCart_FluentCart_Helper {
      * @return string
      */
     public static function get_order_post_type() {
-        return apply_filters( 'gowishcart_fluentcart_order_post_type', 'fc_order' );
+        return apply_filters( 'wishcart_fluentcart_order_post_type', 'fc_order' );
     }
 
     /**
-     * Get product by ID (replaces gwc_get_product)
+     * Get product by ID (replaces wc_get_product)
      *
      * @param int|WP_Post $product_id Product ID or post object
-     * @return GoWishCart_FluentCart_Product|null FluentCart product object or null
+     * @return WishCart_FluentCart_Product|null FluentCart product object or null
      */
     public static function get_product( $product_id ) {
         if ( ! self::is_fluentcart_active() ) {
@@ -691,14 +729,14 @@ class GoWishCart_FluentCart_Helper {
             return null;
         }
 
-        return new GoWishCart_FluentCart_Product( $post );
+        return new WishCart_FluentCart_Product( $post );
     }
 
     /**
-     * Get order by ID (replaces gwc_get_order)
+     * Get order by ID (replaces wc_get_order)
      *
      * @param int|string $order_id Order ID or order number
-     * @return GoWishCart_FluentCart_Order|null FluentCart order object or null
+     * @return WishCart_FluentCart_Order|null FluentCart order object or null
      */
     public static function get_order( $order_id ) {
         if ( ! self::is_fluentcart_active() ) {
@@ -728,7 +766,7 @@ class GoWishCart_FluentCart_Helper {
                     ->find( $order_id );
                 
                 if ( $fc_order ) {
-                    return new GoWishCart_FluentCart_Order( $fc_order );
+                    return new WishCart_FluentCart_Order( $fc_order );
                 }
             } catch ( Exception $e ) {
                 return null;
@@ -749,10 +787,10 @@ class GoWishCart_FluentCart_Helper {
         
         // Try FluentCart's native table first
         $table_name = $wpdb->prefix . 'fct_orders';
-        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
         if ( $wpdb->get_var( "SHOW TABLES LIKE '$table_name'" ) === $table_name ) {
-            $order_id = $wpdb->get_var( $wpdb->prepare( // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter
-                // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
+            $order_id = $wpdb->get_var( $wpdb->prepare(
+                // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
                 "SELECT id FROM {$table_name} 
                 WHERE id = %d OR invoice_no = %s OR receipt_number = %s 
                 LIMIT 1",
@@ -770,7 +808,7 @@ class GoWishCart_FluentCart_Helper {
     }
 
     /**
-     * Get featured product IDs (replaces gwc_get_featured_product_ids)
+     * Get featured product IDs (replaces wc_get_featured_product_ids)
      *
      * @return array Featured product IDs
      */
@@ -799,7 +837,7 @@ class GoWishCart_FluentCart_Helper {
     }
 
     /**
-     * Get orders (replaces gwc_get_orders)
+     * Get orders (replaces wc_get_orders)
      *
      * @param array $args Query arguments
      * @return array Order objects
@@ -842,7 +880,7 @@ class GoWishCart_FluentCart_Helper {
                 $orders = [];
                 
                 foreach ( $fc_orders as $fc_order ) {
-                    $orders[] = new GoWishCart_FluentCart_Order( $fc_order );
+                    $orders[] = new WishCart_FluentCart_Order( $fc_order );
                 }
                 
                 return $orders;
@@ -855,7 +893,7 @@ class GoWishCart_FluentCart_Helper {
     }
 
     /**
-     * Get placeholder image source (replaces gwc_placeholder_img_src)
+     * Get placeholder image source (replaces wc_placeholder_img_src)
      *
      * @param string $size Image size
      * @return string Image URL
@@ -869,7 +907,7 @@ class GoWishCart_FluentCart_Helper {
             }
         }
         // Fallback placeholder
-        return GoWishCart_PLUGIN_URL . 'assets/images/placeholder.png';
+        return WishCart_PLUGIN_URL . 'assets/images/placeholder.png';
     }
 
     /**
@@ -878,6 +916,6 @@ class GoWishCart_FluentCart_Helper {
      * @return string Capability name
      */
     public static function get_manage_capability() {
-        return apply_filters( 'gowishcart_fluentcart_manage_capability', 'manage_options' );
+        return apply_filters( 'wishcart_fluentcart_manage_capability', 'manage_options' );
     }
 }
