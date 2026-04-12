@@ -318,6 +318,31 @@ class GoWishCart_Wishlist {
         // Safe to call: dbDelta is idempotent
         try { new GoWishCart_Database(); } catch ( \Throwable $e ) {}
     }
+    
+    /**
+     * Save GoWishCart - Wishlist for FluentCart some important data for plugin run first time
+     *
+     * @since 1.0.0
+     */
+    private static function create_default_data() {
+        $version         = get_option( 'gowishcart_version', '0' );
+        $install_time    = get_option( 'gowishcart_install_time', '' );
+        $current_user_id = get_current_user_id();
+
+        if ( empty( $version ) ) {
+            update_option( 'gowishcart_version', GoWishCart_VERSION );
+        }
+
+        if ( ! empty( $install_time ) ) {
+            $date_format = get_option( 'date_format' );
+            $time_format = get_option( 'time_format' );
+            update_option( 'gowishcart_install_time', gmdate( $date_format . ' ' . $time_format ) );
+        }
+        update_option( 'gowishcart_free_active', 1 );
+        update_option( "gowishcart_dokan_notifier_on_off_$current_user_id", 1 );
+        flush_rewrite_rules();
+    }
+
 
     /**
      * Handle plugin activation
@@ -325,6 +350,8 @@ class GoWishCart_Wishlist {
      * @return void
      */
     public function activate() {
+        self::create_default_data();
+        
         // Check for FluentCart dependency before activation
         if ( ! $this->check_fluentcart_dependency() ) {
             // Deactivate this plugin
@@ -368,6 +395,7 @@ class GoWishCart_Wishlist {
         
         // Flush rewrite rules
         flush_rewrite_rules();
+        update_option( 'gowishcart_free_active', 0 );
     }
 
 }
