@@ -38,7 +38,7 @@ const SettingsApp = () => {
 
     const [isSaving, setIsSaving] = useState(false);
     const [activeTab, setActiveTab] = useState(() => gowishcartSettings?.defaultTab || 'settings');
-    const baseMenuSlug = gowishcartSettings?.menuSlug || 'gowishcart-wishlist-for-fluentcart';
+    const baseMenuSlug = gowishcartSettings?.menuSlug || 'gowishcart-wishlist-for-fluentcart-pro';
     const fallbackTabPageMap = useMemo(() => ({
         settings: `${baseMenuSlug}-settings`,
         customization: `${baseMenuSlug}-customization`,
@@ -146,10 +146,10 @@ const SettingsApp = () => {
                     title: (
                         <div className="flex items-center gap-2">
                             <CheckCircle2 className="h-4 w-4 text-green-500" />
-                            <span>{__('Settings saved successfully!', 'gowishcart-wishlist-for-fluentcart')}</span>
+                            <span>{__('Settings saved successfully!', 'gowishcart-wishlist-for-fluentcart-pro')}</span>
                         </div>
                     ),
-                    description: __('Your changes have been applied.', 'gowishcart-wishlist-for-fluentcart'),
+                    description: __('Your changes have been applied.', 'gowishcart-wishlist-for-fluentcart-pro'),
                     className: "bg-green-50 border-green-200"
                 });
             } else {
@@ -160,10 +160,10 @@ const SettingsApp = () => {
                 title: (
                     <div className="flex items-center gap-2">
                         <XCircle className="h-4 w-4 text-red-500" />
-                        <span>{__('Failed to save settings', 'gowishcart-wishlist-for-fluentcart')}</span>
+                        <span>{__('Failed to save settings', 'gowishcart-wishlist-for-fluentcart-pro')}</span>
                     </div>
                 ),
-                description: __('Please try again or contact support if the problem persists.', 'gowishcart-wishlist-for-fluentcart'),
+                description: __('Please try again or contact support if the problem persists.', 'gowishcart-wishlist-for-fluentcart-pro'),
                 className: "bg-red-50 border-red-200"
             });
         } finally {
@@ -182,12 +182,12 @@ const SettingsApp = () => {
     };
 
     const tabs = useMemo(() => ([
-        { id: 'settings', label: __('Settings', 'gowishcart-wishlist-for-fluentcart'), icon: Settings },
-        { id: 'customization', label: __('Customization', 'gowishcart-wishlist-for-fluentcart'), icon: Palette },
-        { id: 'integrations', label: __('Integrations', 'gowishcart-wishlist-for-fluentcart'), icon: Plug },
-        { id: 'analytics', label: __('Analytics', 'gowishcart-wishlist-for-fluentcart'), icon: BarChart3 },
-        { id: 'support', label: __('Support', 'gowishcart-wishlist-for-fluentcart'), icon: LifeBuoy },
-        { id: 'get-pro', label: __('Get Pro', 'gowishcart-wishlist-for-fluentcart'), icon: Sparkles },
+        { id: 'settings', label: __('Settings', 'gowishcart-wishlist-for-fluentcart-pro'), icon: Settings },
+        { id: 'customization', label: __('Customization', 'gowishcart-wishlist-for-fluentcart-pro'), icon: Palette },
+        { id: 'integrations', label: __('Integrations', 'gowishcart-wishlist-for-fluentcart-pro'), icon: Plug },
+        { id: 'analytics', label: __('Analytics', 'gowishcart-wishlist-for-fluentcart-pro'), icon: BarChart3 },
+        { id: 'support', label: __('Support', 'gowishcart-wishlist-for-fluentcart-pro'), icon: LifeBuoy },
+        { id: 'get-pro', label: __('Get Pro', 'gowishcart-wishlist-for-fluentcart-pro'), icon: Sparkles },
     ]), []);
 
     const navigateToTab = useCallback((tabId) => {
@@ -288,7 +288,7 @@ const SettingsApp = () => {
                                     disabled={isSaving}
                                     className="gowishcart-button gowishcart-button-primary"
                                 >
-                                    {isSaving ? __('Saving...', 'gowishcart-wishlist-for-fluentcart') : __('Save Settings', 'gowishcart-wishlist-for-fluentcart')}
+                                    {isSaving ? __('Saving...', 'gowishcart-wishlist-for-fluentcart-pro') : __('Save Settings', 'gowishcart-wishlist-for-fluentcart-pro')}
                                 </button>
                             </div>
                         )}

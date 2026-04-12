@@ -61,7 +61,7 @@ class GoWishCart_FluentCRM_SmartCode {
         // Add the Wishlist Data group
         $codes[] = array(
             'key'        => 'gowishcart',
-            'title'      => __( 'Wishlist Data', 'gowishcart-wishlist-for-fluentcart' ),
+            'title'      => __( 'Wishlist Data', 'gowishcart-wishlist-for-fluentcart-pro' ),
             'shortcodes' => $this->get_smart_codes(),
         );
 
@@ -371,24 +371,24 @@ class GoWishCart_FluentCRM_SmartCode {
     private function get_smart_codes() {
         return array(
             // Customer Data
-            '{{gowishcart.customer.first_name}}'  => __( 'Customer First Name', 'gowishcart-wishlist-for-fluentcart' ),
-            '{{gowishcart.customer.last_name}}'   => __( 'Customer Last Name', 'gowishcart-wishlist-for-fluentcart' ),
-            '{{gowishcart.customer.full_name}}'   => __( 'Customer Full Name', 'gowishcart-wishlist-for-fluentcart' ),
-            '{{gowishcart.customer.email}}'       => __( 'Customer Email', 'gowishcart-wishlist-for-fluentcart' ),
+            '{{gowishcart.customer.first_name}}'  => __( 'Customer First Name', 'gowishcart-wishlist-for-fluentcart-pro' ),
+            '{{gowishcart.customer.last_name}}'   => __( 'Customer Last Name', 'gowishcart-wishlist-for-fluentcart-pro' ),
+            '{{gowishcart.customer.full_name}}'   => __( 'Customer Full Name', 'gowishcart-wishlist-for-fluentcart-pro' ),
+            '{{gowishcart.customer.email}}'       => __( 'Customer Email', 'gowishcart-wishlist-for-fluentcart-pro' ),
             
             // Product Data
-            '{{gowishcart.product.name}}'           => __( 'Product Name', 'gowishcart-wishlist-for-fluentcart' ),
-            '{{gowishcart.product.price}}'          => __( 'Current Product Price', 'gowishcart-wishlist-for-fluentcart' ),
-            '{{gowishcart.product.regular_price}}'  => __( 'Regular Price', 'gowishcart-wishlist-for-fluentcart' ),
-            '{{gowishcart.product.sale_price}}'     => __( 'Sale Price (if on sale)', 'gowishcart-wishlist-for-fluentcart' ),
-            '{{gowishcart.product.sku}}'            => __( 'Product SKU', 'gowishcart-wishlist-for-fluentcart' ),
-            '##gowishcart.product.url##'            => __( 'Product URL (button/link)', 'gowishcart-wishlist-for-fluentcart' ),
-            '{{gowishcart.product.image_url}}'      => __( 'Product Image URL', 'gowishcart-wishlist-for-fluentcart' ),
-            '##gowishcart.product.add_to_cart_url##' => __( 'Add to Cart URL (button/link)', 'gowishcart-wishlist-for-fluentcart' ),
+            '{{gowishcart.product.name}}'           => __( 'Product Name', 'gowishcart-wishlist-for-fluentcart-pro' ),
+            '{{gowishcart.product.price}}'          => __( 'Current Product Price', 'gowishcart-wishlist-for-fluentcart-pro' ),
+            '{{gowishcart.product.regular_price}}'  => __( 'Regular Price', 'gowishcart-wishlist-for-fluentcart-pro' ),
+            '{{gowishcart.product.sale_price}}'     => __( 'Sale Price (if on sale)', 'gowishcart-wishlist-for-fluentcart-pro' ),
+            '{{gowishcart.product.sku}}'            => __( 'Product SKU', 'gowishcart-wishlist-for-fluentcart-pro' ),
+            '##gowishcart.product.url##'            => __( 'Product URL (button/link)', 'gowishcart-wishlist-for-fluentcart-pro' ),
+            '{{gowishcart.product.image_url}}'      => __( 'Product Image URL', 'gowishcart-wishlist-for-fluentcart-pro' ),
+            '##gowishcart.product.add_to_cart_url##' => __( 'Add to Cart URL (button/link)', 'gowishcart-wishlist-for-fluentcart-pro' ),
             
             // Wishlist Data
-            '{{gowishcart.wishlist.item_count}}'  => __( 'Total Items in Wishlist', 'gowishcart-wishlist-for-fluentcart' ),
-            '##gowishcart.wishlist.url##'         => __( 'Wishlist Page URL (button/link)', 'gowishcart-wishlist-for-fluentcart' ),
+            '{{gowishcart.wishlist.item_count}}'  => __( 'Total Items in Wishlist', 'gowishcart-wishlist-for-fluentcart-pro' ),
+            '##gowishcart.wishlist.url##'         => __( 'Wishlist Page URL (button/link)', 'gowishcart-wishlist-for-fluentcart-pro' ),
         );
     }
 }

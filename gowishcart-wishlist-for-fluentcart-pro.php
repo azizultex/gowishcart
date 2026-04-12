@@ -1,16 +1,16 @@
 <?php
 
 /**
- * Plugin Name:  GoWishCart - Wishlist for FluentCart
+ * Plugin Name:  GoWishCart - Wishlist for FluentCart Pro
  * Plugin URI:  https://gowishcart.com
  * Description: Wishlist plugin for FluentCart with guest support, product variations, price drop alerts, and FluentCRM integration.
- * Version:     1.1.2
+ * Version:     1.0.0
  * Requires PHP: 7.4
  * Requires Plugins: fluent-cart
  * Author:      GoWishCart Team <support@gowishcart.com>
  * Author URI:  https://gowishcart.com/
  * Contributors: azizultex, sabbirxprt
- * Text Domain:  gowishcart-wishlist-for-fluentcart
+ * Text Domain:  gowishcart-wishlist-for-fluentcart-pro
  * Domain Path: /languages/
  * License: GPL2
  * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
@@ -46,14 +46,14 @@ if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
  * @license  GPL-2.0+ http://www.gnu.org/licenses/gpl-2.0.txt
  * @link     https://gowishcart.com
  */
-class GoWishCart_Wishlist {
+class GoWishCart_Wishlist_Pro {
 
     private static $instance = null;
 
     /**
      * Get singleton instance of this class
      *
-     * @return GoWishCart_Wishlist Instance of this class
+     * @return GoWishCart_Wishlist_Pro Instance of this class
      */
     public static function get_instance() {
         if ( null === self::$instance ) {
@@ -68,10 +68,10 @@ class GoWishCart_Wishlist {
     private function __construct() {
         // Define constants
         define('GoWishCart_PLUGIN_FILE', __FILE__);
-        define('GoWishCart_VERSION', '1.1.2');
+        define('GoWishCart_VERSION', '1.0.0');
         define('GoWishCart_PLUGIN_DIR', plugin_dir_path(__FILE__));
         define('GoWishCart_PLUGIN_URL', plugin_dir_url(__FILE__));
-        define('GoWishCart_TEXT_DOMAIN', 'gowishcart-wishlist-for-fluentcart');
+        define('GoWishCart_TEXT_DOMAIN', 'gowishcart-wishlist-for-fluentcart-pro');
 
         // Check for FluentCart dependency first (before loading other dependencies)
         if ( ! $this->check_fluentcart_dependency() ) {
@@ -161,23 +161,23 @@ class GoWishCart_Wishlist {
         ?>
         <div class="notice notice-error">
             <p>
-                <strong><?php esc_html_e( 'GoWishCart requires FluentCart', 'gowishcart-wishlist-for-fluentcart' ); ?></strong>
+                <strong><?php esc_html_e( 'GoWishCart requires FluentCart', 'gowishcart-wishlist-for-fluentcart-pro' ); ?></strong>
             </p>
             <p>
-                <?php esc_html_e( 'GoWishCart plugin requires FluentCart to be installed and activated. Please install and activate FluentCart to use GoWishCart features.', 'gowishcart-wishlist-for-fluentcart' ); ?>
+                <?php esc_html_e( 'GoWishCart plugin requires FluentCart to be installed and activated. Please install and activate FluentCart to use GoWishCart features.', 'gowishcart-wishlist-for-fluentcart-pro' ); ?>
             </p>
             <p>
                 <?php if ( $is_installed ) : ?>
                     <a href="<?php echo esc_url( $activate_url ); ?>" class="button button-primary">
-                        <?php esc_html_e( 'Activate FluentCart', 'gowishcart-wishlist-for-fluentcart' ); ?>
+                        <?php esc_html_e( 'Activate FluentCart', 'gowishcart-wishlist-for-fluentcart-pro' ); ?>
                     </a>
                 <?php else : ?>
                     <a href="<?php echo esc_url( $install_url ); ?>" class="button button-primary">
-                        <?php esc_html_e( 'Install FluentCart', 'gowishcart-wishlist-for-fluentcart' ); ?>
+                        <?php esc_html_e( 'Install FluentCart', 'gowishcart-wishlist-for-fluentcart-pro' ); ?>
                     </a>
                 <?php endif; ?>
                 <a href="<?php echo esc_url( admin_url( 'plugins.php' ) ); ?>" class="button">
-                    <?php esc_html_e( 'Go to Plugins', 'gowishcart-wishlist-for-fluentcart' ); ?>
+                    <?php esc_html_e( 'Go to Plugins', 'gowishcart-wishlist-for-fluentcart-pro' ); ?>
                 </a>
             </p>
         </div>
@@ -194,7 +194,7 @@ class GoWishCart_Wishlist {
         // Clear cache if FluentCart or this plugin was activated/deactivated
         if ( strpos( $plugin, 'fluentcart' ) !== false || 
              strpos( $plugin, 'fluent-cart' ) !== false ||
-             strpos( $plugin, 'gowishcart-wishlist-for-fluentcart' ) !== false ) {
+             strpos( $plugin, 'gowishcart-wishlist-for-fluentcart-pro' ) !== false ) {
             if ( class_exists( 'GoWishCart_FluentCart_Helper' ) ) {
                 GoWishCart_FluentCart_Helper::clear_detection_cache();
             }
@@ -297,12 +297,12 @@ class GoWishCart_Wishlist {
             wp_die(
                 sprintf(
                     '<h1>%s</h1><p>%s</p><p><a href="%s">%s</a></p>',
-                    esc_html__( 'GoWishCart Activation Failed', 'gowishcart-wishlist-for-fluentcart' ),
-                    esc_html__( 'GoWishCart requires FluentCart plugin to be installed and activated. Please install and activate FluentCart first, then try activating GoWishCart again.', 'gowishcart-wishlist-for-fluentcart' ),
+                    esc_html__( 'GoWishCart Activation Failed', 'gowishcart-wishlist-for-fluentcart-pro' ),
+                    esc_html__( 'GoWishCart requires FluentCart plugin to be installed and activated. Please install and activate FluentCart first, then try activating GoWishCart again.', 'gowishcart-wishlist-for-fluentcart-pro' ),
                     esc_url( admin_url( 'plugins.php' ) ),
-                    esc_html__( 'Return to Plugins', 'gowishcart-wishlist-for-fluentcart' )
+                    esc_html__( 'Return to Plugins', 'gowishcart-wishlist-for-fluentcart-pro' )
                 ),
-                esc_html__( 'Plugin Activation Error', 'gowishcart-wishlist-for-fluentcart' ),
+                esc_html__( 'Plugin Activation Error', 'gowishcart-wishlist-for-fluentcart-pro' ),
                 [ 'back_link' => true ]
             );
         }
@@ -336,4 +336,4 @@ class GoWishCart_Wishlist {
 }
 
 // Initialize the plugin
-GoWishCart_Wishlist::get_instance();
+GoWishCart_Wishlist_Pro::get_instance();

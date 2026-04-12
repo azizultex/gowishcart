@@ -1,9 +1,9 @@
-=== GoWishCart - Wishlist for FluentCart ===
+=== GoWishCart - Wishlist for FluentCart Pro ===
 Contributors: azizultex, sabbirxprt
 Tags: wishlist, fluentcart, ecommerce, shopping, favorites
 Requires at least: 5.0
 Tested up to: 6.9
-Stable tag: 1.1.2
+Stable tag: 1.0.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -55,7 +55,7 @@ GoWishCart is built from the ground up for FluentCart stores:
 * **Analytics tracking** - Track wishlist performance and conversion metrics (Pro feature)
 
 = 📞 Support =
-For free plugin support, please visit the [WordPress.org support forum](https://wordpress.org/support/plugin/gowishcart-wishlist-for-fluentcart/). Commercial support for GoWishCart Pro is available at [gowishcart.com](https://gowishcart.com).
+For free plugin support, please visit the [WordPress.org support forum](https://wordpress.org/support/plugin/gowishcart-wishlist-for-fluentcart-pro/). Commercial support for GoWishCart Pro is available at [gowishcart.com](https://gowishcart.com).
 = 📝 License =
 This project is licensed under the GPL-2.0+ License - see the LICENSE file for details.
 
@@ -168,7 +168,7 @@ This plugin uses the following third-party libraries and services:
 
 == Installation ==
 
-1. Upload the plugin files to the `/wp-content/plugins/gowishcart-wishlist-for-fluentcart` directory, or install the plugin through the WordPress plugins screen directly.
+1. Upload the plugin files to the `/wp-content/plugins/gowishcart-wishlist-for-fluentcart-pro` directory, or install the plugin through the WordPress plugins screen directly.
 2. Activate the plugin through the 'Plugins' screen in WordPress
 3. Ensure FluentCart is installed and activated (GoWishCart requires FluentCart to function)
 4. Navigate to Settings->GoWishCart to configure the plugin
@@ -182,5 +182,5 @@ This plugin uses the following third-party libraries and services:
 
 == Support ==
 
-For free plugin support, please visit the [WordPress.org support forum](https://wordpress.org/support/plugin/gowishcart-wishlist-for-fluentcart/). Commercial support for GoWishCart Pro is available at [gowishcart.com](https://gowishcart.com).
+For free plugin support, please visit the [WordPress.org support forum](https://wordpress.org/support/plugin/gowishcart-wishlist-for-fluentcart-pro/). Commercial support for GoWishCart Pro is available at [gowishcart.com](https://gowishcart.com).
 

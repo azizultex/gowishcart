@@ -2,7 +2,7 @@
 
 set -e
 
-PLUGIN_SLUG="gowishcart-wishlist-for-fluentcart"
+PLUGIN_SLUG="gowishcart-wishlist-for-fluentcart-pro"
 TMP_DIR="../${PLUGIN_SLUG}-release"
 ZIP_PATH="../${PLUGIN_SLUG}.zip"
 

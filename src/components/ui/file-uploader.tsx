@@ -29,11 +29,11 @@ export const FileUploader = ({ accept, maxSize, onUpload }) => {
             <UploadIcon className="mx-auto h-8 w-8 text-gray-400 mb-2" />
             <p className="text-sm text-gray-600">
                 {isDragActive
-                    ? __('Drop the file here...', 'gowishcart-wishlist-for-fluentcart')
-                    : __('Drag & drop a PDF file here, or click to select', 'gowishcart-wishlist-for-fluentcart')}
+                    ? __('Drop the file here...', 'gowishcart-wishlist-for-fluentcart-pro')
+                    : __('Drag & drop a PDF file here, or click to select', 'gowishcart-wishlist-for-fluentcart-pro')}
             </p>
             <p className="text-xs text-gray-500 mt-1">
-                {__('Maximum file size:', 'gowishcart-wishlist-for-fluentcart')} {maxSize}MB
+                {__('Maximum file size:', 'gowishcart-wishlist-for-fluentcart-pro')} {maxSize}MB
             </p>
         </div>
     );

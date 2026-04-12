@@ -25,7 +25,7 @@ if ( ! defined('ABSPATH') ) {
 class GoWishCart_Admin {
 
 
-    private $plugin_slug = 'gowishcart-wishlist-for-fluentcart';
+    private $plugin_slug = 'gowishcart-wishlist-for-fluentcart-pro';
     private static $instance = null;
 
     /**
@@ -86,8 +86,8 @@ class GoWishCart_Admin {
     public function register_admin_menu() {
 
         add_menu_page(
-            esc_html__( 'GoWishCart', 'gowishcart-wishlist-for-fluentcart' ),
-            esc_html__( 'GoWishCart', 'gowishcart-wishlist-for-fluentcart' ),
+            esc_html__( 'GoWishCart', 'gowishcart-wishlist-for-fluentcart-pro' ),
+            esc_html__( 'GoWishCart', 'gowishcart-wishlist-for-fluentcart-pro' ),
             'manage_options',
             $this->plugin_slug,
             [ $this, 'render_settings_page' ],
@@ -97,12 +97,12 @@ class GoWishCart_Admin {
 
         // Primary tabs rendered via React SPA
         $subpages = array(
-            'settings'       => __( 'Settings', 'gowishcart-wishlist-for-fluentcart' ),
-            'customization'  => __( 'Customization', 'gowishcart-wishlist-for-fluentcart' ),
-            'integrations'   => __( 'Integrations', 'gowishcart-wishlist-for-fluentcart' ),
-            'analytics'      => __( 'Analytics', 'gowishcart-wishlist-for-fluentcart' ),
-            'support'        => __( 'Support', 'gowishcart-wishlist-for-fluentcart' ),
-            'get-pro'        => __( 'Get Pro', 'gowishcart-wishlist-for-fluentcart' ),
+            'settings'       => __( 'Settings', 'gowishcart-wishlist-for-fluentcart-pro' ),
+            'customization'  => __( 'Customization', 'gowishcart-wishlist-for-fluentcart-pro' ),
+            'integrations'   => __( 'Integrations', 'gowishcart-wishlist-for-fluentcart-pro' ),
+            'analytics'      => __( 'Analytics', 'gowishcart-wishlist-for-fluentcart-pro' ),
+            'support'        => __( 'Support', 'gowishcart-wishlist-for-fluentcart-pro' ),
+            'get-pro'        => __( 'Get Pro', 'gowishcart-wishlist-for-fluentcart-pro' ),
         );
 
         foreach ( $subpages as $slug_suffix => $label ) {
@@ -272,7 +272,7 @@ class GoWishCart_Admin {
     });
 })();';
         wp_add_inline_script( 'gowishcart-admin', $submenu_navigation_js );
-        wp_set_script_translations('gowishcart-admin', 'gowishcart-wishlist-for-fluentcart');
+        wp_set_script_translations('gowishcart-admin', 'gowishcart-wishlist-for-fluentcart-pro');
     }
 
     /**
@@ -314,7 +314,7 @@ class GoWishCart_Admin {
                 },
                 'args'                => array(
                     'per_page' => array(
-                        'description'       => __( 'Number of pages to return', 'gowishcart-wishlist-for-fluentcart' ),
+                        'description'       => __( 'Number of pages to return', 'gowishcart-wishlist-for-fluentcart-pro' ),
                         'type'              => 'integer',
                         'required'          => false,
                         'sanitize_callback' => 'absint',
@@ -489,7 +489,7 @@ class GoWishCart_Admin {
             },
             'args' => array(
                 'trigger_type' => array(
-                    'description' => __('Filter campaigns by trigger type', 'gowishcart-wishlist-for-fluentcart'),
+                    'description' => __('Filter campaigns by trigger type', 'gowishcart-wishlist-for-fluentcart-pro'),
                     'type' => 'string',
                     'required' => false,
                     'sanitize_callback' => 'sanitize_text_field',
@@ -502,7 +502,7 @@ class GoWishCart_Admin {
                     },
                 ),
                 'status' => array(
-                    'description' => __('Filter campaigns by status', 'gowishcart-wishlist-for-fluentcart'),
+                    'description' => __('Filter campaigns by status', 'gowishcart-wishlist-for-fluentcart-pro'),
                     'type' => 'string',
                     'required' => false,
                     'sanitize_callback' => 'sanitize_text_field',
@@ -598,7 +598,7 @@ class GoWishCart_Admin {
             },
             'args' => array(
                 'status' => array(
-                    'description' => __('Filter notifications by status', 'gowishcart-wishlist-for-fluentcart'),
+                    'description' => __('Filter notifications by status', 'gowishcart-wishlist-for-fluentcart-pro'),
                     'type' => 'string',
                     'required' => false,
                     'sanitize_callback' => 'sanitize_text_field',
@@ -630,13 +630,13 @@ class GoWishCart_Admin {
         },
         'args' => array(
                 'wishlist_id' => array(
-                    'description' => __('Wishlist ID', 'gowishcart-wishlist-for-fluentcart'),
+                    'description' => __('Wishlist ID', 'gowishcart-wishlist-for-fluentcart-pro'),
                     'type' => 'integer',
                     'required' => true,
                     'sanitize_callback' => 'absint',
                 ),
                 'limit' => array(
-                    'description' => __('Number of activities to return', 'gowishcart-wishlist-for-fluentcart'),
+                    'description' => __('Number of activities to return', 'gowishcart-wishlist-for-fluentcart-pro'),
                     'type' => 'integer',
                     'required' => false,
                     'sanitize_callback' => 'absint',
@@ -646,7 +646,7 @@ class GoWishCart_Admin {
                     'default' => 50,
                 ),
                 'offset' => array(
-                    'description' => __('Number of activities to skip', 'gowishcart-wishlist-for-fluentcart'),
+                    'description' => __('Number of activities to skip', 'gowishcart-wishlist-for-fluentcart-pro'),
                     'type' => 'integer',
                     'required' => false,
                     'sanitize_callback' => 'absint',
@@ -666,7 +666,7 @@ class GoWishCart_Admin {
             },
             'args' => array(
                 'limit' => array(
-                    'description' => __('Number of activities to return', 'gowishcart-wishlist-for-fluentcart'),
+                    'description' => __('Number of activities to return', 'gowishcart-wishlist-for-fluentcart-pro'),
                     'type' => 'integer',
                     'required' => false,
                     'sanitize_callback' => 'absint',
@@ -676,7 +676,7 @@ class GoWishCart_Admin {
                     'default' => 20,
                 ),
                 'type' => array(
-                    'description' => __('Filter activities by type', 'gowishcart-wishlist-for-fluentcart'),
+                    'description' => __('Filter activities by type', 'gowishcart-wishlist-for-fluentcart-pro'),
                     'type' => 'string',
                     'required' => false,
                     'sanitize_callback' => 'sanitize_text_field',
@@ -722,7 +722,7 @@ class GoWishCart_Admin {
                     // translators: %s: Plugin activation URL
                     __(
                         'FluentCart is installed but not activated. Please <a href="%s">activate it</a>, then click "Refresh" to continue.',
-                        'gowishcart-wishlist-for-fluentcart'
+                        'gowishcart-wishlist-for-fluentcart-pro'
                     ),
                     esc_url( wp_nonce_url(
                         admin_url( 'plugins.php?action=activate&plugin=' . urlencode( $found_path ) ),
@@ -745,7 +745,7 @@ class GoWishCart_Admin {
                     // translators: %s: Plugin installation URL
                     __(
                         'FluentCart is not installed. Please <a href="%s">install FluentCart</a> first. WordPress will handle the installation automatically when you activate GoWishCart if you have the "Requires Plugins" feature enabled.',
-                        'gowishcart-wishlist-for-fluentcart'
+                        'gowishcart-wishlist-for-fluentcart-pro'
                     ),
                     esc_url( $install_url )
                 )
@@ -957,7 +957,7 @@ class GoWishCart_Admin {
         if ( ! $nonce || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $nonce ) ), 'wp_rest' ) ) {
             return new WP_Error(
                 'rest_cookie_invalid_nonce',
-                __( 'Cookie nonce is invalid', 'gowishcart-wishlist-for-fluentcart' ),
+                __( 'Cookie nonce is invalid', 'gowishcart-wishlist-for-fluentcart-pro' ),
                 array( 'status' => 403 )
             );
         }
@@ -1146,7 +1146,7 @@ class GoWishCart_Admin {
 
         // Validate page name
         if ( empty( $page_name ) ) {
-            $page_name = __( 'Wishlist', 'gowishcart-wishlist-for-fluentcart' );
+            $page_name = __( 'Wishlist', 'gowishcart-wishlist-for-fluentcart-pro' );
         }
 
         // Always create a new page (don't check for existing pages)
@@ -1163,7 +1163,7 @@ class GoWishCart_Admin {
         if ( is_wp_error( $page_id ) || ! $page_id || $page_id <= 0 ) {
             return new WP_Error(
                 'create_failed',
-                __( 'Failed to create wishlist page', 'gowishcart-wishlist-for-fluentcart' ),
+                __( 'Failed to create wishlist page', 'gowishcart-wishlist-for-fluentcart-pro' ),
                 array( 'status' => 500 )
             );
         }
@@ -1173,7 +1173,7 @@ class GoWishCart_Admin {
         if ( ! $page ) {
             return new WP_Error(
                 'page_not_found',
-                __( 'Page was created but could not be retrieved', 'gowishcart-wishlist-for-fluentcart' ),
+                __( 'Page was created but could not be retrieved', 'gowishcart-wishlist-for-fluentcart-pro' ),
                 array( 'status' => 500 )
             );
         }
@@ -1188,7 +1188,7 @@ class GoWishCart_Admin {
                     'slug'  => $page->post_name,
                     'url'   => get_permalink( $page_id ),
                 ),
-                'message' => __( 'Wishlist page created successfully', 'gowishcart-wishlist-for-fluentcart' ),
+                'message' => __( 'Wishlist page created successfully', 'gowishcart-wishlist-for-fluentcart-pro' ),
             )
         );
     }
@@ -1250,7 +1250,7 @@ class GoWishCart_Admin {
 
         return rest_ensure_response( array(
             'success' => true,
-            'message' => __( 'Product added to wishlist', 'gowishcart-wishlist-for-fluentcart' ),
+            'message' => __( 'Product added to wishlist', 'gowishcart-wishlist-for-fluentcart-pro' ),
             'wishlist' => $wishlist_info,
         ) );
     }
@@ -1288,7 +1288,7 @@ class GoWishCart_Admin {
 
         return rest_ensure_response( array(
             'success' => true,
-            'message' => __( 'Product removed from wishlist', 'gowishcart-wishlist-for-fluentcart' ),
+            'message' => __( 'Product removed from wishlist', 'gowishcart-wishlist-for-fluentcart-pro' ),
         ) );
     }
 
@@ -1319,7 +1319,7 @@ class GoWishCart_Admin {
         if ( $product_id <= 0 ) {
             return new WP_Error(
                 'invalid_product',
-                __( 'Invalid product ID', 'gowishcart-wishlist-for-fluentcart' ),
+                __( 'Invalid product ID', 'gowishcart-wishlist-for-fluentcart-pro' ),
                 array( 'status' => 400 )
             );
         }
@@ -1394,7 +1394,7 @@ class GoWishCart_Admin {
         
         return rest_ensure_response( array(
             'success' => true,
-            'message' => __( 'Cart event tracked successfully', 'gowishcart-wishlist-for-fluentcart' ),
+            'message' => __( 'Cart event tracked successfully', 'gowishcart-wishlist-for-fluentcart-pro' ),
         ) );
     }
 
@@ -1440,7 +1440,7 @@ class GoWishCart_Admin {
                 if ( ! $current_user_id || $current_user_id !== $requested_user_id ) {
                     return new WP_Error(
                         'forbidden_wishlist_access',
-                        __( 'You are not allowed to view this wishlist.', 'gowishcart-wishlist-for-fluentcart' ),
+                        __( 'You are not allowed to view this wishlist.', 'gowishcart-wishlist-for-fluentcart-pro' ),
                         array( 'status' => 403 )
                     );
                 }
@@ -1458,7 +1458,7 @@ class GoWishCart_Admin {
             if ( ! $current_wishlist ) {
                 return new WP_Error(
                     'wishlist_not_found',
-                    __( 'Wishlist not found.', 'gowishcart-wishlist-for-fluentcart' ),
+                    __( 'Wishlist not found.', 'gowishcart-wishlist-for-fluentcart-pro' ),
                     array( 'status' => 404 )
                 );
             }
@@ -1471,7 +1471,7 @@ class GoWishCart_Admin {
                     if ( $wishlist_user_id !== $current_user_id ) {
                         return new WP_Error(
                             'forbidden_wishlist_access',
-                            __( 'You are not allowed to view this wishlist.', 'gowishcart-wishlist-for-fluentcart' ),
+                            __( 'You are not allowed to view this wishlist.', 'gowishcart-wishlist-for-fluentcart-pro' ),
                             array( 'status' => 403 )
                         );
                     }
@@ -1482,7 +1482,7 @@ class GoWishCart_Admin {
                     if ( empty( $effective_session_id ) || $wishlist_session_id !== $effective_session_id ) {
                         return new WP_Error(
                             'forbidden_wishlist_access',
-                            __( 'You are not allowed to view this wishlist.', 'gowishcart-wishlist-for-fluentcart' ),
+                            __( 'You are not allowed to view this wishlist.', 'gowishcart-wishlist-for-fluentcart-pro' ),
                             array( 'status' => 403 )
                         );
                     }
@@ -1790,7 +1790,7 @@ class GoWishCart_Admin {
         if ( $product_id <= 0 ) {
             return new WP_Error(
                 'invalid_product_id',
-                __( 'Invalid product ID', 'gowishcart-wishlist-for-fluentcart' ),
+                __( 'Invalid product ID', 'gowishcart-wishlist-for-fluentcart-pro' ),
                 array( 'status' => 400 )
             );
         }
@@ -1808,7 +1808,7 @@ class GoWishCart_Admin {
         if ( ! $product ) {
             return new WP_Error(
                 'product_not_found',
-                __( 'Product not found', 'gowishcart-wishlist-for-fluentcart' ),
+                __( 'Product not found', 'gowishcart-wishlist-for-fluentcart-pro' ),
                 array( 'status' => 404 )
             );
         }
@@ -1870,7 +1870,7 @@ class GoWishCart_Admin {
         if ( ! is_user_logged_in() ) {
             return new WP_Error(
                 'not_logged_in',
-                __( 'User must be logged in', 'gowishcart-wishlist-for-fluentcart' ),
+                __( 'User must be logged in', 'gowishcart-wishlist-for-fluentcart-pro' ),
                 array( 'status' => 401 )
             );
         }
@@ -1889,7 +1889,7 @@ class GoWishCart_Admin {
         if ( empty( $session_id ) ) {
             return new WP_Error(
                 'missing_session_id',
-                __( 'Session ID is required', 'gowishcart-wishlist-for-fluentcart' ),
+                __( 'Session ID is required', 'gowishcart-wishlist-for-fluentcart-pro' ),
                 array( 'status' => 400 )
             );
         }
@@ -1906,7 +1906,7 @@ class GoWishCart_Admin {
 
         return rest_ensure_response( array(
             'success' => true,
-            'message' => __( 'Wishlist synced successfully', 'gowishcart-wishlist-for-fluentcart' ),
+            'message' => __( 'Wishlist synced successfully', 'gowishcart-wishlist-for-fluentcart-pro' ),
         ) );
     }
 
@@ -2001,7 +2001,7 @@ class GoWishCart_Admin {
         
         return rest_ensure_response(array(
             'success' => true,
-            'message' => __('Subscription created', 'gowishcart-wishlist-for-fluentcart'),
+            'message' => __('Subscription created', 'gowishcart-wishlist-for-fluentcart-pro'),
             'notification_id' => $result,
         ));
     }
@@ -2014,7 +2014,7 @@ class GoWishCart_Admin {
      */
     public function notifications_get($request) {
         if (!is_user_logged_in()) {
-            return new WP_Error('not_logged_in', __('User must be logged in', 'gowishcart-wishlist-for-fluentcart'), array('status' => 401));
+            return new WP_Error('not_logged_in', __('User must be logged in', 'gowishcart-wishlist-for-fluentcart-pro'), array('status' => 401));
         }
         
         $notifications = new GoWishCart_Notifications_Handler();
@@ -2110,7 +2110,7 @@ class GoWishCart_Admin {
      */
     public function fluentcrm_get_settings($request) {
         if (!class_exists('GoWishCart_FluentCRM_Integration')) {
-            return new WP_Error('not_available', __('FluentCRM integration not available', 'gowishcart-wishlist-for-fluentcart'), array('status' => 404));
+            return new WP_Error('not_available', __('FluentCRM integration not available', 'gowishcart-wishlist-for-fluentcart-pro'), array('status' => 404));
         }
 
         // Clear cache to force fresh detection
@@ -2135,7 +2135,7 @@ class GoWishCart_Admin {
      */
     public function fluentcrm_update_settings($request) {
         if (!class_exists('GoWishCart_FluentCRM_Integration')) {
-            return new WP_Error('not_available', __('FluentCRM integration not available', 'gowishcart-wishlist-for-fluentcart'), array('status' => 404));
+            return new WP_Error('not_available', __('FluentCRM integration not available', 'gowishcart-wishlist-for-fluentcart-pro'), array('status' => 404));
         }
 
         // Verify REST nonce after integration availability check.
@@ -2152,18 +2152,18 @@ class GoWishCart_Admin {
         
         // Validate required structure
         if (!is_array($params)) {
-            return new WP_Error('invalid_params', __('Invalid parameters provided', 'gowishcart-wishlist-for-fluentcart'), array('status' => 400));
+            return new WP_Error('invalid_params', __('Invalid parameters provided', 'gowishcart-wishlist-for-fluentcart-pro'), array('status' => 400));
         }
         
         $result = $fluentcrm->update_settings($params);
 
         if (!$result) {
-            return new WP_Error('update_failed', __('Failed to update settings', 'gowishcart-wishlist-for-fluentcart'), array('status' => 500));
+            return new WP_Error('update_failed', __('Failed to update settings', 'gowishcart-wishlist-for-fluentcart-pro'), array('status' => 500));
         }
 
         return rest_ensure_response(array(
             'success' => true,
-            'message' => __('Settings updated successfully', 'gowishcart-wishlist-for-fluentcart'),
+            'message' => __('Settings updated successfully', 'gowishcart-wishlist-for-fluentcart-pro'),
         ));
     }
 
@@ -2175,7 +2175,7 @@ class GoWishCart_Admin {
      */
     public function fluentcrm_get_tags($request) {
         if (!class_exists('GoWishCart_FluentCRM_Integration')) {
-            return new WP_Error('not_available', __('FluentCRM integration not available', 'gowishcart-wishlist-for-fluentcart'), array('status' => 404));
+            return new WP_Error('not_available', __('FluentCRM integration not available', 'gowishcart-wishlist-for-fluentcart-pro'), array('status' => 404));
         }
 
         $fluentcrm = new GoWishCart_FluentCRM_Integration();
@@ -2195,7 +2195,7 @@ class GoWishCart_Admin {
      */
     public function fluentcrm_get_lists($request) {
         if (!class_exists('GoWishCart_FluentCRM_Integration')) {
-            return new WP_Error('not_available', __('FluentCRM integration not available', 'gowishcart-wishlist-for-fluentcart'), array('status' => 404));
+            return new WP_Error('not_available', __('FluentCRM integration not available', 'gowishcart-wishlist-for-fluentcart-pro'), array('status' => 404));
         }
 
         $fluentcrm = new GoWishCart_FluentCRM_Integration();
@@ -2215,7 +2215,7 @@ class GoWishCart_Admin {
      */
     public function campaigns_get($request) {
         if (!class_exists('GoWishCart_CRM_Campaign_Handler')) {
-            return new WP_Error('not_available', __('Campaign handler not available', 'gowishcart-wishlist-for-fluentcart'), array('status' => 404));
+            return new WP_Error('not_available', __('Campaign handler not available', 'gowishcart-wishlist-for-fluentcart-pro'), array('status' => 404));
         }
 
         $campaign_handler = new GoWishCart_CRM_Campaign_Handler();
@@ -2300,7 +2300,7 @@ class GoWishCart_Admin {
      */
     public function campaigns_create($request) {
         if (!class_exists('GoWishCart_CRM_Campaign_Handler')) {
-            return new WP_Error('not_available', __('Campaign handler not available', 'gowishcart-wishlist-for-fluentcart'), array('status' => 404));
+            return new WP_Error('not_available', __('Campaign handler not available', 'gowishcart-wishlist-for-fluentcart-pro'), array('status' => 404));
         }
 
         // Verify REST nonce after campaign handler availability check.
@@ -2314,7 +2314,7 @@ class GoWishCart_Admin {
 
         // Validate input structure
         if (!is_array($raw_params)) {
-            return new WP_Error('invalid_params', __('Invalid parameters provided', 'gowishcart-wishlist-for-fluentcart'), array('status' => 400));
+            return new WP_Error('invalid_params', __('Invalid parameters provided', 'gowishcart-wishlist-for-fluentcart-pro'), array('status' => 400));
         }
 
         // Sanitize params before passing to handler
@@ -2322,23 +2322,23 @@ class GoWishCart_Admin {
 
         // Validate required fields
         if (empty($params['wishlist_trigger_type'])) {
-            return new WP_Error('missing_field', __('Missing required field: wishlist_trigger_type', 'gowishcart-wishlist-for-fluentcart'), array('status' => 400));
+            return new WP_Error('missing_field', __('Missing required field: wishlist_trigger_type', 'gowishcart-wishlist-for-fluentcart-pro'), array('status' => 400));
         }
 
         if (empty($params['status'])) {
-            return new WP_Error('missing_field', __('Missing required field: status', 'gowishcart-wishlist-for-fluentcart'), array('status' => 400));
+            return new WP_Error('missing_field', __('Missing required field: status', 'gowishcart-wishlist-for-fluentcart-pro'), array('status' => 400));
         }
 
         // Validate status value
         $allowed_statuses = array('active', 'paused', 'completed', 'draft');
         if (!in_array($params['status'], $allowed_statuses, true)) {
-            return new WP_Error('invalid_status', __('Invalid status value', 'gowishcart-wishlist-for-fluentcart'), array('status' => 400));
+            return new WP_Error('invalid_status', __('Invalid status value', 'gowishcart-wishlist-for-fluentcart-pro'), array('status' => 400));
         }
 
         // Validate trigger_type if provided
         $allowed_triggers = array('item_added', 'item_removed', 'price_drop', 'back_in_stock', 'time_based');
         if (!in_array($params['wishlist_trigger_type'], $allowed_triggers, true)) {
-            return new WP_Error('invalid_trigger', __('Invalid trigger type', 'gowishcart-wishlist-for-fluentcart'), array('status' => 400));
+            return new WP_Error('invalid_trigger', __('Invalid trigger type', 'gowishcart-wishlist-for-fluentcart-pro'), array('status' => 400));
         }
 
         $result = $campaign_handler->create_campaign($params);
@@ -2354,7 +2354,7 @@ class GoWishCart_Admin {
         return rest_ensure_response(array(
             'success' => true,
             'campaign_id' => $result,
-            'message' => __('Campaign created successfully', 'gowishcart-wishlist-for-fluentcart'),
+            'message' => __('Campaign created successfully', 'gowishcart-wishlist-for-fluentcart-pro'),
         ));
     }
 
@@ -2366,7 +2366,7 @@ class GoWishCart_Admin {
      */
     public function campaigns_get_single($request) {
         if (!class_exists('GoWishCart_CRM_Campaign_Handler')) {
-            return new WP_Error('not_available', __('Campaign handler not available', 'gowishcart-wishlist-for-fluentcart'), array('status' => 404));
+            return new WP_Error('not_available', __('Campaign handler not available', 'gowishcart-wishlist-for-fluentcart-pro'), array('status' => 404));
         }
 
         $campaign_handler = new GoWishCart_CRM_Campaign_Handler();
@@ -2375,7 +2375,7 @@ class GoWishCart_Admin {
         $campaign = $campaign_handler->get_campaign($campaign_id);
 
         if (!$campaign) {
-            return new WP_Error('not_found', __('Campaign not found', 'gowishcart-wishlist-for-fluentcart'), array('status' => 404));
+            return new WP_Error('not_found', __('Campaign not found', 'gowishcart-wishlist-for-fluentcart-pro'), array('status' => 404));
         }
 
         return rest_ensure_response(array(
@@ -2392,7 +2392,7 @@ class GoWishCart_Admin {
      */
     public function campaigns_update($request) {
         if (!class_exists('GoWishCart_CRM_Campaign_Handler')) {
-            return new WP_Error('not_available', __('Campaign handler not available', 'gowishcart-wishlist-for-fluentcart'), array('status' => 404));
+            return new WP_Error('not_available', __('Campaign handler not available', 'gowishcart-wishlist-for-fluentcart-pro'), array('status' => 404));
         }
 
         // Verify REST nonce after campaign handler availability check.
@@ -2407,12 +2407,12 @@ class GoWishCart_Admin {
 
         // Validate campaign ID
         if ($campaign_id <= 0) {
-            return new WP_Error('invalid_id', __('Invalid campaign ID', 'gowishcart-wishlist-for-fluentcart'), array('status' => 400));
+            return new WP_Error('invalid_id', __('Invalid campaign ID', 'gowishcart-wishlist-for-fluentcart-pro'), array('status' => 400));
         }
 
         // Validate input structure
         if (!is_array($raw_params)) {
-            return new WP_Error('invalid_params', __('Invalid parameters provided', 'gowishcart-wishlist-for-fluentcart'), array('status' => 400));
+            return new WP_Error('invalid_params', __('Invalid parameters provided', 'gowishcart-wishlist-for-fluentcart-pro'), array('status' => 400));
         }
 
         // Sanitize params before passing to handler
@@ -2422,7 +2422,7 @@ class GoWishCart_Admin {
         if (isset($params['status'])) {
             $allowed_statuses = array('active', 'paused', 'completed', 'draft');
             if (!in_array($params['status'], $allowed_statuses, true)) {
-                return new WP_Error('invalid_status', __('Invalid status value', 'gowishcart-wishlist-for-fluentcart'), array('status' => 400));
+                return new WP_Error('invalid_status', __('Invalid status value', 'gowishcart-wishlist-for-fluentcart-pro'), array('status' => 400));
             }
         }
 
@@ -2430,7 +2430,7 @@ class GoWishCart_Admin {
         if (isset($params['wishlist_trigger_type'])) {
             $allowed_triggers = array('item_added', 'item_removed', 'price_drop', 'back_in_stock', 'time_based');
             if (!in_array($params['wishlist_trigger_type'], $allowed_triggers, true)) {
-                return new WP_Error('invalid_trigger', __('Invalid trigger type', 'gowishcart-wishlist-for-fluentcart'), array('status' => 400));
+                return new WP_Error('invalid_trigger', __('Invalid trigger type', 'gowishcart-wishlist-for-fluentcart-pro'), array('status' => 400));
             }
         }
 
@@ -2446,7 +2446,7 @@ class GoWishCart_Admin {
 
         return rest_ensure_response(array(
             'success' => true,
-            'message' => __('Campaign updated successfully', 'gowishcart-wishlist-for-fluentcart'),
+            'message' => __('Campaign updated successfully', 'gowishcart-wishlist-for-fluentcart-pro'),
         ));
     }
 
@@ -2458,7 +2458,7 @@ class GoWishCart_Admin {
      */
     public function campaigns_delete($request) {
         if (!class_exists('GoWishCart_CRM_Campaign_Handler')) {
-            return new WP_Error('not_available', __('Campaign handler not available', 'gowishcart-wishlist-for-fluentcart'), array('status' => 404));
+            return new WP_Error('not_available', __('Campaign handler not available', 'gowishcart-wishlist-for-fluentcart-pro'), array('status' => 404));
         }
 
         // Verify REST nonce after campaign handler availability check.
@@ -2475,7 +2475,7 @@ class GoWishCart_Admin {
         $result = $wpdb->delete($table, array('campaign_id' => $campaign_id), array('%d'));
 
         if (false === $result) {
-            return new WP_Error('delete_failed', __('Failed to delete campaign', 'gowishcart-wishlist-for-fluentcart'), array('status' => 500));
+            return new WP_Error('delete_failed', __('Failed to delete campaign', 'gowishcart-wishlist-for-fluentcart-pro'), array('status' => 500));
         }
         
         // Clear campaign cache after deletion
@@ -2486,7 +2486,7 @@ class GoWishCart_Admin {
 
         return rest_ensure_response(array(
             'success' => true,
-            'message' => __('Campaign deleted successfully', 'gowishcart-wishlist-for-fluentcart'),
+            'message' => __('Campaign deleted successfully', 'gowishcart-wishlist-for-fluentcart-pro'),
         ));
     }
 
@@ -2498,7 +2498,7 @@ class GoWishCart_Admin {
      */
     public function campaigns_get_analytics($request) {
         if (!class_exists('GoWishCart_CRM_Campaign_Handler')) {
-            return new WP_Error('not_available', __('Campaign handler not available', 'gowishcart-wishlist-for-fluentcart'), array('status' => 404));
+            return new WP_Error('not_available', __('Campaign handler not available', 'gowishcart-wishlist-for-fluentcart-pro'), array('status' => 404));
         }
 
         $campaign_handler = new GoWishCart_CRM_Campaign_Handler();
@@ -2507,7 +2507,7 @@ class GoWishCart_Admin {
         $campaign = $campaign_handler->get_campaign($campaign_id);
 
         if (!$campaign) {
-            return new WP_Error('not_found', __('Campaign not found', 'gowishcart-wishlist-for-fluentcart'), array('status' => 404));
+            return new WP_Error('not_found', __('Campaign not found', 'gowishcart-wishlist-for-fluentcart-pro'), array('status' => 404));
         }
 
         $stats = $campaign['stats'] ? $campaign['stats'] : array();
@@ -2544,7 +2544,7 @@ class GoWishCart_Admin {
         if ( $attempts >= $max_attempts ) {
             return new WP_Error(
                 'rate_limited',
-                __( 'Too many requests. Please try again later.', 'gowishcart-wishlist-for-fluentcart' ),
+                __( 'Too many requests. Please try again later.', 'gowishcart-wishlist-for-fluentcart-pro' ),
                 array( 'status' => 429 )
             );
         }
@@ -2594,7 +2594,7 @@ class GoWishCart_Admin {
         if ( empty( $email ) || ! is_email( $email ) ) {
             return new WP_Error(
                 'invalid_email',
-                __( 'Invalid email address', 'gowishcart-wishlist-for-fluentcart' ),
+                __( 'Invalid email address', 'gowishcart-wishlist-for-fluentcart-pro' ),
                 array( 'status' => 400 )
             );
         }
@@ -2602,7 +2602,7 @@ class GoWishCart_Admin {
         if ( empty( $session_id ) ) {
             return new WP_Error(
                 'invalid_session',
-                __( 'Session ID is required', 'gowishcart-wishlist-for-fluentcart' ),
+                __( 'Session ID is required', 'gowishcart-wishlist-for-fluentcart-pro' ),
                 array( 'status' => 400 )
             );
         }
@@ -2641,7 +2641,7 @@ class GoWishCart_Admin {
 
         return rest_ensure_response( array(
             'success' => true,
-            'message' => __( 'Email saved successfully', 'gowishcart-wishlist-for-fluentcart' ),
+            'message' => __( 'Email saved successfully', 'gowishcart-wishlist-for-fluentcart-pro' ),
             'email' => $email,
         ) );
     }

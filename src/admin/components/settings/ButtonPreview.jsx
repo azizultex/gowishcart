@@ -55,8 +55,8 @@ const ButtonPreview = ({ buttonCustomization }) => {
     }
 
     const labels = buttonCustomization?.labels || { add: '', saved: '' };
-    const defaultAddLabel = __('Add to Wishlist', 'gowishcart-wishlist-for-fluentcart');
-    const defaultSavedLabel = __('Saved to Wishlist', 'gowishcart-wishlist-for-fluentcart');
+    const defaultAddLabel = __('Add to Wishlist', 'gowishcart-wishlist-for-fluentcart-pro');
+    const defaultSavedLabel = __('Saved to Wishlist', 'gowishcart-wishlist-for-fluentcart-pro');
     const addLabel = labels.add || defaultAddLabel;
     const savedLabel = labels.saved || defaultSavedLabel;
 
@@ -253,9 +253,9 @@ const ButtonPreview = ({ buttonCustomization }) => {
     return (
         <div className="gowishcart-button-preview-container">
             <div className="gowishcart-button-preview-header">
-                <h3 className="text-lg font-semibold mb-4">{__('Live Preview', 'gowishcart-wishlist-for-fluentcart')}</h3>
+                <h3 className="text-lg font-semibold mb-4">{__('Live Preview', 'gowishcart-wishlist-for-fluentcart-pro')}</h3>
                 <p className="text-sm text-muted-foreground mb-6">
-                    {__('See how your buttons will look in real-time', 'gowishcart-wishlist-for-fluentcart')}
+                    {__('See how your buttons will look in real-time', 'gowishcart-wishlist-for-fluentcart-pro')}
                 </p>
             </div>
 
@@ -264,7 +264,7 @@ const ButtonPreview = ({ buttonCustomization }) => {
                 <div className="space-y-3">
                     <div>
                         <p className="text-xs text-muted-foreground mb-2">
-                            {__('Add to Wishlist', 'gowishcart-wishlist-for-fluentcart')}
+                            {__('Add to Wishlist', 'gowishcart-wishlist-for-fluentcart-pro')}
                         </p>
                         <PreviewButton
                             label={addLabel}
@@ -276,7 +276,7 @@ const ButtonPreview = ({ buttonCustomization }) => {
                     </div>
                     <div>
                         <p className="text-xs text-muted-foreground mb-2">
-                            {__('Saved to Wishlist', 'gowishcart-wishlist-for-fluentcart')}
+                            {__('Saved to Wishlist', 'gowishcart-wishlist-for-fluentcart-pro')}
                         </p>
                         <PreviewButton
                             label={savedLabel}

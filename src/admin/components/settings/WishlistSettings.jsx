@@ -42,8 +42,8 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                 customUrl: '',
             },
             labels: {
-                add: __('Add to Wishlist', 'gowishcart-wishlist-for-fluentcart'),
-                saved: __('Saved to Wishlist', 'gowishcart-wishlist-for-fluentcart'),
+                add: __('Add to Wishlist', 'gowishcart-wishlist-for-fluentcart-pro'),
+                saved: __('Saved to Wishlist', 'gowishcart-wishlist-for-fluentcart-pro'),
             },
         },
     };
@@ -116,7 +116,7 @@ const WishlistSettings = ({ settings, updateSettings }) => {
     // Get page display text
     const getPageDisplayText = () => {
         if (!selectedPage || !selectedPageId) {
-            return __('-- Select Page --gowishcart-wishlist-for-fluentcart');
+            return __('-- Select Page --gowishcart-wishlist-for-fluentcart-pro');
         }
         const title =
             (selectedPage.title && (selectedPage.title.rendered || selectedPage.title)) ||
@@ -127,7 +127,7 @@ const WishlistSettings = ({ settings, updateSettings }) => {
     // Create wishlist page
     const createWishlistPage = async () => {
         if (!pageName.trim()) {
-            alert(__('Page name is required', 'gowishcart-wishlist-for-fluentcart'));
+            alert(__('Page name is required', 'gowishcart-wishlist-for-fluentcart-pro'));
             return;
         }
 
@@ -163,20 +163,20 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                     setIsCreateModalOpen(false);
                     setPageName('Wishlist');
                     // Show success message
-                    alert(__('Wishlist page created successfully!', 'gowishcart-wishlist-for-fluentcart'));
+                    alert(__('Wishlist page created successfully!', 'gowishcart-wishlist-for-fluentcart-pro'));
                 } else {
-                    alert(__('Failed to create wishlist page.', 'gowishcart-wishlist-for-fluentcart'));
+                    alert(__('Failed to create wishlist page.', 'gowishcart-wishlist-for-fluentcart-pro'));
                 }
             } else {
                 const error = await response.json();
                 alert(
                     error.message ||
-                        __('Failed to create wishlist page.', 'gowishcart-wishlist-for-fluentcart')
+                        __('Failed to create wishlist page.', 'gowishcart-wishlist-for-fluentcart-pro')
                 );
             }
         } catch (error) {
             console.error('Error creating wishlist page:', error);
-            alert(__('An error occurred while creating the wishlist page.', 'gowishcart-wishlist-for-fluentcart'));
+            alert(__('An error occurred while creating the wishlist page.', 'gowishcart-wishlist-for-fluentcart-pro'));
         } finally {
             setCreatingPage(false);
         }
@@ -208,8 +208,8 @@ const WishlistSettings = ({ settings, updateSettings }) => {
             {/* Enable Wishlist */}
             <div className="gowishcart-toggle-row">
                 <div className="toggle-info">
-                    <h4>{__('Enable Wishlist', 'gowishcart-wishlist-for-fluentcart')}</h4>
-                    <p>{__('Enable or disable wishlist functionality', 'gowishcart-wishlist-for-fluentcart')}</p>
+                    <h4>{__('Enable Wishlist', 'gowishcart-wishlist-for-fluentcart-pro')}</h4>
+                    <p>{__('Enable or disable wishlist functionality', 'gowishcart-wishlist-for-fluentcart-pro')}</p>
                 </div>
                 <div className="toggle-control">
                     <Switch
@@ -224,11 +224,11 @@ const WishlistSettings = ({ settings, updateSettings }) => {
             <div className="gowishcart-toggle-row">
                 <div className="toggle-info">
                     <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px'}}>
-                        <h4>{__('Enable Multiple Wishlists', 'gowishcart-wishlist-for-fluentcart')}</h4>
+                        <h4>{__('Enable Multiple Wishlists', 'gowishcart-wishlist-for-fluentcart-pro')}</h4>
                         <span className="gowishcart-badge gowishcart-badge-warning">{__('PRO GoWishCart')}</span>
                     </div>
-                    <p>{__('Allow users to create and manage multiple wishlists. When disabled, products are added directly to the default wishlist.', 'gowishcart-wishlist-for-fluentcart')}</p>
-                    <p style={{fontSize: '13px', margin: '4px 0 0', color: 'var(--gowishcart-text-muted)'}}>{__('This feature is available in GoWishCart Pro. Please upgrade to get all the advanced features.', 'gowishcart-wishlist-for-fluentcart')}</p>
+                    <p>{__('Allow users to create and manage multiple wishlists. When disabled, products are added directly to the default wishlist.', 'gowishcart-wishlist-for-fluentcart-pro')}</p>
+                    <p style={{fontSize: '13px', margin: '4px 0 0', color: 'var(--gowishcart-text-muted)'}}>{__('This feature is available in GoWishCart Pro. Please upgrade to get all the advanced features.', 'gowishcart-wishlist-for-fluentcart-pro')}</p>
                 </div>
                 <div className="toggle-control">
                     <Switch
@@ -243,8 +243,8 @@ const WishlistSettings = ({ settings, updateSettings }) => {
             {/* Shop Page Button */}
             <div className="gowishcart-toggle-row">
                 <div className="toggle-info">
-                    <h4>{__('Show Button on Shop Page', 'gowishcart-wishlist-for-fluentcart')}</h4>
-                    <p>{__('Display wishlist button on product archive/shop pages', 'gowishcart-wishlist-for-fluentcart')}</p>
+                    <h4>{__('Show Button on Shop Page', 'gowishcart-wishlist-for-fluentcart-pro')}</h4>
+                    <p>{__('Display wishlist button on product archive/shop pages', 'gowishcart-wishlist-for-fluentcart-pro')}</p>
                 </div>
                 <div className="toggle-control">
                     <Switch
@@ -259,8 +259,8 @@ const WishlistSettings = ({ settings, updateSettings }) => {
             {/* Button */}
             <div className="gowishcart-toggle-row">
                 <div className="toggle-info">
-                    <h4>{__('Show Button on Product Page', 'gowishcart-wishlist-for-fluentcart')}</h4>
-                    <p>{__('Display wishlist button on single product pages', 'gowishcart-wishlist-for-fluentcart')}</p>
+                    <h4>{__('Show Button on Product Page', 'gowishcart-wishlist-for-fluentcart-pro')}</h4>
+                    <p>{__('Display wishlist button on single product pages', 'gowishcart-wishlist-for-fluentcart-pro')}</p>
                 </div>
                 <div className="toggle-control">
                     <Switch
@@ -276,7 +276,7 @@ const WishlistSettings = ({ settings, updateSettings }) => {
             {wishlistSettings.product_page_button && (
                 <div className="gowishcart-form-group" style={{borderTop: '1px solid var(--gowishcart-gray-25)', paddingTop: '16px'}}>
                     <label className="gowishcart-label" htmlFor="button_position">
-                        {__('Button Position', 'gowishcart-wishlist-for-fluentcart')}
+                        {__('Button Position', 'gowishcart-wishlist-for-fluentcart-pro')}
                     </label>
                     <Select
                         value={buttonPosition}
@@ -288,21 +288,21 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="top">
-                                {__('Above product actions', 'gowishcart-wishlist-for-fluentcart')}
+                                {__('Above product actions', 'gowishcart-wishlist-for-fluentcart-pro')}
                             </SelectItem>
                             <SelectItem value="bottom">
-                                {__('Below product actions', 'gowishcart-wishlist-for-fluentcart')}
+                                {__('Below product actions', 'gowishcart-wishlist-for-fluentcart-pro')}
                             </SelectItem>
                             <SelectItem value="left">
-                                {__('Left of Add to Cart button', 'gowishcart-wishlist-for-fluentcart')}
+                                {__('Left of Add to Cart button', 'gowishcart-wishlist-for-fluentcart-pro')}
                             </SelectItem>
                             <SelectItem value="right">
-                                {__('Right of Add to Cart button', 'gowishcart-wishlist-for-fluentcart')}
+                                {__('Right of Add to Cart button', 'gowishcart-wishlist-for-fluentcart-pro')}
                             </SelectItem>
                         </SelectContent>
                     </Select>
                     <p className="gowishcart-form-helper">
-                        {__('Choose where to display the wishlist button relative to the purchase actions.', 'gowishcart-wishlist-for-fluentcart')}
+                        {__('Choose where to display the wishlist button relative to the purchase actions.', 'gowishcart-wishlist-for-fluentcart-pro')}
                     </p>
                 </div>
             )}
@@ -310,30 +310,30 @@ const WishlistSettings = ({ settings, updateSettings }) => {
             {/* Shortcode */}
             <div className="gowishcart-form-group" style={{borderTop: '1px solid var(--gowishcart-gray-25)', paddingTop: '16px'}}>
                 <label className="gowishcart-label">
-                    {__('Shortcode', 'gowishcart-wishlist-for-fluentcart')}
+                    {__('Shortcode', 'gowishcart-wishlist-for-fluentcart-pro')}
                 </label>
                 <p className="gowishcart-form-helper" style={{marginTop: '8px'}}>
-                    {__('You can add a button manually by using the shortcode', 'gowishcart-wishlist-for-fluentcart')}{' '}
+                    {__('You can add a button manually by using the shortcode', 'gowishcart-wishlist-for-fluentcart-pro')}{' '}
                     <code style={{fontFamily: 'monospace', backgroundColor: '#f5f5f5', padding: '2px 6px', borderRadius: '3px'}}>
                         [gowishcart_sc id="{'{'}product id{'}'}"]
                     </code>
                     {', '}
-                    {__('e.g.', 'gowishcart-wishlist-for-fluentcart')}{' '}
+                    {__('e.g.', 'gowishcart-wishlist-for-fluentcart-pro')}{' '}
                     <code style={{fontFamily: 'monospace', backgroundColor: '#f5f5f5', padding: '2px 6px', borderRadius: '3px'}}>
                         [gowishcart_sc id="99"]
                     </code>
                     {' '}
-                    {__('for the product whose ID is 99.', 'gowishcart-wishlist-for-fluentcart')}
+                    {__('for the product whose ID is 99.', 'gowishcart-wishlist-for-fluentcart-pro')}
                 </p>
             </div>
 
             {/* Wishlist Page */}
             <div className="gowishcart-form-group" style={{borderTop: '1px solid var(--gowishcart-gray-25)', paddingTop: '16px'}}>
                 <h4 style={{fontSize: '14px', fontWeight: '600', marginBottom: '4px'}}>
-                    {__('Select Wishlist Page', 'gowishcart-wishlist-for-fluentcart')}
+                    {__('Select Wishlist Page', 'gowishcart-wishlist-for-fluentcart-pro')}
                 </h4>
                 <p style={{fontSize: '13px', color: '#666', marginBottom: '12px'}}>
-                    {__('Select the page where the wishlist will be displayed.', 'gowishcart-wishlist-for-fluentcart')}
+                    {__('Select the page where the wishlist will be displayed.', 'gowishcart-wishlist-for-fluentcart-pro')}
                 </p>
                 <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start', marginBottom: '8px' }}>
                     <div style={{ flex: 1 }}>
@@ -348,7 +348,7 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                                 </SelectValue>
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="0">{__('-- Select Page --gowishcart-wishlist-for-fluentcart')}</SelectItem>
+                                <SelectItem value="0">{__('-- Select Page --gowishcart-wishlist-for-fluentcart-pro')}</SelectItem>
                                 {wishlistPages.map((page) => {
                                     const title =
                                         (page &&
@@ -386,7 +386,7 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                 </div>
                 {selectedPageId > 0 && (
                     <div style={{ fontSize: '13px', color: '#666', marginTop: '8px' }}>
-                        {__('Use', 'gowishcart-wishlist-for-fluentcart')}{' '}
+                        {__('Use', 'gowishcart-wishlist-for-fluentcart-pro')}{' '}
                         <code style={{fontFamily: 'monospace', backgroundColor: '#f5f5f5', padding: '2px 6px', borderRadius: '3px'}}>
                             [gowishcart_wishlist]
                         </code>
@@ -397,7 +397,7 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                             rel="noopener noreferrer"
                             style={{ color: '#2271b1', textDecoration: 'none', marginLeft: '8px' }}
                         >
-                            {__('Edit', 'gowishcart-wishlist-for-fluentcart')}
+                            {__('Edit', 'gowishcart-wishlist-for-fluentcart-pro')}
                         </a>
                         {' | '}
                         <a 
@@ -406,7 +406,7 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                             rel="noopener noreferrer"
                             style={{ color: '#2271b1', textDecoration: 'none' }}
                         >
-                            {__('Preview', 'gowishcart-wishlist-for-fluentcart')}
+                            {__('Preview', 'gowishcart-wishlist-for-fluentcart-pro')}
                             <ExternalLink size={12} style={{ display: 'inline-block', marginLeft: '4px', verticalAlign: 'middle' }} />
                         </a>
                     </div>
@@ -417,7 +417,7 @@ const WishlistSettings = ({ settings, updateSettings }) => {
             <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>{__('Create Wishlist Page', 'gowishcart-wishlist-for-fluentcart')}</DialogTitle>
+                        <DialogTitle>{__('Create Wishlist Page', 'gowishcart-wishlist-for-fluentcart-pro')}</DialogTitle>
                     </DialogHeader>
                     <div style={{ marginTop: '16px' }}>
                         <label 
@@ -429,14 +429,14 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                                 marginBottom: '8px' 
                             }}
                         >
-                            {__('Page Name', 'gowishcart-wishlist-for-fluentcart')} <span style={{ color: '#dc3232' }}>*</span>
+                            {__('Page Name', 'gowishcart-wishlist-for-fluentcart-pro')} <span style={{ color: '#dc3232' }}>*</span>
                         </label>
                         <Input
                             id="page_name"
                             type="text"
                             value={pageName}
                             onChange={(e) => setPageName(e.target.value)}
-                            placeholder={__('Wishlist', 'gowishcart-wishlist-for-fluentcart')}
+                            placeholder={__('Wishlist', 'gowishcart-wishlist-for-fluentcart-pro')}
                             disabled={creatingPage}
                             style={{ width: '100%' }}
                         />
@@ -451,7 +451,7 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                             }}
                             disabled={creatingPage}
                         >
-                            {__('Cancel', 'gowishcart-wishlist-for-fluentcart')}
+                            {__('Cancel', 'gowishcart-wishlist-for-fluentcart-pro')}
                         </Button>
                         <Button
                             type="button"
@@ -459,8 +459,8 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                             disabled={creatingPage || !pageName.trim()}
                         >
                             {creatingPage
-                                ? __('Creating...', 'gowishcart-wishlist-for-fluentcart')
-                                : __('Create Page', 'gowishcart-wishlist-for-fluentcart')}
+                                ? __('Creating...', 'gowishcart-wishlist-for-fluentcart-pro')
+                                : __('Create Page', 'gowishcart-wishlist-for-fluentcart-pro')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -469,7 +469,7 @@ const WishlistSettings = ({ settings, updateSettings }) => {
             {/* Guest Cookie Expiry */}
             <div className="gowishcart-form-group">
                 <label className="gowishcart-label" htmlFor="guest_cookie_expiry">
-                    {__('Guest Wishlist Expiry (Days)gowishcart-wishlist-for-fluentcart')}
+                    {__('Guest Wishlist Expiry (Days)gowishcart-wishlist-for-fluentcart-pro')}
                 </label>
                 <Input
                     id="guest_cookie_expiry"
@@ -483,7 +483,7 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                     style={{maxWidth: '200px'}}
                 />
                 <p className="gowishcart-form-helper">
-                    {__('Number of days guest wishlists are stored in cookies', 'gowishcart-wishlist-for-fluentcart')}
+                    {__('Number of days guest wishlists are stored in cookies', 'gowishcart-wishlist-for-fluentcart-pro')}
                 </p>
             </div>
 

@@ -35,7 +35,7 @@ class GoWishCart_Guest_Handler {
      */
     public function create_or_update_guest($session_id, $data = array()) {
         if (empty($session_id)) {
-            return new WP_Error('invalid_session', __('Invalid session ID', 'gowishcart-wishlist-for-fluentcart'));
+            return new WP_Error('invalid_session', __('Invalid session ID', 'gowishcart-wishlist-for-fluentcart-pro'));
         }
 
         // Check if guest exists
@@ -80,7 +80,7 @@ class GoWishCart_Guest_Handler {
             );
 
             if (false === $result) {
-                return new WP_Error('db_error', __('Failed to update guest user', 'gowishcart-wishlist-for-fluentcart'));
+                return new WP_Error('db_error', __('Failed to update guest user', 'gowishcart-wishlist-for-fluentcart-pro'));
             }
 
             return $existing_guest['guest_id'];
@@ -102,7 +102,7 @@ class GoWishCart_Guest_Handler {
             $result = $this->wpdb->insert($this->guest_users_table, $insert_data, $format);
 
             if (false === $result) {
-                return new WP_Error('db_error', __('Failed to create guest user', 'gowishcart-wishlist-for-fluentcart'));
+                return new WP_Error('db_error', __('Failed to create guest user', 'gowishcart-wishlist-for-fluentcart-pro'));
             }
 
             return $this->wpdb->insert_id;
@@ -226,7 +226,7 @@ class GoWishCart_Guest_Handler {
      */
     public function update_guest_wishlist_data($session_id, $wishlist_ids = null) {
         if (empty($session_id)) {
-            return new WP_Error('invalid_session', __('Invalid session ID', 'gowishcart-wishlist-for-fluentcart'));
+            return new WP_Error('invalid_session', __('Invalid session ID', 'gowishcart-wishlist-for-fluentcart-pro'));
         }
 
         // If no wishlist_ids provided, fetch from database
@@ -260,7 +260,7 @@ class GoWishCart_Guest_Handler {
         );
 
         if (false === $result) {
-            return new WP_Error('db_error', __('Failed to update wishlist data', 'gowishcart-wishlist-for-fluentcart'));
+            return new WP_Error('db_error', __('Failed to update wishlist data', 'gowishcart-wishlist-for-fluentcart-pro'));
         }
 
         return true;
@@ -275,7 +275,7 @@ class GoWishCart_Guest_Handler {
      */
     public function add_wishlist_to_guest($session_id, $wishlist_id) {
         if (empty($session_id) || empty($wishlist_id)) {
-            return new WP_Error('invalid_params', __('Invalid parameters', 'gowishcart-wishlist-for-fluentcart'));
+            return new WP_Error('invalid_params', __('Invalid parameters', 'gowishcart-wishlist-for-fluentcart-pro'));
         }
 
         // Get current wishlist data
@@ -306,13 +306,13 @@ class GoWishCart_Guest_Handler {
      */
     public function convert_guest_to_user($session_id, $user_id) {
         if (empty($session_id) || empty($user_id)) {
-            return new WP_Error('invalid_params', __('Invalid parameters', 'gowishcart-wishlist-for-fluentcart'));
+            return new WP_Error('invalid_params', __('Invalid parameters', 'gowishcart-wishlist-for-fluentcart-pro'));
         }
 
         // Get guest data
         $guest = $this->get_guest_by_session($session_id);
         if (!$guest) {
-            return new WP_Error('guest_not_found', __('Guest user not found', 'gowishcart-wishlist-for-fluentcart'));
+            return new WP_Error('guest_not_found', __('Guest user not found', 'gowishcart-wishlist-for-fluentcart-pro'));
         }
 
         // Update guest record with conversion data
@@ -325,7 +325,7 @@ class GoWishCart_Guest_Handler {
         );
 
         if (false === $result) {
-            return new WP_Error('db_error', __('Failed to record conversion', 'gowishcart-wishlist-for-fluentcart'));
+            return new WP_Error('db_error', __('Failed to record conversion', 'gowishcart-wishlist-for-fluentcart-pro'));
         }
 
         // Sync wishlists
@@ -651,7 +651,7 @@ class GoWishCart_Guest_Handler {
         );
 
         if (false === $result) {
-            return new WP_Error('db_error', __('Failed to delete guest data', 'gowishcart-wishlist-for-fluentcart'));
+            return new WP_Error('db_error', __('Failed to delete guest data', 'gowishcart-wishlist-for-fluentcart-pro'));
         }
 
         return true;

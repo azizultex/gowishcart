@@ -9,14 +9,14 @@ const IntegrationsSettings = () => {
         {
             id: 'fluentcrm',
             name: __('FluentCRMgowishcart-wishlist-for-fluentcart'),
-            description: __('Connect with FluentCRM to sync wishlist contacts, automate campaigns, and send targeted emails for price drops, back-in-stock alerts, and more.', 'gowishcart-wishlist-for-fluentcart'),
+            description: __('Connect with FluentCRM to sync wishlist contacts, automate campaigns, and send targeted emails for price drops, back-in-stock alerts, and more.', 'gowishcart-wishlist-for-fluentcart-pro'),
             component: FluentCRMSettings,
         },
         // Future integrations can be added here:
         // {
         //     id: 'mailchimp',
-        //     name: __('Mailchimp', 'gowishcart-wishlist-for-fluentcart'),
-        //     description: __('Sync your wishlist with Mailchimp for email marketing campaigns.', 'gowishcart-wishlist-for-fluentcart'),
+        //     name: __('Mailchimp', 'gowishcart-wishlist-for-fluentcart-pro'),
+        //     description: __('Sync your wishlist with Mailchimp for email marketing campaigns.', 'gowishcart-wishlist-for-fluentcart-pro'),
         //     component: MailchimpSettings,
         // },
     ];
@@ -30,7 +30,7 @@ const IntegrationsSettings = () => {
                     color: 'var(--gowishcart-gray-900)',
                     marginBottom: '8px'
                 }}>
-                    {__('Integrations', 'gowishcart-wishlist-for-fluentcart')}
+                    {__('Integrations', 'gowishcart-wishlist-for-fluentcart-pro')}
                 </h3>
                 <p style={{
                     fontSize: '13px',
@@ -38,7 +38,7 @@ const IntegrationsSettings = () => {
                     lineHeight: '1.5',
                     margin: 0
                 }}>
-                    {__('Connect GoWishCart with your favorite marketing and CRM tools to automate your workflows and enhance customer engagement.', 'gowishcart-wishlist-for-fluentcart')}
+                    {__('Connect GoWishCart with your favorite marketing and CRM tools to automate your workflows and enhance customer engagement.', 'gowishcart-wishlist-for-fluentcart-pro')}
                 </p>
             </div>
 

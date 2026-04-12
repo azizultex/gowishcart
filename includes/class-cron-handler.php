@@ -113,7 +113,7 @@ class GoWishCart_Cron_Handler {
         if (!isset($schedules['gowishcart_5min'])) {
             $schedules['gowishcart_5min'] = array(
                 'interval' => 300, // 5 minutes in seconds
-                'display' => __('Every 5 Minutes', 'gowishcart-wishlist-for-fluentcart'),
+                'display' => __('Every 5 Minutes', 'gowishcart-wishlist-for-fluentcart-pro'),
             );
         }
 
@@ -237,14 +237,14 @@ class GoWishCart_Cron_Handler {
      */
     public static function get_cron_status() {
         $events = array(
-            'gowishcart_process_notifications' => __('Process Notifications', 'gowishcart-wishlist-for-fluentcart'),
-            'gowishcart_check_price_drops' => __('Check Price Drops', 'gowishcart-wishlist-for-fluentcart'),
-            'gowishcart_check_back_in_stock' => __('Check Back in Stock', 'gowishcart-wishlist-for-fluentcart'),
-            'gowishcart_cleanup_expired_guests' => __('Cleanup Expired Guests', 'gowishcart-wishlist-for-fluentcart'),
-            'gowishcart_cleanup_expired_shares' => __('Cleanup Expired Shares', 'gowishcart-wishlist-for-fluentcart'),
-            'gowishcart_recalculate_analytics' => __('Recalculate Analytics', 'gowishcart-wishlist-for-fluentcart'),
-            'gowishcart_cleanup_old_data' => __('Cleanup Old Data', 'gowishcart-wishlist-for-fluentcart'),
-            'gowishcart_process_time_based_campaigns' => __('Process Time-Based Campaigns', 'gowishcart-wishlist-for-fluentcart'),
+            'gowishcart_process_notifications' => __('Process Notifications', 'gowishcart-wishlist-for-fluentcart-pro'),
+            'gowishcart_check_price_drops' => __('Check Price Drops', 'gowishcart-wishlist-for-fluentcart-pro'),
+            'gowishcart_check_back_in_stock' => __('Check Back in Stock', 'gowishcart-wishlist-for-fluentcart-pro'),
+            'gowishcart_cleanup_expired_guests' => __('Cleanup Expired Guests', 'gowishcart-wishlist-for-fluentcart-pro'),
+            'gowishcart_cleanup_expired_shares' => __('Cleanup Expired Shares', 'gowishcart-wishlist-for-fluentcart-pro'),
+            'gowishcart_recalculate_analytics' => __('Recalculate Analytics', 'gowishcart-wishlist-for-fluentcart-pro'),
+            'gowishcart_cleanup_old_data' => __('Cleanup Old Data', 'gowishcart-wishlist-for-fluentcart-pro'),
+            'gowishcart_process_time_based_campaigns' => __('Process Time-Based Campaigns', 'gowishcart-wishlist-for-fluentcart-pro'),
         );
 
         $status = array();
@@ -283,7 +283,7 @@ class GoWishCart_Cron_Handler {
         if (!in_array($hook, $valid_hooks)) {
             return array(
                 'success' => false,
-                'message' => __('Invalid cron hook', 'gowishcart-wishlist-for-fluentcart'),
+                'message' => __('Invalid cron hook', 'gowishcart-wishlist-for-fluentcart-pro'),
             );
         }
 
@@ -294,7 +294,7 @@ class GoWishCart_Cron_Handler {
         return array(
             'success' => true,
             /* translators: %s: cron job hook name */
-            'message' => sprintf(__('Cron job %s triggered successfully', 'gowishcart-wishlist-for-fluentcart'), $hook),
+            'message' => sprintf(__('Cron job %s triggered successfully', 'gowishcart-wishlist-for-fluentcart-pro'), $hook),
         );
     }
 

@@ -1087,12 +1087,12 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
     }
 
     // Get button labels
-    const defaultAddLabel = __('Add to Wishlist', 'gowishcart-wishlist-for-fluentcart');
-    const defaultSavedLabel = __('Saved to Wishlist', 'gowishcart-wishlist-for-fluentcart');
+    const defaultAddLabel = __('Add to Wishlist', 'gowishcart-wishlist-for-fluentcart-pro');
+    const defaultSavedLabel = __('Saved to Wishlist', 'gowishcart-wishlist-for-fluentcart-pro');
     const buttonLabel = isInWishlist 
         ? (labels.saved || defaultSavedLabel)
         : (labels.add || defaultAddLabel);
-    const srLabel = isInWishlist ? __('Remove from wishlist', 'gowishcart-wishlist-for-fluentcart') : __('Add to wishlist', 'gowishcart-wishlist-for-fluentcart');
+    const srLabel = isInWishlist ? __('Remove from wishlist', 'gowishcart-wishlist-for-fluentcart-pro') : __('Add to wishlist', 'gowishcart-wishlist-for-fluentcart-pro');
 
     // Get icon component based on wishlist state
     const getIconComponent = () => {
