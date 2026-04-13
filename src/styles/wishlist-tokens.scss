@@ -1,0 +1,40 @@
+/**
+ * Storefront wishlist CSS variables (light defaults + system dark preference).
+ * Imported from frontend entry before component styles.
+ */
+
+:root {
+  --gwc-wl-overlay: rgba(0, 0, 0, 0.5);
+  --gwc-wl-surface: #ffffff;
+  --gwc-wl-surface-muted: #f9fafb;
+  --gwc-wl-surface-subtle: #f3f4f6;
+  --gwc-wl-border: #e5e7eb;
+  --gwc-wl-border-strong: #d1d5db;
+  --gwc-wl-text: #111827;
+  --gwc-wl-text-muted: #6b7280;
+  --gwc-wl-focus-ring: rgba(59, 130, 246, 0.35);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --gwc-wl-overlay: rgba(0, 0, 0, 0.72);
+    --gwc-wl-surface: #1f2937;
+    --gwc-wl-surface-muted: #111827;
+    --gwc-wl-surface-subtle: #374151;
+    --gwc-wl-border: #374151;
+    --gwc-wl-border-strong: #4b5563;
+    --gwc-wl-text: #f9fafb;
+    --gwc-wl-text-muted: #9ca3af;
+    --gwc-wl-focus-ring: rgba(96, 165, 250, 0.45);
+
+    --wishlist-border: #4b5563;
+    --wishlist-bg: #374151;
+    --wishlist-text: #f3f4f6;
+    --wishlist-hover-bg: #4b5563;
+    --wishlist-hover-text: #ffffff;
+    --wishlist-focus-border: #60a5fa;
+    --wishlist-active-border: #f87171;
+    --wishlist-active-bg: rgba(248, 113, 113, 0.12);
+    --wishlist-active-text: #fecaca;
+  }
+}

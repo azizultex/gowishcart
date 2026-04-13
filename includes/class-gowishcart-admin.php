@@ -184,7 +184,16 @@ class GoWishCart_Admin {
             }
         }
 
-        $is_pro = (bool) apply_filters( 'gowishcart_is_pro', false );
+        $is_pro              = (bool) apply_filters( 'gowishcart_is_pro', false );
+        $gowishcart_settings = get_option( 'gowishcart_settings', array() );
+        $admin_ui_theme      = 'auto';
+        if ( isset( $gowishcart_settings['admin']['ui_theme'] ) ) {
+            $candidate = sanitize_key( (string) $gowishcart_settings['admin']['ui_theme'] );
+            if ( in_array( $candidate, array( 'auto', 'light', 'dark' ), true ) ) {
+                $admin_ui_theme = $candidate;
+            }
+        }
+
         wp_localize_script(
             'gowishcart-admin',
             'gowishcartSettings',
@@ -200,6 +209,7 @@ class GoWishCart_Admin {
                 'menuTabMap' => $page_to_tab,
                 'tabPageMap' => $tab_to_page,
                 'isGoWishCartPro' => $is_pro,
+                'adminUiTheme' => $admin_ui_theme,
             ]
         );
 
@@ -856,6 +866,28 @@ class GoWishCart_Admin {
         // Merge with existing settings to preserve structure
         $merged = wp_parse_args( $settings, $existing_settings );
 
+        // Deep-merge admin so partial POST (e.g. only ui_theme) does not wipe other admin keys.
+        if ( isset( $settings['admin'] ) && is_array( $settings['admin'] ) ) {
+            $admin_base = ( isset( $existing_settings['admin'] ) && is_array( $existing_settings['admin'] ) )
+                ? $existing_settings['admin']
+                : array();
+            $merged['admin'] = wp_parse_args( $settings['admin'], $admin_base );
+        }
+
+        if ( ! isset( $merged['admin'] ) || ! is_array( $merged['admin'] ) ) {
+            $merged['admin'] = array();
+        }
+
+        $allowed_ui_themes = array( 'auto', 'light', 'dark' );
+        if ( isset( $merged['admin']['ui_theme'] ) ) {
+            $theme = sanitize_key( (string) $merged['admin']['ui_theme'] );
+            $merged['admin']['ui_theme'] = in_array( $theme, $allowed_ui_themes, true ) ? $theme : 'auto';
+        } else {
+            $merged['admin']['ui_theme'] = ( isset( $existing_settings['admin']['ui_theme'] ) && in_array( (string) $existing_settings['admin']['ui_theme'], $allowed_ui_themes, true ) )
+                ? (string) $existing_settings['admin']['ui_theme']
+                : 'auto';
+        }
+
         // Validate specific fields that need special handling
         if ( isset( $merged['wishlist'] ) && is_array( $merged['wishlist'] ) ) {
             // Validate wishlist_page_id
@@ -932,6 +964,17 @@ class GoWishCart_Admin {
         if ( $settings['wishlist'] !== $merged ) {
             $settings['wishlist'] = $merged;
             $changed               = true;
+        }
+
+        // Admin UI defaults (dashboard appearance).
+        if ( ! isset( $settings['admin'] ) || ! is_array( $settings['admin'] ) ) {
+            $settings['admin'] = array();
+            $changed             = true;
+        }
+        $allowed_ui_themes = array( 'auto', 'light', 'dark' );
+        if ( ! isset( $settings['admin']['ui_theme'] ) || ! in_array( (string) $settings['admin']['ui_theme'], $allowed_ui_themes, true ) ) {
+            $settings['admin']['ui_theme'] = 'auto';
+            $changed                        = true;
         }
 
         if ( $changed ) {

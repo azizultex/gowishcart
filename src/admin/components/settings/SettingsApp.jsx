@@ -10,8 +10,9 @@ import {
     LifeBuoy,
     Sparkles,
     Settings,
-    Plug
+    Plug,
 } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 import WishlistSettings from './WishlistSettings';
 import ButtonCustomizationSettings from './ButtonCustomizationSettings';
@@ -23,6 +24,14 @@ import AnalyticsProMessage from './AnalyticsProMessage';
 const gowishcartSettings = typeof window !== 'undefined' ? window.gowishcartSettings || {} : {};
 const localizedTabPageMap = (typeof window !== 'undefined' && window.gowishcartSettings && window.gowishcartSettings.tabPageMap) || {};
 
+const resolveInitialAdminUiTheme = () => {
+    const raw = gowishcartSettings?.adminUiTheme;
+    if (raw === 'light' || raw === 'dark' || raw === 'auto') {
+        return raw;
+    }
+    return 'auto';
+};
+
 const SettingsApp = () => {
     const { toast } = useToast()
     const [settings, setSettings] = useState({
@@ -33,7 +42,10 @@ const SettingsApp = () => {
             button_position: 'bottom',
             wishlist_page_id: 0,
             guest_cookie_expiry: 30,
-        }
+        },
+        admin: {
+            ui_theme: resolveInitialAdminUiTheme(),
+        },
     });
 
     const [isSaving, setIsSaving] = useState(false);
@@ -100,7 +112,17 @@ const SettingsApp = () => {
                     wishlist: {
                         ...prevSettings.wishlist,
                         ...(normalizedData.wishlist || {})
-                    }
+                    },
+                    admin: {
+                        ...prevSettings.admin,
+                        ...(normalizedData.admin && typeof normalizedData.admin === 'object' ? normalizedData.admin : {}),
+                        ui_theme:
+                            normalizedData.admin?.ui_theme === 'light' ||
+                            normalizedData.admin?.ui_theme === 'dark' ||
+                            normalizedData.admin?.ui_theme === 'auto'
+                                ? normalizedData.admin.ui_theme
+                                : prevSettings.admin?.ui_theme || resolveInitialAdminUiTheme(),
+                    },
                 }));
             }
         } catch (error) {
@@ -175,10 +197,45 @@ const SettingsApp = () => {
         setSettings(prev => ({
             ...prev,
             [section]: {
-                ...prev[section],
+                ...(prev[section] && typeof prev[section] === 'object' ? prev[section] : {}),
                 [key]: value
             }
         }));
+    };
+
+    const persistAdminUiTheme = async (uiTheme) => {
+        const allowed = ['auto', 'light', 'dark'];
+        const next = allowed.includes(uiTheme) ? uiTheme : 'auto';
+        updateSettings('admin', 'ui_theme', next);
+        try {
+            const apiUrl = gowishcartSettings?.apiUrl || '';
+            const response = await fetch(`${apiUrl}settings`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-WP-Nonce': gowishcartSettings.nonce,
+                },
+                body: JSON.stringify({ admin: { ui_theme: next } }),
+            });
+            if (!response.ok) {
+                throw new Error('Failed to save appearance');
+            }
+            if (typeof window !== 'undefined' && window.gowishcartSettings) {
+                window.gowishcartSettings.adminUiTheme = next;
+            }
+        } catch (e) {
+            console.error(e);
+            toast({
+                title: (
+                    <div className="flex items-center gap-2">
+                        <XCircle className="h-4 w-4 text-red-500" />
+                        <span>{__('Could not save appearance', 'gowishcart-wishlist-for-fluentcart')}</span>
+                    </div>
+                ),
+                description: __('Check your connection and try again.', 'gowishcart-wishlist-for-fluentcart'),
+                className: 'bg-red-50 border-red-200',
+            });
+        }
     };
 
     const tabs = useMemo(() => ([
@@ -214,7 +271,10 @@ const SettingsApp = () => {
 
     return (
         <>
-            <div className="gowishcart-admin-shell gowishcart-admin-page">
+            <div
+                className="gowishcart-admin-shell gowishcart-admin-page"
+                data-gwc-theme={settings.admin?.ui_theme ?? 'auto'}
+            >
                 {/* Navigation Tabs - WordPress/FluentCart Style */}
                 <nav className="gowishcart-nav-tabs">
                     {tabs.map((tab) => {
@@ -234,10 +294,35 @@ const SettingsApp = () => {
 
                 {/* Active Tab Header */}
                 <div className="gowishcart-admin-page-header">
-                    <div className="gowishcart-admin-page-header-content">
+                    <div className="gowishcart-admin-page-header-content gowishcart-admin-page-header-content--with-appearance">
                         <h1 className="gowishcart-admin-page-title">
                             {activeTabData.label}
                         </h1>
+                        <div className="gowishcart-admin-appearance-control">
+                            <span className="gowishcart-admin-appearance-label" id="gowishcart-admin-appearance-label">
+                                {__('Appearance', 'gowishcart-wishlist-for-fluentcart')}
+                            </span>
+                            <Select
+                                value={settings.admin?.ui_theme || 'auto'}
+                                onValueChange={persistAdminUiTheme}
+                                aria-labelledby="gowishcart-admin-appearance-label"
+                            >
+                                <SelectTrigger className="gowishcart-admin-appearance-select w-[200px] h-9">
+                                    <SelectValue placeholder={__('Auto', 'gowishcart-wishlist-for-fluentcart')} />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="auto">
+                                        {__('Auto (system / WP)', 'gowishcart-wishlist-for-fluentcart')}
+                                    </SelectItem>
+                                    <SelectItem value="light">
+                                        {__('Light', 'gowishcart-wishlist-for-fluentcart')}
+                                    </SelectItem>
+                                    <SelectItem value="dark">
+                                        {__('Dark', 'gowishcart-wishlist-for-fluentcart')}
+                                    </SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
                     </div>
                 </div>
 

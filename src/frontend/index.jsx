@@ -3,9 +3,11 @@ import { createRoot } from 'react-dom/client';
 import WishlistButton from '../components/WishlistButton';
 import VariantWishlistButtons from '../components/VariantWishlistButtons';
 import WishlistPage from '../components/WishlistPage';
+import '../styles/wishlist-tokens.scss';
 import '../styles/WishlistButton.scss';
 import '../styles/VariantWishlistButtons.scss';
 import '../styles/WishlistPage.scss';
+import '../styles/wishlist-storefront-dark.scss';
 
 // Wrapper component that falls back to single button if variants not detected
 const VariantWishlistButtonsWrapper = ({ productId, fallbackVariantId, fallbackPosition }) => {

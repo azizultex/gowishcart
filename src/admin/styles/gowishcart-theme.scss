@@ -488,6 +488,26 @@
     } 
 }
 
+.gowishcart-admin-page-header-content--with-appearance {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.gowishcart-admin-appearance-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.gowishcart-admin-appearance-label {
+  font-size: 13px;
+  color: var(--gowishcart-text-secondary);
+  white-space: nowrap;
+}
+
 .gowishcart-admin-page-title {
   font-size: 23px;
   font-weight: 400;

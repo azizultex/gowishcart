@@ -20,3 +20,20 @@
   background-repeat: no-repeat;
   background-position: center;
 }
+
+@media (prefers-color-scheme: dark) {
+  .toplevel_page_gowishcart-wishlist-for-fluentcart img {
+    filter: brightness(1.15) contrast(1.05);
+  }
+
+  .gowishcart-trigger-icon i {
+    filter: brightness(1.2) contrast(1.05);
+  }
+}
+
+body.admin-color-midnight .toplevel_page_gowishcart-wishlist-for-fluentcart img,
+body.admin-color-midnight .gowishcart-trigger-icon i,
+body.admin-color-coffee .toplevel_page_gowishcart-wishlist-for-fluentcart img,
+body.admin-color-coffee .gowishcart-trigger-icon i {
+  filter: brightness(1.15) contrast(1.05);
+}

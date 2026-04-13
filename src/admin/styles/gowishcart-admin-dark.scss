@@ -1,0 +1,142 @@
+/**
+ * Dark appearance for GoWishCart wp-admin UI.
+ * Controlled by data-gwc-theme on .gowishcart-admin-shell: auto | light | dark.
+ */
+
+@mixin gowishcart-theme-dark-vars {
+  --gowishcart-primary: #72aee6;
+  --gowishcart-primary-hover: #8cc0f0;
+  --gowishcart-primary-active: #5a9fd4;
+
+  --wp-admin-blue: #72aee6;
+  --wp-admin-blue-hover: #8cc0f0;
+  --wp-admin-blue-active: #5a9fd4;
+
+  --gowishcart-success: #4ade80;
+  --gowishcart-success-bg: #0f2918;
+  --gowishcart-warning: #fbbf24;
+  --gowishcart-warning-bg: #2d2608;
+  --gowishcart-danger: #f87171;
+  --gowishcart-danger-bg: #3b1d1d;
+  --gowishcart-info: #72aee6;
+  --gowishcart-info-bg: #132535;
+
+  --gowishcart-gray-900: #f0f0f1;
+  --gowishcart-gray-800: #e8e9eb;
+  --gowishcart-gray-700: #dcdcde;
+  --gowishcart-gray-600: #c3c4c7;
+  --gowishcart-gray-500: #a7aaad;
+  --gowishcart-gray-400: #8c8f94;
+  --gowishcart-gray-300: #787c82;
+  --gowishcart-gray-200: #646970;
+  --gowishcart-gray-100: #50575e;
+  --gowishcart-gray-50: #3c434a;
+  --gowishcart-gray-25: #2c3338;
+  --gowishcart-gray-10: #23282d;
+
+  --gowishcart-bg-body: #101517;
+  --gowishcart-bg-white: #1d2327;
+  --gowishcart-bg-light: #23282d;
+
+  --gowishcart-border: #3c434a;
+  --gowishcart-border-light: #2c3338;
+  --gowishcart-border-dark: #787c82;
+
+  --gowishcart-text-primary: #f0f0f1;
+  --gowishcart-text-secondary: #c3c4c7;
+  --gowishcart-text-muted: #a7aaad;
+  --gowishcart-text-light: #8c8f94;
+
+  --gowishcart-shadow-sm: 0 1px 1px rgba(0, 0, 0, 0.35);
+  --gowishcart-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+  --gowishcart-shadow-md: 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+@mixin gowishcart-tailwind-dark-hsl {
+  --background: 210 14% 9%;
+  --foreground: 210 11% 96%;
+  --card: 210 14% 12%;
+  --card-foreground: 210 11% 96%;
+  --popover: 210 14% 12%;
+  --popover-foreground: 210 11% 96%;
+  --primary: 207 73% 60%;
+  --primary-foreground: 210 14% 9%;
+  --secondary: 210 12% 18%;
+  --secondary-foreground: 210 11% 96%;
+  --muted: 210 12% 18%;
+  --muted-foreground: 210 9% 70%;
+  --accent: 210 12% 20%;
+  --accent-foreground: 210 11% 96%;
+  --destructive: 358 75% 60%;
+  --destructive-foreground: 210 11% 96%;
+  --border: 210 12% 22%;
+  --input: 210 12% 22%;
+  --ring: 207 73% 60%;
+}
+
+@mixin gowishcart-admin-dark-component-tweaks {
+  .gowishcart-admin-logo {
+    background: rgba(114, 174, 230, 0.15);
+  }
+
+  .gowishcart-nav-tab {
+    &:hover {
+      color: var(--gowishcart-primary);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    &.active {
+      color: var(--gowishcart-primary);
+      background: rgba(114, 174, 230, 0.12);
+      border-bottom-color: var(--gowishcart-primary);
+    }
+  }
+
+  .gowishcart-button-secondary {
+    background: var(--gowishcart-bg-light);
+    color: var(--gowishcart-text-primary);
+    border-color: var(--gowishcart-border);
+
+    &:hover:not(:disabled) {
+      background: var(--gowishcart-gray-25);
+      border-color: var(--gowishcart-border-dark);
+    }
+  }
+}
+
+@mixin gowishcart-admin-dark-full {
+  @include gowishcart-theme-dark-vars;
+  @include gowishcart-tailwind-dark-hsl;
+  @include gowishcart-admin-dark-component-tweaks;
+}
+
+/* Explicit dark */
+.gowishcart-admin-shell[data-gwc-theme="dark"] {
+  @include gowishcart-admin-dark-full;
+}
+
+/* Auto: OS preference + dark-oriented WP admin schemes */
+.gowishcart-admin-shell[data-gwc-theme="auto"] {
+  @media (prefers-color-scheme: dark) {
+    @include gowishcart-admin-dark-full;
+  }
+}
+
+body.admin-color-midnight .gowishcart-admin-shell[data-gwc-theme="auto"],
+body.admin-color-coffee .gowishcart-admin-shell[data-gwc-theme="auto"] {
+  @include gowishcart-admin-dark-full;
+}
+
+/* Light: no dark mixin (inherits :root / main.scss light tokens) */
+
+/* Default when attribute missing (e.g. before React hydrates): treat as auto */
+.gowishcart-admin-shell:not([data-gwc-theme]) {
+  @media (prefers-color-scheme: dark) {
+    @include gowishcart-admin-dark-full;
+  }
+}
+
+body.admin-color-midnight .gowishcart-admin-shell:not([data-gwc-theme]),
+body.admin-color-coffee .gowishcart-admin-shell:not([data-gwc-theme]) {
+  @include gowishcart-admin-dark-full;
+}
