@@ -48,6 +48,7 @@ class GoWishCart_Admin {
     public function __construct() {
         if ( is_admin() ) {
             add_action('admin_menu', [ $this, 'register_admin_menu' ]);
+            add_action('admin_init', [ $this, 'redirect_legacy_pro_admin_pages' ]);
             add_action('admin_enqueue_scripts', [ $this, 'enqueue_admin_scripts' ]);
             add_action('admin_enqueue_scripts', [ $this, 'enqueue_admin_styles' ]);
         }
@@ -130,7 +131,7 @@ class GoWishCart_Admin {
             'toplevel_page_' . $this->plugin_slug,
         ];
 
-        $subpages = [ 'settings', 'customization', 'integrations', 'analytics', 'support', 'get-pro' ];
+        $subpages = [ 'settings', 'support' ];
         foreach ( $subpages as $slug_suffix ) {
             $allowed_hooks[] = $this->plugin_slug . '_page_' . $this->plugin_slug . '-' . $slug_suffix;
         }
@@ -169,12 +170,17 @@ class GoWishCart_Admin {
         $page_to_tab = array(
             $this->plugin_slug                     => 'settings',
             $this->plugin_slug . '-settings'       => 'settings',
-            $this->plugin_slug . '-customization'  => 'customization',
-            $this->plugin_slug . '-integrations'   => 'integrations',
-            $this->plugin_slug . '-analytics'      => 'analytics',
             $this->plugin_slug . '-support'        => 'support',
-            $this->plugin_slug . '-get-pro'        => 'get-pro',
         );
+        $legacy_pro_pages = array(
+            $this->plugin_slug . '-customization',
+            $this->plugin_slug . '-integrations',
+            $this->plugin_slug . '-analytics',
+            $this->plugin_slug . '-get-pro',
+        );
+        if ( in_array( $requested_page, $legacy_pro_pages, true ) ) {
+            $requested_page = $this->plugin_slug . '-settings';
+        }
         $default_tab = isset( $page_to_tab[ $requested_page ] ) ? $page_to_tab[ $requested_page ] : 'settings';
 
         $tab_to_page = array();
@@ -185,6 +191,7 @@ class GoWishCart_Admin {
         }
 
         $is_pro = (bool) apply_filters( 'gowishcart_is_pro', false );
+        $has_pro_dom_bridge = class_exists( 'GoWishCart_Wishlist_Pro' );
         wp_localize_script(
             'gowishcart-admin',
             'gowishcartSettings',
@@ -200,6 +207,7 @@ class GoWishCart_Admin {
                 'menuTabMap' => $page_to_tab,
                 'tabPageMap' => $tab_to_page,
                 'isGoWishCartPro' => $is_pro,
+                'hasProDomBridge' => $has_pro_dom_bridge,
             ]
         );
 
@@ -787,6 +795,36 @@ class GoWishCart_Admin {
      */
     public function render_settings_page() {
         echo '<div id="gowishcart-settings-app"></div>';
+        if ( class_exists( 'GoWishCart_Wishlist_Pro' ) ) {
+            echo '<div id="gowishcart-pro-dom-bridge" data-gowishcart-pro-bridge="1"></div>';
+        }
+    }
+
+    /**
+     * Redirect removed Pro-only admin pages to free settings.
+     *
+     * @return void
+     */
+    public function redirect_legacy_pro_admin_pages() {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            return;
+        }
+
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only page routing fallback.
+        $requested_page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : '';
+        $legacy_pro_pages = array(
+            // $this->plugin_slug . '-customization',
+            // $this->plugin_slug . '-integrations',
+            // $this->plugin_slug . '-analytics',
+            $this->plugin_slug . '-get-prosdd',
+        );
+
+        if ( ! in_array( $requested_page, $legacy_pro_pages, true ) ) {
+            return;
+        }
+
+        wp_safe_redirect( admin_url( 'admin.php?page=' . $this->plugin_slug . '-settings' ) );
+        exit;
     }
 
     /**

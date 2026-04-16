@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { BarChart3, Sparkles, TrendingUp, Users, ShoppingCart, Link as LinkIcon } from 'lucide-react';
 
-const AnalyticsProMessage = () => {
+const AnalyticsProMessage = ({ isPro = false }) => {
     const analyticsFeatures = [
         {
             icon: TrendingUp,
@@ -32,35 +32,44 @@ const AnalyticsProMessage = () => {
         <div className="space-y-6">
             <Card>
                 <CardHeader className="space-y-2">
-                    <div className="inline-flex items-center gap-2 rounded-full bg-yellow-50 px-3 py-1 text-yellow-700">
-                        <Sparkles className="h-4 w-4" />
-                        <span>{__('Pro Feature', 'gowishcart-wishlist-for-fluentcart')}</span>
-                    </div>
+                    {!isPro && (
+                        <div className="inline-flex items-center gap-2 rounded-full bg-yellow-50 px-3 py-1 text-yellow-700">
+                            <Sparkles className="h-4 w-4" />
+                            <span>{__('Pro Feature', 'gowishcart-wishlist-for-fluentcart')}</span>
+                        </div>
+                    )}
                     <CardTitle className="flex items-center gap-2">
                         <BarChart3 className="h-6 w-6" />
                         {__('Analytics Dashboard', 'gowishcart-wishlist-for-fluentcart')}
                     </CardTitle>
                     <CardDescription>
-                        {__('Advanced analytics and insights are available in GoWishCart Pro. Upgrade to track wishlist performance, conversion rates, and customer behavior.', 'gowishcart-wishlist-for-fluentcart')}
+                        {isPro
+                            ? __('Analytics Dashboard — powered by your GoWishCart Pro license.', 'gowishcart-wishlist-for-fluentcart')
+                            : __('Advanced analytics and insights are available in GoWishCart Pro. Upgrade to track wishlist performance, conversion rates, and customer behavior.', 'gowishcart-wishlist-for-fluentcart')
+                        }
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                    <div>
-                        <p className="text-sm text-muted-foreground">
-                            {__('Unlock powerful analytics features to understand your customers better and optimize your sales strategy.', 'gowishcart-wishlist-for-fluentcart')}
-                        </p>
-                    </div>
+                    {!isPro && (
+                        <div>
+                            <p className="text-sm text-muted-foreground">
+                                {__('Unlock powerful analytics features to understand your customers better and optimize your sales strategy.', 'gowishcart-wishlist-for-fluentcart')}
+                            </p>
+                        </div>
+                    )}
                     <div className="flex gap-3">
                         <Button asChild variant="outline">
                             <a href="https://gowishcart.com/demo" target="_blank" rel="noopener noreferrer">
                                 {__('Book Demo', 'gowishcart-wishlist-for-fluentcart')}
                             </a>
                         </Button>
-                        <Button asChild>
-                            <a href="https://gowishcart.com/pricing" target="_blank" rel="noopener noreferrer">
-                                {__('Upgrade to Pro', 'gowishcart-wishlist-for-fluentcart')}
-                            </a>
-                        </Button>
+                        {!isPro && (
+                            <Button asChild>
+                                <a href="https://gowishcart.com/pricing" target="_blank" rel="noopener noreferrer">
+                                    {__('Upgrade to Pro', 'gowishcart-wishlist-for-fluentcart')}
+                                </a>
+                            </Button>
+                        )}
                     </div>
                 </CardContent>
             </Card>

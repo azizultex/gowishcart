@@ -22,6 +22,7 @@ import AnalyticsProMessage from './AnalyticsProMessage';
 
 const gowishcartSettings = typeof window !== 'undefined' ? window.gowishcartSettings || {} : {};
 const localizedTabPageMap = (typeof window !== 'undefined' && window.gowishcartSettings && window.gowishcartSettings.tabPageMap) || {};
+const isProActive = Boolean(gowishcartSettings?.isGoWishCartPro || gowishcartSettings?.hasProDomBridge);
 
 const SettingsApp = () => {
     const { toast } = useToast()
@@ -181,14 +182,17 @@ const SettingsApp = () => {
         }));
     };
 
-    const tabs = useMemo(() => ([
-        { id: 'settings', label: __('Settings', 'gowishcart-wishlist-for-fluentcart'), icon: Settings },
-        { id: 'customization', label: __('Customization', 'gowishcart-wishlist-for-fluentcart'), icon: Palette },
-        { id: 'integrations', label: __('Integrations', 'gowishcart-wishlist-for-fluentcart'), icon: Plug },
-        { id: 'analytics', label: __('Analytics', 'gowishcart-wishlist-for-fluentcart'), icon: BarChart3 },
-        { id: 'support', label: __('Support', 'gowishcart-wishlist-for-fluentcart'), icon: LifeBuoy },
-        { id: 'get-pro', label: __('Get Pro', 'gowishcart-wishlist-for-fluentcart'), icon: Sparkles },
-    ]), []);
+    const tabs = useMemo(() => {
+        const allTabs = [
+            { id: 'settings', label: __('Settings', 'gowishcart-wishlist-for-fluentcart'), icon: Settings },
+            { id: 'customization', label: __('Customization', 'gowishcart-wishlist-for-fluentcart'), icon: Palette },
+            { id: 'integrations', label: __('Integrations', 'gowishcart-wishlist-for-fluentcart'), icon: Plug },
+            { id: 'analytics', label: __('Analytics', 'gowishcart-wishlist-for-fluentcart'), icon: BarChart3 },
+            { id: 'support', label: __('Support', 'gowishcart-wishlist-for-fluentcart'), icon: LifeBuoy },
+            { id: 'get-pro', label: __('Get Pro', 'gowishcart-wishlist-for-fluentcart'), icon: Sparkles },
+        ];
+        return isProActive ? allTabs.filter(tab => tab.id !== 'get-pro') : allTabs;
+    }, []);
 
     const navigateToTab = useCallback((tabId) => {
         const exists = tabs.some(tab => tab.id === tabId);
@@ -267,7 +271,7 @@ const SettingsApp = () => {
 
                         {/* Analytics Tab */}
                         {activeTab === 'analytics' && (
-                            <AnalyticsProMessage />
+                            <AnalyticsProMessage isPro={isProActive} />
                         )}
 
                         {/* Support Tab */}

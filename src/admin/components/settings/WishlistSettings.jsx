@@ -15,6 +15,8 @@ import {
 import { Plus, ExternalLink } from "lucide-react";
 import { __ } from '@wordpress/i18n';
 
+const isProActive = Boolean(typeof window !== 'undefined' && (window.gowishcartSettings?.isGoWishCartPro || window.gowishcartSettings?.hasProDomBridge));
+
 const WishlistSettings = ({ settings, updateSettings }) => {
     const wishlistSettings = settings.wishlist || {
         enabled: true,
@@ -225,10 +227,14 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                 <div className="toggle-info">
                     <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px'}}>
                         <h4>{__('Enable Multiple Wishlists', 'gowishcart-wishlist-for-fluentcart')}</h4>
-                        <span className="gowishcart-badge gowishcart-badge-warning">{__('PRO GoWishCart')}</span>
+                        {!isProActive && (
+                            <span className="gowishcart-badge gowishcart-badge-warning">{__('PRO GoWishCart')}</span>
+                        )}
                     </div>
                     <p>{__('Allow users to create and manage multiple wishlists. When disabled, products are added directly to the default wishlist.', 'gowishcart-wishlist-for-fluentcart')}</p>
-                    <p style={{fontSize: '13px', margin: '4px 0 0', color: 'var(--gowishcart-text-muted)'}}>{__('This feature is available in GoWishCart Pro. Please upgrade to get all the advanced features.', 'gowishcart-wishlist-for-fluentcart')}</p>
+                    {!isProActive && (
+                        <p style={{fontSize: '13px', margin: '4px 0 0', color: 'var(--gowishcart-text-muted)'}}>{__('This feature is available in GoWishCart Pro. Please upgrade to get all the advanced features.', 'gowishcart-wishlist-for-fluentcart')}</p>
+                    )}
                 </div>
                 <div className="toggle-control">
                     <Switch
