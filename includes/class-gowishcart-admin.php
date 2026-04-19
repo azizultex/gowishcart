@@ -165,6 +165,39 @@ class GoWishCart_Admin {
         );
         wp_enqueue_script('gowishcart-admin');
 
+        // Enqueue Pro script if the Pro plugin is active.
+        $pro_basename = 'gowishcart-wishlist-for-fluentcart-pro/gowishcart-wishlist-for-fluentcart-pro.php';
+        if ( is_plugin_active( $pro_basename ) ) {
+            $pro_main = WP_PLUGIN_DIR . '/' . $pro_basename;
+            if ( is_readable( $pro_main ) ) {
+                $pro_dir = dirname( $pro_main );
+                $pro_js  = $pro_dir . '/build/pro.js';
+                $pro_css = $pro_dir . '/build/pro.css';
+                if ( ! wp_script_is( 'gowishcart-pro', 'registered' ) ) {
+                    wp_register_script(
+                        'gowishcart-pro',
+                        plugins_url( 'build/pro.js', $pro_main ),
+                        [ 'gowishcart-admin' ],
+                        file_exists( $pro_js ) ? (string) filemtime( $pro_js ) : '1.0.0',
+                        [
+                            'in_footer' => true,
+                            'strategy'  => 'defer',
+                        ]
+                    );
+                }
+                wp_enqueue_script( 'gowishcart-pro' );
+                if ( ! wp_style_is( 'gowishcart-pro', 'registered' ) ) {
+                    wp_register_style(
+                        'gowishcart-pro',
+                        plugins_url( 'build/pro.css', $pro_main ),
+                        [ 'gowishcart-admin' ],
+                        file_exists( $pro_css ) ? (string) filemtime( $pro_css ) : '1.0.0'
+                    );
+                }
+                wp_enqueue_style( 'gowishcart-pro' );
+            }
+        }
+
         // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Reading query parameter, not processing form data
         $requested_page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : $this->plugin_slug . '-settings';
         $page_to_tab = array(
