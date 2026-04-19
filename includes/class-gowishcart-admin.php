@@ -794,9 +794,11 @@ class GoWishCart_Admin {
      * @return void
      */
     public function render_settings_page() {
-        echo '<div id="gowishcart-settings-app"></div>';
         if ( class_exists( 'GoWishCart_Wishlist_Pro' ) ) {
+            echo '<div id="gowishcart-settings-app"></div>';
             echo '<div id="gowishcart-pro-dom-bridge" data-gowishcart-pro-bridge="1"></div>';
+        } else {
+            echo '<div id="gowishcart-settings-app"></div>';
         }
     }
 
@@ -913,11 +915,16 @@ class GoWishCart_Admin {
             }
 
             // Validate boolean fields
-            $boolean_fields = array( 'enabled', 'shop_page_button', 'product_page_button' );
+            $boolean_fields = array( 'enabled', 'enable_multiple_wishlists', 'shop_page_button', 'product_page_button' );
             foreach ( $boolean_fields as $field ) {
                 if ( isset( $merged['wishlist'][ $field ] ) ) {
                     $merged['wishlist'][ $field ] = (bool) $merged['wishlist'][ $field ];
                 }
+            }
+
+            $is_pro_settings = (bool) apply_filters( 'gowishcart_is_pro', false ) || class_exists( 'GoWishCart_Wishlist_Pro' );
+            if ( ! $is_pro_settings ) {
+                $merged['wishlist']['enable_multiple_wishlists'] = false;
             }
 
             // Validate button_position

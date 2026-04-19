@@ -231,9 +231,10 @@ class GoWishCart_Wishlist_Page {
      */
     public static function get_default_settings( $page_id = 0 ) {
         return array(
-            'enabled'              => true,
-            'shop_page_button'     => true,
-            'product_page_button'  => true,
+            'enabled'                    => true,
+            'enable_multiple_wishlists'  => false,
+            'shop_page_button'           => true,
+            'product_page_button'        => true,
             'button_position'      => 'bottom',
             'wishlist_page_id'     => intval( $page_id ),
             'guest_cookie_expiry'  => 30,

@@ -20,6 +20,7 @@ const isProActive = Boolean(typeof window !== 'undefined' && (window.gowishcartS
 const WishlistSettings = ({ settings, updateSettings }) => {
     const wishlistSettings = settings.wishlist || {
         enabled: true,
+        enable_multiple_wishlists: false,
         shop_page_button: true,
         product_page_button: true,
         button_position: 'bottom',
@@ -239,9 +240,9 @@ const WishlistSettings = ({ settings, updateSettings }) => {
                 <div className="toggle-control">
                     <Switch
                         id="enable_multiple_wishlists"
-                        checked={false}
-                        onCheckedChange={() => {}}
-                        disabled={true}
+                        checked={Boolean(wishlistSettings.enable_multiple_wishlists)}
+                        onCheckedChange={(checked) => updateWishlistSetting('enable_multiple_wishlists', checked)}
+                        disabled={!isProActive || !wishlistSettings.enabled}
                     />
                 </div>
             </div>

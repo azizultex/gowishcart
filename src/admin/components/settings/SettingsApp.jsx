@@ -247,7 +247,7 @@ const SettingsApp = () => {
 
                 {/* Main Content Area */}
                 <div className="gowishcart-admin-body">
-                    <div className="gowishcart-admin-content">
+                    <div className={`gowishcart-admin-content${activeTab === 'analytics' && isProActive ? ' gowishcart-pro-analytics' : ''}`}>
                         {/* Settings Tab */}
                         {activeTab === 'settings' && (
                             <WishlistSettings
