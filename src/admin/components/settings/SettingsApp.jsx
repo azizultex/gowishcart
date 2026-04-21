@@ -10,7 +10,8 @@ import {
     LifeBuoy,
     Sparkles,
     Settings,
-    Plug
+    Plug,
+    KeyRound
 } from 'lucide-react';
 
 import WishlistSettings from './WishlistSettings';
@@ -191,7 +192,12 @@ const SettingsApp = () => {
             { id: 'support', label: __('Support', 'gowishcart-wishlist-for-fluentcart'), icon: LifeBuoy },
             { id: 'get-pro', label: __('Get Pro', 'gowishcart-wishlist-for-fluentcart'), icon: Sparkles },
         ];
-        return isProActive ? allTabs.filter(tab => tab.id !== 'get-pro') : allTabs;
+        if (isProActive) {
+            const supportIndex = allTabs.findIndex(tab => tab.id === 'support');
+            allTabs.splice(supportIndex + 1, 0, { id: 'license', label: __('License', 'gowishcart-wishlist-for-fluentcart'), icon: KeyRound });
+            return allTabs.filter(tab => tab.id !== 'get-pro');
+        }
+        return allTabs;
     }, []);
 
     const navigateToTab = useCallback((tabId) => {
@@ -282,6 +288,13 @@ const SettingsApp = () => {
                         {/* Get Pro Tab */}
                         {activeTab === 'get-pro' && (
                             <UpgradePrompt />
+                        )}
+
+                        {/* License Tab - Pro only */}
+                        {activeTab === 'license' && (
+                            <div className="gowishcart-license-pro">
+                                <h2>{__('License', 'gowishcart-wishlist-for-fluentcart')}</h2>
+                            </div>
                         )}
 
                         {/* Save Button - Only show for tabs that need it */}

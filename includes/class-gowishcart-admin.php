@@ -106,6 +106,12 @@ class GoWishCart_Admin {
             'get-pro'        => __( 'Get Pro', 'gowishcart-wishlist-for-fluentcart' ),
         );
 
+        $pro_basename = 'gowishcart-wishlist-for-fluentcart-pro/gowishcart-wishlist-for-fluentcart-pro.php';
+        if ( is_plugin_active( $pro_basename ) ) {
+            $subpages['license'] = __( 'License', 'gowishcart-wishlist-for-fluentcart' );
+            unset( $subpages['get-pro'] );
+        }
+
         foreach ( $subpages as $slug_suffix => $label ) {
         add_submenu_page(
             $this->plugin_slug,
@@ -827,11 +833,14 @@ class GoWishCart_Admin {
      * @return void
      */
     public function render_settings_page() {
+        $settings_app_class = 'gowishcart-settings-app';
+
         if ( class_exists( 'GoWishCart_Wishlist_Pro' ) ) {
-            echo '<div id="gowishcart-settings-app"></div>';
+            $settings_app_class .= ' gowishcart-settings-app-pro';
+            echo '<div id="gowishcart-settings-app" class="' . esc_attr( $settings_app_class ) . '"></div>';
             echo '<div id="gowishcart-pro-dom-bridge" data-gowishcart-pro-bridge="1"></div>';
         } else {
-            echo '<div id="gowishcart-settings-app"></div>';
+            echo '<div id="gowishcart-settings-app" class="' . esc_attr( $settings_app_class ) . '"></div>';
         }
     }
 
