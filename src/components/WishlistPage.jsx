@@ -31,6 +31,8 @@ const SuccessModal = ({ isOpen, message, onClose }) => {
 };
 
 const WishlistPage = () => {
+    const isProActive = Boolean(window.gowishcartWishlist?.isPro);
+
     const [products, setProducts] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [removingIds, setRemovingIds] = useState(new Set());
@@ -39,7 +41,14 @@ const WishlistPage = () => {
     const [bulkAction, setBulkAction] = useState('');
     const [linkCopied, setLinkCopied] = useState(false);
     const [wishlists, setWishlists] = useState([]);
-    const [currentWishlist, setCurrentWishlist] = useState(null);
+    const [currentWishlist, setCurrentWishlist] = useState(() => {
+        try {
+            const saved = localStorage.getItem('gowishcart_current_wishlist');
+            return saved ? JSON.parse(saved) : null;
+        } catch {
+            return null;
+        }
+    });
     const [isLoadingWishlists, setIsLoadingWishlists] = useState(false);
     const [error, setError] = useState(null);
     const [cartMessage, setCartMessage] = useState({ type: null, text: '' });
@@ -54,6 +63,18 @@ const WishlistPage = () => {
     const loadWishlistRef = useRef(null);
     const productsRef = useRef([]);
     const isLoadingRef = useRef(false);
+
+    // Persist currentWishlist to localStorage and broadcast to pro plugin
+    useEffect(() => {
+        if (currentWishlist !== null) {
+            localStorage.setItem('gowishcart_current_wishlist', JSON.stringify(currentWishlist));
+        } else {
+            localStorage.removeItem('gowishcart_current_wishlist');
+        }
+        window.dispatchEvent(new CustomEvent('gowishcart_wishlist_changed', {
+            detail: { wishlist: currentWishlist }
+        }));
+    }, [currentWishlist]);
 
     // Get session ID from cookie
     const getSessionId = () => {
@@ -927,25 +948,24 @@ const ensureWishlistShareAllowed = () => {
 
             {/* Multiple Wishlists Selector - Pro Feature (removed from free version) */}
             
-            {/* Privacy Control - Only Private in free version */}
+            {/* Privacy Control */}
             {currentWishlist && (
-                <div className="wishlist-selector" style={{marginBottom: '16px'}}>
+                <div className={`wishlist-selector${isProActive ? ' gowishcart-selector-pro' : ''}`} style={{marginBottom: '16px'}}>
                     <div style={{position: 'relative'}}>
                         <CustomSelect
                             options={[
                                 { value: 'private', label: '🔒 Private' },
-                                { value: 'shared', label: '👥 Shared (PRO)', isDisabled: true }
+                                { value: 'shared', label: isProActive ? '👥 Shared' : '👥 Shared (PRO)', isDisabled: !isProActive }
                             ]}
                             value={{
                                 value: 'private',
                                 label: '🔒 Private'
                             }}
                             onChange={(selectedOption) => {
-                                if (selectedOption && (selectedOption.value === 'shared' || selectedOption.value === 'public')) {
-                                    // Show Pro feature message
+                                if (!isProActive && selectedOption && (selectedOption.value === 'shared' || selectedOption.value === 'public')) {
                                     setSuccessMessage('Shared/Public privacy options are available in GoWishCart Pro. Please upgrade to use this feature.');
                                     setIsSuccessModalOpen(true);
-                                    return; // Don't change the selection
+                                    return;
                                 }
                             }}
                             className="privacy-select-trigger"
@@ -1118,11 +1138,13 @@ const ensureWishlistShareAllowed = () => {
                         ))}
                     </div>
 
-                    {/* Share Section - Pro Feature */}
-                    <div className="share-section" style={{position: 'relative', opacity: 0.6, pointerEvents: 'none'}}>
+                    {/* Share Section */}
+                    <div className={`share-section${isProActive ? ' gowishcart-shared-pro' : ''}`} style={isProActive ? {position: 'relative'} : {position: 'relative', opacity: 0.6, pointerEvents: 'none'}}>
                         <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px'}}>
                             <span className="share-label">Wishlist Share on</span>
-                            <span className="gowishcart-badge gowishcart-badge-warning" style={{fontSize: '10px', padding: '2px 6px'}}>PRO</span>
+                            {!isProActive && (
+                                <span className="gowishcart-badge gowishcart-badge-warning" style={{fontSize: '10px', padding: '2px 6px'}}>PRO</span>
+                            )}
                         </div>
                         <div className="share-icons">
                             <button

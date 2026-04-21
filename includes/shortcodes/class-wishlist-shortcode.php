@@ -73,6 +73,7 @@ class GoWishCart_Wishlist_Shortcode {
                 'userId' => get_current_user_id(),
                 'shareCode' => sanitize_text_field( $atts['share_code'] ),
                 'enableMultipleWishlists' => ! empty( $wishlist_settings['enable_multiple_wishlists'] ),
+                'isPro' => (bool) apply_filters( 'gowishcart_is_pro', false ) || class_exists( 'GoWishCart_Wishlist_Pro' ),
             )
         );
 

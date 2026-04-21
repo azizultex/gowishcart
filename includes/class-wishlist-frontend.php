@@ -125,6 +125,7 @@ class GoWishCart_Wishlist_Frontend {
                     'labels' => isset( $button_customization['labels'] ) ? $button_customization['labels'] : array(),
                     'buttonStyle' => isset( $button_customization['buttonStyle'] ) ? $button_customization['buttonStyle'] : 'button',
                 ),
+                'isPro' => (bool) apply_filters( 'gowishcart_is_pro', false ) || class_exists( 'GoWishCart_Wishlist_Pro' ),
             )
         );
     }
