@@ -253,7 +253,7 @@ const SettingsApp = () => {
 
                 {/* Main Content Area */}
                 <div className="gowishcart-admin-body">
-                    <div className={`gowishcart-admin-content${activeTab === 'analytics' && isProActive ? ' gowishcart-pro-analytics' : ''}`}>
+                    <div className="gowishcart-admin-content">
                         {/* Settings Tab */}
                         {activeTab === 'settings' && (
                             <WishlistSettings
@@ -277,7 +277,9 @@ const SettingsApp = () => {
 
                         {/* Analytics Tab */}
                         {activeTab === 'analytics' && (
-                            <AnalyticsProMessage isPro={isProActive} />
+                            <div className={`${isProActive ? 'gowishcart-pro-analytics' : ''}`}>
+                                <AnalyticsProMessage isPro={isProActive} />
+                            </div>
                         )}
 
                         {/* Support Tab */}
