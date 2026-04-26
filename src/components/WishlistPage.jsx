@@ -59,10 +59,29 @@ const WishlistPage = () => {
     // Track if wishlist has been loaded to prevent infinite loops
     const hasLoadedRef = useRef(false);
     const loadedWishlistIdRef = useRef(null);
+    const wishlistLoadInFlightRef = useRef(null);
     const currentWishlistRef = useRef(null);
     const loadWishlistRef = useRef(null);
     const productsRef = useRef([]);
     const isLoadingRef = useRef(false);
+    const wishlistsRef = useRef([]);
+    const isLoadingWishlistsRef = useRef(false);
+
+    const mergeWishlistIntoState = useCallback((wl) => {
+        if (!wl) {
+            return;
+        }
+        setWishlists((prev) => {
+            const sid = String(wl.id ?? wl.share_code ?? '');
+            if (!sid) {
+                return prev;
+            }
+            if (prev.some((w) => String(w.id ?? w.share_code ?? '') === sid)) {
+                return prev;
+            }
+            return [...prev, wl];
+        });
+    }, []);
 
     // Persist currentWishlist to localStorage and broadcast to pro plugin
     useEffect(() => {
@@ -97,6 +116,33 @@ const WishlistPage = () => {
         return null;
     };
 
+    const fetchWishlistsCollection = useCallback(async () => {
+        if (!window.gowishcartWishlist) {
+            return null;
+        }
+        const sessionId = getSessionId();
+        const params = new URLSearchParams();
+        if (sessionId) {
+            params.append('session_id', sessionId);
+        }
+        const query = params.toString();
+        const url = `${window.gowishcartWishlist.apiUrl}wishlists${query ? `?${query}` : ''}`;
+        try {
+            const response = await fetch(url, {
+                headers: {
+                    'X-WP-Nonce': window.gowishcartWishlist.nonce,
+                },
+            });
+            if (!response.ok) {
+                return null;
+            }
+            const data = await response.json();
+            return data.wishlists || [];
+        } catch {
+            return null;
+        }
+    }, []);
+
     // Load wishlists
     useEffect(() => {
         const loadWishlists = async () => {
@@ -105,32 +151,42 @@ const WishlistPage = () => {
             }
 
             // Load user's default wishlist (free version supports single wishlist only)
+            isLoadingWishlistsRef.current = true;
             setIsLoadingWishlists(true);
             try {
                 const sessionId = getSessionId();
                 const url = `${window.gowishcartWishlist.apiUrl}wishlist${sessionId ? `?session_id=${sessionId}` : ''}`;
-                const response = await fetch(url, {
+                const enableMulti = window.gowishcartWishlist.enableMultipleWishlists;
+                const singularPromise = fetch(url, {
                     headers: {
                         'X-WP-Nonce': window.gowishcartWishlist.nonce,
                     },
                 });
+                const pluralPromise = enableMulti ? fetchWishlistsCollection() : Promise.resolve(null);
+
+                const [response, pluralList] = await Promise.all([singularPromise, pluralPromise]);
 
                 if (response.ok) {
                     const data = await response.json();
                     if (data.wishlist) {
                         setCurrentWishlist(data.wishlist);
-                        setWishlists([data.wishlist]); // Single wishlist in free version
+                        mergeWishlistIntoState(data.wishlist);
                     }
+                }
+
+                if (enableMulti && pluralList !== null) {
+                    setWishlists(pluralList);
                 }
             } catch (error) {
                 // Error handled silently
             } finally {
+                isLoadingWishlistsRef.current = false;
                 setIsLoadingWishlists(false);
             }
         };
 
         loadWishlists();
-    }, []);
+    }, [mergeWishlistIntoState, fetchWishlistsCollection]);
 
     // Shared helper to load wishlist products
     const loadWishlist = useCallback(
@@ -141,14 +197,21 @@ const WishlistPage = () => {
             }
 
             const activeWishlist = wishlistOverride || currentWishlist;
+            const wishlistsSnap = wishlistsRef.current;
+            const isLoadingWishlistsSnap = isLoadingWishlistsRef.current;
 
             // If no current wishlist but we have wishlists, wait for wishlists to load
-            if (!activeWishlist && wishlists.length === 0 && isLoadingWishlists) {
+            if (!activeWishlist && wishlistsSnap.length === 0 && isLoadingWishlistsSnap) {
                 return;
             }
 
             // If no wishlists exist, try to load using old method for backward compatibility
-            if (!activeWishlist && wishlists.length === 0) {
+            if (!activeWishlist && wishlistsSnap.length === 0) {
+                const legacyKey = 'legacy-empty';
+                if (!forceReload && wishlistLoadInFlightRef.current === legacyKey) {
+                    return;
+                }
+                wishlistLoadInFlightRef.current = legacyKey;
                 setIsLoading(true);
                 try {
                     const sessionId = getSessionId();
@@ -167,6 +230,7 @@ const WishlistPage = () => {
                         setProducts(data.products || []);
                         if (data.wishlist) {
                             setCurrentWishlist(data.wishlist);
+                            mergeWishlistIntoState(data.wishlist);
                             loadedWishlistIdRef.current = data.wishlist.id || data.wishlist.share_code;
                         }
                         hasLoadedRef.current = true;
@@ -174,6 +238,9 @@ const WishlistPage = () => {
                 } catch (error) {
                     console.error('Error loading wishlist:', error);
                 } finally {
+                    if (wishlistLoadInFlightRef.current === legacyKey) {
+                        wishlistLoadInFlightRef.current = null;
+                    }
                     setIsLoading(false);
                 }
                 return;
@@ -189,6 +256,12 @@ const WishlistPage = () => {
             if (!forceReload && hasLoadedRef.current && loadedWishlistIdRef.current === currentWishlistId) {
                 return;
             }
+
+            const loadKey = String(currentWishlistId ?? '');
+            if (!forceReload && wishlistLoadInFlightRef.current === loadKey) {
+                return;
+            }
+            wishlistLoadInFlightRef.current = loadKey;
 
             setIsLoading(true);
             try {
@@ -218,6 +291,7 @@ const WishlistPage = () => {
                     
                     setProducts(data.products || []);
                     if (data.wishlist) {
+                        mergeWishlistIntoState(data.wishlist);
                         // Only update currentWishlist if the wishlist ID actually changed
                         const newWishlistId = data.wishlist.id || data.wishlist.share_code;
                         if (newWishlistId !== currentWishlistId) {
@@ -236,10 +310,13 @@ const WishlistPage = () => {
             } catch (error) {
                 // Error handled silently
             } finally {
+                if (wishlistLoadInFlightRef.current === loadKey) {
+                    wishlistLoadInFlightRef.current = null;
+                }
                 setIsLoading(false);
             }
         },
-        [currentWishlist, wishlists, isLoadingWishlists]
+        [currentWishlist, mergeWishlistIntoState]
     );
 
     // Load wishlist products on relevant state changes
@@ -263,6 +340,14 @@ const WishlistPage = () => {
     useEffect(() => {
         isLoadingRef.current = isLoading;
     }, [isLoading]);
+
+    useEffect(() => {
+        wishlistsRef.current = wishlists;
+    }, [wishlists]);
+
+    useEffect(() => {
+        isLoadingWishlistsRef.current = isLoadingWishlists;
+    }, [isLoadingWishlists]);
 
     // Initialize selectedVariants Map when products load
     useEffect(() => {
@@ -924,7 +1009,21 @@ const ensureWishlistShareAllowed = () => {
     };
 
     // Create new wishlist
-    const createNewWishlist = async () => {
+    // const createNewWishlist = async () => {
+    //     if (!window.gowishcartWishlist) {
+    //         return;
+    //     }
+
+    //     const name = prompt('Enter wishlist name:', 'New Wishlist');
+    //     if (!name) {
+    //         return;
+    //     }
+
+    //     // Multiple wishlists is a Pro feature - not available in free version
+    //     alert('Multiple wishlists is a Pro feature. Please upgrade to create multiple wishlists.');
+    // };
+     // Create new wishlist
+     const createNewWishlist = async () => {
         if (!window.gowishcartWishlist) {
             return;
         }
@@ -934,9 +1033,36 @@ const ensureWishlistShareAllowed = () => {
             return;
         }
 
-        // Multiple wishlists is a Pro feature - not available in free version
-        alert('Multiple wishlists is a Pro feature. Please upgrade to create multiple wishlists.');
-    };
+        try {
+            const response = await fetch(`${window.gowishcartWishlist.apiUrl}wishlists`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-WP-Nonce': window.gowishcartWishlist.nonce,
+                },
+                body: JSON.stringify({
+                    name: name,
+                    is_default: false,
+                }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                const list = await fetchWishlistsCollection();
+                if (list !== null) {
+                    setWishlists(list);
+                }
+                if (data.wishlist) {
+                    hasLoadedRef.current = false;
+                    loadedWishlistIdRef.current = null;
+                    setCurrentWishlist(data.wishlist);
+                }
+            }
+        } catch (error) {
+            console.error('Error creating wishlist:', error);
+            alert('Failed to create wishlist');
+        }
+    }
 
     return (
         <div className="gowishcart-wishlist-page">
@@ -947,6 +1073,32 @@ const ensureWishlistShareAllowed = () => {
             />
 
             {/* Multiple Wishlists Selector - Pro Feature (removed from free version) */}
+            {window.gowishcartWishlist?.enableMultipleWishlists && (
+            <CustomSelect
+                options={wishlists.map(wishlist => ({
+                    value: wishlist.id.toString(),
+                    label: `${wishlist.wishlist_name}${wishlist.is_default ? ' (Default)' : ''}`
+                }))}
+                value={currentWishlist ? {
+                    value: currentWishlist.id.toString(),
+                    label: `${currentWishlist.wishlist_name}${currentWishlist.is_default ? ' (Default)' : ''}`
+                } : null}
+                onChange={(selectedOption) => handleWishlistSelect(selectedOption.value)}
+                placeholder="Select Wishlist"
+                className="wishlist-select-trigger"
+            />
+            )}
+
+            {window.gowishcartWishlist?.enableMultipleWishlists && (
+                <Button
+                    onClick={createNewWishlist}
+                    className="create-wishlist-btn"
+                    variant="outline"
+                >
+                    Create New
+                </Button>
+            )}
+            
             
             {/* Privacy Control */}
             {currentWishlist && (

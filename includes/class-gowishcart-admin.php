@@ -1703,6 +1703,9 @@ class GoWishCart_Admin {
             } else {
                 // Fallback to old method for backward compatibility
                 $wishlist_items = $handler->get_user_wishlist_with_dates( null, $session_id );
+                if ( ! $current_wishlist && ! empty( $wishlist_items ) && ! empty( $wishlist_items[0]['wishlist_id'] ) ) {
+                    $current_wishlist = $handler->get_wishlist( intval( $wishlist_items[0]['wishlist_id'] ) );
+                }
             }
         }
 
