@@ -297,6 +297,19 @@ class GoWishCart_FluentCart_Order {
         return '';
     }
 
+    /**
+     * WordPress user ID linked to the FluentCart customer, if any.
+     *
+     * @return int
+     */
+    public function get_customer_user_id() {
+        if ( ! $this->fc_order || ! $this->fc_order->customer ) {
+            return 0;
+        }
+        $uid = $this->fc_order->customer->user_id ?? null;
+        return $uid ? (int) $uid : 0;
+    }
+
     public function get_billing_phone() {
         if ( ! $this->fc_order ) {
             return '';

@@ -250,7 +250,8 @@ class GoWishCart_Wishlist {
         include_once GoWishCart_PLUGIN_DIR . 'includes/class-database.php';
         include_once GoWishCart_PLUGIN_DIR . 'includes/class-database-migration.php';
         include_once GoWishCart_PLUGIN_DIR . 'includes/class-fluentcart-helper.php';
-        
+        include_once GoWishCart_PLUGIN_DIR . 'includes/class-analytics-order-bridge.php';
+
         // Handler classes
         include_once GoWishCart_PLUGIN_DIR . 'includes/class-wishlist-handler.php';
         // Analytics handler is a Pro feature - removed from free version
@@ -287,6 +288,9 @@ class GoWishCart_Wishlist {
 
         // Initialize admin/API class so REST routes register for all requests
         GoWishCart_Admin::get_instance();
+
+        // Pro analytics: purchase funnel step is recorded on FluentCart payment complete when Pro provides Analytics_Handler.
+        GoWishCart_Analytics_Order_Bridge::init();
 
         // Initialize frontend handler
         new GoWishCart_Wishlist_Frontend();
