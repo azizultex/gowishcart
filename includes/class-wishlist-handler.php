@@ -809,6 +809,19 @@ class GoWishCart_Wishlist_Handler {
 
         // Log activity
         $this->log_activity($wishlist_id, 'added_item', $product_id, 'product');
+        
+        // Pro: conversion funnel "Added to Wishlist" (wishlist_track_cart records 'cart' separately).
+        if ( class_exists( 'GoWishCart_Analytics_Handler' ) ) {
+            $event_type = apply_filters(
+                'gowishcart_analytics_wishlist_add_event_type',
+                'add',
+                $product_id,
+                $variation_id,
+                $wishlist_id
+            );
+            $analytics_handler = new GoWishCart_Analytics_Handler();
+            $analytics_handler->track_event( $product_id, $variation_id, $event_type );
+        }
 
         // Clear cache
         $this->clear_wishlist_cache($user_id, $session_id);
