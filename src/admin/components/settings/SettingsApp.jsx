@@ -22,8 +22,30 @@ import UpgradePrompt from './UpgradePrompt';
 import AnalyticsProMessage from './AnalyticsProMessage';
 
 const gowishcartSettings = typeof window !== 'undefined' ? window.gowishcartSettings || {} : {};
-const localizedTabPageMap = (typeof window !== 'undefined' && window.gowishcartSettings && window.gowishcartSettings.tabPageMap) || {};
 const isProActive = Boolean(gowishcartSettings?.isGoWishCartPro || gowishcartSettings?.hasProDomBridge);
+
+function getTabIdFromHash() {
+    if (typeof window === 'undefined' || !window.location.hash) {
+        return null;
+    }
+    const m = window.location.hash.match(/^#\/?(.+)$/);
+    if (!m) {
+        return null;
+    }
+    try {
+        return decodeURIComponent(m[1]);
+    } catch {
+        return m[1];
+    }
+}
+
+function getInitialActiveTab() {
+    const fromHash = getTabIdFromHash();
+    if (fromHash) {
+        return fromHash;
+    }
+    return gowishcartSettings?.defaultTab || 'settings';
+}
 
 const SettingsApp = () => {
     const { toast } = useToast()
@@ -39,23 +61,38 @@ const SettingsApp = () => {
     });
 
     const [isSaving, setIsSaving] = useState(false);
-    const [activeTab, setActiveTab] = useState(() => gowishcartSettings?.defaultTab || 'settings');
+    const [activeTab, setActiveTab] = useState(getInitialActiveTab);
     const baseMenuSlug = gowishcartSettings?.menuSlug || 'gowishcart-wishlist-for-fluentcart';
-    const fallbackTabPageMap = useMemo(() => ({
-        settings: `${baseMenuSlug}-settings`,
-        customization: `${baseMenuSlug}-customization`,
-        integrations: `${baseMenuSlug}-integrations`,
-        analytics: `${baseMenuSlug}-analytics`,
-        support: `${baseMenuSlug}-support`,
-        'get-pro': `${baseMenuSlug}-get-pro`,
-    }), [baseMenuSlug]);
+    const canonicalPage = gowishcartSettings?.canonicalPage || baseMenuSlug;
 
-    const tabPageMap = useMemo(() => {
-        if (localizedTabPageMap && Object.keys(localizedTabPageMap).length > 0) {
-            return localizedTabPageMap;
+    const tabs = useMemo(() => {
+        const allTabs = [
+            { id: 'settings', label: __('Settings', 'gowishcart-wishlist-for-fluentcart'), icon: Settings },
+            { id: 'customization', label: __('Customization', 'gowishcart-wishlist-for-fluentcart'), icon: Palette },
+            { id: 'integrations', label: __('Integrations', 'gowishcart-wishlist-for-fluentcart'), icon: Plug },
+            { id: 'analytics', label: __('Analytics', 'gowishcart-wishlist-for-fluentcart'), icon: BarChart3 },
+            { id: 'support', label: __('Support', 'gowishcart-wishlist-for-fluentcart'), icon: LifeBuoy },
+            { id: 'get-pro', label: __('Get Pro', 'gowishcart-wishlist-for-fluentcart'), icon: Sparkles },
+        ];
+        if (isProActive) {
+            const supportIndex = allTabs.findIndex(tab => tab.id === 'support');
+            allTabs.splice(supportIndex + 1, 0, { id: 'license', label: __('License', 'gowishcart-wishlist-for-fluentcart'), icon: KeyRound });
+            return allTabs.filter(tab => tab.id !== 'get-pro');
         }
-        return fallbackTabPageMap;
-    }, [fallbackTabPageMap]);
+        return allTabs;
+    }, []);
+
+    useEffect(() => {
+        if (tabs.some((t) => t.id === activeTab)) {
+            return;
+        }
+        const preferred = gowishcartSettings?.defaultTab;
+        if (preferred && tabs.some((t) => t.id === preferred)) {
+            setActiveTab(preferred);
+        } else {
+            setActiveTab('settings');
+        }
+    }, [tabs, activeTab]);
 
     useEffect(() => {
         // Load settings from WordPress on mount
@@ -110,12 +147,28 @@ const SettingsApp = () => {
         }
     };
 
+    // FluentCart-style: single ?page=canonical plus #/tabId
     useEffect(() => {
-        const slug = tabPageMap[activeTab] || tabPageMap.settings || fallbackTabPageMap.settings;
-        const url = new URL(window.location.href);
-        url.searchParams.set('page', slug);
-        window.history.replaceState({}, '', url.toString());
-    }, [activeTab, tabPageMap, fallbackTabPageMap]);
+        if (typeof window === 'undefined') {
+            return;
+        }
+        const u = new URL(window.location.href);
+        u.searchParams.set('page', canonicalPage);
+        u.hash = `#/${activeTab}`;
+        window.history.replaceState({}, '', u.toString());
+    }, [activeTab, canonicalPage]);
+
+    useEffect(() => {
+        const onHashChange = () => {
+            const id = getTabIdFromHash();
+            if (!id || !tabs.some((t) => t.id === id)) {
+                return;
+            }
+            setActiveTab((current) => (current === id ? current : id));
+        };
+        window.addEventListener('hashchange', onHashChange);
+        return () => window.removeEventListener('hashchange', onHashChange);
+    }, [tabs]);
 
     useEffect(() => {
         if (typeof window !== 'undefined' && typeof window.gowishcartSetActiveMenu === 'function') {
@@ -182,23 +235,6 @@ const SettingsApp = () => {
             }
         }));
     };
-
-    const tabs = useMemo(() => {
-        const allTabs = [
-            { id: 'settings', label: __('Settings', 'gowishcart-wishlist-for-fluentcart'), icon: Settings },
-            { id: 'customization', label: __('Customization', 'gowishcart-wishlist-for-fluentcart'), icon: Palette },
-            { id: 'integrations', label: __('Integrations', 'gowishcart-wishlist-for-fluentcart'), icon: Plug },
-            { id: 'analytics', label: __('Analytics', 'gowishcart-wishlist-for-fluentcart'), icon: BarChart3 },
-            { id: 'support', label: __('Support', 'gowishcart-wishlist-for-fluentcart'), icon: LifeBuoy },
-            { id: 'get-pro', label: __('Get Pro', 'gowishcart-wishlist-for-fluentcart'), icon: Sparkles },
-        ];
-        if (isProActive) {
-            const supportIndex = allTabs.findIndex(tab => tab.id === 'support');
-            allTabs.splice(supportIndex + 1, 0, { id: 'license', label: __('License', 'gowishcart-wishlist-for-fluentcart'), icon: KeyRound });
-            return allTabs.filter(tab => tab.id !== 'get-pro');
-        }
-        return allTabs;
-    }, []);
 
     const navigateToTab = useCallback((tabId) => {
         const exists = tabs.some(tab => tab.id === tabId);

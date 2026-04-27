@@ -49,6 +49,7 @@ class GoWishCart_Admin {
         if ( is_admin() ) {
             add_action('admin_menu', [ $this, 'register_admin_menu' ]);
             add_action('admin_init', [ $this, 'redirect_legacy_pro_admin_pages' ]);
+            add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_gowishcart_menu_bridge' ], 5 );
             add_action('admin_enqueue_scripts', [ $this, 'enqueue_admin_scripts' ]);
             add_action('admin_enqueue_scripts', [ $this, 'enqueue_admin_styles' ]);
         }
@@ -78,6 +79,221 @@ class GoWishCart_Admin {
     }
 
     /**
+     * Submenu slugs and labels (single source for register_admin_menu and enqueue).
+     *
+     * @return array<string, string> Slug suffix => translatable label.
+     */
+    private function get_admin_submenu_config() {
+        $subpages = array(
+            'settings'      => esc_html__( 'Settings', 'gowishcart-wishlist-for-fluentcart' ),
+            'customization'  => esc_html__( 'Customization', 'gowishcart-wishlist-for-fluentcart' ),
+            'integrations'   => esc_html__( 'Integrations', 'gowishcart-wishlist-for-fluentcart' ),
+            'analytics'      => esc_html__( 'Analytics', 'gowishcart-wishlist-for-fluentcart' ),
+            'support'        => esc_html__( 'Support', 'gowishcart-wishlist-for-fluentcart' ),
+            'get-pro'        => esc_html__( 'Get Pro', 'gowishcart-wishlist-for-fluentcart' ),
+        );
+        $pro_basename = 'gowishcart-wishlist-for-fluentcart-pro/gowishcart-wishlist-for-fluentcart-pro.php';
+        if ( is_plugin_active( $pro_basename ) ) {
+            $subpages['license'] = esc_html__( 'License', 'gowishcart-wishlist-for-fluentcart' );
+            unset( $subpages['get-pro'] );
+        }
+        return $subpages;
+    }
+
+    /**
+     * Admin screen $hook allowlist (toplevel and each registered submenu) for the SPA.
+     *
+     * @return string[]
+     */
+    private function get_gowishcart_admin_screen_hooks() {
+        $allowed_hooks = array(
+            'toplevel_page_' . $this->plugin_slug,
+        );
+        $submenu_config = $this->get_admin_submenu_config();
+        foreach ( array_keys( $submenu_config ) as $slug_suffix ) {
+            $allowed_hooks[] = $this->plugin_slug . '_page_' . $this->plugin_slug . '-' . $slug_suffix;
+        }
+        return $allowed_hooks;
+    }
+
+    /**
+     * Map of ?page= slug to React tab id (for submenu hash links and default tab).
+     *
+     * @return array<string, string>
+     */
+    private function get_gowishcart_page_to_tab_map() {
+        $c = $this->plugin_slug;
+        return array(
+            $c                            => 'settings',
+            $c . '-settings'              => 'settings',
+            $c . '-customization'         => 'customization',
+            $c . '-integrations'         => 'integrations',
+            $c . '-analytics'            => 'analytics',
+            $c . '-support'               => 'support',
+            $c . '-get-pro'               => 'get-pro',
+            $c . '-license'              => 'license',
+        );
+    }
+
+    /**
+     * Shared inline script: rewrite submenu to canonical + hash, optional full SPA menu sync.
+     *
+     * @return string
+     */
+    private function get_submenu_navigation_inline_js() {
+        return <<<'GOWCART_SUBMENU_JS'
+(function(){
+    if (typeof window === "undefined") {
+        return;
+    }
+    window.addEventListener("DOMContentLoaded", function(){
+        if (!window.gowishcartSettings || !window.gowishcartSettings.menuTabMap) {
+            return;
+        }
+        var adminBase = (window.gowishcartSettings.adminUrl || "").replace( /\/?$/, "/" );
+        var canonical = window.gowishcartSettings.canonicalPage || window.gowishcartSettings.menuSlug;
+        var menuTabMap = window.gowishcartSettings.menuTabMap;
+        if (!canonical) {
+            return;
+        }
+        var submenu = document.querySelector( "#toplevel_page_" + canonical + " .wp-submenu" );
+        if (!submenu) {
+            return;
+        }
+        function tabFromHash( hash ) {
+            if (!hash || typeof hash !== "string") {
+                return null;
+            }
+            var m = hash.match( /^#\/?(.+)$/ );
+            if (!m) {
+                return null;
+            }
+            return decodeURIComponent( m[1] );
+        }
+        function buildHashUrl( tabId ) {
+            return adminBase + "admin.php?page=" + encodeURIComponent( canonical ) + "#/" + tabId;
+        }
+        function rewriteSubmenuLinks() {
+            var links = submenu.querySelectorAll( "a" );
+            var i, link, url, page, tab;
+            for (i = 0; i < links.length; i++) {
+                link = links[i];
+                try {
+                    url = new URL( link.getAttribute( "href" ) || link.href, window.location.origin );
+                    page = url.searchParams.get( "page" ) || "";
+                    tab = menuTabMap[ page ];
+                    if (tab) {
+                        link.setAttribute( "href", buildHashUrl( tab ) );
+                    }
+                } catch (err) {}
+            }
+        }
+        if ( window.gowishcartSettings.menuBridgeOnly ) {
+            rewriteSubmenuLinks();
+            return;
+        }
+        function setActiveMenuByTab( tabId ) {
+            if (!submenu) {
+                return;
+            }
+            var items = submenu.querySelectorAll( "li" );
+            if (items && items.forEach) {
+                items.forEach( function( item ) { item.classList.remove( "current" ); } );
+            }
+            var links = submenu.querySelectorAll( "a" );
+            for ( var j = 0; j < links.length; j++ ) {
+                var link = links[j];
+                try {
+                    var t = tabFromHash( new URL( link.href, window.location.origin ).hash );
+                    if (t === tabId) {
+                        if (link.parentElement) {
+                            link.parentElement.classList.add( "current" );
+                        }
+                        break;
+                    }
+                } catch (err) {}
+            }
+        }
+        window.gowishcartSetActiveMenu = setActiveMenuByTab;
+        rewriteSubmenuLinks();
+        var initialTab = window.gowishcartSettings.defaultTab;
+        try {
+            if ( window.location.hash ) {
+                var th = tabFromHash( window.location.hash );
+                if ( th ) {
+                    initialTab = th;
+                }
+            }
+        } catch (e) {}
+        setActiveMenuByTab( initialTab );
+        submenu.addEventListener( "click", function( event ) {
+            if (typeof window.gowishcartNavigateToTab !== "function") {
+                return;
+            }
+            var link = event.target.closest( "a" );
+            if (!link) {
+                return;
+            }
+            try {
+                var url = new URL( link.href, window.location.origin );
+                var tab = tabFromHash( url.hash );
+                if (!tab) {
+                    var page = url.searchParams.get( "page" ) || "";
+                    tab = menuTabMap[ page ];
+                }
+                if (!tab) {
+                    return;
+                }
+                event.preventDefault();
+                window.gowishcartNavigateToTab( tab );
+                setActiveMenuByTab( tab );
+                if ( window.history && window.history.replaceState ) {
+                    window.history.replaceState( {}, "", buildHashUrl( tab ) );
+                }
+            } catch (err) {}
+        });
+    });
+})();
+GOWCART_SUBMENU_JS;
+    }
+
+    /**
+     * On non-GoWishCart admin screens, rewrite left-menu submenu hrefs to canonical + hash
+     * (the full gowishcart-admin bundle is not enqueued on those pages).
+     *
+     * @param string $hook Current screen hook.
+     * @return void
+     */
+    public function enqueue_gowishcart_menu_bridge( $hook ) {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            return;
+        }
+        if ( in_array( $hook, $this->get_gowishcart_admin_screen_hooks(), true ) ) {
+            return;
+        }
+
+        if ( ! wp_script_is( 'gowishcart-menu-bridge', 'registered' ) ) {
+            wp_register_script( 'gowishcart-menu-bridge', false, array(), GoWishCart_VERSION, true );
+        }
+        wp_enqueue_script( 'gowishcart-menu-bridge' );
+
+        $page_to_tab = $this->get_gowishcart_page_to_tab_map();
+        wp_localize_script(
+            'gowishcart-menu-bridge',
+            'gowishcartSettings',
+            array(
+                'adminUrl'      => admin_url(),
+                'menuSlug'      => $this->plugin_slug,
+                'canonicalPage' => $this->plugin_slug,
+                'defaultTab'    => 'settings',
+                'menuTabMap'    => $page_to_tab,
+                'menuBridgeOnly' => true,
+            )
+        );
+        wp_add_inline_script( 'gowishcart-menu-bridge', $this->get_submenu_navigation_inline_js() );
+    }
+
+    /**
      * Register admin menu items
      *
      * @since 1.0.0
@@ -96,31 +312,16 @@ class GoWishCart_Admin {
             30
         );
 
-        // Primary tabs rendered via React SPA
-        $subpages = array(
-            'settings'       => __( 'Settings', 'gowishcart-wishlist-for-fluentcart' ),
-            'customization'  => __( 'Customization', 'gowishcart-wishlist-for-fluentcart' ),
-            'integrations'   => __( 'Integrations', 'gowishcart-wishlist-for-fluentcart' ),
-            'analytics'      => __( 'Analytics', 'gowishcart-wishlist-for-fluentcart' ),
-            'support'        => __( 'Support', 'gowishcart-wishlist-for-fluentcart' ),
-            'get-pro'        => __( 'Get Pro', 'gowishcart-wishlist-for-fluentcart' ),
-        );
-
-        $pro_basename = 'gowishcart-wishlist-for-fluentcart-pro/gowishcart-wishlist-for-fluentcart-pro.php';
-        if ( is_plugin_active( $pro_basename ) ) {
-            $subpages['license'] = __( 'License', 'gowishcart-wishlist-for-fluentcart' );
-            unset( $subpages['get-pro'] );
-        }
-
+        $subpages = $this->get_admin_submenu_config();
         foreach ( $subpages as $slug_suffix => $label ) {
-        add_submenu_page(
-            $this->plugin_slug,
+            add_submenu_page(
+                $this->plugin_slug,
                 $label,
                 $label,
-            'manage_options',
+                'manage_options',
                 $this->plugin_slug . '-' . $slug_suffix,
-            [ $this, 'render_settings_page' ]
-        );
+                [ $this, 'render_settings_page' ]
+            );
         }
     }
     /**
@@ -133,16 +334,9 @@ class GoWishCart_Admin {
      * @return void
      */
     public function enqueue_admin_scripts($hook) {
-        $allowed_hooks = [
-            'toplevel_page_' . $this->plugin_slug,
-        ];
+        $allowed_hooks = $this->get_gowishcart_admin_screen_hooks();
 
-        $subpages = [ 'settings', 'support' ];
-        foreach ( $subpages as $slug_suffix ) {
-            $allowed_hooks[] = $this->plugin_slug . '_page_' . $this->plugin_slug . '-' . $slug_suffix;
-        }
-
-        if (!in_array($hook, $allowed_hooks)) {
+        if (!in_array($hook, $allowed_hooks, true)) {
             return;
         }
 
@@ -206,26 +400,15 @@ class GoWishCart_Admin {
 
         // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Reading query parameter, not processing form data
         $requested_page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : $this->plugin_slug . '-settings';
-        $page_to_tab = array(
-            $this->plugin_slug                     => 'settings',
-            $this->plugin_slug . '-settings'       => 'settings',
-            $this->plugin_slug . '-support'        => 'support',
-        );
-        $legacy_pro_pages = array(
-            $this->plugin_slug . '-customization',
-            $this->plugin_slug . '-integrations',
-            $this->plugin_slug . '-analytics',
-            $this->plugin_slug . '-get-pro',
-        );
-        if ( in_array( $requested_page, $legacy_pro_pages, true ) ) {
-            $requested_page = $this->plugin_slug . '-settings';
-        }
-        $default_tab = isset( $page_to_tab[ $requested_page ] ) ? $page_to_tab[ $requested_page ] : 'settings';
+        $canonical_page  = $this->plugin_slug;
+        $page_to_tab     = $this->get_gowishcart_page_to_tab_map();
+        $default_tab     = isset( $page_to_tab[ $requested_page ] ) ? $page_to_tab[ $requested_page ] : 'settings';
 
         $tab_to_page = array();
-        foreach ( $page_to_tab as $page_slug => $tab_id ) {
-            if ( ! isset( $tab_to_page[ $tab_id ] ) ) {
-                $tab_to_page[ $tab_id ] = $page_slug;
+        $unique_tab_ids = array_unique( array_values( $page_to_tab ) );
+        foreach ( $unique_tab_ids as $tab_id ) {
+            if ( is_string( $tab_id ) && '' !== $tab_id ) {
+                $tab_to_page[ $tab_id ] = $canonical_page;
             }
         }
 
@@ -242,83 +425,17 @@ class GoWishCart_Admin {
                 'isFluentCartActive' => GoWishCart_FluentCart_Helper::is_fluentcart_active(),
                 'maxUploadSize' => wp_max_upload_size(),
                 'menuSlug' => $this->plugin_slug,
+                'canonicalPage' => $canonical_page,
                 'defaultTab' => $default_tab,
                 'menuTabMap' => $page_to_tab,
                 'tabPageMap' => $tab_to_page,
                 'isGoWishCartPro' => $is_pro,
                 'hasProDomBridge' => $has_pro_dom_bridge,
+                'menuBridgeOnly'  => false,
             ]
         );
 
-        $submenu_navigation_js = '(function(){
-    if (typeof window === \'undefined\') {
-        return;
-    }
-    window.addEventListener(\'DOMContentLoaded\', function(){
-        if (!window.gowishcartSettings || !window.gowishcartSettings.menuTabMap) {
-            return;
-        }
-        var submenu = document.querySelector(\'#toplevel_page_' . esc_js( $this->plugin_slug ) . ' .wp-submenu\');
-        if (!submenu) {
-            return;
-        }
-        function setActiveMenuByPage(pageSlug){
-            if (!submenu) {
-                return;
-            }
-            var items = submenu.querySelectorAll(\'li\');
-            if (items && items.forEach) {
-                items.forEach(function(item){ item.classList.remove(\'current\'); });
-            }
-            var links = submenu.querySelectorAll(\'a\');
-            for (var i = 0; i < links.length; i++) {
-                var link = links[i];
-                try {
-                    var url = new URL(link.href, window.location.origin);
-                    var linkPage = url.searchParams.get(\'page\') || \'' . esc_js( $this->plugin_slug ) . '-settings\';
-                    if (linkPage === pageSlug) {
-                        if (link.parentElement) {
-                            link.parentElement.classList.add(\'current\');
-                        }
-                        break;
-                    }
-                } catch (err) {}
-            }
-        }
-        function setActiveMenuByTab(tabId){
-            var map = window.gowishcartSettings && window.gowishcartSettings.tabPageMap;
-            if (!map || !map[tabId]) {
-                return;
-            }
-            setActiveMenuByPage(map[tabId]);
-        }
-        window.gowishcartSetActiveMenu = setActiveMenuByTab;
-        setActiveMenuByTab(window.gowishcartSettings.defaultTab);
-        submenu.addEventListener(\'click\', function(event){
-            if (typeof window.gowishcartNavigateToTab !== \'function\') {
-                return;
-            }
-            var link = event.target.closest(\'a\');
-            if (!link) {
-                return;
-            }
-            try {
-                var url = new URL(link.href, window.location.origin);
-                var page = url.searchParams.get(\'page\') || \'' . esc_js( $this->plugin_slug ) . '-settings\';
-                var tab = window.gowishcartSettings.menuTabMap[page];
-                if (!tab) {
-                    return;
-                }
-                event.preventDefault();
-                window.gowishcartNavigateToTab(tab);
-                setActiveMenuByPage(page);
-            } catch (err) {
-                // Fail silently and allow navigation
-            }
-        });
-    });
-})();';
-        wp_add_inline_script( 'gowishcart-admin', $submenu_navigation_js );
+        wp_add_inline_script( 'gowishcart-admin', $this->get_submenu_navigation_inline_js() );
         wp_set_script_translations('gowishcart-admin', 'gowishcart-wishlist-for-fluentcart');
     }
 
