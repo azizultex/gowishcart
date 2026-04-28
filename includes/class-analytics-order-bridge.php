@@ -190,7 +190,7 @@ class GoWishCart_Analytics_Order_Bridge {
 				// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				$prepared = $wpdb->prepare( $sql, $product_id, $wp_user_id );
 			}
-			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Custom wishlist tables; query is prepared above.
 			return (bool) $wpdb->get_var( $prepared );
 		}
 
@@ -207,7 +207,7 @@ class GoWishCart_Analytics_Order_Bridge {
 				// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				$prepared = $wpdb->prepare( $sql, $product_id, $billing_email );
 			}
-			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Custom wishlist tables; query is prepared above.
 			return (bool) $wpdb->get_var( $prepared );
 		}
 

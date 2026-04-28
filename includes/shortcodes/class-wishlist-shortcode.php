@@ -62,6 +62,7 @@ class GoWishCart_Wishlist_Shortcode {
         $wishlist_settings = wp_parse_args( $wishlist_settings, $default_settings );
 
         $is_pro = (bool) apply_filters( 'gowishcart_is_pro', false ) || class_exists( 'GoWishCart_Wishlist_Pro' );
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Share link token from URL; read-only for layout, not form submission.
         $share_token = isset( $_GET['token'] ) ? sanitize_text_field( wp_unslash( $_GET['token'] ) ) : '';
         
         wp_localize_script(
