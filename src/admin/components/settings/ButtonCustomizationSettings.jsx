@@ -484,7 +484,7 @@ const ButtonCustomizationSettings = ({ settings, updateSettings }) => {
             }
             
             if (!imageUrl) {
-                console.error('Attachment data:', attachmentData);
+                console.error('GoWishCart: could not resolve media library image URL for custom icon.');
                 alert(__('Error: Could not get image URL. Please try again.', 'gowishcart-wishlist-for-fluentcart'));
                 return;
             }

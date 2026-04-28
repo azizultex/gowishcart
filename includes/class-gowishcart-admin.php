@@ -1609,7 +1609,6 @@ GOWCART_SUBMENU_JS;
      * @return WP_REST_Response
      */
     public function wishlist_get( $request ) {
-        error_log( 'wishlist_get_cudo' );
         // Enforce REST nonce verification for public read endpoint.
         $nonce_check = $this->verify_rest_nonce( $request );
         if ( is_wp_error( $nonce_check ) ) {
