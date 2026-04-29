@@ -5,6 +5,10 @@
 /node_modules export-ignore
 # /src export-ignore  # Comment out to include source code
 /.claude export-ignore
+/.cursor export-ignore
+/.agents export-ignore
+/openspec export-ignore
+
 
 
 # Files 
