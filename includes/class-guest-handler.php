@@ -492,13 +492,18 @@ class GoWishCart_Guest_Handler {
             $results['processed'] = $result !== false ? $result : 0;
         } else {
             // Just update last_activity to mark as inactive
-            $result = $this->wpdb->update(
-                $this->guest_users_table,
-                array('last_activity' => '2000-01-01 00:00:00'), // Mark as very old
-                array('date_expires <' => current_time('mysql')),
-                array('%s'),
-                array()
+            // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared
+            $result = $this->wpdb->query(
+                $this->wpdb->prepare(
+                    "UPDATE " . esc_sql($this->guest_users_table) . "
+                    SET last_activity = %s
+                    WHERE date_expires < %s
+                        AND conversion_user_id IS NULL",
+                    '2000-01-01 00:00:00',
+                    current_time('mysql')
+                )
             );
+            // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
 
             $results['processed'] = $result !== false ? $result : 0;
         }
