@@ -154,32 +154,25 @@ class GoWishCart_FluentCart_Product {
     }
 
     /**
-     * Get product variants using FluentCart's native API
+     * Get product variants (FluentCart `fct_product_variations` first, then ProductResource).
      *
-     * @return array|null Array of variants or null if error
+     * Reading the variations table first avoids FluentCart’s `ProductResource::find()` ORM path
+     * when rows exist, which prevents PHP 8.4+ deprecations in bundled WPFluent
+     * (`vendor/wpfluent/.../HasAttributes.php`, null used as array offset) from polluting REST JSON.
+     * Track FluentCart / WPFluent fixes via plugin updates: {@link https://github.com/fluent-cart/fluent-cart}.
+     *
+     * Production sites should keep `WP_DEBUG_DISPLAY` false so notices are never echoed into responses.
+     *
+     * @return array List of variant rows (may be empty).
      */
     private function get_variants() {
         if ( $this->variants !== null ) {
             return $this->variants;
         }
 
-        // Try to use FluentCart's native API if available
-        if ( class_exists( '\FluentCart\Api\Resource\ProductResource' ) ) {
-            try {
-                $product_data = \FluentCart\Api\Resource\ProductResource::find( $this->post_id );
-                if ( $product_data && isset( $product_data['variants'] ) ) {
-                    $this->variants = $product_data['variants'];
-                    return $this->variants;
-                }
-            } catch ( Exception $e ) {
-                // Fallback to direct database query
-            }
-        }
-
-        // Fallback: Direct database query
         global $wpdb;
         $table_name = $wpdb->prefix . 'fct_product_variations';
-        
+
         // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter
         if ( $wpdb->get_var( "SHOW TABLES LIKE '$table_name'" ) === $table_name ) {
             $variants = $wpdb->get_results( $wpdb->prepare( // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter
@@ -188,14 +181,54 @@ class GoWishCart_FluentCart_Product {
                 $this->post_id
             ), ARRAY_A );
 
-            if ( is_array( $variants ) ) {
+            if ( is_array( $variants ) && ! empty( $variants ) ) {
                 $this->variants = $variants;
                 return $this->variants;
             }
         }
 
+        if ( class_exists( '\FluentCart\Api\Resource\ProductResource' ) ) {
+            try {
+                $product_data = self::gowishcart_product_resource_find( $this->post_id );
+                if ( $product_data && isset( $product_data['variants'] ) && is_array( $product_data['variants'] ) ) {
+                    $this->variants = $product_data['variants'];
+                    return $this->variants;
+                }
+            } catch ( Exception $e ) {
+                // Variants unavailable via API; fall through to empty list.
+            }
+        }
+
         $this->variants = [];
         return $this->variants;
+    }
+
+    /**
+     * Call FluentCart ProductResource::find with PHP 8.4+ deprecation noise suppressed for this call only.
+     *
+     * When `display_errors` is on, E_DEPRECATED would otherwise prepend HTML to REST JSON. Operators should
+     * still disable `WP_DEBUG_DISPLAY` in production; this is a narrow guard for the known WPFluent issue
+     * until FluentCart ships an updated `vendor/wpfluent` package.
+     *
+     * @param int $post_id FluentCart product post ID.
+     * @return mixed|null Product payload from FluentCart or null on failure.
+     */
+    private static function gowishcart_product_resource_find( $post_id ) {
+        $runner = static function () use ( $post_id ) {
+            return \FluentCart\Api\Resource\ProductResource::find( $post_id );
+        };
+
+        if ( version_compare( PHP_VERSION, '8.4.0', '<' ) ) {
+            return $runner();
+        }
+
+        $prev_level = error_reporting();
+        error_reporting( $prev_level & ~E_DEPRECATED & ~E_USER_DEPRECATED );
+        try {
+            return $runner();
+        } finally {
+            error_reporting( $prev_level );
+        }
     }
 
     /**
