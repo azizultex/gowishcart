@@ -368,7 +368,8 @@ GOWCART_SUBMENU_JS;
         // Enqueue Pro script if the Pro plugin is active.
         $pro_basename = 'gowishcart-wishlist-for-fluentcart-pro/gowishcart-wishlist-for-fluentcart-pro.php';
         if ( is_plugin_active( $pro_basename ) ) {
-            $pro_main = WP_PLUGIN_DIR . '/' . $pro_basename;
+            // Resolve Pro main file from this plugin's directory (avoid WP_PLUGIN_DIR for portability).
+            $pro_main = trailingslashit( dirname( GoWishCart_PLUGIN_DIR ) ) . $pro_basename;
             if ( is_readable( $pro_main ) ) {
                 $pro_dir = dirname( $pro_main );
                 $pro_js  = $pro_dir . '/build/pro.js';
@@ -569,7 +570,9 @@ GOWCART_SUBMENU_JS;
         register_rest_route('gowishcart/v1', '/product/(?P<product_id>\d+)/variants', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_product_variants'),
-            'permission_callback' => '__return_true', // Public endpoint
+            'permission_callback' => function ( $request ) {
+                return $this->rest_public_nonce_permission( $request );
+            },
             'args' => array(
                 'product_id' => array(
                     'required' => true,

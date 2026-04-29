@@ -1,6 +1,12 @@
 # AppSero Client Extended
 ### Version 1.2.3
 
+## GoWishCart vendor policy (bundled copy)
+
+- **Canonical path:** Ship and edit only under `appsero/client/src/` using **forward slashes** in Git paths (matches `require_once __DIR__ . '/appsero/client/src/Client.php'` in the main plugin).
+- **Avoid duplicate trees:** Do not maintain a second copy of these files under OS-specific spellings (for example Windows-only backslash paths as a separate tree); that can split history and cause merge noise.
+- **Updates:** Refresh all PHP files in `appsero/client/src/` from the same upstream Appsero Client Extended revision; run WPCS on any touched files before release.
+
 - [Installation](#installation)
 - [Insights](#insights)
 - [Dynamic Usage](#dynamic-usage)
