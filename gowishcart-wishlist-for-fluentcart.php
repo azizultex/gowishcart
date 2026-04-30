@@ -4,7 +4,7 @@
  * Plugin Name:  GoWishCart - Wishlist for FluentCart
  * Plugin URI:  https://gowishcart.com
  * Description: Wishlist plugin for FluentCart with guest support, product variations, price drop alerts, and FluentCRM integration.
- * Version:     1.2.0
+ * Version:     2.0.0
  * Requires PHP: 7.4
  * Requires Plugins: fluent-cart
  * Author:      GoWishCart Team <support@gowishcart.com>
@@ -68,7 +68,7 @@ class GoWishCart_Wishlist {
     private function __construct() {
         // Define constants
         define('GoWishCart_PLUGIN_FILE', __FILE__);
-        define('GoWishCart_VERSION', '1.2.0');
+        define('GoWishCart_VERSION', '2.0.0');
         define('GoWishCart_PLUGIN_DIR', plugin_dir_path(__FILE__));
         define('GoWishCart_PLUGIN_URL', plugin_dir_url(__FILE__));
         define('GoWishCart_TEXT_DOMAIN', 'gowishcart-wishlist-for-fluentcart');
@@ -250,7 +250,8 @@ class GoWishCart_Wishlist {
         include_once GoWishCart_PLUGIN_DIR . 'includes/class-database.php';
         include_once GoWishCart_PLUGIN_DIR . 'includes/class-database-migration.php';
         include_once GoWishCart_PLUGIN_DIR . 'includes/class-fluentcart-helper.php';
-        
+        include_once GoWishCart_PLUGIN_DIR . 'includes/class-analytics-order-bridge.php';
+
         // Handler classes
         include_once GoWishCart_PLUGIN_DIR . 'includes/class-wishlist-handler.php';
         // Analytics handler is a Pro feature - removed from free version
@@ -287,6 +288,9 @@ class GoWishCart_Wishlist {
 
         // Initialize admin/API class so REST routes register for all requests
         GoWishCart_Admin::get_instance();
+
+        // Pro analytics: purchase funnel step is recorded on FluentCart payment complete when Pro provides Analytics_Handler.
+        GoWishCart_Analytics_Order_Bridge::init();
 
         // Initialize frontend handler
         new GoWishCart_Wishlist_Frontend();

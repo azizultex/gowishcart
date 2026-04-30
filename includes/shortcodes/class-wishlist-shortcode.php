@@ -60,6 +60,10 @@ class GoWishCart_Wishlist_Shortcode {
         $wishlist_settings = isset( $settings['wishlist'] ) ? $settings['wishlist'] : array();
         $default_settings = GoWishCart_Wishlist_Page::get_default_settings();
         $wishlist_settings = wp_parse_args( $wishlist_settings, $default_settings );
+
+        $is_pro = (bool) apply_filters( 'gowishcart_is_pro', false ) || class_exists( 'GoWishCart_Wishlist_Pro' );
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Share link token from URL; read-only for layout, not form submission.
+        $share_token = isset( $_GET['token'] ) ? sanitize_text_field( wp_unslash( $_GET['token'] ) ) : '';
         
         wp_localize_script(
             'gowishcart-wishlist-frontend',
@@ -73,11 +77,18 @@ class GoWishCart_Wishlist_Shortcode {
                 'userId' => get_current_user_id(),
                 'shareCode' => sanitize_text_field( $atts['share_code'] ),
                 'enableMultipleWishlists' => ! empty( $wishlist_settings['enable_multiple_wishlists'] ),
+                'isPro' => $is_pro,
             )
         );
 
+        $container_classes = array();
+        if ( $is_pro && $share_token !== '' ) {
+            $container_classes[] = 'gowishcart-shared-pro-page';
+        }
+        $class_attr = ! empty( $container_classes ) ? ' class="' . esc_attr( implode( ' ', $container_classes ) ) . '"' : '';
+
         // Return container for React component
-        return '<div id="gowishcart-wishlist-page"></div>';
+        return '<div id="gowishcart-wishlist-page"' . $class_attr . '></div>';
     }
 
  

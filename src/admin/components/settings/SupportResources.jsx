@@ -4,6 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { LifeBuoy, MessageCircle, BookOpen, Mail, HelpCircle } from 'lucide-react';
 
+const isProActive = Boolean(typeof window !== 'undefined' && (window.gowishcartSettings?.isGoWishCartPro || window.gowishcartSettings?.hasProDomBridge));
+
 const SupportResources = () => {
     // WordPress.org forum support - PRIMARY option for free users
     const wordpressForumResource = {
@@ -33,9 +35,11 @@ const SupportResources = () => {
         },
         {
             icon: LifeBuoy,
-            title: __('Commercial Support (Pro)', 'gowishcart-wishlist-for-fluentcart'),
-            description: __('Priority support for GoWishCart Pro users. Start a live chat and our team will assist you.', 'gowishcart-wishlist-for-fluentcart'),
-            actionLabel: __('Get Pro Support', 'gowishcart-wishlist-for-fluentcart'),
+            title: isProActive ? __('Commercial Support', 'gowishcart-wishlist-for-fluentcart') : __('Commercial Support (Pro)', 'gowishcart-wishlist-for-fluentcart'),
+            description: isProActive
+                ? __('Priority support for your GoWishCart account. Start a live chat and our team will assist you.', 'gowishcart-wishlist-for-fluentcart')
+                : __('Priority support for GoWishCart Pro users. Start a live chat and our team will assist you.', 'gowishcart-wishlist-for-fluentcart'),
+            actionLabel: __('Get Support', 'gowishcart-wishlist-for-fluentcart'),
             href: 'https://gowishcart.com/support',
         },
     ];
@@ -67,7 +71,10 @@ const SupportResources = () => {
             {/* Commercial Support Section - Clearly labeled as Pro/Commercial */}
             <div className="mt-4">
                 <h3 className="text-sm font-semibold text-gray-700 mb-4">
-                    {__('Commercial Support (GoWishCart Pro Users)', 'gowishcart-wishlist-for-fluentcart')}
+                    {isProActive
+                        ? __('Commercial Support', 'gowishcart-wishlist-for-fluentcart')
+                        : __('Commercial Support (GoWishCart Pro Users)', 'gowishcart-wishlist-for-fluentcart')
+                    }
                 </h3>
                 <div className="grid gap-6 md:grid-cols-2">
                     {commercialResources.map((resource) => {
@@ -96,8 +103,18 @@ const SupportResources = () => {
 
                     <Card className="md:col-span-2">
                         <CardHeader>
-                            <CardTitle>{__('Email Support (Pro Users)', 'gowishcart-wishlist-for-fluentcart')}</CardTitle>
-                            <CardDescription>{__('Commercial email support for GoWishCart Pro users. We will respond within one business day.', 'gowishcart-wishlist-for-fluentcart')}</CardDescription>
+                            <CardTitle>
+                                {isProActive
+                                    ? __('Email Support', 'gowishcart-wishlist-for-fluentcart')
+                                    : __('Email Support (Pro Users)', 'gowishcart-wishlist-for-fluentcart')
+                                }
+                            </CardTitle>
+                            <CardDescription>
+                                {isProActive
+                                    ? __('Commercial email support for your GoWishCart account. We will respond within one business day.', 'gowishcart-wishlist-for-fluentcart')
+                                    : __('Commercial email support for GoWishCart Pro users. We will respond within one business day.', 'gowishcart-wishlist-for-fluentcart')
+                                }
+                            </CardDescription>
                         </CardHeader>
                         <CardContent className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                             <div className="flex items-center gap-2">

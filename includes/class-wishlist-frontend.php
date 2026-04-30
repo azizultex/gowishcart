@@ -100,7 +100,9 @@ class GoWishCart_Wishlist_Frontend {
         $button_customization = isset( $wishlist_settings['button_customization'] ) ? $wishlist_settings['button_customization'] : array();
         $default_customization = GoWishCart_Wishlist_Page::get_default_settings();
         $button_customization = wp_parse_args( $button_customization, isset( $default_customization['button_customization'] ) ? $default_customization['button_customization'] : array() );
-        
+
+        $is_pro = (bool) apply_filters( 'gowishcart_is_pro', false ) || class_exists( 'GoWishCart_Wishlist_Pro' );
+
         wp_localize_script(
             'gowishcart-wishlist-frontend',
             'gowishcartWishlist',
@@ -115,6 +117,7 @@ class GoWishCart_Wishlist_Frontend {
                 'enabled' => ! empty( $wishlist_settings['enabled'] ),
                 'showOnProduct' => ! empty( $wishlist_settings['product_page_button'] ),
                 'showOnShop' => ! empty( $wishlist_settings['shop_page_button'] ),
+                'enableMultipleWishlists' => $is_pro && ! empty( $wishlist_settings['enable_multiple_wishlists'] ),
                 'buttonCustomization' => array(
                     'product_page' => isset( $button_customization['product_page'] ) ? $button_customization['product_page'] : array(),
                     'product_listing' => isset( $button_customization['product_listing'] ) ? $button_customization['product_listing'] : array(),
@@ -125,6 +128,7 @@ class GoWishCart_Wishlist_Frontend {
                     'labels' => isset( $button_customization['labels'] ) ? $button_customization['labels'] : array(),
                     'buttonStyle' => isset( $button_customization['buttonStyle'] ) ? $button_customization['buttonStyle'] : 'button',
                 ),
+                'isPro' => $is_pro,
             )
         );
     }

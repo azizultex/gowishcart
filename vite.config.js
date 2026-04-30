@@ -12,10 +12,11 @@ if (buildTarget === 'admin') {
     entryPoint = path.resolve(__dirname, 'src/frontend/index.jsx');
 }
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
     plugins: [react()],
     build: {
-        sourcemap: true,
+        // Public releases: omit source maps (set SOURCE_MAP=true for local debugging of built files).
+        sourcemap: process.env.SOURCE_MAP === 'true',
         outDir: 'build',
         emptyOutDir: false,
         cssCodeSplit: false,
@@ -40,9 +41,16 @@ export default defineConfig({
             ],
         }
     },
+    esbuild: {
+        // Quieter production bundles; set VITE_KEEP_CONSOLE=1 when you need console during vite build --watch.
+        drop:
+            command === 'build' && process.env.VITE_KEEP_CONSOLE !== '1'
+                ? ['console', 'debugger']
+                : [],
+    },
     resolve: {
         alias: {
             '@': path.resolve(__dirname, './src'),
         }
     }
-})
+}))

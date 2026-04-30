@@ -100,4 +100,23 @@
         <exclude name="WordPress.PHP.StrictInArray.MissingTrueStrict" />
     </rule>
 
+    <!--
+      Bundled Appsero SDK (third-party): hook naming is checked via ValidHookName and
+      PrefixAllGlobals (NonPrefixedHooknameFound, DynamicHooknameFound, etc.).
+
+      Per-sniff exclude patterns are matched against the full file path (File::addMessage).
+      On Windows, *.../appsero/...* can fail if paths mix / and \; patterns like *\appsero\* break
+      because \a is a regex escape. Use \bappsero\b so the segment "appsero" matches in any path.
+    -->
+    <rule ref="WordPress.NamingConventions.ValidHookName">
+        <exclude-pattern>\bappsero\b</exclude-pattern>
+        <exclude-pattern>*/appsero/*</exclude-pattern>
+        <exclude-pattern>appsero/*</exclude-pattern>
+    </rule>
+    <rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+        <exclude-pattern>\bappsero\b</exclude-pattern>
+        <exclude-pattern>*/appsero/*</exclude-pattern>
+        <exclude-pattern>appsero/*</exclude-pattern>
+    </rule>
+
 </ruleset>

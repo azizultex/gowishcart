@@ -75,6 +75,24 @@ const isAdminBarEnabled = () => {
 };
 
 /**
+ * Resolve admin-ajax.php URL from PHP-localized globals (correct for subdirectory installs).
+ *
+ * @returns {string}
+ */
+const resolveAjaxUrl = () => {
+    if (typeof window === 'undefined') {
+        return '';
+    }
+    if (window.gowishcartWishlist && window.gowishcartWishlist.ajaxUrl) {
+        return window.gowishcartWishlist.ajaxUrl;
+    }
+    if (window.wishcartShared && window.wishcartShared.ajaxUrl) {
+        return window.wishcartShared.ajaxUrl;
+    }
+    return '';
+};
+
+/**
  * Add product to cart via FluentCart's direct API endpoint
  * 
  * @param {Object} params - Add to cart parameters
@@ -100,8 +118,7 @@ const addToCartViaFluentCartAPI = async (params) => {
         'fluent_cart_cart_update'
     ];
 
-    // Ajax URL must come from PHP (wp_localize_script); no hardcoded path for WordPress.org compliance.
-    const ajaxUrl = window.gowishcartWishlist?.ajaxUrl;
+    const ajaxUrl = resolveAjaxUrl();
     if (!ajaxUrl) {
         return { success: false, error: 'Ajax URL not available' };
     }
@@ -581,8 +598,7 @@ const tryWordPressAjax = ({ productId, variationId, quantity }) => {
                 return;
             }
 
-            // Ajax URL must come from PHP (wp_localize_script); no hardcoded path for WordPress.org compliance.
-            const ajaxUrl = window.gowishcartWishlist?.ajaxUrl;
+            const ajaxUrl = resolveAjaxUrl();
             if (!ajaxUrl) {
                 resolve({ success: false });
                 return;

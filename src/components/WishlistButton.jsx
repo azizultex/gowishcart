@@ -5,6 +5,7 @@ import { cn } from '../lib/utils';
 import GuestEmailModal from './GuestEmailModal';
 import VariantWishlistButtons from './VariantWishlistButtons';
 import * as LucideIcons from 'lucide-react';
+import WishlistSelectorModal from './WishlistSelectorModal';
 
 const WishlistButton = ({ productId, variationId: propVariationId, className, customStyles, position = 'bottom' }) => {
     const [isInWishlist, setIsInWishlist] = useState(false);
@@ -16,6 +17,12 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
     const [currentVariationId, setCurrentVariationId] = useState(propVariationId || 0);
     const [variants, setVariants] = useState(null); // null = not checked, [] = no variants, array = has variants
     const [isCheckingVariants, setIsCheckingVariants] = useState(true);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const isProActive = Boolean(window.gowishcartWishlist?.isPro);
+    const enableMultipleWishlists = Boolean(
+        window.gowishcartWishlist?.enableMultipleWishlists && isProActive
+    );
     
     // Cache for variant data per product ID
     const variantsCacheRef = useRef(new Map()); // productId -> variants array
@@ -996,9 +1003,19 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
         // Mark guest as having email
         setGuestHasEmail(true);
         
-        // Execute the pending action - always add to default wishlist
-        if (pendingAddAction === 'default' || pendingAddAction === 'toggle') {
-            await addToDefaultWishlist(true); // Skip email check since we just got it
+        // // Execute the pending action - always add to default wishlist
+        // if (pendingAddAction === 'default' || pendingAddAction === 'toggle') {
+        //     await addToDefaultWishlist(true); // Skip email check since we just got it
+        // }
+
+        if (pendingAddAction === 'default') {
+            await addToDefaultWishlist(true);
+        } else if (pendingAddAction === 'toggle') {
+            if (enableMultipleWishlists) {
+                setIsModalOpen(true);
+            } else {
+                await addToDefaultWishlist(true);
+            }
         }
         
         // Clear pending action
@@ -1305,6 +1322,15 @@ const WishlistButton = ({ productId, variationId: propVariationId, className, cu
                 onClose={handleEmailModalClose}
                 onEmailSubmitted={handleEmailSubmitted}
             />
+
+             <WishlistSelectorModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                productId={productId}
+                variationId={variantId}
+                onSuccess={handleModalSuccess}
+            />
+            
             <button
                 type="button"
                 onClick={toggleWishlist}

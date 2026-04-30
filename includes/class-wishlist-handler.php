@@ -397,6 +397,57 @@ class GoWishCart_Wishlist_Handler {
     }
 
     /**
+     * Legacy fallback: active wishlist items with created_at and wishlist_id (for REST when no default row matches).
+     *
+     * @param int|null    $user_id    User ID (unused; resolved from login state).
+     * @param string|null $session_id Guest session ID.
+     * @return array List of rows: product_id, variation_id, created_at, wishlist_id.
+     */
+    public function get_user_wishlist_with_dates( $user_id = null, $session_id = null ) {
+        if ( is_user_logged_in() ) {
+            $user_id = get_current_user_id();
+            $session_id = null;
+        } else {
+            if ( empty( $session_id ) ) {
+                return array();
+            }
+            $user_id = null;
+        }
+
+        if ( $user_id ) {
+            // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+            $results = $this->wpdb->get_results(
+                $this->wpdb->prepare(
+                    "SELECT wi.product_id, wi.variation_id, wi.date_added AS created_at, wi.wishlist_id
+                    FROM " . esc_sql( $this->items_table ) . " wi
+                    INNER JOIN " . esc_sql( $this->wishlists_table ) . " w ON w.id = wi.wishlist_id AND w.status = 'active'
+                    WHERE w.user_id = %d AND wi.status = 'active'
+                    ORDER BY wi.position ASC, wi.date_added DESC",
+                    $user_id
+                ),
+                ARRAY_A
+            );
+            // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        } else {
+            // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+            $results = $this->wpdb->get_results(
+                $this->wpdb->prepare(
+                    "SELECT wi.product_id, wi.variation_id, wi.date_added AS created_at, wi.wishlist_id
+                    FROM " . esc_sql( $this->items_table ) . " wi
+                    INNER JOIN " . esc_sql( $this->wishlists_table ) . " w ON w.id = wi.wishlist_id AND w.status = 'active'
+                    WHERE w.session_id = %s AND wi.status = 'active'
+                    ORDER BY wi.position ASC, wi.date_added DESC",
+                    $session_id
+                ),
+                ARRAY_A
+            );
+            // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        }
+
+        return $results ? $results : array();
+    }
+
+    /**
      * Update wishlist
      *
      * @param int $wishlist_id Wishlist ID
@@ -758,6 +809,19 @@ class GoWishCart_Wishlist_Handler {
 
         // Log activity
         $this->log_activity($wishlist_id, 'added_item', $product_id, 'product');
+        
+        // Pro: conversion funnel "Added to Wishlist" (wishlist_track_cart records 'cart' separately).
+        if ( class_exists( 'GoWishCart_Analytics_Handler' ) ) {
+            $event_type = apply_filters(
+                'gowishcart_analytics_wishlist_add_event_type',
+                'add',
+                $product_id,
+                $variation_id,
+                $wishlist_id
+            );
+            $analytics_handler = new GoWishCart_Analytics_Handler();
+            $analytics_handler->track_event( $product_id, $variation_id, $event_type );
+        }
 
         // Clear cache
         $this->clear_wishlist_cache($user_id, $session_id);
