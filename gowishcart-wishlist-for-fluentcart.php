@@ -4,7 +4,7 @@
  * Plugin Name:  GoWishCart - Wishlist for FluentCart
  * Plugin URI:  https://gowishcart.com
  * Description: Wishlist plugin for FluentCart with guest support, product variations, price drop alerts, and FluentCRM integration.
- * Version:     2.0.0
+ * Version:     2.0.1
  * Requires PHP: 7.4
  * Requires Plugins: fluent-cart
  * Author:      GoWishCart Team <support@gowishcart.com>
@@ -68,11 +68,11 @@ class GoWishCart_Wishlist {
     private function __construct() {
         // Define constants
         define('GoWishCart_PLUGIN_FILE', __FILE__);
-        define('GoWishCart_VERSION', '2.0.0');
+        define('GoWishCart_VERSION', '2.0.1');
         define('GoWishCart_PLUGIN_DIR', plugin_dir_path(__FILE__));
         define('GoWishCart_PLUGIN_URL', plugin_dir_url(__FILE__));
         define('GoWishCart_TEXT_DOMAIN', 'gowishcart-wishlist-for-fluentcart');
-        define('GoWishCart_APPSERO_TOKEN', 'b0651d80-9209-4b08-9c2c-eb84e6cbc81a');
+        define('GoWishCart_APPSERO_TOKEN', 'ecbf7c4f-24c2-4900-8d1c-03ea34081fb1');
 
         // Check for FluentCart dependency first (before loading other dependencies)
         if ( ! $this->check_fluentcart_dependency() ) {
