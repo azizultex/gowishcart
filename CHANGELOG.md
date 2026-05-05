@@ -2,6 +2,9 @@
 
 All notable changes to the GoWishCart Wishlist plugin will be documented in this file.
 
+= 2.0.1 =
+* Improved: Appsero update
+
 = 2.0.0 =
 * Improved: Core functionality and overall performance.
 * Updated: Codebase for enhanced stability.
