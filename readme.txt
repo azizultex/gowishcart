@@ -3,7 +3,7 @@ Contributors: azizultex, sabbirxprt
 Tags: wishlist, fluentcart, ecommerce, shopping, favorites
 Requires at least: 5.0
 Tested up to: 6.9
-Stable tag: 2.0.2
+Stable tag: 2.0.3
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -13,6 +13,8 @@ Wishlist management for FluentCart stores with guest wishlists, variation suppor
 == Description ==
 
 GoWishCart adds wishlist functionality to FluentCart-powered stores.
+
+[youtube httphttps://youtu.be/mZejLo5qsmE?si=g7D7sJkDfp06DlVR]
 
 Customers can:
 * Save products for later
@@ -96,7 +98,7 @@ You can use the `[gowishcart_wishlist]` shortcode on any page, or GoWishCart wil
 
 == Changelog ==
 
-= 2.0.2 =
+= 2.0.3 =
 * Improved: Readme file
 
 = 2.0.1 =

@@ -2,7 +2,7 @@
 
 All notable changes to the GoWishCart Wishlist plugin will be documented in this file.
 
-= 2.0.2 =
+= 2.0.3 =
 * Improved: Readme file
 
 = 2.0.1 =
