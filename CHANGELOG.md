@@ -2,8 +2,13 @@
 
 All notable changes to the GoWishCart Wishlist plugin will be documented in this file.
 
-= 2.0.3 =
+= 2.0.4 =
 * Improved: Readme file
+
+
+= 2.0.3 =
+* Improved: Updated the readme file
+* Improved: Compatibility with WordPress v7
 
 = 2.0.1 =
 * Improved: Appsero update

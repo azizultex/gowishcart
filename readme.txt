@@ -2,8 +2,8 @@
 Contributors: azizultex, sabbirxprt
 Tags: wishlist, fluentcart, ecommerce, shopping, favorites
 Requires at least: 5.0
-Tested up to: 6.9
-Stable tag: 2.0.3
+Tested up to: 7.0
+Stable tag: 2.0.4
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -97,6 +97,10 @@ Yes, you can enable the "Show Button on Shop Page" option in the GoWishCart sett
 You can use the `[gowishcart_wishlist]` shortcode on any page, or GoWishCart will automatically create a wishlist page. You can also use the `[gowishcart_wishlist_button]` shortcode to display the add-to-wishlist button anywhere on your site.
 
 == Changelog ==
+
+= 2.0.4 =
+* Improved: Updated the readme file
+* Improved: Compatibility with WordPress v7
 
 = 2.0.3 =
 * Improved: Readme file
